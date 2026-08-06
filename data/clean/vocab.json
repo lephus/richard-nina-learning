@@ -5654,5 +5654,941 @@
     "exampleEn": "The company's profits ___ in the 1990s.",
     "exampleVi": "Lợi nhuận của công ty giảm trong những năm 1990.",
     "blankAnswer": "dwindled"
+  },
+  {
+    "ordinal": 361,
+    "word": "impede",
+    "pos": "v",
+    "ipa": "/ɪmˈpiːd/",
+    "meaningVi": "cản trở, ngăn cản",
+    "definitionEn": "to delay or stop the progress of something",
+    "definitionVi": "để trì hoãn hoặc ngừng tiến trình của một cái gì đó",
+    "synonyms": [
+      "obstruct"
+    ],
+    "exampleEn": "Natural calamities in the summer will ___ national growth.",
+    "exampleVi": "Thiên tai tự nhiên trong mùa hè sẽ cản trở tăng trưởng quốc gia.",
+    "blankAnswer": "impede"
+  },
+  {
+    "ordinal": 362,
+    "word": "promising",
+    "pos": "adj",
+    "ipa": "/ˈprɑːmɪsɪŋ/",
+    "meaningVi": "đầy hứa hẹn",
+    "definitionEn": "showing signs of being good or successful",
+    "definitionVi": "có dấu hiệu tốt hoặc thành công",
+    "synonyms": [
+      "full of promise"
+    ],
+    "exampleEn": "Many people find ___ careers in health and technology.",
+    "exampleVi": "Nhiều người tìm thấy nghề nghiệp đầy hứa hẹn về sức khỏe và công nghệ.",
+    "blankAnswer": "promising"
+  },
+  {
+    "ordinal": 363,
+    "word": "adversity",
+    "pos": "n",
+    "ipa": "/ədˈvɜːrsəti/",
+    "meaningVi": "sự bất lợi, nghịch cảnh",
+    "definitionEn": "a difficult or unpleasant situation",
+    "definitionVi": "một tình huống khó khăn hoặc khó chịu",
+    "synonyms": [
+      "difficulty"
+    ],
+    "exampleEn": "In spite of the ___ he faced, Mike managed to find a job.",
+    "exampleVi": "Mặc dù sự bất lợi mà anh gặp phải, Mike đã tìm được việc làm.",
+    "blankAnswer": "adversity"
+  },
+  {
+    "ordinal": 364,
+    "word": "purchase",
+    "pos": "v",
+    "ipa": "/ˈpɜːrtʃəs/",
+    "meaningVi": "mua, vật mua được",
+    "definitionEn": "the act or process of buying something",
+    "definitionVi": "hành động hoặc quá trình mua thứ gì đó",
+    "synonyms": [
+      "buy"
+    ],
+    "exampleEn": "The customer ___ a laptop computer.",
+    "exampleVi": "Khách hàng đã mua một máy tính xách tay.",
+    "blankAnswer": "purchased"
+  },
+  {
+    "ordinal": 365,
+    "word": "installment",
+    "pos": "n",
+    "ipa": "/ɪnˈstɔːlmənt/",
+    "meaningVi": "sự trả góp",
+    "definitionEn": "one of a series of regular payments that you make until you have paid all the money you owe",
+    "definitionVi": "một trong số các khoản thanh toán thông thường mà bạn thực hiện cho đến khi bạn đã thanh toán tất cả số tiền bạn nợ",
+    "synonyms": [
+      "part payment"
+    ],
+    "exampleEn": "The shop allows buyer to pay for furniture in monthly ___.",
+    "exampleVi": "Cửa hàng cho phép người mua trả góp đồ nội thất theo từng tháng.",
+    "blankAnswer": "installments"
+  },
+  {
+    "ordinal": 366,
+    "word": "affordable",
+    "pos": "adj",
+    "ipa": "/əˈfɔːrdəbl/",
+    "meaningVi": "giá cả phải chăng, hợp lý",
+    "definitionEn": "cheap enough for most people to afford",
+    "definitionVi": "giá rẻ đủ cho hầu hết mọi người đủ khả năng",
+    "synonyms": [
+      "reasonable",
+      "inexpensive",
+      "cheap"
+    ],
+    "exampleEn": "Toyama launched an ___ mid-range sedan.",
+    "exampleVi": "Toyama ra mắt một chiếc sedan tầm trung giá cả phải chăng.",
+    "blankAnswer": "affordable"
+  },
+  {
+    "ordinal": 367,
+    "word": "exactly",
+    "pos": "adv",
+    "ipa": "/ɪɡˈzæktli/",
+    "meaningVi": "chính xác",
+    "definitionEn": "used to emphasize that something is correct in every way or in every detail",
+    "definitionVi": "được sử dụng để nhấn mạnh rằng một cái gì đó là chính xác trong mọi cách hoặc trong từng chi tiết",
+    "synonyms": [
+      "precisely"
+    ],
+    "exampleEn": "The sales representatives help customers decide ___ what style fits them best.",
+    "exampleVi": "Đại diện bán hàng giúp khách hàng quyết định chính xác kiểu dáng nào phù hợp nhất với họ.",
+    "blankAnswer": "exactly"
+  },
+  {
+    "ordinal": 368,
+    "word": "auction",
+    "pos": "n",
+    "ipa": "/ˈɔːkʃn/",
+    "meaningVi": "sự đấu giá",
+    "definitionEn": "a public event at which things are sold to the person who offers the most money for them",
+    "definitionVi": "một sự kiện công khai mà tại đó mọi thứ được bán cho người trả nhiều tiền nhất",
+    "synonyms": [
+      "bidding",
+      "sale"
+    ],
+    "exampleEn": "A number of antique pieces will be sold at the ___.",
+    "exampleVi": "Một số đồ cổ sẽ được bán tại phiên đấu giá.",
+    "blankAnswer": "auction"
+  },
+  {
+    "ordinal": 369,
+    "word": "authentic",
+    "pos": "adj",
+    "ipa": "/ɔːˈθentɪk/",
+    "meaningVi": "đích thực",
+    "definitionEn": "known to be real and genuine and not a copy",
+    "definitionVi": "được biết là có thật và chính hãng chứ không phải bản sao",
+    "synonyms": [
+      "genuine"
+    ],
+    "exampleEn": "The new restaurant downtown serves ___ Spanish cuisine.",
+    "exampleVi": "Nhà hàng mới ở trung tâm thành phố phục vụ ẩm thực Tây Ban Nha đích thực.",
+    "blankAnswer": "authentic"
+  },
+  {
+    "ordinal": 370,
+    "word": "charge",
+    "pos": "n",
+    "ipa": "/tʃɑːrdʒ/",
+    "meaningVi": "tiền phải trả, phí",
+    "definitionEn": "the amount of money that somebody asks for goods and services",
+    "definitionVi": "số tiền mà ai đó yêu cầu để trả cho hàng hóa và dịch vụ",
+    "synonyms": [
+      "bill"
+    ],
+    "exampleEn": "The price includes shipping and handling ___.",
+    "exampleVi": "Giá bao gồm phí vận chuyển và xử lý.",
+    "blankAnswer": "charges"
+  },
+  {
+    "ordinal": 371,
+    "word": "notice",
+    "pos": "v",
+    "ipa": "/ˈnoʊtɪs/",
+    "meaningVi": "nhận thấy, thông báo",
+    "definitionEn": "a sheet of paper giving written or printed information, usually put in a public place",
+    "definitionVi": "một tờ giấy cung cấp thông tin bằng văn bản hoặc in, thường được đặt ở nơi công cộng",
+    "synonyms": [
+      "announcement",
+      "notification"
+    ],
+    "exampleEn": "The prices listed in the catalog are effective until further ___.",
+    "exampleVi": "Giá được liệt kê trong danh mục có hiệu lực cho đến khi có thông báo mới.",
+    "blankAnswer": "notice"
+  },
+  {
+    "ordinal": 372,
+    "word": "experienced",
+    "pos": "adj",
+    "ipa": "/ɪkˈspɪriənst/",
+    "meaningVi": "có kinh nghiệm, dày dặn kinh nghiệm",
+    "definitionEn": "having knowledge or skill in a particular job or activity",
+    "definitionVi": "có kiến thức hoặc kỹ năng trong một công việc hoặc hoạt động cụ thể",
+    "synonyms": [
+      "knowledgeable",
+      "skillful"
+    ],
+    "exampleEn": "Bill is the most ___ salesperson in the store.",
+    "exampleVi": "Bill là nhân viên bán hàng có kinh nghiệm nhất trong cửa hàng.",
+    "blankAnswer": "experienced"
+  },
+  {
+    "ordinal": 373,
+    "word": "instruction",
+    "pos": "n",
+    "ipa": "/ɪnˈstrʌkʃn/",
+    "meaningVi": "sự hướng dẫn",
+    "definitionEn": "detailed information on how to do or use something",
+    "definitionVi": "thông tin chi tiết về cách thực hiện hoặc sử dụng thứ gì đó",
+    "synonyms": [
+      "guidance",
+      "directions"
+    ],
+    "exampleEn": "The receipt gives ___ for returning or exchanging items.",
+    "exampleVi": "Biên nhận đưa ra lời hướng dẫn cho việc trả hoặc đổi sản phẩm.",
+    "blankAnswer": "instructions"
+  },
+  {
+    "ordinal": 374,
+    "word": "expert",
+    "pos": "n",
+    "ipa": "/ˈekspɜːrt/",
+    "meaningVi": "chuyên gia",
+    "definitionEn": "a person with special knowledge, skill or training in something",
+    "definitionVi": "một người có kiến thức, kỹ năng hoặc đào tạo đặc biệt về điều gì đó",
+    "synonyms": [
+      "specialist",
+      "master"
+    ],
+    "exampleEn": "A personal shopper is an ___ at finding bargains for customers.",
+    "exampleVi": "Một người mua sắm cá nhân là một chuyên gia trong việc tìm kiếm giá rẻ cho khách hàng.",
+    "blankAnswer": "expert"
+  },
+  {
+    "ordinal": 375,
+    "word": "warranty",
+    "pos": "n",
+    "ipa": "/ˈwɔːrənti/",
+    "meaningVi": "bảo hành",
+    "definitionEn": "a written agreement in which a company selling something promises to repair or replace it if there is a problem within a particular period of time",
+    "definitionVi": "một thỏa thuận bằng văn bản trong đó một công ty bán thứ gì đó hứa sẽ sửa chữa hoặc thay thế nó nếu có vấn đề trong một khoảng thời gian cụ thể",
+    "synonyms": [
+      "guarantee",
+      "assurance"
+    ],
+    "exampleEn": "The computer is under ___.",
+    "exampleVi": "Máy tính đang còn bảo hành.",
+    "blankAnswer": "warranty"
+  },
+  {
+    "ordinal": 376,
+    "word": "refund",
+    "pos": "n",
+    "ipa": "/ˈriːfʌnd/",
+    "meaningVi": "hoàn lại tiền",
+    "definitionEn": "a sum of money that is paid back to you, especially because you paid too much or because you returned goods to a shop",
+    "definitionVi": "một khoản tiền được trả lại cho bạn, đặc biệt là vì bạn đã trả quá nhiều hoặc vì bạn trả lại hàng hóa cho một cửa hàng",
+    "synonyms": [
+      "reimburse",
+      "compensate"
+    ],
+    "exampleEn": "Buyers can get a full ___ for a defective product.",
+    "exampleVi": "Người mua có thể nhận được khoản hoàn lại đầy đủ cho một sản phẩm bị lỗi.",
+    "blankAnswer": "refund"
+  },
+  {
+    "ordinal": 377,
+    "word": "subscriber",
+    "pos": "n",
+    "ipa": "/səbˈskraɪbər/",
+    "meaningVi": "người đăng ký",
+    "definitionEn": "a person who pays money, usually once a year, to receive regular copies of a magazine or newspaper",
+    "definitionVi": "một người trả tiền, thường mỗi năm một lần, để nhận các bản sao thường xuyên của một tạp chí hoặc báo",
+    "synonyms": [
+      "member",
+      "customer"
+    ],
+    "exampleEn": "The Web site now has millions of ___.",
+    "exampleVi": "Trang web hiện có hàng triệu người đăng ký.",
+    "blankAnswer": "subscribers"
+  },
+  {
+    "ordinal": 378,
+    "word": "delivery",
+    "pos": "n",
+    "ipa": "/dɪˈlɪvəri/",
+    "meaningVi": "sự giao hàng",
+    "definitionEn": "the act of taking goods, letters, etc. to the people they have been sent to",
+    "definitionVi": "hành động chuyển hàng hóa, thư từ, v.v. cho những người mà chúng đã được gửi đến",
+    "synonyms": [
+      "transport"
+    ],
+    "exampleEn": "We guarantee ___ within three days.",
+    "exampleVi": "Chúng tôi đảm bảo giao hàng trong vòng ba ngày.",
+    "blankAnswer": "delivery"
+  },
+  {
+    "ordinal": 379,
+    "word": "price",
+    "pos": "n",
+    "ipa": "/praɪs/",
+    "meaningVi": "giá, giá cả",
+    "definitionEn": "the amount of money that you have to pay for something",
+    "definitionVi": "số tiền bạn phải trả cho một cái gì đó",
+    "synonyms": [
+      "cost",
+      "fee"
+    ],
+    "exampleEn": "The new color printer has a retail ___ of only $150.99.",
+    "exampleVi": "Máy in màu mới có giá bán lẻ chỉ 150,99 đô la.",
+    "blankAnswer": "price"
+  },
+  {
+    "ordinal": 380,
+    "word": "receipt",
+    "pos": "n",
+    "ipa": "/rɪˈsiːt/",
+    "meaningVi": "hóa đơn, sự nhận được",
+    "definitionEn": "a piece of paper that shows that goods or services have been paid for",
+    "definitionVi": "một mẩu giấy cho thấy rằng hàng hóa hoặc dịch vụ đã được thanh toán",
+    "synonyms": [
+      "bill",
+      "receiving"
+    ],
+    "exampleEn": "The original ___ is required for all refunds.",
+    "exampleVi": "Biên nhận ban đầu là bắt buộc đối với tất cả các khoản hoàn lại.",
+    "blankAnswer": "receipt"
+  },
+  {
+    "ordinal": 381,
+    "word": "offer",
+    "pos": "v",
+    "ipa": "/ˈɔːfər/",
+    "meaningVi": "cung cấp, giảm giá, ưu đãi, lời đề nghị",
+    "definitionEn": "to make something available or to provide the opportunity for something",
+    "definitionVi": "làm cho một cái gì đó có sẵn hoặc cung cấp cơ hội cho một cái gì đó",
+    "synonyms": [
+      "provide"
+    ],
+    "exampleEn": "Z-Mark ___ $25 gift cards to customers signing up for membership.",
+    "exampleVi": "Z-Mark cung cấp thẻ quà tặng trị giá 25 đô la cho khách hàng đăng ký tư cách thành viên.",
+    "blankAnswer": "offers"
+  },
+  {
+    "ordinal": 382,
+    "word": "carefully",
+    "pos": "adv",
+    "ipa": "/ˈkerfəli/",
+    "meaningVi": "cẩn thận",
+    "definitionEn": "with a lot of attention to detail",
+    "definitionVi": "với rất nhiều sự chú ý đến từng chi tiết",
+    "synonyms": [
+      "cautiously",
+      "attentively"
+    ],
+    "exampleEn": "Please follow the installation directions ___.",
+    "exampleVi": "Vui lòng làm theo hướng dẫn cài đặt cẩn thận.",
+    "blankAnswer": "carefully"
+  },
+  {
+    "ordinal": 383,
+    "word": "benefit",
+    "pos": "v",
+    "ipa": "/ˈbenɪfɪt/",
+    "meaningVi": "mang lại lợi ích, lợi ích",
+    "definitionEn": "an advantage that something gives you; a helpful and useful effect that something has",
+    "definitionVi": "một lợi thế mà một cái gì đó mang lại cho bạn; một hiệu ứng hữu ích mà một cái gì đó có",
+    "synonyms": [
+      "advantage",
+      "gain"
+    ],
+    "exampleEn": "The shopper's club offers many ___ to its members.",
+    "exampleVi": "Câu lạc bộ của người mua hàng mang lại nhiều lợi ích cho thành viên của nó.",
+    "blankAnswer": "benefits"
+  },
+  {
+    "ordinal": 384,
+    "word": "exclusively",
+    "pos": "adv",
+    "ipa": "/ɪkˈskluːsɪvli/",
+    "meaningVi": "dành riêng, chỉ",
+    "definitionEn": "for only one particular person, group or use",
+    "definitionVi": "chỉ dành cho một người, nhóm hoặc mục đích sử dụng cụ thể",
+    "synonyms": [
+      "only"
+    ],
+    "exampleEn": "A 10 percent discount is available ___ to Premium Club members.",
+    "exampleVi": "Giảm giá 10% dành riêng cho các thành viên Premium Club.",
+    "blankAnswer": "exclusively"
+  },
+  {
+    "ordinal": 385,
+    "word": "description",
+    "pos": "n",
+    "ipa": "/dɪˈskrɪpʃn/",
+    "meaningVi": "sự mô tả",
+    "definitionEn": "a piece of writing or speech that gives details about what someone or something is like",
+    "definitionVi": "một đoạn văn bản hoặc bài phát biểu cung cấp thông tin chi tiết về một người hoặc một thứ gì đó",
+    "synonyms": [
+      "illustration"
+    ],
+    "exampleEn": "Call customer service for a more extensive ___ of any of the equipment.",
+    "exampleVi": "Gọi dịch vụ khách hàng để có mô tả kỹ lưỡng về bất kỳ thiết bị nào.",
+    "blankAnswer": "description"
+  },
+  {
+    "ordinal": 386,
+    "word": "relatively",
+    "pos": "adv",
+    "ipa": "/ˈrelətɪvli/",
+    "meaningVi": "khá",
+    "definitionEn": "to a fairly large degree, especially in comparison to something else",
+    "definitionVi": "đến một mức độ khá lớn, đặc biệt là so với cái gì khác",
+    "synonyms": [
+      "somewhat",
+      "quite",
+      "fairly"
+    ],
+    "exampleEn": "McCoy's has a ___ lenient return policy compared to similar stores.",
+    "exampleVi": "McCoy có chính sách hoàn trả khá khoan dung so với các cửa hàng tương tự.",
+    "blankAnswer": "relatively"
+  },
+  {
+    "ordinal": 387,
+    "word": "spare",
+    "pos": "v",
+    "ipa": "/sper/",
+    "meaningVi": "để dành, đồ phụ tùng, thêm, thừa",
+    "definitionEn": "that is not being used or is not needed at the present time",
+    "definitionVi": "không được sử dụng hoặc không cần thiết tại thời điểm hiện tại",
+    "synonyms": [
+      "supplementary"
+    ],
+    "exampleEn": "Customers may order ___ parts at the service counter.",
+    "exampleVi": "Khách hàng có thể đặt mua thêm phụ tùng tại quầy dịch vụ.",
+    "blankAnswer": "spare"
+  },
+  {
+    "ordinal": 388,
+    "word": "preparation",
+    "pos": "n",
+    "ipa": "/ˌprepəˈreɪʃn/",
+    "meaningVi": "sự chuẩn bị",
+    "definitionEn": "the act or process of getting ready for something or making something ready",
+    "definitionVi": "hành động hoặc quá trình chuẩn bị sẵn sàng cho một cái gì đó",
+    "synonyms": [
+      "arrangements"
+    ],
+    "exampleEn": "___ are under way for the department store's grand opening.",
+    "exampleVi": "Sự chuẩn bị đang được tiến hành để mở cửa hàng bách hóa.",
+    "blankAnswer": "Preparations"
+  },
+  {
+    "ordinal": 389,
+    "word": "site",
+    "pos": "n",
+    "ipa": "/saɪt/",
+    "meaningVi": "khu vực, vị trí",
+    "definitionEn": "part of a place, town, etc., or a region of a country or the world",
+    "definitionVi": "một phần của một địa điểm, thị trấn, v.v. hoặc một vùng của một quốc gia hoặc trên thế giới",
+    "synonyms": [
+      "location",
+      "place",
+      "area"
+    ],
+    "exampleEn": "There are excellent retail stores in this ___.",
+    "exampleVi": "Có những cửa hàng bán lẻ tuyệt vời trong khu vực này.",
+    "blankAnswer": "area"
+  },
+  {
+    "ordinal": 390,
+    "word": "clearance",
+    "pos": "n",
+    "ipa": "/ˈklɪrəns/",
+    "meaningVi": "sự xả hàng",
+    "definitionEn": "the removal of things that are not wanted",
+    "definitionVi": "việc loại bỏ những thứ không mong muốn",
+    "synonyms": [
+      "sale",
+      "discount"
+    ],
+    "exampleEn": "There is usually a ___ sale for winter clothes in March.",
+    "exampleVi": "Thường có sự xả hàng cho quần áo mùa đông vào tháng 3.",
+    "blankAnswer": "clearance"
+  },
+  {
+    "ordinal": 391,
+    "word": "alter",
+    "pos": "v",
+    "ipa": "/ˈɔːltər/",
+    "meaningVi": "thay đổi",
+    "definitionEn": "to change, or to make someone or something change",
+    "definitionVi": "thay đổi, hoặc làm cho ai đó hoặc một cái gì đó thay đổi",
+    "synonyms": [
+      "change",
+      "modify"
+    ],
+    "exampleEn": "The customer asked that the length of his pants be ___.",
+    "exampleVi": "Khách hàng yêu cầu chiều dài quần của anh ấy được thay đổi.",
+    "blankAnswer": "altered"
+  },
+  {
+    "ordinal": 392,
+    "word": "apply",
+    "pos": "v",
+    "ipa": "/əˈplaɪ/",
+    "meaningVi": "áp dụng, ứng tuyển/xin",
+    "definitionEn": "to use something or make something work in a particular situation",
+    "definitionVi": "sử dụng một cái gì đó hoặc làm một cái gì đó hoạt động trong một tình huống cụ thể",
+    "synonyms": [
+      "use",
+      "employ"
+    ],
+    "exampleEn": "The cashier ___ the discount to all the items.",
+    "exampleVi": "Nhân viên thu ngân áp dụng chiết khấu cho tất cả các mặt hàng.",
+    "blankAnswer": "applied"
+  },
+  {
+    "ordinal": 393,
+    "word": "mutually",
+    "pos": "adv",
+    "ipa": "/ˈmjuːtʃuəli/",
+    "meaningVi": "lẫn nhau, qua lại, cùng nhau",
+    "definitionEn": "done equally by two or more people",
+    "definitionVi": "được thực hiện như nhau bởi hai hoặc nhiều người",
+    "synonyms": [
+      "reciprocally",
+      "jointly"
+    ],
+    "exampleEn": "The couple and dealer reached a ___ agreeable price for the car.",
+    "exampleVi": "Cặp vợ chồng và người bán đã đạt được mức giá mà cả hai bên cùng đồng ý cho chiếc xe.",
+    "blankAnswer": "mutually"
+  },
+  {
+    "ordinal": 394,
+    "word": "method",
+    "pos": "n",
+    "ipa": "/ˈmeθəd/",
+    "meaningVi": "phương pháp, cách thức",
+    "definitionEn": "a particular way of doing something",
+    "definitionVi": "một cách cụ thể để làm điều gì đó",
+    "synonyms": [
+      "way"
+    ],
+    "exampleEn": "In recent years, debit cards have become a popular ___ of payment.",
+    "exampleVi": "Trong những năm gần đây, thẻ ghi nợ đã trở thành phương thức thanh toán phổ biến.",
+    "blankAnswer": "method"
+  },
+  {
+    "ordinal": 395,
+    "word": "acceptable",
+    "pos": "adj",
+    "ipa": "/əkˈseptəbl/",
+    "meaningVi": "có thể chấp nhận được",
+    "definitionEn": "agreed or approved of by most people in a society",
+    "definitionVi": "đã được đồng ý hoặc chấp thuận bởi hầu hết mọi người trong một xã hội",
+    "synonyms": [
+      "adequate",
+      "reasonable"
+    ],
+    "exampleEn": "Jenson Fashions sells clothes that are ___ as business attire.",
+    "exampleVi": "Jenson Fashions bán quần áo có thể chấp nhận được là trang phục kinh doanh.",
+    "blankAnswer": "acceptable"
+  },
+  {
+    "ordinal": 396,
+    "word": "desire",
+    "pos": "n",
+    "ipa": "/dɪˈzaɪər/",
+    "meaningVi": "mong muốn, khao khát",
+    "definitionEn": "a strong wish to have or do something",
+    "definitionVi": "một mong muốn mạnh mẽ để có hoặc làm điều gì đó",
+    "synonyms": [
+      "wish",
+      "want"
+    ],
+    "exampleEn": "Many people ___ the latest electronic devices.",
+    "exampleVi": "Nhiều người mong muốn các thiết bị điện tử mới nhất.",
+    "blankAnswer": "desire"
+  },
+  {
+    "ordinal": 397,
+    "word": "redeemable",
+    "pos": "adj",
+    "ipa": "/rɪˈdiːməbl/",
+    "meaningVi": "đổi lại",
+    "definitionEn": "that can be exchanged for money or goods",
+    "definitionVi": "có thể đổi thành tiền hoặc hàng",
+    "synonyms": [
+      "be exchanged for"
+    ],
+    "exampleEn": "Store gift vouchers are ___ at any branch.",
+    "exampleVi": "Phiếu quà tặng của cửa hàng có thể được đổi tại bất kỳ chi nhánh nào.",
+    "blankAnswer": "redeemable"
+  },
+  {
+    "ordinal": 398,
+    "word": "officially",
+    "pos": "adv",
+    "ipa": "/əˈfɪʃəli/",
+    "meaningVi": "chính thức, trang trọng",
+    "definitionEn": "publicly and by somebody who is in a position of authority",
+    "definitionVi": "công khai và bởi ai đó đang ở trong một vị trí có thẩm quyền",
+    "synonyms": [
+      "formally",
+      "publicly"
+    ],
+    "exampleEn": "The online store will ___ open next month.",
+    "exampleVi": "Cửa hàng trực tuyến sẽ chính thức mở cửa vào tháng tới.",
+    "blankAnswer": "officially"
+  },
+  {
+    "ordinal": 399,
+    "word": "consumption",
+    "pos": "n",
+    "ipa": "/kənˈsʌmpʃn/",
+    "meaningVi": "sự tiêu thụ",
+    "definitionEn": "the act of buying and using products",
+    "definitionVi": "hành vi mua và sử dụng sản phẩm",
+    "synonyms": [
+      "use"
+    ],
+    "exampleEn": "___ of high-end products like home theaters has increased recently.",
+    "exampleVi": "Việc tiêu thụ các sản phẩm cao cấp như rạp hát gia đình đã tăng gần đây.",
+    "blankAnswer": "Consumption"
+  },
+  {
+    "ordinal": 400,
+    "word": "fabric",
+    "pos": "n",
+    "ipa": "/ˈfæbrɪk/",
+    "meaningVi": "vải",
+    "definitionEn": "material made by weaving wool, cotton, silk, etc., used for making clothes, curtains, etc. and for covering furniture",
+    "definitionVi": "vật liệu được làm bằng len dệt, bông, lụa, v.v., dùng để làm quần áo, rèm cửa, v.v. và để bọc đồ nội thất",
+    "synonyms": [
+      "cloth",
+      "textile"
+    ],
+    "exampleEn": "The manufacturer's garments are made of natural ___ only.",
+    "exampleVi": "Quần áo của nhà sản xuất chỉ được làm bằng vải tự nhiên.",
+    "blankAnswer": "fabric"
+  },
+  {
+    "ordinal": 401,
+    "word": "valid",
+    "pos": "adj",
+    "ipa": "/ˈvælɪd/",
+    "meaningVi": "có hiệu lực, có giá trị, hợp lệ",
+    "definitionEn": "that is legally or officially acceptable",
+    "definitionVi": "hợp pháp hoặc được chính thức chấp nhận",
+    "synonyms": [
+      "effective"
+    ],
+    "exampleEn": "A ___ receipt must be present.",
+    "exampleVi": "Một biên lai hợp lệ phải được xuất trình.",
+    "blankAnswer": "valid"
+  },
+  {
+    "ordinal": 402,
+    "word": "qualify",
+    "pos": "v",
+    "ipa": "/ˈkwɑːlɪfaɪ/",
+    "meaningVi": "đủ điều kiện, tư cách",
+    "definitionEn": "to reach the standard of ability or knowledge needed to do a particular job, for example by completing a course of study or passing exams",
+    "definitionVi": "đạt được tiêu chuẩn về khả năng hoặc kiến thức cần thiết để thực hiện một công việc cụ thể, ví dụ bằng cách hoàn thành khóa học hoặc vượt qua bài kiểm tra",
+    "synonyms": [
+      "be eligible for",
+      "be entitled to"
+    ],
+    "exampleEn": "Clients need a regular income to ___ for credit cards.",
+    "exampleVi": "Khách hàng cần thu nhập thường xuyên để đủ điều kiện nhận thẻ tín dụng.",
+    "blankAnswer": "qualify"
+  },
+  {
+    "ordinal": 403,
+    "word": "vendor",
+    "pos": "n",
+    "ipa": "/ˈvendər/",
+    "meaningVi": "người bán, nhà cung cấp, người bán hàng rong",
+    "definitionEn": "a person who sells things, for example food or newspapers, usually outside on the street",
+    "definitionVi": "một người bán những thứ, ví dụ như thực phẩm hoặc báo chí, thường là bên ngoài trên đường phố",
+    "synonyms": [
+      "supplier",
+      "seller"
+    ],
+    "exampleEn": "The street is filled with ___ during the weekly market.",
+    "exampleVi": "Đường phố đông đúc người bán hàng rong trong phiên chợ hàng tuần.",
+    "blankAnswer": "vendors"
+  },
+  {
+    "ordinal": 404,
+    "word": "research",
+    "pos": "v",
+    "ipa": "/ˈriːsɜːrtʃ/",
+    "meaningVi": "nghiên cứu",
+    "definitionEn": "a careful study of a subject, especially in order to discover new facts or information about it",
+    "definitionVi": "một nghiên cứu cẩn thận về một chủ đề, đặc biệt là để khám phá những sự kiện mới hoặc thông tin về nó",
+    "synonyms": [
+      "study"
+    ],
+    "exampleEn": "The company started a ___ program into developing GPS technology.",
+    "exampleVi": "Công ty bắt đầu một chương trình nghiên cứu phát triển công nghệ GPS.",
+    "blankAnswer": "research"
+  },
+  {
+    "ordinal": 405,
+    "word": "devise",
+    "pos": "v",
+    "ipa": "/dɪˈvaɪz/",
+    "meaningVi": "phát minh, nghĩ ra",
+    "definitionEn": "to invent something new or a new way of doing something",
+    "definitionVi": "phát minh ra một cái gì đó mới hoặc một cách mới để làm một cái gì đó",
+    "synonyms": [
+      "invent",
+      "think up"
+    ],
+    "exampleEn": "The firm ___ a more efficient network system.",
+    "exampleVi": "Công ty đã phát minh ra một hệ thống mạng hiệu quả hơn.",
+    "blankAnswer": "devised"
+  },
+  {
+    "ordinal": 406,
+    "word": "revolutionary",
+    "pos": "adj",
+    "ipa": "/ˌrevəˈluːʃəneri/",
+    "meaningVi": "mang tính cách mạng",
+    "definitionEn": "involving a great or complete change",
+    "definitionVi": "liên quan đến một thay đổi lớn hoặc hoàn toàn",
+    "synonyms": [
+      "groundbreaking",
+      "innovative"
+    ],
+    "exampleEn": "The car's ___ new engine surpasses those of the competition.",
+    "exampleVi": "Động cơ mới mang tính cách mạng của chiếc xe vượt trội so với đối thủ cạnh tranh.",
+    "blankAnswer": "revolutionary"
+  },
+  {
+    "ordinal": 407,
+    "word": "innovative",
+    "pos": "adj",
+    "ipa": "/ˈɪnəveɪtɪv/",
+    "meaningVi": "sáng tạo",
+    "definitionEn": "introducing or using new ideas, ways of doing something",
+    "definitionVi": "giới thiệu hoặc sử dụng ý tưởng mới, cách làm điều gì đó",
+    "synonyms": [
+      "create"
+    ],
+    "exampleEn": "Simpson & Associates provides clients with ___ solutions to their needs.",
+    "exampleVi": "Simpson & Associates cung cấp cho khách hàng các giải pháp sáng tạo theo nhu cầu của họ.",
+    "blankAnswer": "innovative"
+  },
+  {
+    "ordinal": 408,
+    "word": "feature",
+    "pos": "n",
+    "ipa": "/ˈfiːtʃər/",
+    "meaningVi": "tính năng, đặc tính",
+    "definitionEn": "a part of something that you notice because it seems important, interesting, or typical",
+    "definitionVi": "một phần của nội dung bạn chú ý vì có vẻ quan trọng, thú vị hoặc điển hình",
+    "synonyms": [
+      "characteristic"
+    ],
+    "exampleEn": "The latest dryer has several new ___.",
+    "exampleVi": "Máy sấy mới nhất có một số tính năng mới.",
+    "blankAnswer": "features"
+  },
+  {
+    "ordinal": 409,
+    "word": "inspiration",
+    "pos": "n",
+    "ipa": "/ˌɪnspəˈreɪʃn/",
+    "meaningVi": "nguồn cảm hứng",
+    "definitionEn": "a good idea about what you should do, write, say, etc., especially one which you get suddenly",
+    "definitionVi": "một ý tưởng hay về những gì bạn nên làm, viết, nói, v.v., đặc biệt là một ý tưởng bạn nhận được đột nhiên",
+    "synonyms": [
+      "motivation",
+      "stimulus"
+    ],
+    "exampleEn": "The new fashion designer draws her ___ from traditional attire.",
+    "exampleVi": "Nhà thiết kế thời trang mới lấy cảm hứng từ trang phục truyền thống.",
+    "blankAnswer": "inspiration"
+  },
+  {
+    "ordinal": 410,
+    "word": "sufficiently",
+    "pos": "adv",
+    "ipa": "/səˈfɪʃntli/",
+    "meaningVi": "đủ",
+    "definitionEn": "enough for a particular purpose; as much as you need",
+    "definitionVi": "đủ cho một mục đích cụ thể; nhiều như bạn cần",
+    "synonyms": [
+      "adequately",
+      "enough"
+    ],
+    "exampleEn": "The containers are ___ strong to resist breakage.",
+    "exampleVi": "Các thùng chứa đủ bền để chống vỡ.",
+    "blankAnswer": "sufficiently"
+  },
+  {
+    "ordinal": 411,
+    "word": "patent",
+    "pos": "n",
+    "ipa": "/ˈpætnt/",
+    "meaningVi": "bằng sáng chế",
+    "definitionEn": "an official right to be the only person to make, use or sell a product or an invention; a document that proves this",
+    "definitionVi": "một quyền chính thức là người duy nhất được thực hiện, sử dụng hoặc bán sản phẩm hoặc sáng chế; một tài liệu chứng minh điều này",
+    "synonyms": [
+      "copyright",
+      "license"
+    ],
+    "exampleEn": "The lawyers submitted the paperwork for a ___ application.",
+    "exampleVi": "Các luật sư gửi giấy tờ cho đơn xin cấp bằng sáng chế.",
+    "blankAnswer": "patent"
+  },
+  {
+    "ordinal": 412,
+    "word": "envision",
+    "pos": "n",
+    "ipa": "/ɪnˈvɪʒn/",
+    "meaningVi": "sự hình dung",
+    "definitionEn": "to imagine what a situation will be like in the future, especially a situation you intend to work towards",
+    "definitionVi": "tưởng tượng tình huống sẽ như thế nào trong tương lai, đặc biệt là một tình huống mà bạn định hướng tới",
+    "synonyms": [
+      "imagine"
+    ],
+    "exampleEn": "Management ___ its latest product being sold in stores across the country.",
+    "exampleVi": "Ban quản lý hình dung sản phẩm mới nhất của mình đang được bán trong các cửa hàng trên toàn quốc.",
+    "blankAnswer": "envisions"
+  },
+  {
+    "ordinal": 413,
+    "word": "extend",
+    "pos": "v",
+    "ipa": "/ɪkˈstend/",
+    "meaningVi": "mở rộng, gia hạn",
+    "definitionEn": "to make something longer or larger",
+    "definitionVi": "làm cho một cái gì đó dài hơn hoặc lớn hơn",
+    "synonyms": [
+      "renew"
+    ],
+    "exampleEn": "The manager ___ the design deadline for a month.",
+    "exampleVi": "Người quản lý đã gia hạn thời hạn thiết kế thêm một tháng.",
+    "blankAnswer": "extended"
+  },
+  {
+    "ordinal": 414,
+    "word": "following",
+    "pos": "prep",
+    "ipa": "/ˈfɑːloʊɪŋ/",
+    "meaningVi": "sau, tiếp theo, sau đây",
+    "definitionEn": "coming next after something, in time or order",
+    "definitionVi": "đến ngay sau một điều gì đó, về thời gian hoặc thứ tự",
+    "synonyms": [
+      "subsequent",
+      "next"
+    ],
+    "exampleEn": "The software was launched ___ months of research.",
+    "exampleVi": "Phần mềm đã được ra mắt sau nhiều tháng nghiên cứu.",
+    "blankAnswer": "following"
+  },
+  {
+    "ordinal": 415,
+    "word": "intend",
+    "pos": "v",
+    "ipa": "/ɪnˈtend/",
+    "meaningVi": "có ý định, dự định",
+    "definitionEn": "to have a plan, result or purpose in your mind when you do something",
+    "definitionVi": "có một kế hoạch, kết quả hoặc mục đích trong tâm trí của bạn khi bạn làm điều gì đó",
+    "synonyms": [
+      "plan"
+    ],
+    "exampleEn": "The inventor ___ that her mixer be used for bread-making.",
+    "exampleVi": "Nhà phát minh dự định rằng máy trộn của cô được sử dụng để làm bánh mì.",
+    "blankAnswer": "intended"
+  },
+  {
+    "ordinal": 416,
+    "word": "grant",
+    "pos": "n",
+    "ipa": "/ɡrænt/",
+    "meaningVi": "trợ cấp/tài trợ, ban cho/cho phép/cấp",
+    "definitionEn": "an amount of money given by an organization for a particular purpose",
+    "definitionVi": "một khoản tiền được cấp bởi một tổ chức cho một mục đích cụ thể",
+    "synonyms": [
+      "subsidy",
+      "funding"
+    ],
+    "exampleEn": "The research team will receive a government ___ of up to $4,000.",
+    "exampleVi": "Nhóm nghiên cứu sẽ nhận được khoản trợ cấp của chính phủ lên tới 4.000 đô la.",
+    "blankAnswer": "grant"
+  },
+  {
+    "ordinal": 417,
+    "word": "allow",
+    "pos": "v",
+    "ipa": "/əˈlaʊ/",
+    "meaningVi": "cho phép",
+    "definitionEn": "to let someone do or have something, or let something happen",
+    "definitionVi": "để cho ai đó làm hoặc có điều gì đó, hoặc để điều gì đó xảy ra",
+    "synonyms": [
+      "permit"
+    ],
+    "exampleEn": "The program's new feature ___ users to conduct advanced searches.",
+    "exampleVi": "Tính năng mới của chương trình cho phép người dùng tiến hành tìm kiếm chuyên sâu.",
+    "blankAnswer": "allows"
+  },
+  {
+    "ordinal": 418,
+    "word": "inspect",
+    "pos": "v",
+    "ipa": "/ɪnˈspekt/",
+    "meaningVi": "kiểm tra",
+    "definitionEn": "to look closely at something/somebody, especially to check that everything is as it should be",
+    "definitionVi": "nhìn kỹ vào một cái gì đó/ai đó, đặc biệt là để kiểm tra xem mọi thứ có đúng như vậy không",
+    "synonyms": [
+      "check"
+    ],
+    "exampleEn": "The head researcher ___ all equipment and chemicals in the laboratory daily to ensure safety.",
+    "exampleVi": "Trưởng nhóm nghiên cứu kiểm tra tất cả các thiết bị và hóa chất trong phòng thí nghiệm hàng ngày để đảm bảo an toàn.",
+    "blankAnswer": "inspects"
+  },
+  {
+    "ordinal": 419,
+    "word": "improve",
+    "pos": "v",
+    "ipa": "/ɪmˈpruːv/",
+    "meaningVi": "cải thiện, nâng cao",
+    "definitionEn": "to become better than before; to make something/somebody better than before",
+    "definitionVi": "trở nên tốt hơn trước; làm cho một cái gì đó/ai đó tốt hơn trước",
+    "synonyms": [
+      "boost"
+    ],
+    "exampleEn": "A variety of incentives can ___ staff productivity.",
+    "exampleVi": "Một loạt các ưu đãi có thể cải thiện năng suất của nhân viên.",
+    "blankAnswer": "improve"
+  },
+  {
+    "ordinal": 420,
+    "word": "increasingly",
+    "pos": "adv",
+    "ipa": "/ɪnˈkriːsɪŋli/",
+    "meaningVi": "ngày càng",
+    "definitionEn": "more and more all the time",
+    "definitionVi": "ngày càng nhiều theo thời gian",
+    "synonyms": [
+      "progressively",
+      "more and more"
+    ],
+    "exampleEn": "Technology is becoming an ___ important factor in the nation's economy.",
+    "exampleVi": "Công nghệ đang trở thành một yếu tố ngày càng quan trọng trong nền kinh tế của đất nước.",
+    "blankAnswer": "increasingly"
   }
 ]
