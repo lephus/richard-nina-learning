@@ -371,6 +371,28 @@ describe("parseVocabPage", () => {
     const noise = "THỂ enon ch ban\nHil\n42. code (n). quy định, SYN: rules.\n";
     expect(parseVocabPage(noise, 1)).toHaveLength(1);
   });
+
+  // Bốn biến thể dưới đây đo được trên dữ liệu thật, chiếm 31/605 mục.
+  // Không xử lý thì chỉ tách được 562 thay vì 593.
+  it("nhận từ loại viết hoa: '32. apprehensive (Adj).'", () => {
+    const [e] = parseVocabPage("32. apprehensive (Adj). lo lắng, SYN: anxious.", 1);
+    expect(e).toMatchObject({ ordinal: 32, word: "apprehensive", pos: "adj" });
+  });
+
+  it("nhận nhiều từ loại và giữ cái đầu: '287. influence (n, v).'", () => {
+    const [e] = parseVocabPage("287. influence (n, v). ảnh hưởng, SYN: effect.", 1);
+    expect(e).toMatchObject({ ordinal: 287, word: "influence", pos: "n" });
+  });
+
+  it("nhận đầu mục thiếu dấu cách: '80.restrict (v).'", () => {
+    const [e] = parseVocabPage("80.restrict (v). hạn chế, SYN: limit.", 1);
+    expect(e).toMatchObject({ ordinal: 80, word: "restrict", pos: "v" });
+  });
+
+  it("bỏ qua rác OCR chen trước ngoặc: '52. access _(n).'", () => {
+    const [e] = parseVocabPage("52. access _(n). sự truy cập, SYN: entry.", 1);
+    expect(e).toMatchObject({ ordinal: 52, word: "access", pos: "n" });
+  });
 });
 ```
 
@@ -385,7 +407,22 @@ Expected: FAIL — `Cannot find module '@content/vocab-parser'`.
 ```ts
 import type { PartOfSpeech, RawVocabEntry } from "./types";
 
-const HEAD = /^\s*(\d{1,4})\.\s+([A-Za-z][A-Za-z\- ]*?)\s*\((n|v|adj|adv|prep|conj)\)/;
+// Sach in dau muc khong nhat quan; ba bien the duoi day DA DO tren du lieu that
+// va chiem 31/605 muc (562 -> 593) neu regex khong dung den:
+//   "32. apprehensive (Adj)."  tu loai viet hoa
+//   "287. influence (n, v)."   nhieu tu loai, lay cai dau tien
+//   "80.restrict (v)."         thieu dau cach sau so thu tu
+//   "52. access _(n)."         rac OCR chen giua tu va ngoac
+const POS = "(?:n|v|adj|adv|prep|conj)";
+const HEAD = new RegExp(
+  "^\\s*(\\d{1,4})\\.\\s*" +           // so thu tu; \s* chu khong \s+ (mau "80.restrict")
+    "([A-Za-z][A-Za-z\\- ]*?)" +       // tu
+    "[\\s_.]*" +                       // rac OCR truoc ngoac
+    "\\(\\s*(" + POS + ")" +           // tu loai dau tien - day la cai ta giu
+    "(?:\\s*,\\s*" + POS + ")*" +      // cac tu loai phu, bo qua
+    "\\s*\\.?\\s*\\)",
+  "i",                                 // cho phep "(Adj)", "(N)"
+);
 
 function field(body: string[], re: RegExp): string | null {
   const m = body.join(" ").match(re);
@@ -403,7 +440,9 @@ export function parseVocabPage(text: string, page: number): RawVocabEntry[] {
       cur = {
         ordinal: Number(m[1]),
         word: m[2]!.trim().toLowerCase(),
-        pos: m[3] as PartOfSpeech,
+        // .toLowerCase() BAT BUOC: co flag "i" nen "(Adj)" bat ra "Adj",
+        // trong khi PartOfSpeech chi nhan chu thuong.
+        pos: m[3]!.toLowerCase() as PartOfSpeech,
         sourcePage: page,
         ipaRaw: null, synonymsRaw: null, meanRaw: null, expRaw: null,
         bodyLines: [line],
@@ -648,6 +687,22 @@ process.exit(invalid.length || dup.length ? 1 : 0);
 | `blankAnswer` | dạng của từ xuất hiện thật trong câu (có thể là `codes`, `complied`… chứ không luôn bằng `word`) |
 
 Ghi vào `data/clean/vocab.json`.
+
+- [ ] **Step 2b: Cứu tay 12 mục OCR nuốt mất từ**
+
+Parser tách được 593/605 mục. 12 mục dưới đây OCR làm hỏng chính dòng đầu mục nên
+không cứu được từ text (ví dụ `173. (n). thông báo, cáo thị, SYN: statement` — mất hẳn từ):
+
+```
+1, 173, 243, 252, 262, 314, 354, 420, 437, 512, 558, 584
+```
+
+Với mỗi mục: tìm trang chứa nó (`grep -rn "^\s*<số>\." data/raw/ocr/`), mở ảnh trang
+tương ứng trong `data/images/` và **đọc trực tiếp bằng mắt** để lấy từ còn thiếu, rồi
+dựng bản ghi như các mục khác. Phần thân (nghĩa, SYN, Exp) thường vẫn còn trong text —
+chỉ riêng từ khoá bị mất.
+
+Không có 12 mục này thì tổng chỉ còn 593 < 600, và `buildLessonPlan` ở Task 10 sẽ ném lỗi.
 
 - [ ] **Step 3: Kiểm định lô đầu**
 
