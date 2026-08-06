@@ -1,0 +1,25 @@
+{
+  "name": "richard-nina-learning",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "phase0:render": "tsx scripts/phase0/01-render-ocr.ts",
+    "phase0:vocab": "tsx scripts/phase0/02-parse-vocab.ts",
+    "phase0:grammar": "tsx scripts/phase0/03-extract-grammar.ts",
+    "phase0:questions": "tsx scripts/phase0/04-parse-questions.ts",
+    "phase0:seed": "tsx scripts/phase0/05-seed.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.10",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.1"
+  }
+}
