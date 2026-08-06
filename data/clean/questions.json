@@ -5290,5 +5290,1157 @@
     ],
     "answer": "D",
     "explanation": "Đảo ngữ câu điều kiện loại 3: 'Had + S + V3/ed' thay cho 'If + S + had + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The manager wishes the new software ______ more intuitive for first-time users.",
+    "options": [
+      "were",
+      "is",
+      "will be",
+      "would be"
+    ],
+    "answer": "A",
+    "explanation": "Wish diễn tả điều ước trái thực tế ở hiện tại; động từ 'to be' luôn chia 'were' cho mọi chủ ngữ."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "I wish I ______ enough authority to approve this purchase order myself.",
+    "options": [
+      "would have",
+      "had",
+      "will have",
+      "have"
+    ],
+    "answer": "B",
+    "explanation": "Ước muốn trái thực tế ở hiện tại: động từ 'have' sau wish chia ở quá khứ đơn 'had'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The interns wish they ______ access the archived files without asking IT every time.",
+    "options": [
+      "would be able to",
+      "will be able to",
+      "can",
+      "could"
+    ],
+    "answer": "D",
+    "explanation": "Wish ở hiện tại đi với modal quá khứ 'could' để diễn tả khả năng không có thật lúc này."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "He wishes he ______ more about international tax law, since clients often ask him complex questions.",
+    "options": [
+      "would know",
+      "knew",
+      "knows",
+      "will know"
+    ],
+    "answer": "B",
+    "explanation": "Wish diễn tả điều ước ở hiện tại nên động từ thường chia quá khứ đơn 'knew', không dùng hiện tại hay tương lai."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "Many employees wish the parking garage ______ closer to the main entrance.",
+    "options": [
+      "were",
+      "has been",
+      "is",
+      "will be"
+    ],
+    "answer": "A",
+    "explanation": "Câu ước hiện tại với wish: 'to be' chia 'were' dù chủ ngữ số ít hay số nhiều."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The CFO wishes the company ______ enough cash reserves to weather a downturn.",
+    "options": [
+      "had",
+      "will have",
+      "is having",
+      "has"
+    ],
+    "answer": "A",
+    "explanation": "Wish diễn tả mong ước trái với thực tế hiện tại nên động từ 'have' được lùi về quá khứ đơn 'had'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "I wish I ______ the contract more carefully before signing it last week.",
+    "options": [
+      "would read",
+      "have read",
+      "read",
+      "had read"
+    ],
+    "answer": "D",
+    "explanation": "Ước muốn về điều không có thật trong quá khứ dùng wish + 'had + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The board wishes it ______ the merger proposal more seriously two years ago.",
+    "options": [
+      "considered",
+      "had considered",
+      "would consider",
+      "has considered"
+    ],
+    "answer": "B",
+    "explanation": "Wish diễn tả tiếc nuối về quá khứ nên động từ chia 'had + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "She wishes she ______ the job offer from the rival firm last spring.",
+    "options": [
+      "had accepted",
+      "would accept",
+      "accepted",
+      "has accepted"
+    ],
+    "answer": "A",
+    "explanation": "Câu ước về quá khứ: wish + 'had + V3/ed' diễn tả điều trái với thực tế đã xảy ra."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "We wish the supplier ______ us about the price increase sooner last month.",
+    "options": [
+      "would inform",
+      "has informed",
+      "informed",
+      "had informed"
+    ],
+    "answer": "D",
+    "explanation": "Wish + 'had + V3/ed' thể hiện điều ước ngược với sự việc đã xảy ra trong quá khứ."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The technician wishes he ______ the backup system before the server crashed yesterday.",
+    "options": [
+      "had checked",
+      "would check",
+      "checked",
+      "has checked"
+    ],
+    "answer": "A",
+    "explanation": "Sự việc đã xảy ra ở quá khứ nên wish đi với 'had + V3/ed' để diễn tả sự tiếc nuối."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "If only I ______ his advice before investing in that startup last year.",
+    "options": [
+      "would take",
+      "took",
+      "had taken",
+      "have taken"
+    ],
+    "answer": "C",
+    "explanation": "'If only' tương đương wish, cũng dùng 'had + V3/ed' để nói về điều không có thật trong quá khứ."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The board wishes the acquisition ______ smoothly by the end of the fiscal year.",
+    "options": [
+      "is proceeding",
+      "will proceed",
+      "proceeds",
+      "would proceed"
+    ],
+    "answer": "D",
+    "explanation": "Wish diễn tả mong ước về tương lai đi với cấu trúc 'would + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "Investors wish the market ______ soon after months of steady decline.",
+    "options": [
+      "will recover",
+      "would recover",
+      "recovered",
+      "recovers"
+    ],
+    "answer": "B",
+    "explanation": "Wish diễn tả hy vọng về tương lai dùng 'would + V nguyên mẫu', không dùng hiện tại hay tương lai đơn."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The sales team wishes the new pricing policy ______ into effect next month as planned.",
+    "options": [
+      "came",
+      "comes",
+      "will come",
+      "would come"
+    ],
+    "answer": "D",
+    "explanation": "Câu ước về tương lai: wish + 'would + V nguyên mẫu' diễn tả mong muốn một việc sẽ xảy ra."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "He wishes the shipment ______ before the client's deadline next Friday.",
+    "options": [
+      "arrives",
+      "will arrive",
+      "arrived",
+      "would arrive"
+    ],
+    "answer": "D",
+    "explanation": "Wish kết hợp 'would + V nguyên mẫu' để bày tỏ mong ước về một sự việc trong tương lai."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "If only the finance department ______ more transparent about the budget cuts.",
+    "options": [
+      "were",
+      "will be",
+      "would be",
+      "is"
+    ],
+    "answer": "A",
+    "explanation": "'If only' tương đương wish, diễn tả điều ước hiện tại nên 'to be' chia 'were'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "If only we ______ a direct flight to the regional office instead of two layovers.",
+    "options": [
+      "have",
+      "would have",
+      "had",
+      "will have"
+    ],
+    "answer": "C",
+    "explanation": "'If only' + quá khứ đơn diễn tả điều ước trái với thực tế ở hiện tại."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The team failed to submit the proposal before the deadline. If they ______ it on time, the client would not have awarded the contract to a competitor.",
+    "options": [
+      "submitted",
+      "would submit",
+      "had submitted",
+      "submit"
+    ],
+    "answer": "C",
+    "explanation": "Ngữ cảnh cho biết sự việc đã không xảy ra trong quá khứ nên đây là câu điều kiện loại 3."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "Ms. Tran is not currently the head of the marketing department, but she has strong opinions about strategy. If she ______ in charge, she would restructure the entire team.",
+    "options": [
+      "had been",
+      "will be",
+      "were",
+      "is"
+    ],
+    "answer": "C",
+    "explanation": "Ngữ cảnh cho thấy điều giả định trái với hiện tại nên dùng câu điều kiện loại 2 với 'were'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The company still has not decided on a new office location, and the decision affects everyone's commute. If the new office ______ downtown, most employees will need to relocate.",
+    "options": [
+      "would be",
+      "were",
+      "is",
+      "had been"
+    ],
+    "answer": "C",
+    "explanation": "Quyết định vẫn có thể xảy ra trong tương lai nên đây là câu điều kiện loại 1, mệnh đề if chia hiện tại đơn."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The audit revealed several compliance issues that could have been costly. If the internal team ______ regular reviews last quarter, they would have caught the issues before the external audit.",
+    "options": [
+      "had conducted",
+      "conducted",
+      "would conduct",
+      "conduct"
+    ],
+    "answer": "A",
+    "explanation": "Ngữ cảnh nói về việc không xảy ra trong quá khứ nên đây là câu điều kiện loại 3 với 'had + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The startup relies heavily on one client for most of its revenue, which worries the investors. If that client ______ its contract, the company would face serious financial trouble.",
+    "options": [
+      "cancels",
+      "had cancelled",
+      "cancelled",
+      "would cancel"
+    ],
+    "answer": "C",
+    "explanation": "Tình huống giả định trái với hiện tại (khách hàng hiện chưa hủy hợp đồng) nên dùng câu điều kiện loại 2."
+  },
+  {
+    "lessonSlug": "cau-mong-uoc-wish-va-luyen-tap-dieu-kien",
+    "stem": "The renovation project is already behind schedule, but the contractor insists it can still finish by June. As long as no further delays ______, the office will reopen as promised.",
+    "options": [
+      "occur",
+      "will occur",
+      "occurred",
+      "had occurred"
+    ],
+    "answer": "A",
+    "explanation": "'As long as' mang nghĩa như 'if', mệnh đề điều kiện loại 1 chia động từ ở thì hiện tại đơn."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "______ the transaction be flagged as suspicious, the compliance team will investigate immediately.",
+    "options": [
+      "Should",
+      "Were",
+      "If",
+      "Had"
+    ],
+    "answer": "A",
+    "explanation": "Đảo ngữ câu điều kiện loại 1 dùng 'Should' đứng đầu câu, theo sau là động từ nguyên mẫu 'be' thay cho 'If...should be'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Should the board ______ the merger, shareholders will be notified within 48 hours.",
+    "options": [
+      "approves",
+      "approve",
+      "approved",
+      "approving"
+    ],
+    "answer": "B",
+    "explanation": "Sau 'Should' trong đảo ngữ loại 1, động từ chia ở dạng nguyên mẫu không 'to'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Should you ______ any difficulty accessing the shared drive, please reset your password first.",
+    "options": [
+      "will encounter",
+      "encounters",
+      "encounter",
+      "encountered"
+    ],
+    "answer": "C",
+    "explanation": "Cấu trúc đảo ngữ 'Should + S + V nguyên mẫu' thay cho 'If + S + should + V'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Should the client request further revisions, the design team ______ them within a week.",
+    "options": [
+      "completed",
+      "will complete",
+      "complete",
+      "would complete"
+    ],
+    "answer": "B",
+    "explanation": "Mệnh đề chính trong đảo ngữ loại 1 vẫn giữ 'will/can/may + V nguyên mẫu' như câu điều kiện loại 1 thông thường."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "______ I in your position, I would renegotiate the terms before signing.",
+    "options": [
+      "Should",
+      "If",
+      "Were",
+      "Had"
+    ],
+    "answer": "C",
+    "explanation": "Đảo ngữ câu điều kiện loại 2 dùng 'Were' đứng đầu câu thay cho 'If...were'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Were the company ______ its prices, competitors would likely respond within weeks.",
+    "options": [
+      "lower",
+      "lowered",
+      "to lower",
+      "lowering"
+    ],
+    "answer": "C",
+    "explanation": "Đảo ngữ loại 2 với động từ thường dùng cấu trúc 'Were + S + to + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Were she less experienced, the committee ______ have selected her for the position.",
+    "options": [
+      "didn't",
+      "won't",
+      "hadn't",
+      "wouldn't"
+    ],
+    "answer": "D",
+    "explanation": "Mệnh đề chính của đảo ngữ loại 2 vẫn dùng 'would/could/might + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Were the merger not ______ by the shareholders, the deal would collapse entirely.",
+    "options": [
+      "approving",
+      "approve",
+      "to approve",
+      "approved"
+    ],
+    "answer": "D",
+    "explanation": "Đảo ngữ loại 2 ở thể bị động dùng 'Were + S + (not) + V3/ed' thay cho 'If + S + were (not) + V3/ed'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Were it not ______ the sudden currency drop, the export figures would look much stronger this quarter.",
+    "options": [
+      "from",
+      "of",
+      "for",
+      "to"
+    ],
+    "answer": "C",
+    "explanation": "'Were it not for' là cách nói đảo ngữ tương đương 'If it weren't for' (nếu không vì)."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "______ the manager taken action sooner, the shipment would have left on time.",
+    "options": [
+      "Were",
+      "Had",
+      "If",
+      "Should"
+    ],
+    "answer": "B",
+    "explanation": "Đảo ngữ câu điều kiện loại 3 dùng 'Had' đứng đầu câu, theo sau là quá khứ phân từ, không dùng 'If' vì thiếu 'had'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Had the engineers ______ the defect earlier, the product recall could have been avoided.",
+    "options": [
+      "to detect",
+      "detecting",
+      "detect",
+      "detected"
+    ],
+    "answer": "D",
+    "explanation": "Sau 'Had' trong đảo ngữ loại 3, động từ chia ở dạng quá khứ phân từ (V3/ed)."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Had she not ______ overtime last weekend, the report would not have been ready for Monday's meeting.",
+    "options": [
+      "to work",
+      "working",
+      "work",
+      "worked"
+    ],
+    "answer": "D",
+    "explanation": "Đảo ngữ loại 3 phủ định: 'Had + S + not + V3/ed' thay cho 'If + S + hadn't + V3/ed'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Had the negotiations failed, both companies ______ significant legal costs.",
+    "options": [
+      "will incur",
+      "had incurred",
+      "would have incurred",
+      "would incur"
+    ],
+    "answer": "C",
+    "explanation": "Mệnh đề chính của đảo ngữ loại 3 vẫn dùng 'would/could/might + have + V3/ed'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Had it not been for the vendor's flexible payment terms, the small business ______ into bankruptcy.",
+    "options": [
+      "would go",
+      "had gone",
+      "went",
+      "would have gone"
+    ],
+    "answer": "D",
+    "explanation": "'Had it not been for' tương đương 'If it hadn't been for', mệnh đề chính dùng 'would have + V3/ed'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "But for the last-minute investment from an overseas partner, the factory ______ down last spring.",
+    "options": [
+      "would shut",
+      "shut",
+      "would have shut",
+      "will shut"
+    ],
+    "answer": "C",
+    "explanation": "'But for' (nếu không nhờ có) tạo câu điều kiện ẩn tương đương loại 3, mệnh đề chính dùng 'would have + V3/ed'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "______ the translator's help, the negotiations would have collapsed within the first hour.",
+    "options": [
+      "Because of",
+      "Regardless of",
+      "According to",
+      "But for"
+    ],
+    "answer": "D",
+    "explanation": "'But for' mang nghĩa 'nếu không có/không nhờ có', tạo câu điều kiện ẩn, khác nghĩa hẳn với các cụm còn lại."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "But for the strict safety regulations, accidents ______ far more common in this industry.",
+    "options": [
+      "would be",
+      "will be",
+      "would have been",
+      "are"
+    ],
+    "answer": "A",
+    "explanation": "Câu điều kiện ẩn với 'but for' mang nghĩa hiện tại nên mệnh đề chính dùng 'would + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "You need to submit the expense report by Friday. ______, the finance team will not process your reimbursement this month.",
+    "options": [
+      "However",
+      "Otherwise",
+      "Therefore",
+      "Moreover"
+    ],
+    "answer": "B",
+    "explanation": "'Otherwise' mang nghĩa 'nếu không (thì)', tạo câu điều kiện ẩn nối hai câu độc lập."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "The company should update its cybersecurity policy soon. Otherwise, sensitive data ______ vulnerable to attacks.",
+    "options": [
+      "would have remained",
+      "remained",
+      "would remain",
+      "will remain"
+    ],
+    "answer": "D",
+    "explanation": "'Otherwise' ngụ ý điều kiện loại 1 (có thể xảy ra ở tương lai) nên mệnh đề theo sau dùng 'will + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Luckily, the accountant caught the discrepancy in time. Otherwise, the company ______ a significant fine from the tax authority.",
+    "options": [
+      "will receive",
+      "would have received",
+      "received",
+      "would receive"
+    ],
+    "answer": "B",
+    "explanation": "'Otherwise' ở đây ngụ ý điều trái với quá khứ (loại 3 ẩn) nên dùng 'would have + V3/ed'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "______ proper training, new employees often make costly mistakes during their first month.",
+    "options": [
+      "Unless",
+      "But",
+      "Otherwise",
+      "Without"
+    ],
+    "answer": "D",
+    "explanation": "'Without' (không có) đứng đầu câu tạo điều kiện ẩn, tương đương 'If there were no...'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "Without the government's subsidy last year, dozens of small farms ______ out of business.",
+    "options": [
+      "went",
+      "would go",
+      "will go",
+      "would have gone"
+    ],
+    "answer": "D",
+    "explanation": "'Without' mang nghĩa 'nếu không có', ở đây tạo điều kiện ẩn loại 3 nên dùng 'would have + V3/ed'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "With a bit more patience, the two departments ______ their disagreement instead of escalating it to upper management.",
+    "options": [
+      "will resolve",
+      "could resolve",
+      "resolve",
+      "could have resolved"
+    ],
+    "answer": "B",
+    "explanation": "'With' (nếu có) tạo điều kiện ẩn hiện tại, mệnh đề chính dùng 'could + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "dao-ngu-cau-dieu-kien-va-dieu-kien-an",
+    "stem": "With better planning last quarter, the team ______ the deadline instead of missing it by two weeks.",
+    "options": [
+      "meets",
+      "can meet",
+      "could have met",
+      "could meet"
+    ],
+    "answer": "C",
+    "explanation": "'With' ở đây tạo điều kiện ẩn quá khứ (tương đương loại 3) nên dùng 'could have + V3/ed'."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The manager wishes his assistant ______ interrupting him during client calls so often.",
+    "options": [
+      "will stop",
+      "would stop",
+      "stops",
+      "stopped"
+    ],
+    "answer": "B",
+    "explanation": "'Wish + would' dùng để phàn nàn về một hành động lặp đi lặp lại gây khó chịu của người khác."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The HR director wishes employees ______ their timesheets late every single week.",
+    "options": [
+      "didn't submit",
+      "wouldn't submit",
+      "don't submit",
+      "won't submit"
+    ],
+    "answer": "B",
+    "explanation": "Thể phủ định 'wish + wouldn't' diễn tả sự phàn nàn về thói quen khó chịu lặp lại của người khác."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "I wish the vendor ______ back to our emails within a reasonable time instead of days later.",
+    "options": [
+      "got",
+      "would get",
+      "will get",
+      "gets"
+    ],
+    "answer": "B",
+    "explanation": "'Wish + would' thể hiện mong muốn thay đổi hành vi lặp lại gây khó chịu của bên thứ ba."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The team wishes senior management ______ decisions more quickly instead of delaying every project.",
+    "options": [
+      "makes",
+      "would make",
+      "will make",
+      "made"
+    ],
+    "answer": "B",
+    "explanation": "'Wish + would' diễn tả sự phàn nàn/mong muốn thay đổi một hành động lặp lại đang gây khó chịu."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "I wish the meeting room ______ so small; we can barely fit the whole team in for weekly reviews.",
+    "options": [
+      "wouldn't be",
+      "weren't",
+      "won't be",
+      "isn't"
+    ],
+    "answer": "B",
+    "explanation": "Wish diễn tả một trạng thái/đặc điểm cố định ở hiện tại nên dùng quá khứ đơn 'weren't', không dùng 'would'."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "He wishes his colleagues ______ arriving late to the morning stand-up meeting.",
+    "options": [
+      "would stop",
+      "stops",
+      "stopped",
+      "will stop"
+    ],
+    "answer": "A",
+    "explanation": "'Wish + would' dùng để phàn nàn về hành động lặp lại gây khó chịu, khác với 'wish + quá khứ đơn' chỉ diễn tả trạng thái."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The director would rather ______ the proposal in person rather than over email.",
+    "options": [
+      "present",
+      "presents",
+      "to present",
+      "presenting"
+    ],
+    "answer": "A",
+    "explanation": "'Would rather + V nguyên mẫu' diễn tả sự ưu tiên của một chủ ngữ ở hiện tại."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "I would rather ______ overtime this weekend than fall behind on the project.",
+    "options": [
+      "work",
+      "worked",
+      "working",
+      "to work"
+    ],
+    "answer": "A",
+    "explanation": "Sau 'would rather' (một chủ ngữ), động từ chia ở dạng nguyên mẫu không 'to'."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The employees would rather ______ a smaller bonus than lose their year-end vacation days.",
+    "options": [
+      "received",
+      "receiving",
+      "receive",
+      "to receive"
+    ],
+    "answer": "C",
+    "explanation": "'Would rather + V nguyên mẫu' thể hiện sự lựa chọn ưu tiên hơn giữa hai phương án."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "She would rather not ______ any comments during the negotiation until she consults legal.",
+    "options": [
+      "to make",
+      "making",
+      "made",
+      "make"
+    ],
+    "answer": "D",
+    "explanation": "Thể phủ định 'would rather not + V nguyên mẫu' vẫn giữ nguyên tắc động từ nguyên mẫu không 'to'."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "Looking back, the CEO would rather ______ the acquisition than expand organically.",
+    "options": [
+      "have pursue",
+      "pursued",
+      "pursue",
+      "have pursued"
+    ],
+    "answer": "D",
+    "explanation": "'Would rather + have + V3/ed' diễn tả điều một người ước đã làm khác đi trong quá khứ."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "I would rather ______ the contract before the client changed the terms.",
+    "options": [
+      "have signed",
+      "have sign",
+      "sign",
+      "signed"
+    ],
+    "answer": "A",
+    "explanation": "'Would rather + have + V3/ed' thể hiện sự tiếc nuối về một lựa chọn trong quá khứ."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The board would rather not ______ so much on the failed marketing campaign last year.",
+    "options": [
+      "have spend",
+      "have spent",
+      "spend",
+      "spent"
+    ],
+    "answer": "B",
+    "explanation": "Thể phủ định 'would rather not + have + V3/ed' diễn tả điều một người ước đã không làm trong quá khứ."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "Starting next week, the supervisor would rather that the intern ______ the client directly instead of going through her.",
+    "options": [
+      "didn't contact",
+      "doesn't contact",
+      "not contacted",
+      "not contact"
+    ],
+    "answer": "D",
+    "explanation": "'Would rather that + S2 + V nguyên mẫu' diễn tả mong muốn/yêu cầu người khác làm gì trong tương lai gần."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The lawyer would rather that the witness ______ every detail exactly as it happened when testifying tomorrow.",
+    "options": [
+      "described",
+      "describes",
+      "describe",
+      "describing"
+    ],
+    "answer": "C",
+    "explanation": "'Would rather that + S2 + V nguyên mẫu' thể hiện yêu cầu về một hành động sắp diễn ra, không chia theo thì hay ngôi."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "He would rather that we ______ the final decision today rather than postponing it further.",
+    "options": [
+      "make",
+      "made",
+      "making",
+      "makes"
+    ],
+    "answer": "A",
+    "explanation": "'Would rather that + S2 + V nguyên mẫu' thể hiện mong muốn của người thứ nhất đối với hành động của người thứ hai."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "Henry would rather that his business partner ______ more experienced in overseas markets, but he simply isn't.",
+    "options": [
+      "were",
+      "has been",
+      "be",
+      "is"
+    ],
+    "answer": "A",
+    "explanation": "'Would rather that' diễn tả điều giả định trái với hiện tại; 'to be' luôn chia 'were' cho mọi ngôi."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The manager would rather that the team ______ in the same building as the clients, but relocating isn't realistic right now.",
+    "options": [
+      "work",
+      "worked",
+      "works",
+      "had worked"
+    ],
+    "answer": "B",
+    "explanation": "'Would rather that' + quá khứ đơn diễn tả điều giả định trái với thực tế hiện tại."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "She would rather that her deputy ______ more initiative instead of waiting for instructions on every task, though he rarely does.",
+    "options": [
+      "shows",
+      "show",
+      "had shown",
+      "showed"
+    ],
+    "answer": "D",
+    "explanation": "'Would rather that' + quá khứ đơn diễn tả điều giả định trái với hiện tại, phù hợp khi thực tế đang ngược lại mong muốn."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "Bob would rather that Jill ______ to class yesterday instead of skipping it.",
+    "options": [
+      "had gone",
+      "went",
+      "would go",
+      "has gone"
+    ],
+    "answer": "A",
+    "explanation": "'Would rather that' + 'had + V3/ed' diễn tả điều giả định trái ngược với quá khứ."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The partners would rather that the deal ______ before the fiscal year ended, but negotiations dragged on.",
+    "options": [
+      "closed",
+      "has closed",
+      "had closed",
+      "would close"
+    ],
+    "answer": "C",
+    "explanation": "Cấu trúc 'would rather that + S2 + had + V3/ed' thể hiện điều trái với thực tế đã xảy ra trong quá khứ."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "She would rather that management ______ her about the layoffs sooner instead of announcing them without warning.",
+    "options": [
+      "would tell",
+      "has told",
+      "told",
+      "had told"
+    ],
+    "answer": "D",
+    "explanation": "'Would rather that' + 'had + V3/ed' diễn tả sự tiếc nuối về điều không có thật trong quá khứ."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The CEO wishes ______ the new regional director personally before the announcement.",
+    "options": [
+      "to meet",
+      "met",
+      "meeting",
+      "meet"
+    ],
+    "answer": "A",
+    "explanation": "'Wish + to V' là cách nói trang trọng thay cho 'want to', nghĩa 'muốn làm gì'."
+  },
+  {
+    "lessonSlug": "wish-nang-cao-va-would-rather",
+    "stem": "The board wishes the auditors ______ the report before it goes to the shareholders.",
+    "options": [
+      "reviewing",
+      "to review",
+      "review",
+      "reviewed"
+    ],
+    "answer": "B",
+    "explanation": "'Wish + O + to V' nghĩa 'muốn ai đó làm gì', theo sau tân ngữ là động từ nguyên mẫu có 'to'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The supervisor said that she ______ the budget report by Friday.",
+    "options": [
+      "has finished",
+      "finishes",
+      "would finish",
+      "will finish"
+    ],
+    "answer": "C",
+    "explanation": "Câu tường thuật lùi thì tương lai đơn 'will' thành 'would' khi động từ tường thuật ở quá khứ."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "Mr. Lee told his assistant that he ______ the invoice the previous day.",
+    "options": [
+      "sent",
+      "had sent",
+      "has sent",
+      "sends"
+    ],
+    "answer": "B",
+    "explanation": "Thì quá khứ đơn trong câu trực tiếp lùi thành quá khứ hoàn thành trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The client said that the shipment ______ still on the way.",
+    "options": [
+      "has been",
+      "would be",
+      "was",
+      "is"
+    ],
+    "answer": "C",
+    "explanation": "Thì hiện tại đơn lùi thành quá khứ đơn trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "She told me that ______ report needed to be revised before submission.",
+    "options": [
+      "his",
+      "their",
+      "my",
+      "her"
+    ],
+    "answer": "D",
+    "explanation": "Đại từ sở hữu 'my' trong câu trực tiếp đổi thành 'her' khi tường thuật lại lời của cô ấy."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The engineer explained that they ______ testing the prototype for two weeks when the funding was cut.",
+    "options": [
+      "had been",
+      "are",
+      "were",
+      "have been"
+    ],
+    "answer": "A",
+    "explanation": "Thì quá khứ tiếp diễn lùi thành quá khứ hoàn thành tiếp diễn trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The manager said that the department ______ hire two more analysts next quarter.",
+    "options": [
+      "would",
+      "could",
+      "should",
+      "will"
+    ],
+    "answer": "A",
+    "explanation": "Trong câu tường thuật, động từ khiếm khuyết 'will' lùi thành 'would'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The technician said he ______ fix the server by that evening.",
+    "options": [
+      "can",
+      "might",
+      "would",
+      "could"
+    ],
+    "answer": "D",
+    "explanation": "Động từ khiếm khuyết 'can' lùi thành 'could' trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The compliance officer said all employees ______ complete the training by law.",
+    "options": [
+      "must",
+      "should",
+      "ought to",
+      "had to"
+    ],
+    "answer": "D",
+    "explanation": "Động từ khiếm khuyết 'must' (bắt buộc) lùi thành 'had to' trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "He said that he would submit the report ______ since he needed more time.",
+    "options": [
+      "yesterday",
+      "the next day",
+      "tomorrow",
+      "today"
+    ],
+    "answer": "B",
+    "explanation": "Trạng từ 'tomorrow' trong câu trực tiếp đổi thành 'the next day' trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "She said that she had visited the branch office ______.",
+    "options": [
+      "yesterday",
+      "today",
+      "tomorrow",
+      "the day before"
+    ],
+    "answer": "D",
+    "explanation": "Trạng từ 'yesterday' đổi thành 'the day before' trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The receptionist told the visitor that the manager was ______ and would return shortly.",
+    "options": [
+      "that",
+      "there",
+      "here",
+      "this"
+    ],
+    "answer": "B",
+    "explanation": "Trạng từ nơi chốn 'here' trong câu trực tiếp đổi thành 'there' khi tường thuật lại."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The interviewer asked the candidate ______ she had experience managing a remote team.",
+    "options": [
+      "how",
+      "whether",
+      "what",
+      "that"
+    ],
+    "answer": "B",
+    "explanation": "Câu hỏi Yes/No trong lời nói gián tiếp dùng 'whether' để dẫn dắt mệnh đề, không dùng 'that'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The auditor asked ______ the company had kept receipts for every transaction.",
+    "options": [
+      "what",
+      "that",
+      "whether",
+      "which"
+    ],
+    "answer": "C",
+    "explanation": "Câu tường thuật của câu hỏi Yes/No dùng 'whether' thay cho liên từ 'that'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "Sam asked his colleague ______ the meeting had been rescheduled or not.",
+    "options": [
+      "which",
+      "whether",
+      "that",
+      "when"
+    ],
+    "answer": "B",
+    "explanation": "Cụm '...or not' xác nhận đây là câu hỏi Yes/No tường thuật, phải dùng 'whether', không dùng 'when/which/that'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The manager asked me ______ I would finish the analysis.",
+    "options": [
+      "if",
+      "that",
+      "whether",
+      "when"
+    ],
+    "answer": "D",
+    "explanation": "Câu hỏi Wh- trong lời nói gián tiếp giữ nguyên từ để hỏi 'when', không dùng 'if/whether/that'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The client asked the consultant ______ the delay had occurred.",
+    "options": [
+      "whether",
+      "that",
+      "why",
+      "if"
+    ],
+    "answer": "C",
+    "explanation": "Từ hỏi 'why' được giữ nguyên khi tường thuật câu hỏi Wh-, không thêm 'if' hay 'that'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "She asked him ______ documents he needed for the audit.",
+    "options": [
+      "whether",
+      "if",
+      "which",
+      "that"
+    ],
+    "answer": "C",
+    "explanation": "Từ hỏi 'which' đứng trước danh từ được giữ nguyên trong câu tường thuật của câu hỏi Wh-."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The supervisor told the new hires ______ their badges at all times.",
+    "options": [
+      "wear",
+      "wore",
+      "wearing",
+      "to wear"
+    ],
+    "answer": "D",
+    "explanation": "Câu mệnh lệnh khẳng định trong lời nói gián tiếp dùng 'told/asked + O + to V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The manager warned the staff ______ confidential files on personal devices.",
+    "options": [
+      "not storing",
+      "not store",
+      "don't store",
+      "not to store"
+    ],
+    "answer": "D",
+    "explanation": "Câu mệnh lệnh phủ định trong lời nói gián tiếp dùng 'told/warned + O + not + to V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The technician instructed the team ______ the machine before restarting it.",
+    "options": [
+      "unplug",
+      "unplugged",
+      "unplugging",
+      "to unplug"
+    ],
+    "answer": "D",
+    "explanation": "Mệnh lệnh khẳng định tường thuật lại bằng cấu trúc 'instructed + O + to V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The consultant suggested ______ the budget before finalizing the proposal.",
+    "options": [
+      "to revise",
+      "revise",
+      "revising",
+      "revised"
+    ],
+    "answer": "C",
+    "explanation": "Động từ 'suggest' trong câu tường thuật theo sau bởi danh động từ (V-ing), không dùng 'to V'."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The vendor apologized for ______ the wrong invoice to the client.",
+    "options": [
+      "sent",
+      "send",
+      "to send",
+      "sending"
+    ],
+    "answer": "D",
+    "explanation": "Cấu trúc 'apologize for + V-ing' được dùng để tường thuật lời xin lỗi về một hành động."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "The teacher reminded the class that the earth ______ around the sun.",
+    "options": [
+      "would revolve",
+      "had revolved",
+      "revolved",
+      "revolves"
+    ],
+    "answer": "D",
+    "explanation": "Sự thật hiển nhiên/chân lý khoa học không lùi thì trong câu tường thuật."
+  },
+  {
+    "lessonSlug": "cau-tuong-thuat",
+    "stem": "She said that if she ______ more time, she would have finished the project sooner.",
+    "options": [
+      "had",
+      "has had",
+      "had had",
+      "would have had"
+    ],
+    "answer": "C",
+    "explanation": "Câu điều kiện loại 3 trong lời nói trực tiếp giữ nguyên hình thức động từ khi tường thuật, không lùi thì thêm."
   }
 ]
