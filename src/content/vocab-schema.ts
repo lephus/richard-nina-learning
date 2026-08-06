@@ -11,7 +11,12 @@ export const vocabWordSchema = z.object({
   word: z.string().min(1).regex(/^[a-z][a-z\- ]*$/, "từ phải là chữ thường"),
   pos: z.enum(["n", "v", "adj", "adv", "prep", "conj"]),
   ipa: z.string().regex(/^\/.+\/$/, "IPA phải bọc trong dấu /.../"),
-  meaningVi: z.string().min(2).regex(VN_DIACRITIC, "nghĩa tiếng Việt thiếu dấu"),
+  // meaningVi thường chỉ là cụm ngắn 2-3 chữ (vd "tham gia", "kinh doanh",
+  // "an ninh") — nhiều cụm đúng chính tả vốn dĩ không có dấu nào. Áp
+  // VN_DIACRITIC ở đây tạo dương tính giả, ép nội dung học phải độn thêm
+  // chữ chỉ để qua validator. Không regex ở trường này; definitionVi và
+  // exampleVi là câu đầy đủ nên vẫn giữ ràng buộc để chặn OCR chưa sửa dấu.
+  meaningVi: z.string().min(2),
   definitionEn: z.string().min(10),
   definitionVi: z.string().min(5).regex(VN_DIACRITIC, "định nghĩa tiếng Việt thiếu dấu"),
   synonyms: z.array(z.string().min(1)).min(1, "cần ít nhất 1 từ đồng nghĩa"),

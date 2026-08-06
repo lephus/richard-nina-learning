@@ -29,8 +29,14 @@ describe("vocabWordSchema", () => {
     expect(() => vocabWordSchema.parse({ ...ok, synonyms: [] })).toThrow();
   });
 
-  it("từ chối nghĩa tiếng Việt không có dấu (dấu hiệu OCR chưa sửa)", () => {
-    expect(() => vocabWordSchema.parse({ ...ok, meaningVi: "quy dinh, quy tac" })).toThrow();
+  it("chấp nhận meaningVi không dấu khi đó là chính tả đúng (vd 'tham gia')", () => {
+    expect(vocabWordSchema.parse({ ...ok, meaningVi: "tham gia" }).meaningVi).toBe("tham gia");
+  });
+
+  it("từ chối definitionVi không có dấu (dấu hiệu OCR chưa sửa)", () => {
+    expect(() =>
+      vocabWordSchema.parse({ ...ok, definitionVi: "mot he thong cac quy tac thanh van" })
+    ).toThrow();
   });
 });
 
