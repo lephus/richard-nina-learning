@@ -1,0 +1,16 @@
+name: keepalive
+on:
+  schedule:
+    - cron: "0 6 */3 * *"   # 3 ngay/lan, du an toan truoc nguong ~7 ngay
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Truy van nhe de giu project Supabase khong ngu
+        run: |
+          curl -sS -f \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "${{ secrets.SUPABASE_URL }}/rest/v1/grammar_lessons?select=id&limit=1" \
+            > /dev/null
+          echo "ping ok"
