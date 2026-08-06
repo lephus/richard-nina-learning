@@ -1,6 +1,10 @@
 import type { PartOfSpeech, RawVocabEntry } from "./types";
 
-const HEAD = /^\s*(\d{1,4})\.\s+([A-Za-z][A-Za-z\- ]*?)\s*\((n|v|adj|adv|prep|conj)\)/;
+const P = "(?:n|v|adj|adv|prep|conj)";
+const HEAD = new RegExp(
+  `^\\s*(\\d{1,4})\\.\\s*([A-Za-z][A-Za-z\\- ]*?)[\\s_.]*\\(\\s*(${P})(?:\\s*,\\s*${P})*\\s*\\.?\\s*\\)`,
+  "i"
+);
 
 function field(body: string[], re: RegExp): string | null {
   const m = body.join(" ").match(re);
@@ -18,7 +22,7 @@ export function parseVocabPage(text: string, page: number): RawVocabEntry[] {
       cur = {
         ordinal: Number(m[1]),
         word: m[2]!.trim().toLowerCase(),
-        pos: m[3] as PartOfSpeech,
+        pos: m[3]!.toLowerCase() as PartOfSpeech,
         sourcePage: page,
         ipaRaw: null, synonymsRaw: null, meanRaw: null, expRaw: null,
         bodyLines: [line],

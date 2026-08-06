@@ -34,4 +34,32 @@ describe("parseVocabPage", () => {
     const noise = "THỂ enon ch ban\nHil\n42. code (n). quy định, SYN: rules.\n";
     expect(parseVocabPage(noise, 1)).toHaveLength(1);
   });
+
+  it("tách được từ loại viết hoa (Adj)", () => {
+    const text = "32. apprehensive (Adj). lo lắng";
+    const result = parseVocabPage(text, 5);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ ordinal: 32, word: "apprehensive", pos: "adj" });
+  });
+
+  it("tách được nhiều từ loại (n, v)", () => {
+    const text = "287. influence (n, v). ảnh hưởng";
+    const result = parseVocabPage(text, 5);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ ordinal: 287, word: "influence", pos: "n" });
+  });
+
+  it("tách được khi thiếu dấu cách sau số", () => {
+    const text = "80.restrict (v). hạn chế";
+    const result = parseVocabPage(text, 5);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ ordinal: 80, word: "restrict", pos: "v" });
+  });
+
+  it("tách được khi có rác OCR trước ngoặc", () => {
+    const text = "52. access _(n). truy cập";
+    const result = parseVocabPage(text, 5);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ ordinal: 52, word: "access", pos: "n" });
+  });
 });
