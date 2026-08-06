@@ -2398,5 +2398,1445 @@
     ],
     "answer": "A",
     "explanation": "Thì tương lai hoàn thành tiếp diễn ('will have been working') nhấn mạnh quá trình kéo dài tính đến một mốc trong tương lai được nêu bằng mệnh đề 'by the time...'."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "All new employees ______ complete the safety training within their first week.",
+    "options": [
+      "might",
+      "must",
+      "would",
+      "could"
+    ],
+    "answer": "B",
+    "explanation": "'must' diễn tả nghĩa vụ bắt buộc theo quy định của công ty, không phải khả năng hay dự đoán."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Staff ______ discuss confidential client information with anyone outside the company.",
+    "options": [
+      "may",
+      "needn't",
+      "mustn't",
+      "could"
+    ],
+    "answer": "C",
+    "explanation": "'mustn't' diễn tả sự cấm đoán tuyệt đối, khác với 'needn't' (không cần thiết) vốn không mang nghĩa cấm."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "You ______ print the contract; the client accepts a digitally signed PDF.",
+    "options": [
+      "mustn't",
+      "needn't",
+      "shouldn't",
+      "can't"
+    ],
+    "answer": "B",
+    "explanation": "'needn't' nghĩa là không cần thiết phải làm, khác hẳn 'mustn't' mang nghĩa cấm không được làm."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Under the new government regulation, all factories ______ submit an environmental report every quarter.",
+    "options": [
+      "musts",
+      "must to",
+      "have to",
+      "having to"
+    ],
+    "answer": "C",
+    "explanation": "'have to' dùng khi sự bắt buộc đến từ quy định bên ngoài (chính phủ) chứ không do người nói tự quyết định như 'must'."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Employees who work remotely ______ come into the office every day, but they must attend the weekly video call.",
+    "options": [
+      "shouldn't",
+      "mustn't",
+      "can't",
+      "don't have to"
+    ],
+    "answer": "D",
+    "explanation": "'don't have to' nghĩa là không bắt buộc, khác với 'mustn't' mang nghĩa cấm hoàn toàn, không phù hợp với ngữ cảnh cho phép làm việc từ xa."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Our new accounting software ______ generate monthly reports automatically.",
+    "options": [
+      "can",
+      "cans",
+      "could to",
+      "is able"
+    ],
+    "answer": "A",
+    "explanation": "Động từ khiếm khuyết 'can' luôn giữ nguyên dạng, không chia số, không thêm 'to' hay '-ing' phía sau."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Before the merger, the two branches ______ operate independently without head-office approval.",
+    "options": [
+      "must",
+      "can",
+      "could",
+      "should"
+    ],
+    "answer": "C",
+    "explanation": "'could' diễn tả khả năng đã từng có trong quá khứ (trước khi sáp nhập), còn 'can' chỉ dùng cho hiện tại."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "______ you forward me the signed agreement by tomorrow morning, please?",
+    "options": [
+      "Are",
+      "Could",
+      "Must",
+      "Do"
+    ],
+    "answer": "B",
+    "explanation": "'Could' dùng để đưa ra yêu cầu một cách lịch sự, trang trọng hơn các cấu trúc còn lại."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Visitors ______ enter the server room only if accompanied by an IT staff member.",
+    "options": [
+      "shall",
+      "must",
+      "may",
+      "would"
+    ],
+    "answer": "C",
+    "explanation": "'may' diễn tả sự cho phép có điều kiện, phù hợp với ngữ cảnh hơn 'must' vốn mang nghĩa bắt buộc."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "The shipment ______ arrive late because of the storm along the coast.",
+    "options": [
+      "must",
+      "can",
+      "might",
+      "should"
+    ],
+    "answer": "C",
+    "explanation": "'might' diễn tả khả năng có thể xảy ra nhưng không chắc chắn, trong khi 'must' mang tính suy đoán gần như chắc chắn."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "You ______ double-check the figures before sending the invoice to the client.",
+    "options": [
+      "shoulds",
+      "to should",
+      "shoulding",
+      "should"
+    ],
+    "answer": "D",
+    "explanation": "'should' là động từ khiếm khuyết, giữ nguyên dạng, không chia và không thêm '-ing' hay 'to' phía trước."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "The committee ______ review the budget proposal more carefully before granting approval.",
+    "options": [
+      "can to",
+      "should to",
+      "must to",
+      "ought to"
+    ],
+    "answer": "D",
+    "explanation": "'ought to' là động từ khiếm khuyết duy nhất bắt buộc có 'to' trước động từ nguyên mẫu; 'should/must/can' không bao giờ đi với 'to'."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "______ we reschedule the client presentation to next Thursday afternoon?",
+    "options": [
+      "Are",
+      "Do",
+      "Have",
+      "Shall"
+    ],
+    "answer": "D",
+    "explanation": "'Shall + we' dùng để đưa ra đề nghị một cách trang trọng, không dùng 'do/are/have' trong ngữ cảnh này."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "______ I leave the office early today to catch my flight?",
+    "options": [
+      "Must",
+      "May",
+      "Do",
+      "Are"
+    ],
+    "answer": "B",
+    "explanation": "'May' dùng để xin phép một cách trang trọng, phù hợp với tình huống xin nghỉ sớm hơn các lựa chọn còn lại."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "That email ______ be from the CEO — she is on leave until next week and never emails during her vacation.",
+    "options": [
+      "mustn't",
+      "may not",
+      "shouldn't",
+      "can't"
+    ],
+    "answer": "D",
+    "explanation": "Khi phủ định một giả định chắc chắn, tiếng Anh dùng 'can't' (chắc chắn là không), không dùng 'mustn't'."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "The lights are still on in the meeting room, so someone ______ forgotten to turn them off.",
+    "options": [
+      "must has",
+      "must have",
+      "must having",
+      "must"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc 'must have + V3/ed' diễn tả một suy đoán gần như chắc chắn về việc đã xảy ra trong quá khứ."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "The proposal was rejected because the team ______ included more financial data.",
+    "options": [
+      "should have",
+      "should",
+      "should has",
+      "shoulding have"
+    ],
+    "answer": "A",
+    "explanation": "'should have + PP' diễn tả điều lẽ ra nên làm trong quá khứ nhưng thực tế đã không làm."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "We ______ finished the project earlier if the supplier had delivered the materials on time.",
+    "options": [
+      "could",
+      "can have",
+      "could has",
+      "could have"
+    ],
+    "answer": "D",
+    "explanation": "'could have + PP' diễn tả một khả năng đã có thể xảy ra trong quá khứ nhưng thực tế đã không xảy ra."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Sales dropped sharply last quarter; the new pricing strategy ______ discouraged some regular customers.",
+    "options": [
+      "may have",
+      "must have",
+      "may",
+      "may having"
+    ],
+    "answer": "A",
+    "explanation": "'may have + PP' diễn tả một khả năng đã xảy ra trong quá khứ nhưng người nói không chắc chắn hoàn toàn, khác với 'must have' mang tính gần như chắc chắn."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "He ______ attended the training session yesterday — his badge shows he was in another city the whole day.",
+    "options": [
+      "don't have",
+      "can't have",
+      "shouldn't have",
+      "mustn't have"
+    ],
+    "answer": "B",
+    "explanation": "'can't have + PP' diễn tả điều gì đó gần như chắc chắn đã KHÔNG xảy ra trong quá khứ, dựa trên bằng chứng rõ ràng."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "You ______ rushed to finish the slides — the meeting was postponed to next week.",
+    "options": [
+      "shouldn't have",
+      "needn't have",
+      "don't need",
+      "mustn't have"
+    ],
+    "answer": "B",
+    "explanation": "'needn't have + PP' diễn tả một việc đã làm nhưng thực ra không cần thiết, khác với 'shouldn't have' mang nghĩa hối tiếc vì đã làm một việc sai."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "Despite the tight deadline, the design team ______ deliver the prototype on time.",
+    "options": [
+      "can",
+      "was able to",
+      "could",
+      "cans"
+    ],
+    "answer": "B",
+    "explanation": "'was able to' nhấn mạnh sự nỗ lực và thành công trong một tình huống cụ thể ở quá khứ, phù hợp hơn 'could' vốn chỉ năng lực chung chung."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "______ you mind reviewing this contract draft before our call with the client this afternoon?",
+    "options": [
+      "Shall",
+      "Would",
+      "Must",
+      "Should"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc 'Would you mind + V-ing' dùng để đưa ra yêu cầu lịch sự, không dùng 'should/must/shall' trong cấu trúc này."
+  },
+  {
+    "lessonSlug": "dong-tu-khiem-khuyet",
+    "stem": "She has answered every technical question flawlessly; she ______ be an expert in the field.",
+    "options": [
+      "could",
+      "would",
+      "must",
+      "might"
+    ],
+    "answer": "C",
+    "explanation": "'must' dùng để diễn tả một giả định gần như chắc chắn ở hiện tại dựa trên bằng chứng rõ ràng."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The marketing manager and the sales director ______ meeting with the client this afternoon.",
+    "options": [
+      "is",
+      "was",
+      "are",
+      "has been"
+    ],
+    "answer": "C",
+    "explanation": "Hai chủ ngữ nối bằng 'and' chỉ hai người khác nhau nên động từ chia số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The founder and CEO of the startup ______ presenting the quarterly results in person.",
+    "options": [
+      "were",
+      "is",
+      "are",
+      "have been"
+    ],
+    "answer": "B",
+    "explanation": "Khi 'and' nối hai chức danh chỉ cùng một người (founder và CEO là một người), động từ chia số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Each department head ______ required to submit a budget forecast by Friday.",
+    "options": [
+      "were",
+      "have been",
+      "is",
+      "are"
+    ],
+    "answer": "C",
+    "explanation": "'each' luôn đi với động từ chia số ít, dù danh từ phía sau có vẻ chỉ nhiều người."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Meeting the shipping deadline ______ essential to keeping the client relationship strong.",
+    "options": [
+      "are",
+      "have been",
+      "were",
+      "is"
+    ],
+    "answer": "D",
+    "explanation": "Cụm V-ing đóng vai trò chủ ngữ (Meeting the shipping deadline) luôn được coi là số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "What the auditors found in the financial records ______ still under review by the board.",
+    "options": [
+      "were",
+      "is",
+      "have been",
+      "are"
+    ],
+    "answer": "B",
+    "explanation": "Mệnh đề danh từ làm chủ ngữ (bắt đầu bằng 'what') luôn chia động từ số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Economics ______ one of the required courses for all business majors.",
+    "options": [
+      "have been",
+      "are",
+      "is",
+      "were"
+    ],
+    "answer": "C",
+    "explanation": "Danh từ tận cùng bằng '-ics' chỉ tên môn học (economics, statistics) luôn chia động từ số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The police ______ currently investigating the data breach reported last week.",
+    "options": [
+      "has been",
+      "is",
+      "are",
+      "was"
+    ],
+    "answer": "C",
+    "explanation": "'police' là danh từ luôn được coi là số nhiều dù không tận cùng bằng chữ 's'."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The unemployed in this region ______ eligible for the new job-training program.",
+    "options": [
+      "was",
+      "has been",
+      "is",
+      "are"
+    ],
+    "answer": "D",
+    "explanation": "'the + tính từ' (the unemployed) chỉ một nhóm người luôn được coi là danh từ số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Either the regional managers or the CFO ______ responsible for approving this expense.",
+    "options": [
+      "is",
+      "are",
+      "were",
+      "have been"
+    ],
+    "answer": "A",
+    "explanation": "Trong cấu trúc 'either... or', động từ chia theo chủ ngữ đứng gần nó nhất, ở đây là 'the CFO' số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Neither the accountant nor the interns ______ finished reconciling the accounts yet.",
+    "options": [
+      "was",
+      "have",
+      "is",
+      "has"
+    ],
+    "answer": "B",
+    "explanation": "Trong cấu trúc 'neither... nor', động từ chia theo danh từ gần nó nhất, ở đây 'the interns' số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Not only the receptionist but also the two assistants ______ trained to use the new booking system.",
+    "options": [
+      "is",
+      "were",
+      "was",
+      "has been"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc 'not only... but also' chia động từ theo chủ ngữ đứng sau, ở đây 'the two assistants' số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The project manager, as well as her team members, ______ attending the workshop next Monday.",
+    "options": [
+      "were",
+      "are",
+      "have been",
+      "is"
+    ],
+    "answer": "D",
+    "explanation": "Cụm 'as well as' không phải liên từ nối chủ ngữ, động từ chia theo danh từ đứng trước nó, ở đây 'the project manager' số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The CEO, together with several board members, ______ scheduled to visit the new factory.",
+    "options": [
+      "are",
+      "is",
+      "were",
+      "have been"
+    ],
+    "answer": "B",
+    "explanation": "Cụm 'together with' không làm thay đổi số của chủ ngữ chính, động từ vẫn chia theo 'the CEO' số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The quality of the materials used in production ______ closely monitored by the QA team.",
+    "options": [
+      "is",
+      "are",
+      "have been",
+      "were"
+    ],
+    "answer": "A",
+    "explanation": "Hai danh từ nối bằng 'of' chia động từ theo danh từ phía trước ('the quality'), trừ một số từ đặc biệt như some/most/all."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Most of the invoices submitted last week ______ still waiting for approval.",
+    "options": [
+      "was",
+      "is",
+      "has been",
+      "are"
+    ],
+    "answer": "D",
+    "explanation": "Khi 'most/some/all' đứng trước 'of', động từ chia theo danh từ đứng sau 'of', ở đây 'invoices' số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "A number of employees ______ requested a flexible working schedule this year.",
+    "options": [
+      "have",
+      "was",
+      "is",
+      "has"
+    ],
+    "answer": "A",
+    "explanation": "'a number of + danh từ số nhiều' mang nghĩa 'một số', động từ luôn chia số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The number of complaints received by customer service ______ decreased significantly this quarter.",
+    "options": [
+      "have",
+      "were",
+      "are",
+      "has"
+    ],
+    "answer": "D",
+    "explanation": "'the number of + danh từ số nhiều' mang nghĩa 'số lượng', động từ vẫn chia số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The management team ______ a single, unified vision for the company's future.",
+    "options": [
+      "are",
+      "have",
+      "were",
+      "has"
+    ],
+    "answer": "D",
+    "explanation": "Khi nhấn mạnh tập thể như một khối thống nhất, danh từ tập hợp như 'team' chia động từ số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The staff ______ divided in their opinions about the new dress code policy.",
+    "options": [
+      "is",
+      "are",
+      "was",
+      "has been"
+    ],
+    "answer": "B",
+    "explanation": "Khi nhấn mạnh hành động, ý kiến riêng lẻ của từng thành viên, danh từ tập hợp như 'staff' chia động từ số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "There ______ a signed contract and two invoices attached to this email.",
+    "options": [
+      "is",
+      "were",
+      "are",
+      "have been"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc 'there + be' chia theo danh từ đứng ngay sau nó, ở đây 'a signed contract' số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Fifty thousand dollars ______ a substantial investment for a small startup like ours.",
+    "options": [
+      "were",
+      "are",
+      "have been",
+      "is"
+    ],
+    "answer": "D",
+    "explanation": "Cụm từ chỉ số tiền được xem là một đơn vị số ít, nên động từ chia số ít dù danh từ có 's'."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "The pliers used in the workshop ______ stored in the top drawer of the toolbox.",
+    "options": [
+      "is",
+      "are",
+      "has been",
+      "was"
+    ],
+    "answer": "B",
+    "explanation": "'pliers' thuộc nhóm danh từ luôn ở dạng số nhiều nên động từ đi kèm luôn chia số nhiều."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "A pair of scissors ______ missing from the office supply cabinet.",
+    "options": [
+      "are",
+      "were",
+      "have been",
+      "is"
+    ],
+    "answer": "D",
+    "explanation": "Khi có 'a pair of' đứng trước các danh từ luôn số nhiều như 'scissors', động từ lại chia số ít."
+  },
+  {
+    "lessonSlug": "su-hoa-hop-chu-ngu-dong-tu",
+    "stem": "Our sales figures improved this quarter, but theirs ______ dropped by ten percent.",
+    "options": [
+      "has",
+      "have",
+      "was",
+      "is"
+    ],
+    "answer": "B",
+    "explanation": "Đại từ sở hữu 'theirs' thay cho 'their sales figures' (số nhiều), nên động từ chia theo số nhiều."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "This year's marketing budget is ______ as last year's, so no major changes are expected.",
+    "options": [
+      "as large",
+      "as larger",
+      "so large",
+      "as more large"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc so sánh bằng 'as + adj + as' dùng tính từ nguyên thể, không chia dạng so sánh hơn."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The new intern completed the task ______ as the senior staff member did.",
+    "options": [
+      "as quickly",
+      "more quickly",
+      "quicklier",
+      "as quicker"
+    ],
+    "answer": "A",
+    "explanation": "So sánh bằng với trạng từ dùng 'as + trạng từ nguyên thể + as', không chia dạng so sánh hơn."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The client's second proposal is ______ as the original one, according to the finance team.",
+    "options": [
+      "not as detailed",
+      "not so detailed than",
+      "not as more detailed",
+      "no as detailed"
+    ],
+    "answer": "A",
+    "explanation": "Phủ định so sánh bằng dùng cấu trúc 'not so/as + adj + as', không dùng 'than' hay thêm 'more'."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The new contract terms are ______ as the ones we signed last year.",
+    "options": [
+      "same",
+      "the same",
+      "as same",
+      "the similar"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc so sánh bằng 'the same...as' luôn cần có 'the' đứng trước 'same'."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "This branch handled ______ complaints as the head office did last month.",
+    "options": [
+      "as many",
+      "so much",
+      "as many as",
+      "as much"
+    ],
+    "answer": "A",
+    "explanation": "'complaints' là danh từ đếm được số nhiều nên dùng 'as many...as', không dùng 'as much...as' (dành cho danh từ không đếm được)."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The new factory doesn't have ______ storage space as the old warehouse.",
+    "options": [
+      "as many",
+      "so many",
+      "as much",
+      "much as"
+    ],
+    "answer": "C",
+    "explanation": "'space' là danh từ không đếm được nên dùng 'as much...as', không dùng 'as many...as'."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The revised delivery schedule is ______ than the one we proposed initially.",
+    "options": [
+      "more tighter",
+      "as tight",
+      "tighter",
+      "tightest"
+    ],
+    "answer": "C",
+    "explanation": "Tính từ ngắn 'tight' (1 âm tiết) thêm đuôi '-er' khi so sánh hơn, không dùng 'more' kèm theo."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "Our updated onboarding process is ______ than the previous one.",
+    "options": [
+      "more efficient",
+      "efficienter",
+      "the most efficient",
+      "as efficient"
+    ],
+    "answer": "A",
+    "explanation": "Tính từ dài từ 2 âm tiết trở lên ('efficient') thêm 'more' phía trước khi so sánh hơn, không thêm đuôi '-er'."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The renovated office is ______ more spacious than the old one on Fifth Street.",
+    "options": [
+      "so",
+      "too",
+      "much",
+      "very"
+    ],
+    "answer": "C",
+    "explanation": "'much' dùng để nhấn mạnh mức độ trong câu so sánh hơn, còn 'very/so/too' không đứng trực tiếp trước dạng so sánh hơn theo cách này."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "This quarter's revenue is ______ higher than analysts had predicted.",
+    "options": [
+      "quite",
+      "very",
+      "too",
+      "slightly"
+    ],
+    "answer": "D",
+    "explanation": "'slightly' dùng để nhấn mạnh mức độ nhẹ trong câu so sánh hơn; 'very/too/quite' không đi trực tiếp trước dạng so sánh hơn theo cấu trúc này."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "Ms. Tran is the ______ candidate we have interviewed for the position so far.",
+    "options": [
+      "strongest",
+      "most strong",
+      "stronger",
+      "as strong"
+    ],
+    "answer": "A",
+    "explanation": "Tính từ ngắn thêm đuôi '-est' và có 'the' đứng trước khi ở dạng so sánh nhất."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "This is ______ complicated merger our legal team has ever handled.",
+    "options": [
+      "the mostest",
+      "the most",
+      "most",
+      "the more"
+    ],
+    "answer": "B",
+    "explanation": "Tính từ dài dùng 'the most' phía trước khi ở dạng so sánh nhất, không thêm đuôi '-est'."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "Among all the proposals, this one is ______ cost-effective for our current budget.",
+    "options": [
+      "the fewest",
+      "the less",
+      "the least",
+      "least than"
+    ],
+    "answer": "C",
+    "explanation": "'the least + tính từ' diễn tả mức độ kém nhất, khác với 'the fewest' chỉ dùng cho danh từ đếm được, không dùng trực tiếp trước tính từ."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "______ we finalize the budget, the sooner production can begin.",
+    "options": [
+      "More early",
+      "The more early",
+      "Earlier",
+      "The earlier"
+    ],
+    "answer": "D",
+    "explanation": "Cấu trúc so sánh kép 'The + so sánh hơn, the + so sánh hơn' luôn bắt đầu bằng 'the' trước dạng so sánh hơn."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "Customer complaints have been getting ______ since we launched the new support system.",
+    "options": [
+      "few and few",
+      "more few",
+      "the fewest",
+      "fewer and fewer"
+    ],
+    "answer": "D",
+    "explanation": "So sánh lặp với danh từ đếm được dùng 'fewer and fewer' để diễn tả sự giảm dần liên tục."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "Remote work is becoming ______ common among businesses in this industry.",
+    "options": [
+      "much and much",
+      "more and more",
+      "more more",
+      "the most"
+    ],
+    "answer": "B",
+    "explanation": "So sánh lặp với tính từ dài dùng 'more and more' để diễn tả xu hướng tăng dần liên tục."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "This department has ______ staff members than it did two years ago.",
+    "options": [
+      "lesser",
+      "least",
+      "fewer",
+      "less"
+    ],
+    "answer": "C",
+    "explanation": "'staff members' là danh từ đếm được số nhiều nên dùng 'fewer', không dùng 'less' (dành cho danh từ không đếm được)."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The new procedure requires ______ paperwork than the old one.",
+    "options": [
+      "fewer",
+      "the least",
+      "least",
+      "less"
+    ],
+    "answer": "D",
+    "explanation": "'paperwork' là danh từ không đếm được nên dùng 'less', không dùng 'fewer'."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "This year's marketing spend is ______ as much as last year's budget.",
+    "options": [
+      "twicely",
+      "twice",
+      "two times more",
+      "the double"
+    ],
+    "answer": "B",
+    "explanation": "So sánh bội dùng 'bội số + as + much/many + as', ví dụ 'twice as much as'; không dùng các cấu trúc còn lại."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The junior model is ______ expensive than the flagship version.",
+    "options": [
+      "lesser",
+      "less",
+      "the least",
+      "fewer"
+    ],
+    "answer": "B",
+    "explanation": "So sánh kém với tính từ dùng 'less + adj + than', không dùng 'fewer' (dành cho danh từ đếm được)."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The client seemed ______ with this proposal than with our first draft.",
+    "options": [
+      "as happy",
+      "happiest",
+      "happier",
+      "more happy"
+    ],
+    "answer": "C",
+    "explanation": "Tính từ ngắn tận cùng '-y' đổi thành '-i' rồi thêm '-er' khi so sánh hơn ('happy' → 'happier')."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The second warehouse is ______ than the first one, so we can store more inventory there.",
+    "options": [
+      "bigger",
+      "biggest",
+      "more big",
+      "as big"
+    ],
+    "answer": "A",
+    "explanation": "Tính từ ngắn tận cùng một phụ âm sau nguyên âm phải gấp đôi phụ âm cuối khi thêm '-er' ('big' → 'bigger')."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "This is ______ presentation the sales team has given all year.",
+    "options": [
+      "as interesting",
+      "the most interesting",
+      "interestinger",
+      "the interestingest"
+    ],
+    "answer": "B",
+    "explanation": "Tính từ hai âm tiết tận cùng '-ing' ('interesting') được xếp vào nhóm tính từ dài, dùng 'the most' khi so sánh nhất."
+  },
+  {
+    "lessonSlug": "so-sanh",
+    "stem": "The new manager communicates with the team ______ than her predecessor did.",
+    "options": [
+      "as clear",
+      "more clearly",
+      "clearer",
+      "clearliest"
+    ],
+    "answer": "B",
+    "explanation": "Trạng từ tận cùng '-ly' ('clearly') được coi là dạng dài, dùng 'more' khi so sánh hơn, không thêm đuôi '-er'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "All incoming invoices ______ by the accounting department before payment is issued.",
+    "options": [
+      "are reviewed",
+      "were reviewed",
+      "have reviewed",
+      "review"
+    ],
+    "answer": "A",
+    "explanation": "Thì hiện tại đơn ở thể bị động dùng 'am/is/are + V3/ed'; chủ ngữ số nhiều nên dùng 'are reviewed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The quarterly report ______ right now, so please don't disturb the finance team.",
+    "options": [
+      "prepares",
+      "has been prepared",
+      "is preparing",
+      "is being prepared"
+    ],
+    "answer": "D",
+    "explanation": "Thì hiện tại tiếp diễn ở thể bị động dùng 'am/is/are + being + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The new safety regulations ______ by all department heads since last month.",
+    "options": [
+      "were approved",
+      "have been approved",
+      "are approved",
+      "have approved"
+    ],
+    "answer": "B",
+    "explanation": "Thì hiện tại hoàn thành ở thể bị động dùng 'have/has + been + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The merger agreement ______ by both companies' lawyers last Friday.",
+    "options": [
+      "is signed",
+      "signed",
+      "was signed",
+      "has signed"
+    ],
+    "answer": "C",
+    "explanation": "Thì quá khứ đơn ở thể bị động dùng 'was/were + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The client's complaint ______ when the manager suddenly walked into the room.",
+    "options": [
+      "was discussing",
+      "discussed",
+      "was being discussed",
+      "had been discussed"
+    ],
+    "answer": "C",
+    "explanation": "Thì quá khứ tiếp diễn ở thể bị động dùng 'was/were + being + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "By the time the auditors arrived, all the financial records ______ already.",
+    "options": [
+      "had been organized",
+      "were organized",
+      "have been organized",
+      "had organized"
+    ],
+    "answer": "A",
+    "explanation": "Thì quá khứ hoàn thành ở thể bị động dùng 'had + been + V3/ed', diễn tả việc hoàn tất trước một mốc trong quá khứ."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The new branch ______ in downtown next spring, according to the expansion plan.",
+    "options": [
+      "opens",
+      "is opened",
+      "will open",
+      "will be opened"
+    ],
+    "answer": "D",
+    "explanation": "Thì tương lai đơn ở thể bị động dùng 'will + be + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "By next December, the entire warehouse ______ to the new automated system.",
+    "options": [
+      "has been converted",
+      "will be converted",
+      "will have been converted",
+      "will convert"
+    ],
+    "answer": "C",
+    "explanation": "Thì tương lai hoàn thành ở thể bị động dùng 'will + have + been + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "This confidential file ______ shared with anyone outside the legal department.",
+    "options": [
+      "mustn't be",
+      "isn't must be",
+      "doesn't must be",
+      "mustn't"
+    ],
+    "answer": "A",
+    "explanation": "Động từ khiếm khuyết ở thể bị động dùng 'modal + be + V3/ed', nên chọn 'mustn't be'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The shipment ______ delayed by the customs inspection, according to the tracking update.",
+    "options": [
+      "must have",
+      "must having been",
+      "must have been",
+      "must be"
+    ],
+    "answer": "C",
+    "explanation": "Động từ khiếm khuyết kết hợp thì hoàn thành ở thể bị động dùng 'modal + have been + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "Each new employee ______ a laptop and an ID badge on the first day.",
+    "options": [
+      "is giving",
+      "is given",
+      "has given",
+      "gives"
+    ],
+    "answer": "B",
+    "explanation": "Với động từ có hai tân ngữ như 'give', tân ngữ gián tiếp có thể làm chủ ngữ của câu bị động, dùng 'be + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "This contract clause is so important that it ______ carefully by both parties.",
+    "options": [
+      "must reviewed",
+      "must review",
+      "must be reviewing",
+      "must be reviewed"
+    ],
+    "answer": "D",
+    "explanation": "Khi diễn đạt sự cần thiết ở thể bị động, dùng 'should/must + be + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "This deadline is unrealistic; the entire project ______ within just three days.",
+    "options": [
+      "isn't completed",
+      "can't be completed",
+      "can't complete",
+      "can't completed"
+    ],
+    "answer": "B",
+    "explanation": "Câu diễn tả điều không thể thực hiện được ở thể bị động dùng 'can't + be + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "\"Submit the report by Friday!\" the manager insisted. The report ______ by Friday.",
+    "options": [
+      "should submit",
+      "submitted",
+      "is submitted",
+      "should be submitted"
+    ],
+    "answer": "D",
+    "explanation": "Câu mệnh lệnh khi chuyển sang bị động dùng 'should/must + be + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The office manager ______ the printer repaired by a technician yesterday.",
+    "options": [
+      "was had",
+      "had",
+      "has",
+      "had been"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc nhờ ai làm gì 'have + O + V3/ed' dùng 'had' ở thì quá khứ, không chia thành 'was had'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "We ______ the contract translated into Vietnamese before sending it to the local partner.",
+    "options": [
+      "got",
+      "were got",
+      "have gotten to",
+      "got to"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc 'get + O + V3/ed' (nhờ ai làm gì) dùng 'got' ở thì quá khứ, tương tự 'have + O + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "______ that the company plans to expand into the Asian market next year.",
+    "options": [
+      "It says",
+      "It is said",
+      "It has said",
+      "It is saying"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc chủ ngữ giả 'It + be + PP + that...' dùng để diễn đạt một ý kiến chung một cách bị động."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The new CEO ______ negotiate every major contract personally, according to her former colleagues.",
+    "options": [
+      "is said to",
+      "said to have",
+      "was said",
+      "is said to have"
+    ],
+    "answer": "A",
+    "explanation": "Khi động từ tường thuật và động từ theo sau cùng thời điểm, dùng 'S + be + PP + to + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The supplier ______ missed the delivery deadline several times last year, based on the current audit findings.",
+    "options": [
+      "said to have",
+      "is said to",
+      "is said to have",
+      "was said to have"
+    ],
+    "answer": "C",
+    "explanation": "Khi hành động theo sau xảy ra trước hành động tường thuật, dùng 'S + be + PP + to have + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "It is essential ______ before the board meeting begins.",
+    "options": [
+      "for the budget finalizing",
+      "the budget to be finalized",
+      "for the budget finalize",
+      "for the budget to be finalized"
+    ],
+    "answer": "D",
+    "explanation": "Bị động của chủ ngữ giả 'It' dùng cấu trúc 'It + be + adj + for + O + to be + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The security guard ______ removing files from the office late at night.",
+    "options": [
+      "was seen",
+      "saw",
+      "was seeing",
+      "has seen"
+    ],
+    "answer": "A",
+    "explanation": "Bị động của động từ tri giác theo cấu trúc 'S + Vp + O + V-ing' là 'S + be + PP + V-ing'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The intern ______ leave the building with company equipment yesterday evening.",
+    "options": [
+      "was seen",
+      "saw to",
+      "was seen to",
+      "was seeing to"
+    ],
+    "answer": "C",
+    "explanation": "Bị động của động từ tri giác theo cấu trúc 'S + Vp + O + V-bare' là 'S + be + PP + to + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "New hires ______ complete a compliance course during their first week.",
+    "options": [
+      "are making to",
+      "are made to",
+      "are made",
+      "made to"
+    ],
+    "answer": "B",
+    "explanation": "Bị động của 'make' (S + make + O + V-inf) là 'S + be + made + to + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-bi-dong",
+    "stem": "The consultant recommended that a new marketing strategy ______ before the product launch.",
+    "options": [
+      "is developed",
+      "developed",
+      "was developed",
+      "be developed"
+    ],
+    "answer": "D",
+    "explanation": "Bị động sau các động từ đặc biệt như 'suggest/recommend/require' luôn dùng 'be + V3/ed' ở dạng nguyên mẫu, không chia theo thì."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The manager received ______ email from a supplier requesting an extension on the delivery date.",
+    "options": [
+      "some",
+      "a",
+      "an",
+      "the"
+    ],
+    "answer": "C",
+    "explanation": "Danh từ đếm được số ít xuất hiện lần đầu và bắt đầu bằng nguyên âm ('email') dùng mạo từ 'an'."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "Before the presentation, the intern printed ______ one-page summary for each attendee.",
+    "options": [
+      "a",
+      "some",
+      "the",
+      "an"
+    ],
+    "answer": "A",
+    "explanation": "Mạo từ 'a/an' được chọn theo âm đọc chứ không theo chữ cái; 'one' bắt đầu bằng âm phụ âm /w/ nên dùng 'a'."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The team submitted a proposal last week. ______ proposal was approved by the board yesterday.",
+    "options": [
+      "An",
+      "The",
+      "Some",
+      "A"
+    ],
+    "answer": "B",
+    "explanation": "Khi danh từ đã được nhắc đến lần đầu, lần nhắc lại thứ hai dùng mạo từ xác định 'the'."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "This is ______ most profitable quarter our company has recorded in a decade.",
+    "options": [
+      "no article",
+      "an",
+      "a",
+      "the"
+    ],
+    "answer": "D",
+    "explanation": "Mạo từ 'the' luôn đứng trước tính từ ở dạng so sánh nhất."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "She is ______ only employee who has worked here for over twenty years.",
+    "options": [
+      "the",
+      "some",
+      "a",
+      "an"
+    ],
+    "answer": "A",
+    "explanation": "'the' luôn đứng trước 'only' khi diễn tả tính duy nhất của một người hay vật."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The department needs ______ new laptop for the incoming marketing intern.",
+    "options": [
+      "a",
+      "the",
+      "no article",
+      "an"
+    ],
+    "answer": "A",
+    "explanation": "Danh từ đếm được số ít xuất hiện lần đầu, chưa được xác định cụ thể và bắt đầu bằng phụ âm nên dùng 'a'."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "This software is used by businesses all over ______ world.",
+    "options": [
+      "an",
+      "no article",
+      "the",
+      "a"
+    ],
+    "answer": "C",
+    "explanation": "'the' luôn đứng trước những danh từ chỉ vật thể duy nhất như 'world', 'sun', 'moon'."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The new policy provides financial support for ______ unemployed in the region.",
+    "options": [
+      "the",
+      "a",
+      "no article",
+      "an"
+    ],
+    "answer": "A",
+    "explanation": "'the + tính từ' tạo thành danh từ số nhiều chỉ một nhóm người, ở đây là 'những người thất nghiệp'."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "______ Japanese are widely respected in the business world for their punctuality and attention to detail.",
+    "options": [
+      "No article",
+      "A",
+      "An",
+      "The"
+    ],
+    "answer": "D",
+    "explanation": "'the' đứng trước tên dân tộc để chỉ toàn thể dân tộc đó, khác với tên ngôn ngữ thì không dùng 'the'."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "Our new client service team must be able to speak ______ Japanese fluently.",
+    "options": [
+      "an",
+      "a",
+      "the",
+      "no article"
+    ],
+    "answer": "D",
+    "explanation": "Tên ngôn ngữ như 'Japanese' không dùng mạo từ, khác với 'the Japanese' chỉ dân tộc."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "Our regional office plans to expand operations into ______ Philippines next year.",
+    "options": [
+      "no article",
+      "an",
+      "the",
+      "a"
+    ],
+    "answer": "C",
+    "explanation": "Tên quốc gia có hình thức số nhiều như 'the Philippines' luôn cần 'the' đứng trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The company opened a new manufacturing plant in ______ Vietnam last month.",
+    "options": [
+      "the",
+      "no article",
+      "an",
+      "a"
+    ],
+    "answer": "B",
+    "explanation": "Tên quốc gia là một từ đơn như 'Vietnam' không dùng mạo từ phía trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The logistics company transports goods along ______ Mekong River to reach rural markets.",
+    "options": [
+      "a",
+      "no article",
+      "the",
+      "an"
+    ],
+    "answer": "C",
+    "explanation": "Tên các con sông luôn dùng mạo từ 'the' đứng trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The mining company operates several sites across ______ Rocky Mountains.",
+    "options": [
+      "the",
+      "a",
+      "an",
+      "no article"
+    ],
+    "answer": "A",
+    "explanation": "Tên các dãy núi (ở dạng số nhiều) luôn dùng mạo từ 'the' đứng trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The expedition sponsored by the company reached the summit of ______ Kilimanjaro.",
+    "options": [
+      "a",
+      "no article",
+      "the",
+      "an"
+    ],
+    "answer": "B",
+    "explanation": "Tên một ngọn núi đơn lẻ không dùng mạo từ phía trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "As part of the company event, the marketing director performed on ______ piano for the guests.",
+    "options": [
+      "an",
+      "the",
+      "no article",
+      "a"
+    ],
+    "answer": "B",
+    "explanation": "Tên các loại nhạc cụ khi nói đến việc chơi nhạc cụ đó luôn dùng 'the' đứng trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "Many employees play ______ badminton together every Friday evening after work.",
+    "options": [
+      "the",
+      "a",
+      "no article",
+      "an"
+    ],
+    "answer": "C",
+    "explanation": "Tên các môn thể thao không dùng mạo từ phía trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The staff usually have ______ lunch together in the pantry at noon.",
+    "options": [
+      "the",
+      "a",
+      "an",
+      "no article"
+    ],
+    "answer": "D",
+    "explanation": "Tên các bữa ăn trong ngày thường không dùng mạo từ, trừ khi được xác định cụ thể."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "______ dinner that the client hosted last night was extremely impressive.",
+    "options": [
+      "The",
+      "No article",
+      "An",
+      "A"
+    ],
+    "answer": "A",
+    "explanation": "Khi bữa ăn được xác định cụ thể bằng mệnh đề đi kèm, phải dùng 'the' thay vì bỏ mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The training program requires new analysts to have a background in ______ statistics.",
+    "options": [
+      "the",
+      "a",
+      "no article",
+      "an"
+    ],
+    "answer": "C",
+    "explanation": "Tên các môn học nói chung không dùng mạo từ phía trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The consultant emphasized that ______ trust between partners is essential for a successful merger.",
+    "options": [
+      "a",
+      "the",
+      "an",
+      "no article"
+    ],
+    "answer": "D",
+    "explanation": "Danh từ trừu tượng nói chung như 'trust' không dùng mạo từ phía trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "Most employees at the branch office commute to work by ______ car every morning.",
+    "options": [
+      "the",
+      "an",
+      "no article",
+      "a"
+    ],
+    "answer": "C",
+    "explanation": "Phương tiện di chuyển đi sau giới từ 'by' (by car, by bus) không dùng mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The new office desks are made of ______ oak imported from Canada.",
+    "options": [
+      "the",
+      "an",
+      "no article",
+      "a"
+    ],
+    "answer": "C",
+    "explanation": "Danh từ chỉ chất liệu nói chung như 'oak' không dùng mạo từ phía trước."
+  },
+  {
+    "lessonSlug": "mao-tu-ly-thuyet",
+    "stem": "The company's product launch was featured in ______ Wall Street Journal last week.",
+    "options": [
+      "a",
+      "no article",
+      "an",
+      "the"
+    ],
+    "answer": "D",
+    "explanation": "Tên các tờ báo, tạp chí luôn dùng mạo từ 'the' đứng trước."
   }
 ]
