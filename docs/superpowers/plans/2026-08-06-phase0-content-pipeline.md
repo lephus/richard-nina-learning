@@ -681,7 +681,7 @@ process.exit(invalid.length || dup.length ? 1 : 0);
 | `ipa` | **viết lại từ đầu** dựa trên từ đã biết, không sửa `ipaRaw`. `code` → `/koʊd/` |
 | `meaningVi` | lấy từ dòng đầu mục, phục hồi dấu tiếng Việt |
 | `definitionEn` / `definitionVi` | tách từ `meanRaw` theo cặp `<tiếng Anh> (<tiếng Việt>)` |
-| `synonyms` | tách `synonymsRaw` theo dấu phẩy, trim, bỏ rỗng |
+| `synonyms` | tách `synonymsRaw` theo dấu phẩy, trim, bỏ rỗng. **173/605 mục sách gốc không có `SYN:` — với những mục đó phải TỰ VIẾT 2–3 từ đồng nghĩa tiếng Anh chuẩn** (đã đo, phán quyết của người dùng). Schema bắt buộc tối thiểu 1 phần tử nên bỏ trống là trượt kiểm định. Lưu ý mục có nhiều từ loại chỉ bắt được `SYN` của khối đầu — đối chiếu `bodyLines` để lấy đủ |
 | `exampleEn` | lấy từ `expRaw`, **thay từ đích bằng `___`** nếu sách chưa khoét |
 | `exampleVi` | phần trong ngoặc của `expRaw`, phục hồi dấu |
 | `blankAnswer` | dạng của từ xuất hiện thật trong câu (có thể là `codes`, `complied`… chứ không luôn bằng `word`) |
