@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const URL = process.env.SUPABASE_URL!;
 const ANON = process.env.SUPABASE_ANON_KEY!;
@@ -9,6 +9,7 @@ const admin = createClient(URL, SERVICE);
 let alice: ReturnType<typeof createClient>;
 let bob: ReturnType<typeof createClient>;
 let aliceId = "";
+let bobId = "";
 let testWordId = 0;
 
 beforeAll(async () => {
@@ -22,7 +23,7 @@ beforeAll(async () => {
   };
   const a = await mk(`alice-${Date.now()}@test.local`);
   const b = await mk(`bob-${Date.now()}@test.local`);
-  alice = a.client; bob = b.client; aliceId = a.id;
+  alice = a.client; bob = b.client; aliceId = a.id; bobId = b.id;
 
   await admin.from("profiles").insert({ id: aliceId, display_name: "Alice" });
 
@@ -45,6 +46,33 @@ beforeAll(async () => {
   }, { onConflict: "ordinal" }).select("id").single();
   if (wordErr) throw wordErr;
   testWordId = word!.id as number;
+});
+
+// Don sach moi thu test tao ra, dung client `admin` (service role) vi RLS se
+// chan client thuong. Khi bo test nay chay tren project Supabase THAT cua
+// nguoi dung (Task 15), khong don se tao 6 tai khoan nguoi dung that trong he
+// thong xac thuc va chen mot tu vung gia vao noi dung hoc — khong chap nhan duoc.
+afterAll(async () => {
+  // 1. word_mastery.word_id -> vocab_words(id) KHONG cascade khi xoa, nen phai
+  //    xoa moi dong word_mastery cua 2 user test truoc khi xoa dong vocab_words
+  //    gia o buoc 4, neu khong se dinh loi khoa ngoai 23503.
+  await admin.from("word_mastery").delete().in("user_id", [aliceId, bobId]);
+
+  // 2. Xoa dong profiles minh dinh. profiles.id -> auth.users(id) on delete
+  //    cascade nen ve ly thuyet buoc 3 (xoa auth user) se tu dong xoa profiles
+  //    ho — nhung xoa minh dinh o day de khong phu thuoc thu tu voi buoc 3 va
+  //    de test tu kiem chung lai cascade co that su hoat dong hay khong.
+  await admin.from("profiles").delete().in("id", [aliceId, bobId]);
+
+  // 3. Xoa 2 tai khoan test that khoi auth.users — day la phan quan trong nhat:
+  //    neu bo qua buoc nay, moi lan chay test tren project That se de lai
+  //    tai khoan nguoi dung that trong he thong xac thuc.
+  if (aliceId) await admin.auth.admin.deleteUser(aliceId);
+  if (bobId) await admin.auth.admin.deleteUser(bobId);
+
+  // 4. Xoa dong vocab_words gia (ordinal 9999) chen o beforeAll — phai xoa
+  //    SAU cung vi buoc 1 da don sach moi tham chieu khoa ngoai toi no.
+  await admin.from("vocab_words").delete().eq("ordinal", 9999);
 });
 
 describe("RLS", () => {
