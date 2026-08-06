@@ -745,15 +745,15 @@
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
-    "stem": "Her ______ helped the team succeed.",
+    "stem": "By showing strong ______ during the crisis, she helped the team stay focused and succeed.",
     "options": [
-      "leadership",
       "leading",
-      "lead",
-      "leader"
+      "leadership",
+      "leader",
+      "lead"
     ],
-    "answer": "A",
-    "explanation": "Chỗ trống đóng vai trò chủ ngữ, cần danh từ trừu tượng chỉ phẩm chất, nên chọn 'leadership' (khả năng lãnh đạo)."
+    "answer": "B",
+    "explanation": "'Show + danh từ trừu tượng' (show leadership: thể hiện khả năng lãnh đạo) là cụm cố định; không nói 'show a leader'."
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
@@ -889,15 +889,15 @@
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
-    "stem": "The ______ of the event was impressive.",
+    "stem": "The ______ of the event was impressive — she coordinated over two hundred guests single-handedly.",
     "options": [
+      "organize",
       "organizer",
       "organizing",
-      "organize",
       "organization"
     ],
-    "answer": "A",
-    "explanation": "Chỗ trống làm chủ ngữ cho 'was impressive' mô tả một người gây ấn tượng, nên chọn danh từ chỉ người 'organizer' (người tổ chức)."
+    "answer": "B",
+    "explanation": "Đại từ 'she' ở vế sau chỉ có thể quy chiếu về một người, nên chỗ trống phải là danh từ chỉ người 'organizer', không phải 'organization' (việc tổ chức)."
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
@@ -1033,15 +1033,15 @@
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
-    "stem": "We must consider the ______ of the plan.",
+    "stem": "We must consider the ______ of the plan on employee morale, both intended and unintended, before giving final approval.",
     "options": [
+      "effective",
       "effectiveness",
       "effect",
-      "effectively",
-      "effective"
+      "effectively"
     ],
-    "answer": "B",
-    "explanation": "Sau 'the' và trước 'of' cần một danh từ, nên chọn 'effect' (kết quả, tác động) của kế hoạch."
+    "answer": "C",
+    "explanation": "Cụm 'unintended effect' (tác động không mong muốn) là cách diễn đạt chuẩn; 'effectiveness' (hiệu quả) không đi với 'unintended'."
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
@@ -1153,27 +1153,27 @@
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
-    "stem": "The ______ of the staff is important.",
+    "stem": "The ______ of the staff is standardized across all branches to maintain consistent service quality.",
     "options": [
-      "training",
       "trainer",
+      "train",
       "trained",
-      "train"
+      "training"
     ],
-    "answer": "B",
-    "explanation": "Chỗ trống làm chủ ngữ cho 'is important', mô tả một người quan trọng đối với đội ngũ, nên chọn danh từ chỉ người 'trainer' (người đào tạo)."
+    "answer": "D",
+    "explanation": "Chỉ quy trình/chương trình mới có thể được 'chuẩn hoá' (standardized), nên chọn danh từ 'training' (việc đào tạo), không phải 'trainer' (một người)."
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
-    "stem": "The ______ of the system failed.",
+    "stem": "The ______ of the system was fully automated last year, eliminating the need for manual monitoring.",
     "options": [
-      "operating",
-      "operate",
       "operation",
-      "operator"
+      "operator",
+      "operate",
+      "operating"
     ],
-    "answer": "D",
-    "explanation": "Chỗ trống làm chủ ngữ cho 'failed', mô tả người vận hành không hoàn thành nhiệm vụ, nên chọn danh từ chỉ người 'operator' (người vận hành)."
+    "answer": "A",
+    "explanation": "Chỉ quy trình mới có thể được 'tự động hoá' (automated), nên chọn danh từ 'operation' (sự vận hành), không phải 'operator' (người vận hành)."
   },
   {
     "lessonSlug": "danh-tu-tinh-tu-va-trang-tu",
@@ -4671,13 +4671,13 @@
     "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
     "stem": "The auditor recommended the finance team ______ the year-end figures once more before submission.",
     "options": [
-      "to verify",
       "verify",
       "verifying",
+      "to verify",
       "verified"
     ],
     "answer": "A",
-    "explanation": "Khi 'recommend' có tân ngữ đứng ngay sau, cấu trúc là 'recommend + O + to-inf'."
+    "explanation": "'Recommend' không đi với 'O + to-inf' (đây là lỗi ESL kinh điển); cấu trúc đúng là giả định thức 'recommend + (that) + S + V nguyên mẫu' → 'recommended the team verify'."
   },
   {
     "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
