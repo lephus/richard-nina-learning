@@ -275,7 +275,11 @@ for (let p = FIRST; p <= LAST; p++) {
   if (!produced) throw new Error(`pdftoppm khong tao ra anh cho trang ${p}`);
   const png = join(IMG, produced);
 
-  execFileSync("tesseract", [png, txt.replace(/\.txt$/, ""), "-l", "vie+eng"]);
+  // --psm 6 BAT BUOC: che do mac dinh (psm 3) doc trang theo KHOI, lam
+  // so thu tu + tu bi tach roi khoi tu loai + nghia + SYN o khoi khac,
+  // khien parser truot sach 47/112 trang. psm 6 ep doc theo DONG.
+  // Da do: psm 3 -> 297 muc; psm 6 -> ~594 muc, khong trang nao te di.
+  execFileSync("tesseract", [png, txt.replace(/\.txt$/, ""), "-l", "vie+eng", "--psm", "6"]);
   console.log(`xong trang ${p}`);
 }
 console.log(`Hoan tat: ${LAST - FIRST + 1} trang -> ${OCR}/`);
