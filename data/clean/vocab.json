@@ -7,7 +7,10 @@
     "meaningVi": "bản sơ yếu lý lịch",
     "definitionEn": "a written record of your education and the jobs you have done, that you send when you are applying for a job",
     "definitionVi": "một bản ghi chép về giáo dục của bạn và những công việc mà bạn đã làm, mà bạn gửi khi bạn đang xin việc",
-    "synonyms": ["summary", "CV"],
+    "synonyms": [
+      "summary",
+      "CV"
+    ],
     "exampleEn": "Fax your ___ and cover letter to the above number.",
     "exampleVi": "Hãy gửi sơ yếu lý lịch của bạn và thư xin việc đến số điện thoại trên.",
     "blankAnswer": "resume"
@@ -20,7 +23,9 @@
     "meaningVi": "việc làm còn trống, vị trí trống cần tuyển",
     "definitionEn": "a job that is available",
     "definitionVi": "một công việc có sẵn",
-    "synonyms": ["vacancy"],
+    "synonyms": [
+      "vacancy"
+    ],
     "exampleEn": "The company has posted several job ___ on its website this week.",
     "exampleVi": "Công ty đã đăng một số vị trí việc làm còn trống trên trang web của mình trong tuần này.",
     "blankAnswer": "openings"
@@ -33,7 +38,10 @@
     "meaningVi": "ứng cử viên, người nộp đơn xin việc",
     "definitionEn": "a person who makes a formal request for something, especially for a job, a place at a college or university, etc",
     "definitionVi": "một người có yêu cầu chính thức về điều gì đó, đặc biệt là cho một công việc, một nơi ở trường đại học, v.v",
-    "synonyms": ["candidate", "job-seeker"],
+    "synonyms": [
+      "candidate",
+      "job-seeker"
+    ],
     "exampleEn": "Every ___ must submit a completed application form by Friday.",
     "exampleVi": "Mỗi ứng viên phải nộp mẫu đơn đã hoàn thành trước thứ Sáu.",
     "blankAnswer": "applicant"
@@ -46,7 +54,9 @@
     "meaningVi": "sự yêu cầu, điều kiện tiên quyết",
     "definitionEn": "something that you need or want",
     "definitionVi": "cái gì đó mà bạn cần hoặc muốn",
-    "synonyms": ["prerequisite"],
+    "synonyms": [
+      "prerequisite"
+    ],
     "exampleEn": "A university degree is a basic ___ for this position.",
     "exampleVi": "Bằng đại học là một yêu cầu cơ bản cho vị trí này.",
     "blankAnswer": "requirement"
@@ -59,7 +69,10 @@
     "meaningVi": "gặp gỡ, đáp ứng, thỏa mãn",
     "definitionEn": "to do or satisfy what is needed or what somebody asks for",
     "definitionVi": "để làm hoặc đáp ứng những gì cần thiết hoặc những gì ai đó yêu cầu",
-    "synonyms": ["fulfill", "satisfy"],
+    "synonyms": [
+      "fulfill",
+      "satisfy"
+    ],
     "exampleEn": "The new intern was able to ___ all the deadlines set by her manager.",
     "exampleVi": "Thực tập sinh mới đã có thể đáp ứng tất cả các thời hạn do người quản lý đặt ra.",
     "blankAnswer": "meet"
@@ -72,7 +85,9 @@
     "meaningVi": "đủ khả năng, tư cách, điều kiện",
     "definitionEn": "having passed the exams or completed the training that are necessary in order to do a particular job; having the experience to do a particular job",
     "definitionVi": "đã vượt qua kỳ thi hoặc hoàn thành chương trình đào tạo cần thiết để thực hiện một công việc cụ thể; có kinh nghiệm về một công việc cụ thể",
-    "synonyms": ["competent"],
+    "synonyms": [
+      "competent"
+    ],
     "exampleEn": "Only ___ candidates will be invited for a second interview.",
     "exampleVi": "Chỉ những ứng viên đủ điều kiện mới được mời tham gia vòng phỏng vấn thứ hai.",
     "blankAnswer": "qualified"
@@ -85,7 +100,11 @@
     "meaningVi": "ứng cử viên",
     "definitionEn": "a person who is trying to be elected or is applying for a job",
     "definitionVi": "một người đang cố gắng để được bầu cử hoặc đang xin việc",
-    "synonyms": ["applicant", "job-seeker", "interviewee"],
+    "synonyms": [
+      "applicant",
+      "job-seeker",
+      "interviewee"
+    ],
     "exampleEn": "The hiring committee narrowed the list down to three ___.",
     "exampleVi": "Hội đồng tuyển dụng đã thu hẹp danh sách xuống còn ba ứng viên.",
     "blankAnswer": "candidates"
@@ -98,7 +117,10 @@
     "meaningVi": "sự tự tin, sự tin cậy",
     "definitionEn": "the feeling that you can trust, believe in and be sure about the abilities or good qualities of somebody/something",
     "definitionVi": "cảm giác bạn có thể tin cậy, tin tưởng và chắc chắn về khả năng hoặc phẩm chất tốt của ai đó/cái gì đó",
-    "synonyms": ["trust", "belief"],
+    "synonyms": [
+      "trust",
+      "belief"
+    ],
     "exampleEn": "We have ___ that she can handle the position.",
     "exampleVi": "Chúng tôi có niềm tin rằng cô ấy có thể đảm nhận tốt vị trí này.",
     "blankAnswer": "confidence"
@@ -111,7 +133,10 @@
     "meaningVi": "rất, cao",
     "definitionEn": "to a high level or standard",
     "definitionVi": "đến một mức độ cao hoặc tiêu chuẩn",
-    "synonyms": ["very", "extremely"],
+    "synonyms": [
+      "very",
+      "extremely"
+    ],
     "exampleEn": "Mr. Monroe's experience makes him ___ qualified for the job.",
     "exampleVi": "Kinh nghiệm của ông Monroe khiến ông ấy có trình độ rất cao cho công việc này.",
     "blankAnswer": "highly"
@@ -124,7 +149,10 @@
     "meaningVi": "chuyên nghiệp, chuyên gia",
     "definitionEn": "connected with a job that needs special training or skill, especially one that needs a high level of education",
     "definitionVi": "liên quan đến một công việc cần đào tạo đặc biệt hoặc kỹ năng, đặc biệt là công việc cần một trình độ giáo dục cao",
-    "synonyms": ["expert", "master"],
+    "synonyms": [
+      "expert",
+      "master"
+    ],
     "exampleEn": "Merseyside Hospital is looking for a certified health ___.",
     "exampleVi": "Bệnh viện Merseyside đang tìm kiếm một chuyên gia y tế được chứng nhận.",
     "blankAnswer": "professional"
@@ -137,7 +165,10 @@
     "meaningVi": "cuộc phỏng vấn, sự gặp gỡ",
     "definitionEn": "a formal meeting at which somebody is asked questions to see if they are suitable for a particular job, or for a course of study at a college, university, etc",
     "definitionVi": "một cuộc họp chính thức mà tại đó ai đó được đặt câu hỏi để xem liệu họ có phù hợp với một công việc cụ thể, hoặc cho một khóa học tại một trường cao đẳng, đại học, v.v",
-    "synonyms": ["meeting", "discussion"],
+    "synonyms": [
+      "meeting",
+      "discussion"
+    ],
     "exampleEn": "The manager ___ almost 100 applicants.",
     "exampleVi": "Người quản lý đã phỏng vấn gần 100 người nộp đơn.",
     "blankAnswer": "interviewed"
@@ -150,7 +181,10 @@
     "meaningVi": "thuê",
     "definitionEn": "to give somebody a job",
     "definitionVi": "để cho ai đó một công việc",
-    "synonyms": ["employ", "recruit"],
+    "synonyms": [
+      "employ",
+      "recruit"
+    ],
     "exampleEn": "The company expects to ___ several new employees.",
     "exampleVi": "Công ty hy vọng sẽ thuê thêm một số nhân viên mới.",
     "blankAnswer": "hire"
@@ -163,7 +197,9 @@
     "meaningVi": "sự đào tạo, sự huấn luyện",
     "definitionEn": "the process of learning the skills that you need to do a job",
     "definitionVi": "quá trình học các kỹ năng bạn cần để làm một công việc",
-    "synonyms": ["coaching"],
+    "synonyms": [
+      "coaching"
+    ],
     "exampleEn": "This company offers on-the-job ___ for new staff.",
     "exampleVi": "Công ty này cung cấp chương trình đào tạo tại chỗ cho nhân viên mới.",
     "blankAnswer": "training"
@@ -176,7 +212,10 @@
     "meaningVi": "người giới thiệu, thư giới thiệu, sự tham khảo",
     "definitionEn": "a thing you say or write that mentions somebody/something else; the act of mentioning somebody/something",
     "definitionVi": "một điều mà bạn nói hoặc viết đề cập đến ai đó/cái gì khác; hành động đề cập đến ai đó/cái gì đó",
-    "synonyms": ["referral", "testimonial"],
+    "synonyms": [
+      "referral",
+      "testimonial"
+    ],
     "exampleEn": "Philip asked his previous employer to write a ___ for him.",
     "exampleVi": "Philip yêu cầu ông chủ cũ viết một thư giới thiệu cho anh ấy.",
     "blankAnswer": "reference"
@@ -189,7 +228,11 @@
     "meaningVi": "vị trí",
     "definitionEn": "a job, especially one that is important",
     "definitionVi": "một công việc, đặc biệt là một công việc quan trọng",
-    "synonyms": ["job", "place", "post"],
+    "synonyms": [
+      "job",
+      "place",
+      "post"
+    ],
     "exampleEn": "The advertised ___ provides health care and other benefits.",
     "exampleVi": "Vị trí được quảng cáo cung cấp dịch vụ chăm sóc sức khỏe và các lợi ích khác.",
     "blankAnswer": "position"
@@ -202,7 +245,10 @@
     "meaningVi": "thành tựu, thành tích, sự đạt được",
     "definitionEn": "a thing that somebody has done successfully, especially using their own effort and skill",
     "definitionVi": "một điều mà ai đó đã làm thành công, đặc biệt là với nỗ lực và kỹ năng của mình",
-    "synonyms": ["accomplishment", "attainment"],
+    "synonyms": [
+      "accomplishment",
+      "attainment"
+    ],
     "exampleEn": "Winning the sales award was a major ___ for the whole team.",
     "exampleVi": "Giành được giải thưởng bán hàng là một thành tựu lớn đối với cả đội.",
     "blankAnswer": "achievement"
@@ -215,7 +261,10 @@
     "meaningVi": "ấn tượng",
     "definitionEn": "having a feeling of respect and admiration for someone or something because of an impressive quality or achievement",
     "definitionVi": "có cảm giác tôn trọng và ngưỡng mộ đối với ai đó hoặc điều gì đó vì một phẩm chất hay thành tích ấn tượng",
-    "synonyms": ["amazed", "astonished"],
+    "synonyms": [
+      "amazed",
+      "astonished"
+    ],
     "exampleEn": "The CEO was ___ by his assistant's organizing skills.",
     "exampleVi": "Giám đốc điều hành đã rất ấn tượng với kỹ năng tổ chức của trợ lý.",
     "blankAnswer": "impressed"
@@ -228,7 +277,10 @@
     "meaningVi": "xuất sắc, tuyệt vời, hoàn hảo",
     "definitionEn": "extremely good; outstanding",
     "definitionVi": "cực kỳ tốt, xuất sắc",
-    "synonyms": ["outstanding", "wonderful"],
+    "synonyms": [
+      "outstanding",
+      "wonderful"
+    ],
     "exampleEn": "She received an ___ performance review from her supervisor.",
     "exampleVi": "Cô ấy đã nhận được một bản đánh giá hiệu suất xuất sắc từ người giám sát.",
     "blankAnswer": "excellent"
@@ -241,7 +293,10 @@
     "meaningVi": "đủ tư cách, đủ điều kiện",
     "definitionEn": "a person who is eligible for something or to do something is able to have or do it because they have the right qualifications, are the right age, etc",
     "definitionVi": "một người có đủ điều kiện để làm điều gì đó hoặc làm gì đó, có thể có nó hoặc làm điều đó bởi vì họ có đủ tiêu chuẩn, đúng độ tuổi, v.v",
-    "synonyms": ["qualified", "suitable"],
+    "synonyms": [
+      "qualified",
+      "suitable"
+    ],
     "exampleEn": "The part-time workers are also ___ for paid holidays.",
     "exampleVi": "Những người lao động bán thời gian cũng đủ điều kiện hưởng các ngày nghỉ có lương.",
     "blankAnswer": "eligible"
@@ -254,7 +309,10 @@
     "meaningVi": "nhận dạng, nhận ra",
     "definitionEn": "to recognize and correctly name someone or something",
     "definitionVi": "để nhận ra và gọi đúng tên ai đó hoặc cái gì đó",
-    "synonyms": ["determine", "recognize"],
+    "synonyms": [
+      "determine",
+      "recognize"
+    ],
     "exampleEn": "Auditors were asked to ___ any errors in the financial report.",
     "exampleVi": "Các kiểm toán viên được yêu cầu xác định bất kỳ sai sót nào trong báo cáo tài chính.",
     "blankAnswer": "identify"
@@ -267,7 +325,11 @@
     "meaningVi": "cộng tác, tham gia",
     "definitionEn": "to spend time with someone or have some connection with someone or something",
     "definitionVi": "dành thời gian với ai đó hoặc có một số kết nối với ai đó hoặc một cái gì đó",
-    "synonyms": ["join", "merge", "partner"],
+    "synonyms": [
+      "join",
+      "merge",
+      "partner"
+    ],
     "exampleEn": "Two of the applicants were ___ with a competitor.",
     "exampleVi": "Hai trong số các ứng viên có liên hệ với một đối thủ cạnh tranh.",
     "blankAnswer": "associated"
@@ -280,7 +342,10 @@
     "meaningVi": "điều kiện",
     "definitionEn": "the state of something",
     "definitionVi": "tình trạng của cái gì đó",
-    "synonyms": ["provision", "terms"],
+    "synonyms": [
+      "provision",
+      "terms"
+    ],
     "exampleEn": "The ___ of employment are listed in the job posting.",
     "exampleVi": "Các điều kiện làm việc được liệt kê trong thông báo tuyển dụng.",
     "blankAnswer": "conditions"
@@ -293,7 +358,11 @@
     "meaningVi": "công việc, việc làm",
     "definitionEn": "work, especially when it is done to earn money; the state of being employed",
     "definitionVi": "công việc, đặc biệt là khi nó được thực hiện để kiếm tiền; tình trạng đang làm việc",
-    "synonyms": ["work", "job", "hire"],
+    "synonyms": [
+      "work",
+      "job",
+      "hire"
+    ],
     "exampleEn": "The company announced ___ opportunities in the personnel department.",
     "exampleVi": "Công ty đã thông báo các cơ hội việc làm trong bộ phận nhân sự.",
     "blankAnswer": "employment"
@@ -306,7 +375,10 @@
     "meaningVi": "sự thiếu",
     "definitionEn": "the state of not having something or not having enough of something",
     "definitionVi": "trạng thái không có cái gì đó hoặc không có đủ thứ",
-    "synonyms": ["insufficiency", "shortage"],
+    "synonyms": [
+      "insufficiency",
+      "shortage"
+    ],
     "exampleEn": "Due to a ___ of funds, the project has been temporarily halted.",
     "exampleVi": "Do thiếu vốn, dự án đã được tạm thời dừng lại.",
     "blankAnswer": "lack"
@@ -319,7 +391,9 @@
     "meaningVi": "thuộc quản lý",
     "definitionEn": "relating to the job of a manager",
     "definitionVi": "liên quan đến công việc quản lý",
-    "synonyms": ["supervisory"],
+    "synonyms": [
+      "supervisory"
+    ],
     "exampleEn": "After five years, she was promoted to a ___ position.",
     "exampleVi": "Sau năm năm, cô ấy đã được thăng chức lên vị trí quản lý.",
     "blankAnswer": "managerial"
@@ -332,7 +406,9 @@
     "meaningVi": "siêng năng, chăm chỉ",
     "definitionEn": "showing care and effort in your work or duties",
     "definitionVi": "thể hiện sự cẩn thận và nỗ lực trong công việc hoặc nhiệm vụ của bạn",
-    "synonyms": ["hard-working"],
+    "synonyms": [
+      "hard-working"
+    ],
     "exampleEn": "Carmen is one of the most ___ workers in the company.",
     "exampleVi": "Carmen là một trong những nhân viên chăm chỉ nhất trong công ty.",
     "blankAnswer": "diligent"
@@ -345,7 +421,10 @@
     "meaningVi": "quen thuộc, am hiểu",
     "definitionEn": "knowing something very well",
     "definitionVi": "biết rõ về điều gì đó",
-    "synonyms": ["acquainted with", "knowledgeable of"],
+    "synonyms": [
+      "acquainted with",
+      "knowledgeable of"
+    ],
     "exampleEn": "Staff must review the handbook to become ___ with it.",
     "exampleVi": "Nhân viên phải xem lại sổ tay để trở nên quen thuộc với nó.",
     "blankAnswer": "familiar"
@@ -358,7 +437,9 @@
     "meaningVi": "sự thông thạo, thành thạo",
     "definitionEn": "the ability to do something well because of training and practice",
     "definitionVi": "khả năng làm việc tốt vì tập luyện và thực hành",
-    "synonyms": ["mastery"],
+    "synonyms": [
+      "mastery"
+    ],
     "exampleEn": "Overseas workers need proof of ___ in a second language.",
     "exampleVi": "Người lao động nước ngoài cần chứng minh sự thông thạo ngôn ngữ thứ hai.",
     "blankAnswer": "proficiency"
@@ -371,7 +452,9 @@
     "meaningVi": "tiềm năng, tương lai",
     "definitionEn": "expected to do something or to become something",
     "definitionVi": "mong muốn làm điều gì đó hoặc trở thành cái gì đó",
-    "synonyms": ["potential"],
+    "synonyms": [
+      "potential"
+    ],
     "exampleEn": "___ employees were asked to come in for a second interview.",
     "exampleVi": "Các nhân viên tiềm năng được yêu cầu tham gia buổi phỏng vấn lần thứ hai.",
     "blankAnswer": "Prospective"
@@ -384,7 +467,9 @@
     "meaningVi": "hấp dẫn, thu hút",
     "definitionEn": "a quality that makes somebody/something attractive or interesting",
     "definitionVi": "chất lượng làm cho ai đó/cái gì hấp dẫn hoặc thú vị",
-    "synonyms": ["attract"],
+    "synonyms": [
+      "attract"
+    ],
     "exampleEn": "The 10 percent pay increase ___ to the staff.",
     "exampleVi": "Mức tăng lương 10 phần trăm đã thu hút được nhân viên.",
     "blankAnswer": "appealed"
@@ -397,7 +482,10 @@
     "meaningVi": "chuyên về",
     "definitionEn": "to become an expert in a particular area of work, study, or business; to spend more time on one area of work than on others",
     "definitionVi": "trở thành một chuyên gia trong một lĩnh vực cụ thể của công việc, học tập hoặc kinh doanh; dành nhiều thời gian hơn cho một lĩnh vực làm việc so với những lĩnh vực khác",
-    "synonyms": ["focus on", "major in"],
+    "synonyms": [
+      "focus on",
+      "major in"
+    ],
     "exampleEn": "The law firm plans to ___ in international trade disputes.",
     "exampleVi": "Công ty luật này dự định chuyên về các tranh chấp thương mại quốc tế.",
     "blankAnswer": "specialize"
@@ -410,7 +498,11 @@
     "meaningVi": "lo lắng, sợ hãi, e sợ",
     "definitionEn": "worried or frightened that something unpleasant may happen",
     "definitionVi": "lo lắng hoặc sợ hãi rằng một điều gì đó khó chịu có thể xảy ra",
-    "synonyms": ["concerned", "anxious", "nervous"],
+    "synonyms": [
+      "concerned",
+      "anxious",
+      "nervous"
+    ],
     "exampleEn": "Many people feel ___ before an important job interview.",
     "exampleVi": "Nhiều người cảm thấy lo lắng trước một cuộc phỏng vấn xin việc quan trọng.",
     "blankAnswer": "apprehensive"
@@ -423,7 +515,9 @@
     "meaningVi": "người tư vấn, cố vấn",
     "definitionEn": "a person who knows a lot about a particular subject and is employed to give advice about it to other people",
     "definitionVi": "một người biết rất nhiều về một chủ đề cụ thể và được thuê để tư vấn cho người khác",
-    "synonyms": ["adviser"],
+    "synonyms": [
+      "adviser"
+    ],
     "exampleEn": "The firm hired an outside ___ to review its marketing strategy.",
     "exampleVi": "Công ty đã thuê một nhà tư vấn bên ngoài để xem xét chiến lược marketing của mình.",
     "blankAnswer": "consultant"
@@ -436,7 +530,10 @@
     "meaningVi": "đủ điều kiện, đủ tư cách",
     "definitionEn": "to give somebody the right to have or to do something",
     "definitionVi": "trao cho ai đó quyền có hoặc để làm điều gì đó",
-    "synonyms": ["qualify", "make eligible"],
+    "synonyms": [
+      "qualify",
+      "make eligible"
+    ],
     "exampleEn": "Executives are ___ to additional benefits.",
     "exampleVi": "Các nhà điều hành được hưởng thêm các quyền lợi bổ sung.",
     "blankAnswer": "entitled"
@@ -449,7 +546,9 @@
     "meaningVi": "bằng cấp",
     "definitionEn": "the qualification obtained by students who successfully complete a university or college course",
     "definitionVi": "bằng cấp của sinh viên hoàn thành khóa học đại học hoặc cao đẳng",
-    "synonyms": ["diploma"],
+    "synonyms": [
+      "diploma"
+    ],
     "exampleEn": "A bachelor's ___ in engineering is a requirement for this position.",
     "exampleVi": "Bằng cử nhân ngành kỹ thuật là một yêu cầu cho vị trí này.",
     "blankAnswer": "degree"
@@ -462,7 +561,10 @@
     "meaningVi": "tiền lương, danh sách biên chế",
     "definitionEn": "the total amount of wages paid to all the people working in a particular company or industry",
     "definitionVi": "tổng số tiền lương trả cho tất cả những người làm việc trong một công ty hoặc ngành công nghiệp cụ thể",
-    "synonyms": ["earnings", "income"],
+    "synonyms": [
+      "earnings",
+      "income"
+    ],
     "exampleEn": "Fifteen new employees were added to the ___ last month.",
     "exampleVi": "Mười lăm nhân viên mới đã được bổ sung vào bảng lương tháng trước.",
     "blankAnswer": "payroll"
@@ -475,7 +577,10 @@
     "meaningVi": "tuyển dụng",
     "definitionEn": "to find new people to join a company, an organization, the armed forces, etc",
     "definitionVi": "tìm người mới để gia nhập công ty, tổ chức, lực lượng quân đội, v.v",
-    "synonyms": ["hire", "employ"],
+    "synonyms": [
+      "hire",
+      "employ"
+    ],
     "exampleEn": "The firm ___ promising graduates on a yearly basis.",
     "exampleVi": "Công ty tuyển dụng những sinh viên tốt nghiệp đầy triển vọng hàng năm.",
     "blankAnswer": "recruits"
@@ -488,7 +593,10 @@
     "meaningVi": "giấy chứng nhận, chứng chỉ",
     "definitionEn": "an official document that says that someone is allowed to do a certain job, that something is of good quality, etc.",
     "definitionVi": "một tài liệu chính thức cho biết rằng ai đó được phép làm một công việc nhất định, rằng một cái gì đó có chất lượng tốt, v.v",
-    "synonyms": ["accreditation", "qualification"],
+    "synonyms": [
+      "accreditation",
+      "qualification"
+    ],
     "exampleEn": "Obtaining professional ___ usually takes about a year of study.",
     "exampleVi": "Việc lấy chứng chỉ chuyên môn thường mất khoảng một năm học.",
     "blankAnswer": "certification"
@@ -501,7 +609,10 @@
     "meaningVi": "nghề nghiệp, công việc",
     "definitionEn": "a job or profession",
     "definitionVi": "một công việc hoặc nghề nghiệp",
-    "synonyms": ["job", "profession"],
+    "synonyms": [
+      "job",
+      "profession"
+    ],
     "exampleEn": "Journalism is an interesting and challenging ___.",
     "exampleVi": "Báo chí là một nghề nghiệp thú vị và đầy thử thách.",
     "blankAnswer": "occupation"
@@ -514,7 +625,9 @@
     "meaningVi": "tiền lương, tiền công",
     "definitionEn": "a regular amount of money that you earn, usually every week, for work or services",
     "definitionVi": "một khoản tiền thường xuyên mà bạn kiếm được, thường là mỗi tuần, để làm việc hoặc dịch vụ",
-    "synonyms": ["salary"],
+    "synonyms": [
+      "salary"
+    ],
     "exampleEn": "Workers with formal education may earn higher ___ than those without.",
     "exampleVi": "Người lao động có trình độ học vấn chính quy có thể kiếm được mức lương cao hơn những người không có.",
     "blankAnswer": "wages"
@@ -527,7 +640,10 @@
     "meaningVi": "quần áo, trang phục",
     "definitionEn": "clothes, especially fine or formal clothing worn for a particular occasion",
     "definitionVi": "quần áo, đặc biệt là trang phục trang trọng mặc trong một dịp cụ thể",
-    "synonyms": ["clothing", "garments"],
+    "synonyms": [
+      "clothing",
+      "garments"
+    ],
     "exampleEn": "Employees are required to wear business ___ during client meetings.",
     "exampleVi": "Nhân viên được yêu cầu mặc trang phục công sở trong các cuộc họp với khách hàng.",
     "blankAnswer": "attire"
@@ -540,7 +656,10 @@
     "meaningVi": "quy định, quy tắc",
     "definitionEn": "a system of laws or written rules that state how people should behave",
     "definitionVi": "một hệ thống pháp luật hoặc các văn bản quy định cách hành xử",
-    "synonyms": ["rules", "regulations"],
+    "synonyms": [
+      "rules",
+      "regulations"
+    ],
     "exampleEn": "Employees are expected to follow the dress ___.",
     "exampleVi": "Nhân viên được yêu cầu tuân theo quy định về trang phục.",
     "blankAnswer": "code"
@@ -553,7 +672,11 @@
     "meaningVi": "sự quan tâm, lo lắng, vấn đề",
     "definitionEn": "a feeling of worry about something important, or something that worries or interests someone",
     "definitionVi": "cảm giác lo lắng về điều gì đó quan trọng, hoặc điều gì đó khiến ai đó lo lắng hoặc quan tâm",
-    "synonyms": ["issue", "matter", "worry"],
+    "synonyms": [
+      "issue",
+      "matter",
+      "worry"
+    ],
     "exampleEn": "The board voiced ___ about safety at the meeting.",
     "exampleVi": "Hội đồng quản trị đã bày tỏ lo ngại về vấn đề an toàn tại cuộc họp.",
     "blankAnswer": "concerns"
@@ -566,7 +689,10 @@
     "meaningVi": "chính sách, quy định",
     "definitionEn": "a plan of action agreed or chosen by a political party, a business, etc.",
     "definitionVi": "một kế hoạch hành động đã được một đảng chính trị, một doanh nghiệp đồng ý hoặc lựa chọn",
-    "synonyms": ["code", "rule"],
+    "synonyms": [
+      "code",
+      "rule"
+    ],
     "exampleEn": "The employee benefit ___ will be expanded next year.",
     "exampleVi": "Chính sách phúc lợi của nhân viên sẽ được mở rộng vào năm tới.",
     "blankAnswer": "policy"
@@ -579,7 +705,11 @@
     "meaningVi": "tuân thủ",
     "definitionEn": "comply (with something): to obey a rule, an order, etc.",
     "definitionVi": "để tuân theo một quy tắc, một mệnh lệnh, v.v",
-    "synonyms": ["obey", "adhere to", "abide by"],
+    "synonyms": [
+      "obey",
+      "adhere to",
+      "abide by"
+    ],
     "exampleEn": "Employees must ___ with the regulations governing computer use.",
     "exampleVi": "Nhân viên phải tuân thủ các quy định về việc sử dụng máy tính.",
     "blankAnswer": "comply"
@@ -592,7 +722,10 @@
     "meaningVi": "quy định",
     "definitionEn": "an official rule made by a government or some other authority",
     "definitionVi": "một quy tắc chính thức được ban hành bởi chính phủ hoặc một cơ quan khác",
-    "synonyms": ["rule", "statute"],
+    "synonyms": [
+      "rule",
+      "statute"
+    ],
     "exampleEn": "___ regarding lunch breaks were established last month.",
     "exampleVi": "Các quy định về giờ nghỉ trưa đã được ban hành vào tháng trước.",
     "blankAnswer": "Regulations"
@@ -605,7 +738,9 @@
     "meaningVi": "ngoại lệ, điều ngoại trừ",
     "definitionEn": "a thing that does not follow a rule",
     "definitionVi": "một điều không tuân theo quy tắc",
-    "synonyms": ["omission"],
+    "synonyms": [
+      "omission"
+    ],
     "exampleEn": "Management decided not to make any ___ to the rules.",
     "exampleVi": "Ban quản lý quyết định không tạo bất kỳ ngoại lệ nào đối với các quy tắc.",
     "blankAnswer": "exceptions"
@@ -618,7 +753,10 @@
     "meaningVi": "tuân thủ",
     "definitionEn": "to continue to behave according to a particular rule, agreement, or belief",
     "definitionVi": "tiếp tục hành xử theo một quy tắc, thỏa thuận hoặc niềm tin cụ thể",
-    "synonyms": ["obey", "abide by"],
+    "synonyms": [
+      "obey",
+      "abide by"
+    ],
     "exampleEn": "All staff should do their best to ___ to the company's policies.",
     "exampleVi": "Tất cả nhân viên nên cố gắng hết sức để tuân thủ các chính sách của công ty.",
     "blankAnswer": "adhere"
@@ -631,7 +769,10 @@
     "meaningVi": "khắt khe, rất xấu, khốc liệt",
     "definitionEn": "very badly or seriously",
     "definitionVi": "rất tệ hoặc nghiêm trọng",
-    "synonyms": ["strictly", "sternly"],
+    "synonyms": [
+      "strictly",
+      "sternly"
+    ],
     "exampleEn": "Those who share company data with outside parties will be ___ punished.",
     "exampleVi": "Những ai chia sẻ dữ liệu công ty với bên ngoài sẽ bị trừng phạt nghiêm khắc.",
     "blankAnswer": "severely"
@@ -644,7 +785,10 @@
     "meaningVi": "tránh, không thực hiện",
     "definitionEn": "to stop yourself from doing something, especially something that you want to do",
     "definitionVi": "để ngăn không cho bạn làm điều gì đó, đặc biệt là cái gì bạn muốn làm",
-    "synonyms": ["avoid", "hold back"],
+    "synonyms": [
+      "avoid",
+      "hold back"
+    ],
     "exampleEn": "Guards should ___ from making personal calls during a shift.",
     "exampleVi": "Bảo vệ nên tránh thực hiện các cuộc gọi cá nhân trong ca trực.",
     "blankAnswer": "refrain"
@@ -657,7 +801,10 @@
     "meaningVi": "sự cho phép, sự chấp thuận",
     "definitionEn": "the act of allowing somebody to do something",
     "definitionVi": "hành động cho phép ai đó làm điều gì đó",
-    "synonyms": ["allowance", "consent"],
+    "synonyms": [
+      "allowance",
+      "consent"
+    ],
     "exampleEn": "The CEO gave managers ___ to hold a weekend workshop.",
     "exampleVi": "Giám đốc điều hành đã cho phép các nhà quản lý tổ chức một buổi hội thảo cuối tuần.",
     "blankAnswer": "permission"
@@ -670,7 +817,10 @@
     "meaningVi": "sự truy cập, quyền sử dụng, lối vào, việc tiếp cận",
     "definitionEn": "the right or opportunity to use or enter something",
     "definitionVi": "quyền hoặc cơ hội để sử dụng hoặc vào một nơi nào đó",
-    "synonyms": ["entry", "admittance"],
+    "synonyms": [
+      "entry",
+      "admittance"
+    ],
     "exampleEn": "Only authorized staff have ___ to the server room.",
     "exampleVi": "Chỉ nhân viên được ủy quyền mới có quyền truy cập vào phòng máy chủ.",
     "blankAnswer": "access"
@@ -683,7 +833,10 @@
     "meaningVi": "một cách kỹ lưỡng, hoàn toàn",
     "definitionEn": "completely and with great attention to detail",
     "definitionVi": "hoàn toàn và chú ý đến chi tiết",
-    "synonyms": ["rigorously", "carefully"],
+    "synonyms": [
+      "rigorously",
+      "carefully"
+    ],
     "exampleEn": "Please read the user manual ___ before installing this software.",
     "exampleVi": "Vui lòng đọc kỹ hướng dẫn sử dụng trước khi cài đặt phần mềm này.",
     "blankAnswer": "thoroughly"
@@ -696,7 +849,10 @@
     "meaningVi": "chỉnh sửa, sửa đổi",
     "definitionEn": "to change your opinions or plans, for example because of something you have learned",
     "definitionVi": "thay đổi ý kiến hay kế hoạch của bạn, ví dụ như vì điều gì đó bạn đã học được",
-    "synonyms": ["adjust", "change"],
+    "synonyms": [
+      "adjust",
+      "change"
+    ],
     "exampleEn": "The office's policies regarding vacations have been ___.",
     "exampleVi": "Các chính sách của văn phòng liên quan đến kỳ nghỉ đã được sửa đổi.",
     "blankAnswer": "revised"
@@ -709,7 +865,10 @@
     "meaningVi": "sự tiếp cận, phương pháp",
     "definitionEn": "to come near to somebody/something in distance or time",
     "definitionVi": "đến gần ai đó/cái gì đó trong khoảng cách hoặc thời gian",
-    "synonyms": ["manner", "strategy"],
+    "synonyms": [
+      "manner",
+      "strategy"
+    ],
     "exampleEn": "The manager has a strict ___ to enforcing office regulations.",
     "exampleVi": "Người quản lý có phương pháp nghiêm ngặt để thực thi các quy định của văn phòng.",
     "blankAnswer": "approach"
@@ -722,7 +881,10 @@
     "meaningVi": "sự chấp thuận, sự thông qua",
     "definitionEn": "agreement to, or permission for, something, especially a plan or request",
     "definitionVi": "sự đồng ý, hoặc sự cho phép đối với điều gì đó, đặc biệt là một kế hoạch hoặc yêu cầu",
-    "synonyms": ["acceptance", "consent"],
+    "synonyms": [
+      "acceptance",
+      "consent"
+    ],
     "exampleEn": "The manager gave her ___ for the new marketing plan.",
     "exampleVi": "Người quản lý đã chấp thuận kế hoạch marketing mới.",
     "blankAnswer": "approval"
@@ -735,7 +897,10 @@
     "meaningVi": "mẫu đơn, giấy tờ, loại",
     "definitionEn": "an official document containing questions and spaces for answers",
     "definitionVi": "một tài liệu chính thức có chứa câu hỏi và không gian cho câu trả lời",
-    "synonyms": ["paper", "document"],
+    "synonyms": [
+      "paper",
+      "document"
+    ],
     "exampleEn": "Visitors are required to present a ___ of identification to security guards.",
     "exampleVi": "Khách tham quan phải xuất trình một loại giấy tờ tùy thân cho nhân viên bảo vệ.",
     "blankAnswer": "form"
@@ -748,7 +913,10 @@
     "meaningVi": "ngay lập tức",
     "definitionEn": "without delay",
     "definitionVi": "không chậm trễ",
-    "synonyms": ["right away", "at once"],
+    "synonyms": [
+      "right away",
+      "at once"
+    ],
     "exampleEn": "Effective ___, taxes will be automatically deducted from each paycheck.",
     "exampleVi": "Có hiệu lực ngay lập tức, thuế sẽ được tự động khấu trừ từ mỗi kỳ lương.",
     "blankAnswer": "immediately"
@@ -761,7 +929,10 @@
     "meaningVi": "sự kiểm tra",
     "definitionEn": "an official visit to a school, factory, etc. in order to check that rules are being obeyed and that standards are acceptable",
     "definitionVi": "chuyến thăm chính thức đến trường học, nhà máy, v.v để kiểm tra các quy tắc đang được tuân thủ và các tiêu chuẩn được chấp nhận",
-    "synonyms": ["examination", "check"],
+    "synonyms": [
+      "examination",
+      "check"
+    ],
     "exampleEn": "The facility ___ should be conducted at least once a month.",
     "exampleVi": "Việc kiểm tra cơ sở nên được tiến hành ít nhất mỗi tháng một lần.",
     "blankAnswer": "inspection"
@@ -774,9 +945,952 @@
     "meaningVi": "sự sắp xếp, sự chuẩn bị",
     "definitionEn": "a plan or preparation that you make so that something can happen",
     "definitionVi": "một kế hoạch hoặc sự chuẩn bị mà bạn thực hiện để điều gì đó có thể xảy ra",
-    "synonyms": ["preparation", "plan"],
+    "synonyms": [
+      "preparation",
+      "plan"
+    ],
     "exampleEn": "The manager made ___ for the purchase of new machinery.",
     "exampleVi": "Người quản lý đã sắp xếp việc mua máy móc mới.",
     "blankAnswer": "arrangements"
+  },
+  {
+    "ordinal": 61,
+    "word": "procedure",
+    "pos": "n",
+    "ipa": "/prəˈsiːdʒər/",
+    "meaningVi": "thủ tục, quy trình",
+    "definitionEn": "a way of doing something, especially the usual or correct way",
+    "definitionVi": "một cách để làm điều gì đó, đặc biệt là cách thông thường hoặc chính xác",
+    "synonyms": [
+      "course of action",
+      "plan of action"
+    ],
+    "exampleEn": "The ___ for patent applications is outlined on the APTO Web site.",
+    "exampleVi": "Thủ tục đăng ký bằng sáng chế được mô tả trên trang web của APTO.",
+    "blankAnswer": "procedure"
+  },
+  {
+    "ordinal": 62,
+    "word": "negative",
+    "pos": "adj",
+    "ipa": "/ˈneɡətɪv/",
+    "meaningVi": "tiêu cực",
+    "definitionEn": "bad or harmful",
+    "definitionVi": "xấu hoặc có hại",
+    "synonyms": [
+      "unfavorable",
+      "harmful"
+    ],
+    "exampleEn": "The new vacation policy received ___ feedback from the employees.",
+    "exampleVi": "Chính sách về kỳ nghỉ mới đã nhận phản hồi tiêu cực từ nhân viên.",
+    "blankAnswer": "negative"
+  },
+  {
+    "ordinal": 63,
+    "word": "mandate",
+    "pos": "v",
+    "ipa": "/ˈmændeɪt/",
+    "meaningVi": "chỉ thị, ra lệnh",
+    "definitionEn": "to officially order something to happen or someone to do something",
+    "definitionVi": "chính thức ra lệnh cho điều gì đó xảy ra hoặc ai đó phải làm gì",
+    "synonyms": [
+      "order",
+      "direct"
+    ],
+    "exampleEn": "The board of directors has ___ an increase in research funding.",
+    "exampleVi": "Hội đồng quản trị đã ra lệnh tăng ngân sách nghiên cứu.",
+    "blankAnswer": "mandated"
+  },
+  {
+    "ordinal": 64,
+    "word": "effect",
+    "pos": "n",
+    "ipa": "/ɪˈfekt/",
+    "meaningVi": "hiệu lực, ảnh hưởng",
+    "definitionEn": "a change that results directly from an action or other cause; the state of being operative",
+    "definitionVi": "một sự thay đổi là kết quả trực tiếp của một hành động hoặc nguyên nhân khác; tình trạng đang có hiệu lực",
+    "synonyms": [
+      "impact",
+      "result"
+    ],
+    "exampleEn": "The incentive policy will be in ___ starting next week.",
+    "exampleVi": "Chính sách ưu đãi sẽ có hiệu lực bắt đầu từ tuần sau.",
+    "blankAnswer": "effect"
+  },
+  {
+    "ordinal": 65,
+    "word": "drastically",
+    "pos": "adv",
+    "ipa": "/ˈdræstɪkli/",
+    "meaningVi": "mạnh, đáng kể",
+    "definitionEn": "extreme and sudden",
+    "definitionVi": "vô cùng và đột ngột",
+    "synonyms": [
+      "severely",
+      "dramatically"
+    ],
+    "exampleEn": "Fines for breaking company rules have been increased ___.",
+    "exampleVi": "Tiền phạt cho việc vi phạm quy định công ty đã tăng đáng kể.",
+    "blankAnswer": "drastically"
+  },
+  {
+    "ordinal": 66,
+    "word": "according to",
+    "pos": "prep",
+    "ipa": "/əˈkɔːrdɪŋ tuː/",
+    "meaningVi": "theo như",
+    "definitionEn": "as stated or reported by somebody/something",
+    "definitionVi": "như được nêu hoặc báo cáo bởi ai đó/cái gì đó",
+    "synonyms": [
+      "in accordance with",
+      "based on"
+    ],
+    "exampleEn": "All transactions must be handled ___ the guidelines.",
+    "exampleVi": "Tất cả các giao dịch phải được xử lý theo hướng dẫn.",
+    "blankAnswer": "according to"
+  },
+  {
+    "ordinal": 67,
+    "word": "enable",
+    "pos": "v",
+    "ipa": "/ɪˈneɪbl/",
+    "meaningVi": "cho phép, làm cho có thể",
+    "definitionEn": "to make it possible for somebody to do something",
+    "definitionVi": "để làm cho ai đó có thể làm điều gì đó",
+    "synonyms": [
+      "allow"
+    ],
+    "exampleEn": "Jenny's promotion ___ her to participate in the board meeting.",
+    "exampleVi": "Sự thăng chức của Jenny đã giúp cô có thể tham gia vào cuộc họp hội đồng quản trị.",
+    "blankAnswer": "enabled"
+  },
+  {
+    "ordinal": 68,
+    "word": "standard",
+    "pos": "n",
+    "ipa": "/ˈstændərd/",
+    "meaningVi": "tiêu chuẩn",
+    "definitionEn": "a level of quality, especially one that people think is acceptable",
+    "definitionVi": "một mức chất lượng, đặc biệt là mức mà mọi người nghĩ là chấp nhận được",
+    "synonyms": [
+      "benchmark",
+      "criterion"
+    ],
+    "exampleEn": "The company must make changes to meet the current safety ___.",
+    "exampleVi": "Công ty phải thực hiện các thay đổi để đáp ứng các tiêu chuẩn an toàn hiện tại.",
+    "blankAnswer": "standards"
+  },
+  {
+    "ordinal": 69,
+    "word": "constant",
+    "pos": "adj",
+    "ipa": "/ˈkɑːnstənt/",
+    "meaningVi": "liên tục, không ngừng, không thay đổi",
+    "definitionEn": "happening all the time or repeatedly",
+    "definitionVi": "xảy ra suốt thời gian hoặc lặp đi lặp lại",
+    "synonyms": [
+      "continual"
+    ],
+    "exampleEn": "There was ___ chatter among the staff throughout the meeting.",
+    "exampleVi": "Có tiếng bàn tán không ngừng của nhân viên trong suốt cuộc họp.",
+    "blankAnswer": "constant"
+  },
+  {
+    "ordinal": 70,
+    "word": "act",
+    "pos": "n",
+    "ipa": "/ækt/",
+    "meaningVi": "hành động",
+    "definitionEn": "something that somebody does",
+    "definitionVi": "một điều gì đó mà ai đó làm",
+    "synonyms": [
+      "perform",
+      "carry out"
+    ],
+    "exampleEn": "A lawyer always ___ on behalf of his clients.",
+    "exampleVi": "Luật sư luôn hành động thay mặt cho khách hàng của mình.",
+    "blankAnswer": "acts"
+  },
+  {
+    "ordinal": 71,
+    "word": "compensation",
+    "pos": "n",
+    "ipa": "/ˌkɑːmpenˈseɪʃn/",
+    "meaningVi": "tiền bồi thường, sự đền bù",
+    "definitionEn": "something, especially money, that somebody gives you because they have hurt you, or damaged something that you own; the act of giving this to somebody",
+    "definitionVi": "một cái gì đó, đặc biệt là tiền bạc, mà ai đó cho bạn vì họ đã làm tổn thương bạn, hoặc làm hỏng một thứ gì đó mà bạn sở hữu; hành động cho người này",
+    "synonyms": [
+      "reimbursement",
+      "damages"
+    ],
+    "exampleEn": "Employees will receive ___ based on their performance and evaluation.",
+    "exampleVi": "Nhân viên sẽ nhận được khoản bồi thường dựa trên hiệu suất và đánh giá của họ.",
+    "blankAnswer": "compensation"
+  },
+  {
+    "ordinal": 72,
+    "word": "ban",
+    "pos": "n",
+    "ipa": "/bæn/",
+    "meaningVi": "cấm",
+    "definitionEn": "an official rule that says something is not allowed",
+    "definitionVi": "một quy định chính thức nói rằng điều gì đó không được phép",
+    "synonyms": [
+      "prohibit"
+    ],
+    "exampleEn": "The company ___ the use of the internet for personal purposes.",
+    "exampleVi": "Công ty đã cấm việc sử dụng Internet vì mục đích cá nhân.",
+    "blankAnswer": "banned"
+  },
+  {
+    "ordinal": 73,
+    "word": "obligation",
+    "pos": "n",
+    "ipa": "/ˌɑːblɪˈɡeɪʃn/",
+    "meaningVi": "nghĩa vụ, bổn phận",
+    "definitionEn": "the state of being forced to do something because it is your duty, or because of a law, etc.",
+    "definitionVi": "tình trạng buộc phải làm điều gì đó vì đó là nghĩa vụ, hoặc vì luật pháp, v.v",
+    "synonyms": [
+      "duty"
+    ],
+    "exampleEn": "Under the new contract, the company has an ___ to provide health insurance.",
+    "exampleVi": "Theo hợp đồng mới, công ty có nghĩa vụ cung cấp bảo hiểm y tế.",
+    "blankAnswer": "obligation"
+  },
+  {
+    "ordinal": 74,
+    "word": "authorize",
+    "pos": "v",
+    "ipa": "/ˈɔːθəraɪz/",
+    "meaningVi": "ủy quyền, cho phép",
+    "definitionEn": "to give official permission for something, or for somebody to do something",
+    "definitionVi": "để cho phép chính thức đối với điều gì đó, hoặc cho ai đó làm điều gì đó",
+    "synonyms": [
+      "allow"
+    ],
+    "exampleEn": "Allocations of funds must be ___ by management.",
+    "exampleVi": "Việc phân bổ quỹ phải được ban quản lý phê duyệt.",
+    "blankAnswer": "authorized"
+  },
+  {
+    "ordinal": 75,
+    "word": "prohibit",
+    "pos": "v",
+    "ipa": "/proʊˈhɪbɪt/",
+    "meaningVi": "cấm, ngăn chặn",
+    "definitionEn": "to stop something from being done or used, especially by law",
+    "definitionVi": "để ngăn chặn một điều gì đó khỏi được thực hiện hoặc sử dụng, đặc biệt là theo luật",
+    "synonyms": [
+      "ban"
+    ],
+    "exampleEn": "The museum ___ visitors from taking pictures.",
+    "exampleVi": "Bảo tàng cấm du khách chụp ảnh.",
+    "blankAnswer": "prohibits"
+  },
+  {
+    "ordinal": 76,
+    "word": "abolish",
+    "pos": "v",
+    "ipa": "/əˈbɑːlɪʃ/",
+    "meaningVi": "bãi bỏ, chấm dứt",
+    "definitionEn": "to officially end a law, a system, or an institution",
+    "definitionVi": "để chính thức chấm dứt một luật, hệ thống hoặc một tổ chức",
+    "synonyms": [
+      "eliminate",
+      "end"
+    ],
+    "exampleEn": "Congress decided to ___ taxes on imported fruit.",
+    "exampleVi": "Quốc hội quyết định bãi bỏ thuế đối với trái cây nhập khẩu.",
+    "blankAnswer": "abolish"
+  },
+  {
+    "ordinal": 77,
+    "word": "enforce",
+    "pos": "v",
+    "ipa": "/ɪnˈfɔːrs/",
+    "meaningVi": "bắt buộc, thi hành",
+    "definitionEn": "to make sure that people obey a particular law or rule",
+    "definitionVi": "để đảm bảo rằng mọi người tuân theo một luật hoặc quy tắc cụ thể",
+    "synonyms": [
+      "implement",
+      "apply"
+    ],
+    "exampleEn": "All departments must ___ the no smoking policy.",
+    "exampleVi": "Tất cả các phòng ban phải thi hành chính sách cấm hút thuốc.",
+    "blankAnswer": "enforce"
+  },
+  {
+    "ordinal": 78,
+    "word": "habit",
+    "pos": "n",
+    "ipa": "/ˈhæbɪt/",
+    "meaningVi": "thói quen",
+    "definitionEn": "a thing that you do often and almost without thinking, especially something that is hard to stop doing",
+    "definitionVi": "một điều mà bạn thường làm và hầu như không suy nghĩ, đặc biệt là cái gì đó khó mà ngừng làm",
+    "synonyms": [
+      "routine",
+      "custom"
+    ],
+    "exampleEn": "Setting goals should be a regular ___.",
+    "exampleVi": "Việc đặt mục tiêu nên là một thói quen thường xuyên.",
+    "blankAnswer": "habit"
+  },
+  {
+    "ordinal": 79,
+    "word": "legislation",
+    "pos": "n",
+    "ipa": "/ˌledʒɪsˈleɪʃn/",
+    "meaningVi": "luật, luật pháp",
+    "definitionEn": "a law or a set of laws passed by a parliament",
+    "definitionVi": "một luật hoặc một bộ luật được thông qua bởi một quốc hội",
+    "synonyms": [
+      "law",
+      "statute"
+    ],
+    "exampleEn": "The committee unanimously voted for the new export limitation ___.",
+    "exampleVi": "Ủy ban đã nhất trí bỏ phiếu thông qua luật hạn chế xuất khẩu mới.",
+    "blankAnswer": "legislation"
+  },
+  {
+    "ordinal": 80,
+    "word": "restrict",
+    "pos": "v",
+    "ipa": "/rɪˈstrɪkt/",
+    "meaningVi": "hạn chế, giới hạn",
+    "definitionEn": "to limit the size, amount, or range of something",
+    "definitionVi": "để hạn chế kích thước, số lượng hoặc phạm vi của một cái gì đó",
+    "synonyms": [
+      "limit"
+    ],
+    "exampleEn": "Access is ___ to authorized personnel.",
+    "exampleVi": "Việc truy cập chỉ giới hạn cho những người có thẩm quyền.",
+    "blankAnswer": "restricted"
+  },
+  {
+    "ordinal": 81,
+    "word": "accustomed",
+    "pos": "adj",
+    "ipa": "/əˈkʌstəmd/",
+    "meaningVi": "quen thuộc",
+    "definitionEn": "familiar with something and accepting it as normal or usual",
+    "definitionVi": "quen thuộc với cái gì đó và chấp nhận nó như bình thường",
+    "synonyms": [
+      "familiar"
+    ],
+    "exampleEn": "All our employees are ___ to using the new design software.",
+    "exampleVi": "Tất cả nhân viên của chúng tôi đã quen với việc sử dụng phần mềm thiết kế mới.",
+    "blankAnswer": "accustomed"
+  },
+  {
+    "ordinal": 82,
+    "word": "corporation",
+    "pos": "n",
+    "ipa": "/ˌkɔːrpəˈreɪʃn/",
+    "meaningVi": "công ty, tập đoàn",
+    "definitionEn": "a large business company",
+    "definitionVi": "một công ty kinh doanh lớn",
+    "synonyms": [
+      "company",
+      "firm",
+      "business"
+    ],
+    "exampleEn": "Delroy Lee heads a multinational telecommunications ___ based in Virginia.",
+    "exampleVi": "Delroy Lee đứng đầu một tập đoàn viễn thông đa quốc gia có trụ sở tại Virginia.",
+    "blankAnswer": "corporation"
+  },
+  {
+    "ordinal": 83,
+    "word": "demanding",
+    "pos": "adj",
+    "ipa": "/dɪˈmændɪŋ/",
+    "meaningVi": "khó khăn, khắt khe",
+    "definitionEn": "needing a lot of skill, patience, effort, etc.",
+    "definitionVi": "cần rất nhiều kỹ năng, kiên nhẫn, nỗ lực, v.v",
+    "synonyms": [
+      "difficult"
+    ],
+    "exampleEn": "Although Ms. Jenkins is a ___ supervisor, she has a reputation for being fair.",
+    "exampleVi": "Mặc dù bà Jenkins là một giám sát viên khắt khe, bà vẫn nổi tiếng là công bằng.",
+    "blankAnswer": "demanding"
+  },
+  {
+    "ordinal": 84,
+    "word": "colleague",
+    "pos": "n",
+    "ipa": "/ˈkɑːliːɡ/",
+    "meaningVi": "đồng nghiệp",
+    "definitionEn": "a person that you work with, especially in a profession or a business",
+    "definitionVi": "một người mà bạn làm việc cùng, đặc biệt là trong một nghề hoặc một doanh nghiệp",
+    "synonyms": [
+      "coworker"
+    ],
+    "exampleEn": "Regular social activities can improve cooperation among ___.",
+    "exampleVi": "Các hoạt động xã hội thường xuyên có thể cải thiện sự hợp tác giữa các đồng nghiệp.",
+    "blankAnswer": "colleagues"
+  },
+  {
+    "ordinal": 85,
+    "word": "division",
+    "pos": "n",
+    "ipa": "/dɪˈvɪʒn/",
+    "meaningVi": "bộ phận, sự phân chia",
+    "definitionEn": "a large and important unit or section of an organization",
+    "definitionVi": "một đơn vị lớn hoặc quan trọng của một tổ chức",
+    "synonyms": [
+      "department"
+    ],
+    "exampleEn": "The technician will transfer to the automobile ___ after training.",
+    "exampleVi": "Kỹ thuật viên sẽ chuyển sang bộ phận ô tô sau khi đào tạo.",
+    "blankAnswer": "division"
+  },
+  {
+    "ordinal": 86,
+    "word": "request",
+    "pos": "n",
+    "ipa": "/rɪˈkwest/",
+    "meaningVi": "sự yêu cầu",
+    "definitionEn": "the action of asking for something formally and politely",
+    "definitionVi": "hành động yêu cầu một cái gì đó chính thức và lịch sự",
+    "synonyms": [
+      "ask for",
+      "petition"
+    ],
+    "exampleEn": "Factory tours are available upon ___.",
+    "exampleVi": "Các chuyến tham quan nhà máy được cung cấp theo yêu cầu.",
+    "blankAnswer": "request"
+  },
+  {
+    "ordinal": 87,
+    "word": "efficiently",
+    "pos": "adv",
+    "ipa": "/ɪˈfɪʃntli/",
+    "meaningVi": "có hiệu quả, một cách có hiệu quả",
+    "definitionEn": "in a good and thorough way, with no waste of time, money or energy",
+    "definitionVi": "theo một cách tốt và triệt để, không lãng phí thời gian, tiền bạc hay năng lượng",
+    "synonyms": [
+      "effectively",
+      "productively"
+    ],
+    "exampleEn": "The software helps employees work more ___.",
+    "exampleVi": "Phần mềm này giúp nhân viên làm việc hiệu quả hơn.",
+    "blankAnswer": "efficiently"
+  },
+  {
+    "ordinal": 88,
+    "word": "manage",
+    "pos": "v",
+    "ipa": "/ˈmænɪdʒ/",
+    "meaningVi": "quản lý, xoay xở",
+    "definitionEn": "to be able to solve your problems, deal with a difficult situation, etc.",
+    "definitionVi": "để có thể giải quyết vấn đề của bạn, đối phó với một tình huống khó khăn, v.v",
+    "synonyms": [
+      "handle",
+      "cope with"
+    ],
+    "exampleEn": "The boss decided Colleen could ___ the new store.",
+    "exampleVi": "Ông chủ quyết định rằng Colleen có thể quản lý cửa hàng mới.",
+    "blankAnswer": "manage"
+  },
+  {
+    "ordinal": 89,
+    "word": "submit",
+    "pos": "n",
+    "ipa": "/səbˈmɪt/",
+    "meaningVi": "nộp, trình",
+    "definitionEn": "to give a document, proposal, etc. to somebody in authority so that they can study or consider it",
+    "definitionVi": "đưa ra một tài liệu, đề xuất, v.v cho ai đó có thẩm quyền để họ có thể nghiên cứu hoặc xem xét nó",
+    "synonyms": [
+      "hand in",
+      "present"
+    ],
+    "exampleEn": "Applicants should ___ a résumé to the personnel manager.",
+    "exampleVi": "Các ứng viên nên nộp sơ yếu lý lịch cho quản lý nhân sự.",
+    "blankAnswer": "submit"
+  },
+  {
+    "ordinal": 90,
+    "word": "directly",
+    "pos": "adv",
+    "ipa": "/daɪˈrektli/",
+    "meaningVi": "một cách trực tiếp",
+    "definitionEn": "in a direct line or manner",
+    "definitionVi": "theo đường thẳng hoặc cách thức trực tiếp",
+    "synonyms": [
+      "straight",
+      "personally"
+    ],
+    "exampleEn": "All regional branches report ___ to the head office in Washington.",
+    "exampleVi": "Tất cả các chi nhánh khu vực báo cáo trực tiếp cho trụ sở chính tại Washington.",
+    "blankAnswer": "directly"
+  },
+  {
+    "ordinal": 91,
+    "word": "remind",
+    "pos": "v",
+    "ipa": "/rɪˈmaɪnd/",
+    "meaningVi": "nhắc nhở",
+    "definitionEn": "to help somebody remember something, especially something important that they must do",
+    "definitionVi": "để giúp ai đó nhớ một cái gì đó, đặc biệt là điều quan trọng mà họ phải làm",
+    "synonyms": [
+      "prompt",
+      "bring to mind"
+    ],
+    "exampleEn": "Ms. Williams ___ Mr. Johnson of his lunch meeting.",
+    "exampleVi": "Bà Williams đã nhắc ông Johnson về cuộc hẹn ăn trưa của ông.",
+    "blankAnswer": "reminded"
+  },
+  {
+    "ordinal": 92,
+    "word": "instruct",
+    "pos": "v",
+    "ipa": "/ɪnˈstrʌkt/",
+    "meaningVi": "hướng dẫn, dạy",
+    "definitionEn": "to teach somebody something, especially a practical skill",
+    "definitionVi": "dạy ai đó điều gì đó, đặc biệt là kỹ năng thực hành",
+    "synonyms": [
+      "teach"
+    ],
+    "exampleEn": "The manager ___ the staff to read the conference materials beforehand.",
+    "exampleVi": "Người quản lý đã chỉ thị cho nhân viên đọc tài liệu hội nghị trước.",
+    "blankAnswer": "instructed"
+  },
+  {
+    "ordinal": 93,
+    "word": "deadline",
+    "pos": "n",
+    "ipa": "/ˈdedlaɪn/",
+    "meaningVi": "hạn chót",
+    "definitionEn": "a point in time by which something must be done",
+    "definitionVi": "một thời điểm mà theo đó điều gì đó phải được hoàn thành",
+    "synonyms": [
+      "due date",
+      "time limit"
+    ],
+    "exampleEn": "The team worked closely together and finished the project ahead of the ___.",
+    "exampleVi": "Đội ngũ đã hợp tác chặt chẽ và hoàn thành dự án trước hạn chót.",
+    "blankAnswer": "deadline"
+  },
+  {
+    "ordinal": 94,
+    "word": "sample",
+    "pos": "n",
+    "ipa": "/ˈsæmpl/",
+    "meaningVi": "mẫu, hàng mẫu",
+    "definitionEn": "a small amount of a product that people can try in order to find out what it is like",
+    "definitionVi": "một lượng nhỏ sản phẩm mà mọi người có thể thử để tìm ra nó như thế nào",
+    "synonyms": [
+      "specimen",
+      "example"
+    ],
+    "exampleEn": "We need to prepare ___ of our products for the fair.",
+    "exampleVi": "Chúng ta cần chuẩn bị các mẫu sản phẩm cho hội chợ.",
+    "blankAnswer": "samples"
+  },
+  {
+    "ordinal": 95,
+    "word": "notify",
+    "pos": "v",
+    "ipa": "/ˈnoʊtɪfaɪ/",
+    "meaningVi": "thông báo, báo cho ai đó biết",
+    "definitionEn": "to formally or officially tell somebody about something",
+    "definitionVi": "chính thức thông báo cho ai đó về điều gì đó",
+    "synonyms": [
+      "inform"
+    ],
+    "exampleEn": "All staff applying for leave must ___ their supervisors in writing.",
+    "exampleVi": "Tất cả nhân viên xin nghỉ phép phải thông báo cho người giám sát bằng văn bản.",
+    "blankAnswer": "notify"
+  },
+  {
+    "ordinal": 96,
+    "word": "perform",
+    "pos": "v",
+    "ipa": "/pərˈfɔːrm/",
+    "meaningVi": "thực hiện, biểu diễn",
+    "definitionEn": "to do something, such as a piece of work, task or duty",
+    "definitionVi": "làm một điều gì đó, chẳng hạn như một công việc, nhiệm vụ hoặc nghĩa vụ",
+    "synonyms": [
+      "carry out"
+    ],
+    "exampleEn": "All work on the assembly line stopped while equipment repairs were being ___.",
+    "exampleVi": "Tất cả công việc trên dây chuyền lắp ráp đã dừng lại trong khi việc sửa chữa thiết bị được tiến hành.",
+    "blankAnswer": "performed"
+  },
+  {
+    "ordinal": 97,
+    "word": "monitor",
+    "pos": "v",
+    "ipa": "/ˈmɑːnɪtər/",
+    "meaningVi": "giám sát, theo dõi",
+    "definitionEn": "to carefully watch and check a situation in order to see how it changes over a period of time",
+    "definitionVi": "cẩn thận theo dõi và kiểm tra tình huống để xem nó thay đổi như thế nào trong một khoảng thời gian",
+    "synonyms": [
+      "supervise"
+    ],
+    "exampleEn": "The new director will ___ progress on the project.",
+    "exampleVi": "Giám đốc mới sẽ giám sát tiến độ của dự án.",
+    "blankAnswer": "monitor"
+  },
+  {
+    "ordinal": 98,
+    "word": "deserve",
+    "pos": "v",
+    "ipa": "/dɪˈzɜːrv/",
+    "meaningVi": "xứng đáng",
+    "definitionEn": "if somebody/something deserves something, it is right that they should have it",
+    "definitionVi": "nếu ai đó/thứ gì đó xứng đáng điều gì đó, đúng là họ nên có nó",
+    "synonyms": [
+      "be worthy of",
+      "merit"
+    ],
+    "exampleEn": "The person with the highest performance evaluation ___ the Employee of the Year Award.",
+    "exampleVi": "Người có đánh giá hiệu suất cao nhất xứng đáng nhận giải thưởng Nhân viên của năm.",
+    "blankAnswer": "deserves"
+  },
+  {
+    "ordinal": 99,
+    "word": "assignment",
+    "pos": "n",
+    "ipa": "/əˈsaɪnmənt/",
+    "meaningVi": "nhiệm vụ",
+    "definitionEn": "a task or piece of work that somebody is given to do, usually as part of their job or studies",
+    "definitionVi": "một nhiệm vụ hoặc một công việc mà ai đó được giao để làm, thường là một phần của công việc hoặc học tập của họ",
+    "synonyms": [
+      "task",
+      "duty"
+    ],
+    "exampleEn": "Walter took the ___ in India because he was promised a promotion there.",
+    "exampleVi": "Walter đã nhận nhiệm vụ tại Ấn Độ vì ông được hứa sẽ thăng chức ở đó.",
+    "blankAnswer": "assignment"
+  },
+  {
+    "ordinal": 100,
+    "word": "entire",
+    "pos": "adj",
+    "ipa": "/ɪnˈtaɪər/",
+    "meaningVi": "toàn bộ",
+    "definitionEn": "including everything, everyone, or every part",
+    "definitionVi": "bao gồm mọi thứ, mọi người hoặc mọi phần",
+    "synonyms": [
+      "whole"
+    ],
+    "exampleEn": "The ___ team gathers every Monday morning to discuss plans for the week.",
+    "exampleVi": "Toàn bộ đội ngũ họp mặt vào mỗi sáng thứ Hai để bàn kế hoạch cho tuần.",
+    "blankAnswer": "entire"
+  },
+  {
+    "ordinal": 101,
+    "word": "release",
+    "pos": "v",
+    "ipa": "/rɪˈliːs/",
+    "meaningVi": "phát hành, công bố, công khai",
+    "definitionEn": "to let news or official information be known and printed",
+    "definitionVi": "để tin tức hoặc thông tin chính thức được biết đến và công bố",
+    "synonyms": [
+      "make public",
+      "launch",
+      "issue"
+    ],
+    "exampleEn": "The company ___ its annual report.",
+    "exampleVi": "Công ty đã công bố báo cáo thường niên.",
+    "blankAnswer": "released"
+  },
+  {
+    "ordinal": 102,
+    "word": "extension",
+    "pos": "n",
+    "ipa": "/ɪkˈstenʃn/",
+    "meaningVi": "sự gia hạn, kéo dài, máy nhánh",
+    "definitionEn": "the act of increasing the area of activity, group of people, etc. that is affected by something",
+    "definitionVi": "hành động tăng diện tích hoạt động, nhóm người, v.v bị ảnh hưởng bởi một cái gì đó",
+    "synonyms": [
+      "prolongation",
+      "increase"
+    ],
+    "exampleEn": "To reach Mr. Jackson, call our main office and press ___ number 727.",
+    "exampleVi": "Để liên hệ với ông Jackson, hãy gọi văn phòng chính của chúng tôi và bấm số máy nhánh 727.",
+    "blankAnswer": "extension"
+  },
+  {
+    "ordinal": 103,
+    "word": "electronically",
+    "pos": "adv",
+    "ipa": "/ɪˌlekˈtrɑːnɪkli/",
+    "meaningVi": "bằng điện tử, kiểu điện tử",
+    "definitionEn": "using electronic equipment or technology, such as computers, to do something",
+    "definitionVi": "sử dụng thiết bị hoặc công nghệ điện tử, chẳng hạn như máy tính, để làm điều gì đó",
+    "synonyms": [
+      "digitally",
+      "online"
+    ],
+    "exampleEn": "It saves time and resources to send invoices ___.",
+    "exampleVi": "Việc gửi hóa đơn bằng điện tử giúp tiết kiệm thời gian và tài nguyên.",
+    "blankAnswer": "electronically"
+  },
+  {
+    "ordinal": 104,
+    "word": "attendance",
+    "pos": "n",
+    "ipa": "/əˈtendəns/",
+    "meaningVi": "số người tham dự, sự có mặt/tham dự",
+    "definitionEn": "the number of people present at an organized event",
+    "definitionVi": "số người có mặt tại một sự kiện có tổ chức",
+    "synonyms": [
+      "appearance"
+    ],
+    "exampleEn": "___ at these lectures is not compulsory.",
+    "exampleVi": "Việc tham dự các buổi giảng này không phải là bắt buộc.",
+    "blankAnswer": "Attendance"
+  },
+  {
+    "ordinal": 105,
+    "word": "absolutely",
+    "pos": "adv",
+    "ipa": "/ˈæbsəluːtli/",
+    "meaningVi": "tuyệt đối, hoàn toàn",
+    "definitionEn": "used to emphasize that something is completely true",
+    "definitionVi": "được dùng để nhấn mạnh rằng cái gì đó là hoàn toàn đúng",
+    "synonyms": [
+      "completely",
+      "totally"
+    ],
+    "exampleEn": "It is ___ necessary that everyone on the board is in agreement before the vote.",
+    "exampleVi": "Điều tuyệt đối cần thiết là mọi thành viên hội đồng phải đồng thuận trước khi bỏ phiếu.",
+    "blankAnswer": "absolutely"
+  },
+  {
+    "ordinal": 106,
+    "word": "delegate",
+    "pos": "v",
+    "ipa": "/ˈdelɪɡeɪt/",
+    "meaningVi": "ủy nhiệm, ủy quyền",
+    "definitionEn": "to give part of your work, power, or authority to somebody in a lower position than you",
+    "definitionVi": "giao một phần công việc, quyền lực hoặc thẩm quyền của bạn cho ai đó ở vị trí thấp hơn",
+    "synonyms": [
+      "representative"
+    ],
+    "exampleEn": "Managers must be skilled in ___ responsibilities to subordinates.",
+    "exampleVi": "Người quản lý phải có kỹ năng ủy quyền trách nhiệm cho cấp dưới.",
+    "blankAnswer": "delegating"
+  },
+  {
+    "ordinal": 107,
+    "word": "attentively",
+    "pos": "adv",
+    "ipa": "/əˈtentɪvli/",
+    "meaningVi": "chăm chú, cẩn thận",
+    "definitionEn": "carefully, in a way that shows a lot of interest",
+    "definitionVi": "cẩn thận, theo cách cho thấy rất nhiều sự quan tâm",
+    "synonyms": [
+      "carefully"
+    ],
+    "exampleEn": "Stockholders listened ___ as executives explained the company strategy.",
+    "exampleVi": "Các cổ đông đã lắng nghe chăm chú khi ban điều hành giải thích chiến lược công ty.",
+    "blankAnswer": "attentively"
+  },
+  {
+    "ordinal": 108,
+    "word": "supervision",
+    "pos": "n",
+    "ipa": "/ˌsuːpərˈvɪʒn/",
+    "meaningVi": "sự giám sát",
+    "definitionEn": "the work or activity involved in being in charge of somebody/something and making sure that everything is done correctly, safely, etc.",
+    "definitionVi": "công việc hoặc hoạt động liên quan đến việc chịu trách nhiệm về ai đó/cái gì đó và đảm bảo mọi thứ được thực hiện đúng, an toàn, v.v",
+    "synonyms": [
+      "observation",
+      "oversight"
+    ],
+    "exampleEn": "Close ___ ensures high quality.",
+    "exampleVi": "Giám sát chặt chẽ đảm bảo chất lượng cao.",
+    "blankAnswer": "supervision"
+  },
+  {
+    "ordinal": 109,
+    "word": "workshop",
+    "pos": "n",
+    "ipa": "/ˈwɜːrkʃɑːp/",
+    "meaningVi": "hội thảo",
+    "definitionEn": "a period of discussion and practical work on a particular subject, in which a group of people share their knowledge and experience",
+    "definitionVi": "một khoảng thời gian thảo luận và thực hành về một chủ đề cụ thể, trong đó một nhóm người chia sẻ kiến thức và kinh nghiệm",
+    "synonyms": [
+      "seminar"
+    ],
+    "exampleEn": "Mr. Kim was asked to speak at the ___ on Friday.",
+    "exampleVi": "Ông Kim đã được mời phát biểu tại buổi hội thảo vào thứ Sáu.",
+    "blankAnswer": "workshop"
+  },
+  {
+    "ordinal": 110,
+    "word": "draw",
+    "pos": "v",
+    "ipa": "/drɔː/",
+    "meaningVi": "thu hút",
+    "definitionEn": "to attract or interest somebody",
+    "definitionVi": "để thu hút hoặc gây hứng thú cho ai đó",
+    "synonyms": [
+      "attract",
+      "pull in"
+    ],
+    "exampleEn": "The company's annual conference usually ___ 800 employees from around the world.",
+    "exampleVi": "Hội nghị thường niên của công ty thường thu hút 800 nhân viên từ khắp nơi trên thế giới.",
+    "blankAnswer": "draws"
+  },
+  {
+    "ordinal": 111,
+    "word": "revision",
+    "pos": "n",
+    "ipa": "/rɪˈvɪʒn/",
+    "meaningVi": "sự sửa đổi",
+    "definitionEn": "a change or set of changes to something",
+    "definitionVi": "một sự thay đổi hoặc tập hợp các thay đổi đối với điều gì đó",
+    "synonyms": [
+      "change",
+      "alteration",
+      "editing"
+    ],
+    "exampleEn": "The final ___ of the contract will be sent to both parties for approval.",
+    "exampleVi": "Bản sửa đổi cuối cùng của hợp đồng sẽ được gửi cho cả hai bên để phê duyệt.",
+    "blankAnswer": "revision"
+  },
+  {
+    "ordinal": 112,
+    "word": "reluctantly",
+    "pos": "adv",
+    "ipa": "/rɪˈlʌktəntli/",
+    "meaningVi": "miễn cưỡng, bất đắc dĩ",
+    "definitionEn": "in a way that involves hesitating before doing something because you do not want to do it",
+    "definitionVi": "theo một cách liên quan đến do dự trước khi làm điều gì đó vì không muốn làm điều đó",
+    "synonyms": [
+      "unwillingly",
+      "hesitantly"
+    ],
+    "exampleEn": "Ms. Danvers ___ agreed to cut the advertising budget.",
+    "exampleVi": "Cô Danvers miễn cưỡng đồng ý cắt giảm ngân sách quảng cáo.",
+    "blankAnswer": "reluctantly"
+  },
+  {
+    "ordinal": 113,
+    "word": "acquaint",
+    "pos": "v",
+    "ipa": "/əˈkweɪnt/",
+    "meaningVi": "quen thuộc",
+    "definitionEn": "to make somebody/yourself familiar with or aware of something",
+    "definitionVi": "làm cho ai đó/bản thân bạn quen thuộc hoặc nhận thức về điều gì đó",
+    "synonyms": [
+      "familiarize with"
+    ],
+    "exampleEn": "The training program ___ new employees with company procedures.",
+    "exampleVi": "Chương trình đào tạo giúp nhân viên mới làm quen với các quy trình của công ty.",
+    "blankAnswer": "acquaints"
+  },
+  {
+    "ordinal": 114,
+    "word": "convey",
+    "pos": "v",
+    "ipa": "/kənˈveɪ/",
+    "meaningVi": "truyền, đưa, chuyển",
+    "definitionEn": "to take, carry or transport somebody/something from one place to another",
+    "definitionVi": "mang, mang theo hoặc vận chuyển ai đó/cái gì đó từ nơi này đến nơi khác",
+    "synonyms": [
+      "send",
+      "transport"
+    ],
+    "exampleEn": "The secretary urgently ___ the message to the director.",
+    "exampleVi": "Thư ký đã khẩn cấp chuyển thông điệp đến giám đốc.",
+    "blankAnswer": "conveyed"
+  },
+  {
+    "ordinal": 115,
+    "word": "check",
+    "pos": "v",
+    "ipa": "/tʃek/",
+    "meaningVi": "kiểm tra, soát lại",
+    "definitionEn": "to examine something to see if it is correct, safe, or acceptable",
+    "definitionVi": "kiểm tra cái gì đó để xem nó có đúng, an toàn hoặc chấp nhận được không",
+    "synonyms": [
+      "examine",
+      "inspect"
+    ],
+    "exampleEn": "Please ___ your computer regularly for disk errors.",
+    "exampleVi": "Vui lòng kiểm tra máy tính của bạn thường xuyên để phát hiện lỗi ổ đĩa.",
+    "blankAnswer": "check"
+  },
+  {
+    "ordinal": 116,
+    "word": "headquarters",
+    "pos": "n",
+    "ipa": "/ˈhedkwɔːrtərz/",
+    "meaningVi": "trụ sở chính",
+    "definitionEn": "a place from which an organization or a military operation is controlled; the people who work there",
+    "definitionVi": "một nơi mà tổ chức hoặc hoạt động quân sự được kiểm soát; những người làm việc ở đó",
+    "synonyms": [
+      "head office",
+      "main office"
+    ],
+    "exampleEn": "The company ___ is located in London.",
+    "exampleVi": "Trụ sở chính của công ty đặt tại London.",
+    "blankAnswer": "headquarters"
+  },
+  {
+    "ordinal": 117,
+    "word": "file",
+    "pos": "v",
+    "ipa": "/faɪl/",
+    "meaningVi": "nộp, sắp xếp, lưu trữ",
+    "definitionEn": "to store documents in a particular order, or to officially submit something such as a report or claim",
+    "definitionVi": "sắp xếp lưu trữ tài liệu theo một trật tự nhất định, hoặc chính thức nộp một thứ gì đó như báo cáo hay đơn khiếu nại",
+    "synonyms": [
+      "submit",
+      "organize"
+    ],
+    "exampleEn": "Old accounting documents are ___ in the storage room.",
+    "exampleVi": "Các tài liệu kế toán cũ được lưu trữ trong phòng lưu trữ.",
+    "blankAnswer": "filed"
+  },
+  {
+    "ordinal": 118,
+    "word": "oversee",
+    "pos": "v",
+    "ipa": "/ˌoʊvərˈsiː/",
+    "meaningVi": "giám sát",
+    "definitionEn": "to watch somebody/something and make sure that a job or an activity is done correctly",
+    "definitionVi": "quan sát ai đó/cái gì đó và đảm bảo rằng một công việc hoặc hoạt động được thực hiện đúng",
+    "synonyms": [
+      "supervise"
+    ],
+    "exampleEn": "Natalie will ___ the office relocation process.",
+    "exampleVi": "Natalie sẽ giám sát quá trình di chuyển văn phòng.",
+    "blankAnswer": "oversee"
+  },
+  {
+    "ordinal": 119,
+    "word": "involved",
+    "pos": "adj",
+    "ipa": "/ɪnˈvɑːlvd/",
+    "meaningVi": "dính líu, liên quan",
+    "definitionEn": "taking part in something; being part of something or connected with something",
+    "definitionVi": "tham gia vào một cái gì đó; là một phần của cái gì đó hoặc kết nối với một cái gì đó",
+    "synonyms": [
+      "engaged",
+      "participating"
+    ],
+    "exampleEn": "Dr. Mair was deeply ___ in the decision-making process.",
+    "exampleVi": "Bác sĩ Mair đã tham gia sâu vào quá trình ra quyết định.",
+    "blankAnswer": "involved"
+  },
+  {
+    "ordinal": 120,
+    "word": "concentrate",
+    "pos": "v",
+    "ipa": "/ˈkɑːnsntreɪt/",
+    "meaningVi": "tập trung",
+    "definitionEn": "to give all your attention to something and not think about anything else",
+    "definitionVi": "dồn hết sự chú ý của bạn vào một cái gì đó và không nghĩ về bất cứ điều gì khác",
+    "synonyms": [
+      "focus on"
+    ],
+    "exampleEn": "The sales team ___ on developing new strategies.",
+    "exampleVi": "Đội ngũ bán hàng đã tập trung vào việc phát triển các chiến lược mới.",
+    "blankAnswer": "concentrated"
   }
 ]
