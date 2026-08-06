@@ -1198,5 +1198,1205 @@
     ],
     "answer": "B",
     "explanation": "Sau 'the' và trước 'of' cần một danh từ trừu tượng, nên chọn 'success' (sự thành công)."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "______ was a sudden increase in customer complaints last month.",
+    "options": [
+      "They",
+      "There",
+      "This",
+      "It"
+    ],
+    "answer": "B",
+    "explanation": "Câu không có chủ ngữ thật (chỉ nói đến sự tồn tại của một sự việc), nên cần chủ ngữ giả 'there' theo đúng cấu trúc 'There + be'."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "______ is essential to submit the expense report before the deadline.",
+    "options": [
+      "It",
+      "This",
+      "He",
+      "There"
+    ],
+    "answer": "A",
+    "explanation": "Chủ ngữ thật của câu là mệnh đề 'to submit the expense report', nên cần chủ ngữ giả 'it' đứng đầu câu."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "______ were several vacancies in the accounting department last spring.",
+    "options": [
+      "Those",
+      "It",
+      "Their",
+      "There"
+    ],
+    "answer": "D",
+    "explanation": "Câu thông báo về sự tồn tại của nhiều vị trí trống, cần chủ ngữ giả 'there' đi với động từ số nhiều 'were'."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "______ is a well-known fact that punctuality improves workplace efficiency.",
+    "options": [
+      "This",
+      "That",
+      "There",
+      "It"
+    ],
+    "answer": "D",
+    "explanation": "'It' đóng vai trò chủ ngữ giả cho mệnh đề thật 'that punctuality improves...' đứng sau, đúng như cấu trúc nêu sự thật hiển nhiên."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The HR manager sent ______ the updated employee handbook.",
+    "options": [
+      "for him",
+      "him",
+      "himself",
+      "to him"
+    ],
+    "answer": "B",
+    "explanation": "Sau động từ 'sent', tân ngữ gián tiếp có thể đứng ngay sau động từ mà không cần giới từ, nên chỉ cần đại từ tân ngữ 'him'."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The supplier delivered the new equipment ______ before the factory reopened.",
+    "options": [
+      "the warehouse",
+      "to the warehouse",
+      "warehouse's",
+      "for the warehouse"
+    ],
+    "answer": "B",
+    "explanation": "Khi tân ngữ gián tiếp đứng sau tân ngữ trực tiếp ('the new equipment'), cần thêm giới từ 'to' để nối với tân ngữ gián tiếp, giống ví dụ 'gave the book to Jim'."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The manager offered ______ a temporary promotion during the busy season.",
+    "options": [
+      "assistant's",
+      "for the assistant",
+      "to the assistant",
+      "the assistant"
+    ],
+    "answer": "D",
+    "explanation": "Tân ngữ gián tiếp đứng ngay sau động từ 'offered' và trước tân ngữ trực tiếp 'a temporary promotion' thì không cần giới từ."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The consultant explained the new policy ______ during the orientation session.",
+    "options": [
+      "for the new hires",
+      "the new hires",
+      "to the new hires",
+      "new hires'"
+    ],
+    "answer": "C",
+    "explanation": "Vì tân ngữ trực tiếp 'the new policy' đã đứng ngay sau động từ, tân ngữ gián tiếp phía sau cần giới từ 'to' đi kèm."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The new intern ______ great enthusiasm during the orientation session.",
+    "options": [
+      "to show",
+      "shown",
+      "showed",
+      "showing"
+    ],
+    "answer": "C",
+    "explanation": "Mọi câu đều phải có một động từ chia hoàn chỉnh làm vị ngữ; 'showed' là dạng động từ hoàn chỉnh duy nhất, các lựa chọn còn lại là dạng không chia (V-ing/to V/V3) không thể tự làm vị ngữ."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "Every employee in the department ______ the annual compliance training last week.",
+    "options": [
+      "completed",
+      "completion",
+      "completing",
+      "to complete"
+    ],
+    "answer": "A",
+    "explanation": "Câu cần một động từ chia hoàn chỉnh làm vị ngữ chính; 'completed' là động từ, còn lại là danh động từ, động từ nguyên mẫu và danh từ nên không thể làm vị ngữ."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The finance team ______ the quarterly figures before presenting them to the board.",
+    "options": [
+      "reviewer",
+      "reviewing",
+      "reviewed",
+      "review's"
+    ],
+    "answer": "C",
+    "explanation": "Vị ngữ của câu cần một động từ chia hoàn chỉnh; chỉ 'reviewed' đáp ứng được điều đó, các lựa chọn còn lại là danh động từ, sở hữu cách hoặc danh từ chỉ người."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The logistics coordinator ______ all shipments before they leave the warehouse.",
+    "options": [
+      "inspecting",
+      "to inspect",
+      "inspects",
+      "inspection"
+    ],
+    "answer": "C",
+    "explanation": "Câu cần một động từ chia hoàn chỉnh làm vị ngữ chính cho chủ ngữ 'the logistics coordinator'; chỉ 'inspects' là động từ chia đầy đủ."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "______ arrived early for the meeting with the overseas investors.",
+    "options": [
+      "The regional manager",
+      "Extremely punctual",
+      "In the regional office",
+      "Very efficiently"
+    ],
+    "answer": "A",
+    "explanation": "Chủ ngữ của câu phải là một danh từ hoặc ngữ danh từ; chỉ 'the regional manager' là ngữ danh từ, còn lại là cụm giới từ, trạng từ và tính từ nên không thể làm chủ ngữ."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "______ submitted the proposal on behalf of the whole team.",
+    "options": [
+      "With great care",
+      "Before the deadline",
+      "Highly motivated",
+      "The project leader"
+    ],
+    "answer": "D",
+    "explanation": "Chủ ngữ đứng đầu câu phải là một danh từ/ngữ danh từ; chỉ 'the project leader' phù hợp, ba lựa chọn còn lại là cụm trạng ngữ hoặc cụm tính từ."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The committee elected her ______ of the newly formed department.",
+    "options": [
+      "chaired",
+      "chairing",
+      "chairs",
+      "chair"
+    ],
+    "answer": "D",
+    "explanation": "Đây là cấu trúc S + V + O + Co (bổ ngữ cho tân ngữ), cần một danh từ số ít 'chair' để mô tả tân ngữ 'her', giống ví dụ 'elected him president of the club'."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The board considers the new strategy ______ for long-term growth.",
+    "options": [
+      "essence",
+      "essential",
+      "essentials",
+      "essentially"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc S + V + O + Co cần một tính từ làm bổ ngữ mô tả tân ngữ 'the new strategy', nên chọn 'essential'."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The interview panel found the candidate ______ for the position.",
+    "options": [
+      "suitable",
+      "suitability",
+      "suit",
+      "suitably"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc 'find + O + C' cần một tính từ làm bổ ngữ cho tân ngữ 'the candidate', nên chọn 'suitable'."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The delivery driver placed the parcels ______ so the client could retrieve them easily.",
+    "options": [
+      "the front desk",
+      "on the front desk",
+      "at front desk to",
+      "front desk's"
+    ],
+    "answer": "B",
+    "explanation": "Trạng ngữ chỉ nơi chốn (cụm giới từ) phải đứng sau tân ngữ, không được chen giữa động từ và tân ngữ, và cần đủ giới từ + mạo từ để tạo thành cụm giới từ hợp lệ."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "The auditor examined the receipts ______ before writing the final report.",
+    "options": [
+      "care of",
+      "carefulness the",
+      "the careful",
+      "carefully"
+    ],
+    "answer": "D",
+    "explanation": "Trạng từ bổ nghĩa cho động từ phải đứng sau tân ngữ ('the receipts'), không được chen vào giữa động từ và tân ngữ; chỉ phương án 'carefully' tạo thành câu đúng cấu trúc."
+  },
+  {
+    "lessonSlug": "cau-truc-cau",
+    "stem": "My colleague ______ me a ride to the airport this morning.",
+    "options": [
+      "given",
+      "gave",
+      "gave for",
+      "gave to"
+    ],
+    "answer": "B",
+    "explanation": "Với động từ 'give', tân ngữ gián tiếp có thể đứng ngay sau động từ mà không cần giới từ ('gave me a ride'), và câu cần một động từ chia hoàn chỉnh."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "Please forward the invoice to ______ before the end of the week.",
+    "options": [
+      "his",
+      "himself",
+      "he",
+      "him"
+    ],
+    "answer": "D",
+    "explanation": "Sau giới từ 'to' cần một đại từ tân ngữ, nên chọn 'him' chứ không dùng đại từ chủ ngữ 'he' hay tính từ sở hữu 'his'."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "This is not my laptop; ______ is still in the office.",
+    "options": [
+      "myself",
+      "I",
+      "my",
+      "mine"
+    ],
+    "answer": "D",
+    "explanation": "'Mine' là đại từ sở hữu, thay thế cho cụm 'my laptop' để tránh lặp từ, đúng như cấu trúc 'mine = my + N'."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "The manager, who missed the deadline, blamed ______ for the delay.",
+    "options": [
+      "she",
+      "herself",
+      "her",
+      "hers"
+    ],
+    "answer": "B",
+    "explanation": "Chủ ngữ và tân ngữ cùng chỉ một người ('the manager'), nên cần đại từ phản thân 'herself' làm tân ngữ của động từ 'blamed'."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "The CEO ______ approved the merger after months of negotiation.",
+    "options": [
+      "himself",
+      "he",
+      "him",
+      "his"
+    ],
+    "answer": "A",
+    "explanation": "Đại từ nhấn mạnh 'himself' đứng ngay sau chủ ngữ 'the CEO' để nhấn mạnh rằng chính ông ấy là người phê duyệt."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "The intern completed the entire audit by ______, without any help from the team.",
+    "options": [
+      "his own",
+      "him",
+      "himself",
+      "he"
+    ],
+    "answer": "C",
+    "explanation": "Cấu trúc 'by + đại từ phản thân' mang nghĩa 'một mình/không có sự trợ giúp', nên chọn 'himself'."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "______ of the applicants was asked to submit a writing sample before the interview.",
+    "options": [
+      "Most",
+      "Both",
+      "Each",
+      "All"
+    ],
+    "answer": "C",
+    "explanation": "'Each of + danh từ số nhiều' đi với động từ số ít 'was', trong khi 'all/both/most of' thường đi với động từ số nhiều nên không phù hợp ở đây."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "The company narrowed the shortlist to two finalists. ______ of them have strong qualifications.",
+    "options": [
+      "Each",
+      "Most",
+      "Both",
+      "All"
+    ],
+    "answer": "C",
+    "explanation": "Vì chỉ có đúng hai người ('two finalists') và động từ chia số nhiều 'have', nên dùng 'both' (dành riêng cho 2 đối tượng), không dùng 'each' (đi với động từ số ít)."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "The manager proposed two solutions, but ______ of them fully addresses the client's concern.",
+    "options": [
+      "some",
+      "both",
+      "neither",
+      "all"
+    ],
+    "answer": "C",
+    "explanation": "Động từ số ít 'addresses' và ý nghĩa phủ định ('không cái nào') cho thấy cần dùng 'neither of + danh từ số nhiều + động từ số ít'."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "______ has left a message for the sales director this morning.",
+    "options": [
+      "Anybody",
+      "Someone",
+      "Nobody",
+      "Everything"
+    ],
+    "answer": "B",
+    "explanation": "Đây là câu khẳng định nên dùng 'someone' (đi với động từ số ít 'has'); 'anybody' thường dùng trong câu phủ định/nghi vấn, còn 'nobody' trái nghĩa với sự việc đã xảy ra."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "I didn't mention the layoff plan to ______ outside the management team.",
+    "options": [
+      "everyone",
+      "someone",
+      "no one",
+      "anyone"
+    ],
+    "answer": "D",
+    "explanation": "Trong câu phủ định, cần dùng 'anyone' thay vì 'someone'; dùng 'no one' ở đây sẽ tạo thành phủ định kép sai ngữ pháp."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "______ in the office is aware of the updated dress code policy.",
+    "options": [
+      "Both",
+      "All",
+      "Everyone",
+      "They"
+    ],
+    "answer": "C",
+    "explanation": "'Everyone' là đại từ mang nghĩa số nhiều nhưng luôn đi với động từ chia số ít 'is', đúng như quy tắc đã học."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "______ passport was found at the security checkpoint this morning.",
+    "options": [
+      "Someone",
+      "It's",
+      "Anybody",
+      "Someone's"
+    ],
+    "answer": "D",
+    "explanation": "Cần dạng sở hữu cách của đại từ bất định để đứng trước danh từ 'passport', nên chọn 'someone's', giống ví dụ 'Someone's passport has been stolen.'"
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "______ of the information in the report was accurate, so it had to be rewritten.",
+    "options": [
+      "None",
+      "No",
+      "Nothing",
+      "Not"
+    ],
+    "answer": "A",
+    "explanation": "'None of + danh từ không đếm được' phù hợp để thay thế cho 'the information' đã nhắc đến, còn 'nothing' không đi được với 'of' theo cách này."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "______ of the budget has already been allocated to marketing, with the remainder set aside for other departments.",
+    "options": [
+      "Both",
+      "Each",
+      "All",
+      "Most"
+    ],
+    "answer": "D",
+    "explanation": "Vì câu nói rõ vẫn còn 'phần còn lại' (remainder), nên 'most' (phần lớn, chưa phải toàn bộ) phù hợp hơn 'all' (toàn bộ)."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "I saw a delivery truck parked right behind ______ when I checked the mirror.",
+    "options": [
+      "me",
+      "myself",
+      "mine",
+      "I"
+    ],
+    "answer": "A",
+    "explanation": "Sau giới từ chỉ nơi chốn, chỉ dùng đại từ nhân xưng ('me'), không dùng đại từ phản thân, đúng như lưu ý đã học."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "I'm quite disappointed with ______ for missing such an obvious error in the contract.",
+    "options": [
+      "me",
+      "myself",
+      "I",
+      "mine"
+    ],
+    "answer": "B",
+    "explanation": "Sau giới từ không chỉ nơi chốn (ở đây là 'with'), khi chủ ngữ và đối tượng là cùng một người, cần dùng đại từ phản thân 'myself'."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "David is a close colleague of ______ from the finance department.",
+    "options": [
+      "mine",
+      "me",
+      "my",
+      "myself"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc sở hữu kép 'a colleague of + đại từ sở hữu' cần 'mine', giống ví dụ 'a friend of mine' đã học."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "______ attended the workshop last week to learn the new accounting software.",
+    "options": [
+      "Every of us",
+      "All of we",
+      "All us",
+      "All of us"
+    ],
+    "answer": "D",
+    "explanation": "Trước đại từ, không được bỏ 'of' và phải dùng đại từ tân ngữ 'us' (không dùng 'we'); 'every' cũng không đi với cấu trúc 'of + đại từ'."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "Would you like tea or coffee? — ______, I don't really mind.",
+    "options": [
+      "Each",
+      "Both",
+      "Either",
+      "Neither"
+    ],
+    "answer": "C",
+    "explanation": "'Either' diễn tả 'cái nào cũng được' phù hợp với ý 'I don't mind'; 'neither' lại mang nghĩa từ chối cả hai, mâu thuẫn với câu sau."
+  },
+  {
+    "lessonSlug": "dai-tu",
+    "stem": "The two suppliers submitted similar quotes, but ______ was significantly cheaper than expected.",
+    "options": [
+      "both",
+      "each",
+      "neither",
+      "all"
+    ],
+    "answer": "C",
+    "explanation": "Ý nghĩa phủ định ('không bên nào rẻ hơn hẳn') và động từ số ít 'was' cho thấy cần dùng 'neither', dành cho hai đối tượng."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The accounting department ______ the monthly report on the first Monday of every month.",
+    "options": [
+      "submitted",
+      "submits",
+      "is submitting",
+      "was submitting"
+    ],
+    "answer": "B",
+    "explanation": "Trạng từ tần suất ngầm định 'every month' cho thấy đây là một thói quen lặp lại, nên dùng thì hiện tại đơn 'submits'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "Please be quiet — the director ______ an important phone call right now.",
+    "options": [
+      "makes",
+      "made",
+      "was making",
+      "is making"
+    ],
+    "answer": "D",
+    "explanation": "Dấu hiệu 'right now' cho thấy hành động đang diễn ra ngay lúc nói, nên dùng thì hiện tại tiếp diễn 'is making'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The shuttle bus ______ the office at 8:15 every weekday morning.",
+    "options": [
+      "leaves",
+      "was leaving",
+      "is leaving",
+      "left"
+    ],
+    "answer": "A",
+    "explanation": "Hiện tại đơn được dùng để diễn tả một lịch trình cố định (fixed schedule), nên chọn 'leaves'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "Water ______ at 100 degrees Celsius at sea level.",
+    "options": [
+      "boiled",
+      "boils",
+      "is boiling",
+      "was boiling"
+    ],
+    "answer": "B",
+    "explanation": "Đây là một chân lý khoa học không đổi, nên dùng thì hiện tại đơn 'boils'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "If the shipment ______ late, the client will request a discount.",
+    "options": [
+      "arrived",
+      "is arriving",
+      "arrives",
+      "was arriving"
+    ],
+    "answer": "C",
+    "explanation": "Trong câu điều kiện loại 1, mệnh đề if dùng thì hiện tại đơn, nên chọn 'arrives'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "We will send the invoice as soon as the client ______ the contract.",
+    "options": [
+      "was signing",
+      "signed",
+      "signs",
+      "is signing"
+    ],
+    "answer": "C",
+    "explanation": "Sau liên từ chỉ thời gian 'as soon as' diễn tả ý tương lai, mệnh đề đi kèm dùng thì hiện tại đơn thay cho thì tương lai."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "I ______ this proposal is worth pursuing; it could save the company a lot of money.",
+    "options": [
+      "think",
+      "am thinking",
+      "was thinking",
+      "thought"
+    ],
+    "answer": "A",
+    "explanation": "'Think' ở đây mang nghĩa 'cho rằng' (một động từ chỉ nhận thức, không chia tiếp diễn), nên dùng thì hiện tại đơn."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The intern usually arrives at 9 a.m., but today she ______ in at 7 a.m. to finish a report.",
+    "options": [
+      "was coming",
+      "came",
+      "is coming",
+      "comes"
+    ],
+    "answer": "C",
+    "explanation": "'Today' cho thấy đây là một hành động tạm thời, trái với thói quen thường ngày, nên dùng thì hiện tại tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The company's market share ______ larger each year as new products launch.",
+    "options": [
+      "got",
+      "was getting",
+      "is getting",
+      "gets"
+    ],
+    "answer": "C",
+    "explanation": "Hiện tại tiếp diễn được dùng để diễn tả một xu hướng đang thay đổi dần theo thời gian, nên chọn 'is getting'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The new intern always ______ everyone else's tasks instead of focusing on her own work.",
+    "options": [
+      "is doing",
+      "did",
+      "does",
+      "was doing"
+    ],
+    "answer": "A",
+    "explanation": "'Always' đi với thì hiện tại tiếp diễn diễn tả sự phàn nàn về một hành động lặp đi lặp lại gây khó chịu."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The company ______ its headquarters to Da Nang last year.",
+    "options": [
+      "was moving",
+      "is moving",
+      "moves",
+      "moved"
+    ],
+    "answer": "D",
+    "explanation": "'Last year' là mốc thời gian xác định trong quá khứ, nên dùng thì quá khứ đơn 'moved'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The manager reviewed the budget, then she ______ it to the CFO for approval.",
+    "options": [
+      "was forwarding",
+      "forwarded",
+      "forwards",
+      "is forwarding"
+    ],
+    "answer": "B",
+    "explanation": "Đây là một chuỗi hành động xảy ra liên tiếp trong quá khứ, nên cả hai động từ đều chia ở thì quá khứ đơn."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The technician ______ the server when the power suddenly went out.",
+    "options": [
+      "repairs",
+      "was repairing",
+      "is repairing",
+      "repaired"
+    ],
+    "answer": "B",
+    "explanation": "Hành động đang diễn ra ('sửa máy chủ') bị một hành động khác xen ngang ('mất điện'), nên dùng quá khứ tiếp diễn cho hành động đang xảy ra."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "While the sales team ______ the new clients, the marketing team was preparing the presentation slides.",
+    "options": [
+      "was greeting",
+      "greeted",
+      "is greeting",
+      "greets"
+    ],
+    "answer": "A",
+    "explanation": "Hai hành động xảy ra song song trong quá khứ được nối bằng 'while' đều dùng thì quá khứ tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "At 9 o'clock yesterday morning, the staff ______ a mandatory safety training session.",
+    "options": [
+      "are attending",
+      "were attending",
+      "attended",
+      "attend"
+    ],
+    "answer": "B",
+    "explanation": "Cụm 'at 9 o'clock yesterday morning' chỉ một thời điểm xác định trong quá khứ mà hành động đang diễn ra, nên dùng quá khứ tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The factory ______ produce textiles, but now it manufactures electronics.",
+    "options": [
+      "uses to",
+      "used to",
+      "is used to",
+      "use to"
+    ],
+    "answer": "B",
+    "explanation": "'Used to + V nguyên mẫu' diễn tả một thói quen/tình trạng trong quá khứ nay không còn nữa, đúng với ý đối lập 'but now' trong câu."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "After years working abroad, she ______ working with international clients.",
+    "options": [
+      "uses to",
+      "is use to",
+      "used to",
+      "is used to"
+    ],
+    "answer": "D",
+    "explanation": "'Be used to + V-ing' mang nghĩa 'đã quen với việc gì', khác với 'used to' (thói quen quá khứ không còn nữa)."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "It took him a while, but he finally ______ managing a fully remote team.",
+    "options": [
+      "was use to",
+      "get use to",
+      "got used to",
+      "used to"
+    ],
+    "answer": "C",
+    "explanation": "'Get used to + V-ing' diễn tả quá trình dần trở nên quen với điều gì, phù hợp với ý 'it took him a while... finally'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The IT team ______ system backups every night at midnight.",
+    "options": [
+      "runs",
+      "is running",
+      "was running",
+      "ran"
+    ],
+    "answer": "A",
+    "explanation": "Trạng từ tần suất 'every night' cho thấy đây là một thói quen lặp lại, nên dùng thì hiện tại đơn 'runs'."
+  },
+  {
+    "lessonSlug": "thi-hien-tai-va-qua-khu",
+    "stem": "The finance team ______ overtime this week to close the annual books.",
+    "options": [
+      "was working",
+      "works",
+      "is working",
+      "worked"
+    ],
+    "answer": "C",
+    "explanation": "'This week' cho thấy đây là một tình huống tạm thời đang diễn ra quanh thời điểm hiện tại, nên dùng thì hiện tại tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The company ______ a leading supplier of office furniture for over twenty years.",
+    "options": [
+      "has been",
+      "had been",
+      "was",
+      "is"
+    ],
+    "answer": "A",
+    "explanation": "Dấu hiệu 'for + khoảng thời gian' kéo dài đến hiện tại cho thấy cần dùng thì hiện tại hoàn thành 'has been'."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "Ms. Tran ______ as the regional manager since 2019.",
+    "options": [
+      "worked",
+      "has worked",
+      "works",
+      "had worked"
+    ],
+    "answer": "B",
+    "explanation": "Dấu hiệu 'since 2019' (một mốc thời gian, hành động kéo dài đến hiện tại) đòi hỏi thì hiện tại hoàn thành 'has worked'."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "I ______ my access badge, so I can't get into the server room.",
+    "options": [
+      "had lost",
+      "lose",
+      "have lost",
+      "lost"
+    ],
+    "answer": "C",
+    "explanation": "Hành động vừa xảy ra và kết quả còn ảnh hưởng đến hiện tại ('không vào được phòng'), nên dùng thì hiện tại hoàn thành."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "______ you ever negotiated a contract with an overseas client?",
+    "options": [
+      "Had",
+      "Did",
+      "Do",
+      "Have"
+    ],
+    "answer": "D",
+    "explanation": "'Ever' là dấu hiệu của thì hiện tại hoàn thành khi hỏi về kinh nghiệm, nên câu hỏi bắt đầu bằng 'Have'."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The board ______ already approved the budget for next year.",
+    "options": [
+      "has",
+      "had",
+      "did",
+      "is"
+    ],
+    "answer": "A",
+    "explanation": "'Already' đi với thì hiện tại hoàn thành để nhấn mạnh một hành động đã xảy ra mà không nêu rõ thời điểm cụ thể."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The technician ______ this machine three times this month.",
+    "options": [
+      "has repaired",
+      "repaired",
+      "repairs",
+      "had repaired"
+    ],
+    "answer": "A",
+    "explanation": "Hành động lặp lại nhiều lần tính đến hiện tại trong một khoảng thời gian chưa kết thúc ('this month') dùng thì hiện tại hoàn thành."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The CEO ______ just signed the merger agreement.",
+    "options": [
+      "did",
+      "is",
+      "has",
+      "had"
+    ],
+    "answer": "C",
+    "explanation": "'Just' đi với thì hiện tại hoàn thành để thông báo một hành động vừa mới xảy ra."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The negotiators ______ for six hours without a break.",
+    "options": [
+      "negotiated",
+      "had been negotiating",
+      "negotiate",
+      "have been negotiating"
+    ],
+    "answer": "D",
+    "explanation": "Thì hiện tại hoàn thành tiếp diễn nhấn mạnh tính liên tục của hành động kéo dài đến hiện tại, phù hợp với 'for six hours' và ngữ cảnh vẫn đang diễn ra."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "His hands are covered in ink; he ______ documents all morning.",
+    "options": [
+      "signed",
+      "had been signing",
+      "has been signing",
+      "signs"
+    ],
+    "answer": "C",
+    "explanation": "Kết quả hiện tại có thể nhìn thấy được (tay dính mực) là bằng chứng cho một hành động vừa kéo dài, nên dùng hiện tại hoàn thành tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "Mr. Lee ______ to Tokyo twice this year for supplier meetings.",
+    "options": [
+      "has been",
+      "has gone",
+      "went",
+      "had been"
+    ],
+    "answer": "A",
+    "explanation": "'Have been to' diễn tả đã đến và đã trở về, phù hợp với việc ông Lee vẫn đang ở đây kể chuyện; 'has gone' lại có nghĩa vẫn còn ở đó."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "We can't reach Sarah — she ______ to the client's office and hasn't returned yet.",
+    "options": [
+      "had gone",
+      "has been",
+      "went",
+      "has gone"
+    ],
+    "answer": "D",
+    "explanation": "'Have gone to' diễn tả đã đi và vẫn chưa quay lại, đúng với ý 'hasn't returned yet' trong câu."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The company ______ its new logo in March 2021.",
+    "options": [
+      "has introduced",
+      "have introduced",
+      "introduced",
+      "had introduced"
+    ],
+    "answer": "C",
+    "explanation": "Có mốc thời gian xác định trong quá khứ ('in March 2021'), nên dùng thì quá khứ đơn thay vì hiện tại hoàn thành."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The firm ______ several award-winning campaigns over the years, though no specific date was ever recorded.",
+    "options": [
+      "produces",
+      "had produced",
+      "has produced",
+      "produced"
+    ],
+    "answer": "C",
+    "explanation": "Không có thời gian xác định cụ thể và hành động vẫn còn liên quan đến hiện tại, nên dùng thì hiện tại hoàn thành."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "This is the first time I ______ a presentation to international investors.",
+    "options": [
+      "have given",
+      "had given",
+      "give",
+      "gave"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc 'It's/This is the first time + S + hiện tại hoàn thành' là mẫu câu cố định đã học."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "By the time the auditors arrived, the accountant ______ all the necessary documents.",
+    "options": [
+      "prepares",
+      "has prepared",
+      "prepared",
+      "had prepared"
+    ],
+    "answer": "D",
+    "explanation": "Hành động 'chuẩn bị tài liệu' xảy ra trước một hành động khác trong quá khứ ('the auditors arrived'), nên dùng quá khứ hoàn thành."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The meeting ______ already started when the client walked in.",
+    "options": [
+      "had",
+      "did",
+      "has",
+      "was"
+    ],
+    "answer": "A",
+    "explanation": "Hành động xảy ra trước một hành động khác trong quá khứ ('walked in') cần thì quá khứ hoàn thành, kết hợp với 'already'."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "She was exhausted because she ______ overtime for the entire week before the deadline.",
+    "options": [
+      "worked",
+      "has been working",
+      "works",
+      "had been working"
+    ],
+    "answer": "D",
+    "explanation": "Quá khứ hoàn thành tiếp diễn nhấn mạnh khoảng thời gian kéo dài trước một mốc/hành động khác trong quá khứ."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "If the team ______ the risks earlier, they could have avoided the loss.",
+    "options": [
+      "have identified",
+      "identified",
+      "had identified",
+      "identifies"
+    ],
+    "answer": "C",
+    "explanation": "Đây là câu điều kiện loại 3, mệnh đề if dùng quá khứ hoàn thành 'had identified'."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "The manager wishes she ______ the contract more carefully before signing it.",
+    "options": [
+      "reviews",
+      "had reviewed",
+      "reviewed",
+      "has reviewed"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc 'wish + S + had V3' diễn tả một điều ước trái với quá khứ, nên dùng quá khứ hoàn thành."
+  },
+  {
+    "lessonSlug": "thi-hoan-thanh",
+    "stem": "No sooner ______ the CEO finished her speech than the audience began applauding.",
+    "options": [
+      "was",
+      "did",
+      "has",
+      "had"
+    ],
+    "answer": "D",
+    "explanation": "Cấu trúc đảo ngữ 'No sooner + had + S + V3 + than' là mẫu câu cố định diễn tả hai hành động nối tiếp nhau rất nhanh."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "I think the new marketing campaign ______ increase sales significantly.",
+    "options": [
+      "is",
+      "is going to",
+      "will",
+      "was"
+    ],
+    "answer": "C",
+    "explanation": "'I think' cho thấy đây là một dự đoán mang tính chủ quan, không có căn cứ rõ ràng, nên dùng thì tương lai đơn với 'will'."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "The photocopier is out of paper. ______ get some from the supply closet.",
+    "options": [
+      "I am",
+      "I'll",
+      "I'm going to",
+      "I was"
+    ],
+    "answer": "B",
+    "explanation": "Đây là một quyết định được đưa ra ngay tại thời điểm nói, nên dùng thì tương lai đơn 'will' (I'll)."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "The new regulations ______ take effect on January 1st regardless of industry objections.",
+    "options": [
+      "are",
+      "are going to",
+      "were",
+      "will"
+    ],
+    "answer": "D",
+    "explanation": "Đây là một sự kiện chắc chắn xảy ra và không thể kiểm soát được (do quy định, không phải một kế hoạch có chuẩn bị), nên dùng thì tương lai đơn."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "______ I carry those boxes to the storage room for you?",
+    "options": [
+      "Am",
+      "Shall",
+      "Was",
+      "Will"
+    ],
+    "answer": "B",
+    "explanation": "'Shall I...?' được dùng để đề nghị giúp đỡ ai đó, đúng như cách dùng đã học."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "______ you send me the updated invoice by tomorrow?",
+    "options": [
+      "Shall",
+      "Will",
+      "Do",
+      "Are"
+    ],
+    "answer": "B",
+    "explanation": "'Will you...?' được dùng để yêu cầu ai đó làm gì cho mình, đúng như cách dùng đã học."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "I promise I ______ finish the report before you leave today.",
+    "options": [
+      "am",
+      "will",
+      "am going to",
+      "was"
+    ],
+    "answer": "B",
+    "explanation": "'Promise' đi kèm với thì tương lai đơn 'will' để diễn tả lời hứa, đúng như cách dùng đã học."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "This time next week, the team ______ the annual conference in Singapore.",
+    "options": [
+      "is attending",
+      "will be attending",
+      "attends",
+      "will attend"
+    ],
+    "answer": "B",
+    "explanation": "Cụm 'this time next week' chỉ một thời điểm xác định trong tương lai mà hành động đang diễn ra, nên dùng thì tương lai tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "The band ______ when the president arrives at the venue.",
+    "options": [
+      "is playing",
+      "will play",
+      "plays",
+      "will be playing"
+    ],
+    "answer": "D",
+    "explanation": "Hành động đang diễn ra tại một thời điểm trong tương lai khi có một hành động khác xảy đến, nên dùng thì tương lai tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "He ______ with the regional office for the next two weeks to finalize the deal.",
+    "options": [
+      "stays",
+      "will be staying",
+      "will stay",
+      "is staying"
+    ],
+    "answer": "B",
+    "explanation": "Hành động sẽ kéo dài suốt một quãng thời gian trong tương lai ('for the next two weeks') dùng thì tương lai tiếp diễn."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "______ you be using the conference room this afternoon?",
+    "options": [
+      "Will",
+      "Shall",
+      "Do",
+      "Are"
+    ],
+    "answer": "A",
+    "explanation": "Thì tương lai tiếp diễn 'Will you be + V-ing' được dùng để hỏi lịch sự về kế hoạch của ai đó trong tương lai gần."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "We ______ launch the new product line next quarter; the marketing materials are already being prepared.",
+    "options": [
+      "will",
+      "are going to",
+      "were",
+      "are"
+    ],
+    "answer": "B",
+    "explanation": "'Be going to' diễn tả một kế hoạch, dự định đã có sự chuẩn bị, phù hợp với chi tiết 'materials are already being prepared'."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "Look at those dark clouds — it ______ rain before the outdoor event starts.",
+    "options": [
+      "will",
+      "is going to",
+      "rained",
+      "rains"
+    ],
+    "answer": "B",
+    "explanation": "'Be going to' được dùng để dự đoán dựa trên bằng chứng có thể thấy ngay ở hiện tại (những đám mây đen), đúng như cách dùng đã học."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "We ______ dinner with the new investors next Sunday — the reservation is already confirmed.",
+    "options": [
+      "are going to have",
+      "are having",
+      "will have",
+      "have"
+    ],
+    "answer": "B",
+    "explanation": "Hiện tại tiếp diễn diễn tả ý tương lai được dùng cho một sự sắp xếp đã chuẩn bị sẵn với thời gian cụ thể, đặc biệt khi đã có xác nhận đặt chỗ."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "By the end of this month, the sales team ______ their annual targets.",
+    "options": [
+      "will reach",
+      "reaches",
+      "will be reaching",
+      "will have reached"
+    ],
+    "answer": "D",
+    "explanation": "Thì tương lai hoàn thành diễn tả một hành động sẽ hoàn thành trước một mốc thời gian trong tương lai ('by the end of this month')."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "By the time the shareholders arrive, the accountant ______ the final report.",
+    "options": [
+      "finishes",
+      "will be finishing",
+      "will finish",
+      "will have finished"
+    ],
+    "answer": "D",
+    "explanation": "Hành động sẽ hoàn tất trước một hành động khác trong tương lai ('the shareholders arrive'), nên dùng thì tương lai hoàn thành."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "By November, the company ______ in this building for exactly ten years.",
+    "options": [
+      "will have operated",
+      "will have been operating",
+      "will operate",
+      "operates"
+    ],
+    "answer": "B",
+    "explanation": "Thì tương lai hoàn thành tiếp diễn nhấn mạnh khoảng thời gian kéo dài tính đến một mốc trong tương lai ('by November... for ten years')."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "The manager will approve the request as soon as she ______ all the required documents.",
+    "options": [
+      "received",
+      "receives",
+      "is receiving",
+      "will receive"
+    ],
+    "answer": "B",
+    "explanation": "Sau liên từ chỉ thời gian 'as soon as' mang ý tương lai, không được chia thì tương lai mà phải dùng hiện tại đơn."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "By the time you ______ back from lunch, the delivery will have arrived.",
+    "options": [
+      "are getting",
+      "got",
+      "will get",
+      "get"
+    ],
+    "answer": "D",
+    "explanation": "Sau cụm từ chỉ thời gian 'by the time', không chia thì tương lai mà dùng thì hiện tại đơn thay thế."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "When the technician ______ the repairs, the system will resume normal operation.",
+    "options": [
+      "completed",
+      "completes",
+      "will complete",
+      "is completing"
+    ],
+    "answer": "B",
+    "explanation": "Sau liên từ chỉ thời gian 'when' mang ý tương lai, mệnh đề đi kèm phải dùng thì hiện tại đơn, không dùng thì tương lai."
+  },
+  {
+    "lessonSlug": "thi-tuong-lai",
+    "stem": "My colleagues and I ______ working overtime by the time this project is finally delivered.",
+    "options": [
+      "will have been",
+      "will be",
+      "have been",
+      "were"
+    ],
+    "answer": "A",
+    "explanation": "Thì tương lai hoàn thành tiếp diễn ('will have been working') nhấn mạnh quá trình kéo dài tính đến một mốc trong tương lai được nêu bằng mệnh đề 'by the time...'."
   }
 ]
