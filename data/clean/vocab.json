@@ -3785,5 +3785,943 @@
     "exampleEn": "The writer is an ___ of public education.",
     "exampleVi": "Người viết là người ủng hộ giáo dục cộng đồng.",
     "blankAnswer": "advocate"
+  },
+  {
+    "ordinal": 241,
+    "word": "contributor",
+    "pos": "n",
+    "ipa": "/kənˈtrɪbjətər/",
+    "meaningVi": "người đóng góp",
+    "definitionEn": "someone who gives money, help, ideas etc to something",
+    "definitionVi": "ai đó cung cấp tiền, trợ giúp, ý tưởng, v.v cho một việc gì đó",
+    "synonyms": [
+      "donor"
+    ],
+    "exampleEn": "The doctor is a regular ___ to the medical journal.",
+    "exampleVi": "Bác sĩ là người đóng góp thường xuyên cho tạp chí y khoa.",
+    "blankAnswer": "contributor"
+  },
+  {
+    "ordinal": 242,
+    "word": "defy",
+    "pos": "v",
+    "ipa": "/dɪˈfaɪ/",
+    "meaningVi": "chống lại, gần như không thể (mô tả)",
+    "definitionEn": "to refuse openly to obey a person, decision, or law",
+    "definitionVi": "từ chối công khai việc tuân theo một người, quyết định hoặc luật lệ nào đó",
+    "synonyms": [
+      "disobey",
+      "go against"
+    ],
+    "exampleEn": "The documentary series ___ conventional wisdom about fitness.",
+    "exampleVi": "Loạt phim tài liệu chống lại những hiểu biết theo truyền thống về thể hình.",
+    "blankAnswer": "defies"
+  },
+  {
+    "ordinal": 243,
+    "word": "fascinating",
+    "pos": "adj",
+    "ipa": "/ˈfæsɪneɪtɪŋ/",
+    "meaningVi": "hấp dẫn, quyến rũ",
+    "definitionEn": "extremely interesting and attractive",
+    "definitionVi": "cực kỳ thú vị và hấp dẫn",
+    "synonyms": [
+      "interesting",
+      "engrossing"
+    ],
+    "exampleEn": "Many ___ pieces of art were on display.",
+    "exampleVi": "Nhiều tác phẩm nghệ thuật hấp dẫn đã được trưng bày.",
+    "blankAnswer": "fascinating"
+  },
+  {
+    "ordinal": 244,
+    "word": "showing",
+    "pos": "n",
+    "ipa": "/ˈʃoʊɪŋ/",
+    "meaningVi": "sự trình chiếu/ra mắt, triển lãm",
+    "definitionEn": "an occasion when a film, art show, etc. can be seen or looked at",
+    "definitionVi": "một dịp khi một bộ phim, chương trình nghệ thuật, v.v. có thể được nhìn thấy hoặc xem",
+    "synonyms": [
+      "airing",
+      "screening"
+    ],
+    "exampleEn": "There will be another ___ of this artist's work.",
+    "exampleVi": "Sẽ có một cuộc triển lãm khác về tác phẩm của nghệ sĩ này.",
+    "blankAnswer": "showing"
+  },
+  {
+    "ordinal": 245,
+    "word": "survey",
+    "pos": "n",
+    "ipa": "/ˈsɜːrveɪ/",
+    "meaningVi": "khảo sát",
+    "definitionEn": "an investigation of the opinions, behaviour, etc. of a particular group of people",
+    "definitionVi": "một cuộc điều tra về ý kiến, hành vi, v.v. của một nhóm người cụ thể",
+    "synonyms": [
+      "poll"
+    ],
+    "exampleEn": "Customer ___ help to improve product quality.",
+    "exampleVi": "Khảo sát khách hàng giúp cải thiện chất lượng sản phẩm.",
+    "blankAnswer": "surveys"
+  },
+  {
+    "ordinal": 246,
+    "word": "analysis",
+    "pos": "n",
+    "ipa": "/əˈnæləsɪs/",
+    "meaningVi": "sự phân tích",
+    "definitionEn": "the detailed study or examination of something in order to understand more about it",
+    "definitionVi": "nghiên cứu chi tiết hoặc kiểm tra một cái gì đó để hiểu thêm về nó; kết quả của nghiên cứu",
+    "synonyms": [
+      "research"
+    ],
+    "exampleEn": "The latest market ___ shows an increase in used car purchases.",
+    "exampleVi": "Phân tích thị trường mới nhất cho thấy sự gia tăng mua xe cũ.",
+    "blankAnswer": "analysis"
+  },
+  {
+    "ordinal": 247,
+    "word": "respondent",
+    "pos": "n",
+    "ipa": "/rɪˈspɑːndənt/",
+    "meaningVi": "người trả lời",
+    "definitionEn": "a person who answers questions, especially in a survey",
+    "definitionVi": "một người trả lời câu hỏi, đặc biệt là trong một cuộc khảo sát",
+    "synonyms": [
+      "participant",
+      "interviewee"
+    ],
+    "exampleEn": "Almost all survey ___ rated the product highly.",
+    "exampleVi": "Hầu như tất cả người trả lời khảo sát đều đánh giá cao sản phẩm.",
+    "blankAnswer": "respondents"
+  },
+  {
+    "ordinal": 248,
+    "word": "monopoly",
+    "pos": "n",
+    "ipa": "/məˈnɑːpəli/",
+    "meaningVi": "sự độc quyền",
+    "definitionEn": "a large company that controls all or most of a business activity",
+    "definitionVi": "một công ty lớn kiểm soát tất cả hoặc hầu hết hoạt động kinh doanh",
+    "synonyms": [
+      "exclusive control",
+      "dominance"
+    ],
+    "exampleEn": "Panatronic has virtual ___ on the manufacture of digital recorders.",
+    "exampleVi": "Panatronic có độc quyền thật sự trong sản xuất máy ghi âm kỹ thuật số.",
+    "blankAnswer": "monopoly"
+  },
+  {
+    "ordinal": 249,
+    "word": "competition",
+    "pos": "n",
+    "ipa": "/ˌkɑːmpəˈtɪʃn/",
+    "meaningVi": "sự cạnh tranh, cuộc thi đấu",
+    "definitionEn": "a situation in which people or organizations compete with each other for something",
+    "definitionVi": "một tình huống mà mọi người hoặc các tổ chức cạnh tranh với nhau vì điều gì đó",
+    "synonyms": [
+      "tournament",
+      "match"
+    ],
+    "exampleEn": "___ in the game software market has increased.",
+    "exampleVi": "Sự cạnh tranh trong thị trường phần mềm trò chơi đã tăng lên.",
+    "blankAnswer": "Competition"
+  },
+  {
+    "ordinal": 250,
+    "word": "consistently",
+    "pos": "adv",
+    "ipa": "/kənˈsɪstəntli/",
+    "meaningVi": "luôn, kiên định, liên tục",
+    "definitionEn": "always the same, without changing",
+    "definitionVi": "luôn luôn giống nhau, không thay đổi",
+    "synonyms": [
+      "always"
+    ],
+    "exampleEn": "The factory has ___ provided the highest grade products.",
+    "exampleVi": "Nhà máy đã luôn cung cấp các sản phẩm cao cấp nhất.",
+    "blankAnswer": "consistently"
+  },
+  {
+    "ordinal": 251,
+    "word": "demand",
+    "pos": "n",
+    "ipa": "/dɪˈmænd/",
+    "meaningVi": "nhu cầu, (v) yêu cầu",
+    "definitionEn": "a very firm request for something; something that somebody needs",
+    "definitionVi": "một yêu cầu rất chắc chắn về điều gì đó; một cái gì đó mà ai đó cần",
+    "synonyms": [
+      "need",
+      "call for",
+      "ask for"
+    ],
+    "exampleEn": "The company could not meet the increased ___ for mobile devices.",
+    "exampleVi": "Công ty không thể đáp ứng nhu cầu tăng đối với thiết bị di động.",
+    "blankAnswer": "demand"
+  },
+  {
+    "ordinal": 252,
+    "word": "utmost",
+    "pos": "n",
+    "ipa": "/ˈʌtmoʊst/",
+    "meaningVi": "hết sức, mức tối đa",
+    "definitionEn": "the greatest amount, extent, or effort that is possible",
+    "definitionVi": "mức độ, phạm vi hoặc nỗ lực lớn nhất có thể",
+    "synonyms": [
+      "maximum",
+      "greatest effort"
+    ],
+    "exampleEn": "Sun Manufacturing does its ___ to ensure the quality of its products.",
+    "exampleVi": "Sun Manufacturing làm hết sức mình để đảm bảo chất lượng sản phẩm của mình.",
+    "blankAnswer": "utmost"
+  },
+  {
+    "ordinal": 253,
+    "word": "expand",
+    "pos": "v",
+    "ipa": "/ɪkˈspænd/",
+    "meaningVi": "mở rộng",
+    "definitionEn": "to become greater in size, number or importance",
+    "definitionVi": "để trở nên lớn hơn về kích thước, số lượng hoặc tầm quan trọng",
+    "synonyms": [
+      "built up",
+      "extend"
+    ],
+    "exampleEn": "Brahe Optics has ___ its marketing and sales division.",
+    "exampleVi": "Brahe Optics đã mở rộng bộ phận tiếp thị và bán hàng của mình.",
+    "blankAnswer": "expanded"
+  },
+  {
+    "ordinal": 254,
+    "word": "advanced",
+    "pos": "adj",
+    "ipa": "/ədˈvænst/",
+    "meaningVi": "tiên tiến, phát triển, hiện đại",
+    "definitionEn": "having the most modern and recently developed ideas, methods",
+    "definitionVi": "có những ý tưởng, phương pháp hiện đại và được phát triển gần đây nhất",
+    "synonyms": [
+      "state-of-the-art",
+      "developed"
+    ],
+    "exampleEn": "Modern cell phones are very ___ compared to those from a decade ago.",
+    "exampleVi": "Điện thoại di động hiện đại rất tiên tiến so với những cái từ một thập kỷ trước.",
+    "blankAnswer": "advanced"
+  },
+  {
+    "ordinal": 255,
+    "word": "postpone",
+    "pos": "v",
+    "ipa": "/poʊˈspoʊn/",
+    "meaningVi": "hoãn lại, trì hoãn",
+    "definitionEn": "to arrange for an event, etc. to take place at a later time or date",
+    "definitionVi": "sắp xếp một sự kiện, v.v. sẽ diễn ra vào một thời điểm hoặc ngày sau đó",
+    "synonyms": [
+      "put off/back",
+      "delay",
+      "reschedule"
+    ],
+    "exampleEn": "Organizers ___ the conference on management strategies because of bad weather.",
+    "exampleVi": "Ban tổ chức đã hoãn hội nghị về chiến lược quản lý vì thời tiết xấu.",
+    "blankAnswer": "postponed"
+  },
+  {
+    "ordinal": 256,
+    "word": "additional",
+    "pos": "adj",
+    "ipa": "/əˈdɪʃənl/",
+    "meaningVi": "bổ sung, thêm",
+    "definitionEn": "more than what was agreed or expected",
+    "definitionVi": "nhiều hơn những gì đã được thỏa thuận hoặc dự kiến",
+    "synonyms": [
+      "extra"
+    ],
+    "exampleEn": "Several investors decided to purchase ___ stocks.",
+    "exampleVi": "Một số nhà đầu tư quyết định mua thêm cổ phiếu.",
+    "blankAnswer": "additional"
+  },
+  {
+    "ordinal": 257,
+    "word": "appreciate",
+    "pos": "v",
+    "ipa": "/əˈpriːʃieɪt/",
+    "meaningVi": "cảm kích, đánh giá cao",
+    "definitionEn": "to be grateful for something that somebody has done",
+    "definitionVi": "để biết ơn điều gì đó mà ai đó đã làm",
+    "synonyms": [
+      "be grateful for",
+      "be thankful for"
+    ],
+    "exampleEn": "Benson Co. ___ your continued business.",
+    "exampleVi": "Công ty Benson cảm kích việc tiếp tục kinh doanh của bạn.",
+    "blankAnswer": "appreciates"
+  },
+  {
+    "ordinal": 258,
+    "word": "demonstration",
+    "pos": "n",
+    "ipa": "/ˌdemənˈstreɪʃn/",
+    "meaningVi": "sự giải thích, sự chứng minh, thuyết trình",
+    "definitionEn": "an act of showing or explaining how something works or is done",
+    "definitionVi": "một hành động thể hiện hoặc giải thích cách thức hoạt động của một cái gì đó hoặc được thực hiện",
+    "synonyms": [
+      "presentation"
+    ],
+    "exampleEn": "The salesclerk offered to provide a ___ on how to use the photocopier.",
+    "exampleVi": "Nhân viên bán hàng đã đề nghị đưa ra một bài thuyết trình về cách sử dụng máy photocopy.",
+    "blankAnswer": "demonstration"
+  },
+  {
+    "ordinal": 259,
+    "word": "buy",
+    "pos": "v",
+    "ipa": "/baɪ/",
+    "meaningVi": "mua",
+    "definitionEn": "to obtain something by paying money for it",
+    "definitionVi": "để có được một cái gì đó bằng cách trả tiền cho nó",
+    "synonyms": [
+      "purchase"
+    ],
+    "exampleEn": "The acquisitions department ___ all of the office equipment.",
+    "exampleVi": "Bộ phận thu mua mua tất cả các thiết bị văn phòng.",
+    "blankAnswer": "buys"
+  },
+  {
+    "ordinal": 260,
+    "word": "examine",
+    "pos": "v",
+    "ipa": "/ɪɡˈzæmɪn/",
+    "meaningVi": "kiểm tra, nghiên cứu",
+    "definitionEn": "to consider or study an idea, a subject, etc. very carefully",
+    "definitionVi": "để xem xét hoặc nghiên cứu một ý tưởng, một chủ đề, v.v. rất cẩn thận",
+    "synonyms": [
+      "investigate",
+      "study"
+    ],
+    "exampleEn": "Research and Development will ___ food consumption trends in foreign markets.",
+    "exampleVi": "Research and Development sẽ nghiên cứu xu hướng tiêu dùng thực phẩm ở thị trường nước ngoài.",
+    "blankAnswer": "examine"
+  },
+  {
+    "ordinal": 261,
+    "word": "effective",
+    "pos": "adj",
+    "ipa": "/ɪˈfektɪv/",
+    "meaningVi": "có hiệu lực, hiệu quả",
+    "definitionEn": "(of laws and rules) coming into use",
+    "definitionVi": "(của luật và quy tắc) được đưa vào sử dụng",
+    "synonyms": [
+      "successful",
+      "effectual"
+    ],
+    "exampleEn": "Increased tax deductions will be ___ as of June 1.",
+    "exampleVi": "Các khoản khấu trừ thuế tăng sẽ có hiệu lực kể từ ngày 1 tháng 6.",
+    "blankAnswer": "effective"
+  },
+  {
+    "ordinal": 262,
+    "word": "like",
+    "pos": "v",
+    "ipa": "/laɪk/",
+    "meaningVi": "thích, (prep) giống như",
+    "definitionEn": "to enjoy or approve of something or someone",
+    "definitionVi": "thích hoặc chấp nhận một điều gì đó hoặc một người nào đó",
+    "synonyms": [
+      "enjoy",
+      "be fond of"
+    ],
+    "exampleEn": "Consumers ___ products that look high-end but are less expensive.",
+    "exampleVi": "Người tiêu dùng thích các sản phẩm trông cao cấp nhưng ít tốn kém hơn.",
+    "blankAnswer": "like"
+  },
+  {
+    "ordinal": 263,
+    "word": "especially",
+    "pos": "adv",
+    "ipa": "/ɪˈspeʃəli/",
+    "meaningVi": "đặc biệt",
+    "definitionEn": "for a particular purpose, person, etc.",
+    "definitionVi": "cho một mục đích cụ thể, người, v.v.",
+    "synonyms": [
+      "particularly"
+    ],
+    "exampleEn": "Manufacturers of large vehicles are facing an ___ difficult year for sales.",
+    "exampleVi": "Các nhà sản xuất xe lớn đang phải đối mặt với một năm đặc biệt khó khăn cho việc buôn bán.",
+    "blankAnswer": "especially"
+  },
+  {
+    "ordinal": 264,
+    "word": "closely",
+    "pos": "adv",
+    "ipa": "/ˈkloʊsli/",
+    "meaningVi": "kỹ lưỡng, cẩn thận, gần gũi",
+    "definitionEn": "in a careful and thorough way",
+    "definitionVi": "một cách cẩn thận và kỹ lưỡng",
+    "synonyms": [
+      "carefully",
+      "attentively"
+    ],
+    "exampleEn": "Marketing departments monitor the latest trends ___.",
+    "exampleVi": "Bộ phận tiếp thị theo dõi các xu hướng mới nhất một cách cẩn thận.",
+    "blankAnswer": "closely"
+  },
+  {
+    "ordinal": 265,
+    "word": "reserve",
+    "pos": "v",
+    "ipa": "/rɪˈzɜːrv/",
+    "meaningVi": "đặt trước, để dành",
+    "definitionEn": "to ask for a seat, table, room, etc. to be available for you or somebody else at a future time",
+    "definitionVi": "yêu cầu chỗ ngồi, bàn, phòng, v.v. có sẵn cho bạn hoặc ai đó khác trong tương lai",
+    "synonyms": [
+      "book"
+    ],
+    "exampleEn": "The secretary will ___ hotel rooms for anyone going to the convention.",
+    "exampleVi": "Thư ký sẽ đặt trước phòng khách sạn cho bất kỳ ai tham dự hội nghị.",
+    "blankAnswer": "reserve"
+  },
+  {
+    "ordinal": 266,
+    "word": "cooperate",
+    "pos": "v",
+    "ipa": "/koʊˈɑːpəreɪt/",
+    "meaningVi": "cộng tác, hợp tác",
+    "definitionEn": "to work together with somebody else in order to achieve something",
+    "definitionVi": "làm việc cùng với người khác để đạt được điều gì đó",
+    "synonyms": [
+      "collaborate",
+      "work together"
+    ],
+    "exampleEn": "The two companies ___ on developing the promotional campaign for the new spring collection.",
+    "exampleVi": "Hai công ty hợp tác phát triển chiến dịch quảng cáo cho bộ sưu tập xuân mới.",
+    "blankAnswer": "cooperated"
+  },
+  {
+    "ordinal": 267,
+    "word": "very",
+    "pos": "adv",
+    "ipa": "/ˈveri/",
+    "meaningVi": "rất",
+    "definitionEn": "used before adjectives, adverbs and determiners to mean 'in a high degree' or 'extremely'",
+    "definitionVi": "được sử dụng trước tính từ, trạng từ và từ hạn định có nghĩa là 'ở mức độ cao' hoặc 'cực kỳ'",
+    "synonyms": [
+      "extremely",
+      "highly"
+    ],
+    "exampleEn": "The survey was ___ effective at identifying the target market.",
+    "exampleVi": "Cuộc khảo sát rất hiệu quả trong việc xác định thị trường mục tiêu.",
+    "blankAnswer": "very"
+  },
+  {
+    "ordinal": 268,
+    "word": "consecutive",
+    "pos": "adj",
+    "ipa": "/kənˈsekjətɪv/",
+    "meaningVi": "liên tiếp, liên tục",
+    "definitionEn": "following one after another in a series, without interruption",
+    "definitionVi": "sau cái khác trong một chuỗi, mà không bị gián đoạn",
+    "synonyms": [
+      "in a row"
+    ],
+    "exampleEn": "The Barkley Company achieved high sales growth for the third ___ year.",
+    "exampleVi": "Công ty Barkley đạt mức tăng trưởng doanh thu cao trong năm thứ 3 liên tiếp.",
+    "blankAnswer": "consecutive"
+  },
+  {
+    "ordinal": 269,
+    "word": "expectation",
+    "pos": "n",
+    "ipa": "/ˌekspekˈteɪʃn/",
+    "meaningVi": "sự mong đợi, kỳ vọng",
+    "definitionEn": "a belief that something will happen because it is likely",
+    "definitionVi": "một niềm tin rằng một cái gì đó sẽ xảy ra bởi vì nó có khả năng",
+    "synonyms": [
+      "anticipation"
+    ],
+    "exampleEn": "The ___ is that cost will be cut.",
+    "exampleVi": "Kỳ vọng rằng chi phí đó sẽ được cắt giảm.",
+    "blankAnswer": "expectation"
+  },
+  {
+    "ordinal": 270,
+    "word": "publicize",
+    "pos": "v",
+    "ipa": "/ˈpʌblɪsaɪz/",
+    "meaningVi": "công bố, công khai, quảng cáo",
+    "definitionEn": "to make something known to the public; to advertise something",
+    "definitionVi": "để làm cho một cái gì đó được biết đến với công chúng; để quảng cáo thứ gì đó",
+    "synonyms": [
+      "advertise"
+    ],
+    "exampleEn": "New regulations are ___ on the government Web site.",
+    "exampleVi": "Quy định mới được công bố trên trang web.",
+    "blankAnswer": "publicized"
+  },
+  {
+    "ordinal": 271,
+    "word": "raise",
+    "pos": "v",
+    "ipa": "/reɪz/",
+    "meaningVi": "tăng, đưa ra, nâng cao, (n) tăng lương",
+    "definitionEn": "to increase the amount or level of something",
+    "definitionVi": "để tăng số lượng hoặc mức độ của một cái gì đó",
+    "synonyms": [
+      "increase"
+    ],
+    "exampleEn": "We used mass-mailing methods to ___ awareness of our brand.",
+    "exampleVi": "Chúng tôi đã sử dụng các phương pháp gửi thư hàng loạt để nâng cao nhận thức về thương hiệu của chúng tôi.",
+    "blankAnswer": "raise"
+  },
+  {
+    "ordinal": 272,
+    "word": "extremely",
+    "pos": "adv",
+    "ipa": "/ɪkˈstriːmli/",
+    "meaningVi": "cực kì, vô cùng",
+    "definitionEn": "to a very high degree",
+    "definitionVi": "đến một mức độ rất cao",
+    "synonyms": [
+      "very"
+    ],
+    "exampleEn": "Internet service providers struggle to survive in today's ___ competitive market.",
+    "exampleVi": "Các nhà cung cấp dịch vụ Internet phải vật lộn để tồn tại trong thị trường vô cùng cạnh tranh ngày nay.",
+    "blankAnswer": "extremely"
+  },
+  {
+    "ordinal": 273,
+    "word": "affect",
+    "pos": "v",
+    "ipa": "/əˈfekt/",
+    "meaningVi": "ảnh hưởng, tác động",
+    "definitionEn": "to produce a change in somebody or something",
+    "definitionVi": "ảnh hưởng đến ai đó hoặc điều gì đó, khiến cho ai đó hoặc điều gì đó thay đổi",
+    "synonyms": [
+      "have an impact on"
+    ],
+    "exampleEn": "The frozen-food industry can ___ the canned goods market.",
+    "exampleVi": "Ngành công nghiệp thực phẩm đông lạnh có thể ảnh hưởng đến thị trường hàng hóa đóng hộp.",
+    "blankAnswer": "affect"
+  },
+  {
+    "ordinal": 274,
+    "word": "target",
+    "pos": "v",
+    "ipa": "/ˈtɑːrɡɪt/",
+    "meaningVi": "nhắm tới, (n) mục tiêu",
+    "definitionEn": "a result that you try to achieve",
+    "definitionVi": "kết quả mà bạn cố gắng đạt được",
+    "synonyms": [
+      "aim",
+      "goal",
+      "objective"
+    ],
+    "exampleEn": "The government's ___ of 3.5 percent annual growth seems easily attainable.",
+    "exampleVi": "Mục tiêu tăng trưởng hàng năm 3,5% của chính phủ dường như dễ dàng đạt được.",
+    "blankAnswer": "target"
+  },
+  {
+    "ordinal": 275,
+    "word": "campaign",
+    "pos": "v",
+    "ipa": "/kæmˈpeɪn/",
+    "meaningVi": "chiến dịch",
+    "definitionEn": "a series of planned activities that are intended to achieve a particular social, commercial or political aim",
+    "definitionVi": "một loạt các hoạt động được lên kế hoạch nhằm mục đích đạt được mục tiêu xã hội, thương mại hoặc chính trị cụ thể",
+    "synonyms": [
+      "strategy"
+    ],
+    "exampleEn": "The mayor's election ___ focused on his strong record in office.",
+    "exampleVi": "Chiến dịch bầu cử của thị trưởng tập trung vào thành tích to lớn của ông trong văn phòng.",
+    "blankAnswer": "campaign"
+  },
+  {
+    "ordinal": 276,
+    "word": "probable",
+    "pos": "adj",
+    "ipa": "/ˈprɑːbəbl/",
+    "meaningVi": "có thể",
+    "definitionEn": "likely to happen, to exist or to be true",
+    "definitionVi": "có khả năng xảy ra, tồn tại hoặc đúng",
+    "synonyms": [
+      "likely"
+    ],
+    "exampleEn": "One of the ___ causes for low sales was the lack of promotion.",
+    "exampleVi": "Một trong những nguyên nhân có thể gây ra do doanh số bán hàng thấp là thiếu quảng cáo.",
+    "blankAnswer": "probable"
+  },
+  {
+    "ordinal": 277,
+    "word": "focus",
+    "pos": "v",
+    "ipa": "/ˈfoʊkəs/",
+    "meaningVi": "tập trung",
+    "definitionEn": "to give attention, effort, etc. to one particular subject, situation or person rather than another",
+    "definitionVi": "để chú ý, nỗ lực, v.v. cho một chủ đề, tình huống hoặc người cụ thể thay vì một chủ đề khác",
+    "synonyms": [
+      "concentrate on"
+    ],
+    "exampleEn": "Management decided to ___ resources on expanding its business.",
+    "exampleVi": "Quản lý đã quyết định tập trung nguồn lực vào việc mở rộng kinh doanh của mình.",
+    "blankAnswer": "focus"
+  },
+  {
+    "ordinal": 278,
+    "word": "seasonal",
+    "pos": "adj",
+    "ipa": "/ˈsiːzənl/",
+    "meaningVi": "theo mùa",
+    "definitionEn": "happening or needed during a particular season; varying with the seasons",
+    "definitionVi": "xảy ra hoặc cần thiết trong một mùa cụ thể; thay đổi theo mùa",
+    "synonyms": [
+      "periodic",
+      "cyclical"
+    ],
+    "exampleEn": "The sugarcane industry is vulnerable to ___ variations.",
+    "exampleVi": "Ngành mía đường dễ bị tổn thương bởi các sự thay đổi theo mùa.",
+    "blankAnswer": "seasonal"
+  },
+  {
+    "ordinal": 279,
+    "word": "impact",
+    "pos": "v",
+    "ipa": "/ˈɪmpækt/",
+    "meaningVi": "tác động",
+    "definitionEn": "the powerful effect that something has on somebody or something",
+    "definitionVi": "hiệu ứng mạnh mẽ mà một cái gì đó có trên ai đó hoặc một cái gì đó",
+    "synonyms": [
+      "affect"
+    ],
+    "exampleEn": "Price fluctuations had a major ___ on the market.",
+    "exampleVi": "Biến động giá có tác động lớn đến thị trường.",
+    "blankAnswer": "impact"
+  },
+  {
+    "ordinal": 280,
+    "word": "comparison",
+    "pos": "n",
+    "ipa": "/kəmˈpærɪsn/",
+    "meaningVi": "sự so sánh",
+    "definitionEn": "the process of comparing two or more people or things",
+    "definitionVi": "quá trình so sánh hai hoặc nhiều người hoặc nhiều thứ",
+    "synonyms": [
+      "comparability"
+    ],
+    "exampleEn": "Online advertising is cheaper in ___ with television.",
+    "exampleVi": "Quảng cáo trực tuyến rẻ hơn so với truyền hình.",
+    "blankAnswer": "comparison"
+  },
+  {
+    "ordinal": 281,
+    "word": "gap",
+    "pos": "n",
+    "ipa": "/ɡæp/",
+    "meaningVi": "khoảng trống, mức chênh lệch",
+    "definitionEn": "a space between two things or in the middle of something, especially because there is a part missing",
+    "definitionVi": "một khoảng trống giữa hai thứ hoặc ở giữa thứ gì đó, đặc biệt là vì có một phần thiếu",
+    "synonyms": [
+      "gulf",
+      "discrepancy"
+    ],
+    "exampleEn": "Severe deficits can occur when there is a huge ___ between exports and imports.",
+    "exampleVi": "Tiền thiếu hụt nghiêm trọng có thể xảy ra khi có một mức chênh lệch lớn giữa xuất khẩu và nhập khẩu.",
+    "blankAnswer": "gap"
+  },
+  {
+    "ordinal": 282,
+    "word": "mounting",
+    "pos": "adj",
+    "ipa": "/ˈmaʊntɪŋ/",
+    "meaningVi": "gia tăng",
+    "definitionEn": "increasing, often in a manner that causes or expresses anxiety",
+    "definitionVi": "tăng, thường theo cách gây ra hoặc thể hiện sự lo lắng",
+    "synonyms": [
+      "increasing",
+      "growing"
+    ],
+    "exampleEn": "There is ___ pressure from management to increase productivity.",
+    "exampleVi": "Có sự gia tăng áp lực từ người quản lý để tăng năng suất.",
+    "blankAnswer": "mounting"
+  },
+  {
+    "ordinal": 283,
+    "word": "reflective",
+    "pos": "adj",
+    "ipa": "/rɪˈflektɪv/",
+    "meaningVi": "phản ánh",
+    "definitionEn": "showing that something is true about a situation",
+    "definitionVi": "cho thấy một cái gì đó là đúng về một tình huống",
+    "synonyms": [
+      "indicative",
+      "suggestive"
+    ],
+    "exampleEn": "Shrinking profits are ___ of the current state of the company.",
+    "exampleVi": "Lợi nhuận thu hẹp phản ánh trạng thái hiện tại của công ty.",
+    "blankAnswer": "reflective"
+  },
+  {
+    "ordinal": 284,
+    "word": "advertisement",
+    "pos": "n",
+    "ipa": "/ˌædvərˈtaɪzmənt/",
+    "meaningVi": "sự quảng cáo",
+    "definitionEn": "a notice, picture or film telling people about a product, job or service",
+    "definitionVi": "một thông báo, hình ảnh hoặc phim nói cho mọi người biết về một sản phẩm, công việc hoặc dịch vụ",
+    "synonyms": [
+      "ad"
+    ],
+    "exampleEn": "Sales have been propelled by the new ___.",
+    "exampleVi": "Sự bán hàng đã được thúc đẩy bởi quảng cáo mới.",
+    "blankAnswer": "advertisement"
+  },
+  {
+    "ordinal": 285,
+    "word": "marginal",
+    "pos": "adj",
+    "ipa": "/ˈmɑːrdʒɪnl/",
+    "meaningVi": "nhỏ, 1 chút, mép",
+    "definitionEn": "small and not important",
+    "definitionVi": "nhỏ và không quan trọng",
+    "synonyms": [
+      "slight",
+      "small"
+    ],
+    "exampleEn": "Customers showed only ___ interest in the new tablet computer.",
+    "exampleVi": "Khách hàng chỉ cho thấy sự quan tâm nhỏ trong máy tính bảng mới.",
+    "blankAnswer": "marginal"
+  },
+  {
+    "ordinal": 286,
+    "word": "customer",
+    "pos": "n",
+    "ipa": "/ˈkʌstəmər/",
+    "meaningVi": "khách hàng",
+    "definitionEn": "a person or an organization that buys something from a shop/store or business",
+    "definitionVi": "một người hoặc một tổ chức mua thứ gì đó từ một cửa hàng hoặc doanh nghiệp",
+    "synonyms": [
+      "consumer",
+      "client"
+    ],
+    "exampleEn": "Telephone representatives should make the needs of their ___ a priority.",
+    "exampleVi": "Người đại diện qua điện thoại sẽ làm cho nhu cầu của khách hàng được ưu tiên.",
+    "blankAnswer": "customers"
+  },
+  {
+    "ordinal": 287,
+    "word": "influence",
+    "pos": "n",
+    "ipa": "/ˈɪnfluəns/",
+    "meaningVi": "ảnh hưởng",
+    "definitionEn": "the power to have an effect on the way someone thinks or behaves, or on the way something works",
+    "definitionVi": "khả năng tác động đến cách suy nghĩ, hành động của ai đó, hoặc cách một sự việc diễn ra",
+    "synonyms": [
+      "effect",
+      "impact"
+    ],
+    "exampleEn": "Demand for housing directly ___ the cost of homes.",
+    "exampleVi": "Nhu cầu về nhà ở ảnh hưởng trực tiếp đến chi phí nhà cửa.",
+    "blankAnswer": "influences"
+  },
+  {
+    "ordinal": 288,
+    "word": "instantly",
+    "pos": "adv",
+    "ipa": "/ˈɪnstəntli/",
+    "meaningVi": "ngay lập tức",
+    "definitionEn": "immediately, without any delay",
+    "definitionVi": "ngay lập tức, không có bất kỳ sự trì hoãn nào",
+    "synonyms": [
+      "immediately"
+    ],
+    "exampleEn": "The brand logo should be ___ recognizable.",
+    "exampleVi": "Biểu tượng thương hiệu phải được nhận dạng ngay lập tức.",
+    "blankAnswer": "instantly"
+  },
+  {
+    "ordinal": 289,
+    "word": "creative",
+    "pos": "adj",
+    "ipa": "/kriˈeɪtɪv/",
+    "meaningVi": "sáng tạo",
+    "definitionEn": "having the skill and ability to produce something new, especially a work of art",
+    "definitionVi": "có kỹ năng và khả năng sản xuất một cái gì đó mới, đặc biệt là một tác phẩm nghệ thuật",
+    "synonyms": [
+      "innovative",
+      "imaginative"
+    ],
+    "exampleEn": "Mr. Beaumont came up with a ___ idea.",
+    "exampleVi": "Ông Beaumont nghĩ ra một ý tưởng sáng tạo.",
+    "blankAnswer": "creative"
+  },
+  {
+    "ordinal": 290,
+    "word": "aggressively",
+    "pos": "adv",
+    "ipa": "/əˈɡresɪvli/",
+    "meaningVi": "xông xáo, tháo vát, quyết liệt",
+    "definitionEn": "in a way that shows force and determination in order to succeed",
+    "definitionVi": "theo cách thể hiện sức mạnh và quyết tâm để thành công",
+    "synonyms": [
+      "assertively",
+      "boldly"
+    ],
+    "exampleEn": "The best sales representatives ___ seek out potential clients.",
+    "exampleVi": "Các đại diện bán hàng giỏi nhất xông xáo tìm kiếm khách hàng tiềm năng.",
+    "blankAnswer": "aggressively"
+  },
+  {
+    "ordinal": 291,
+    "word": "aim",
+    "pos": "v",
+    "ipa": "/eɪm/",
+    "meaningVi": "nhắm đến, (n) mục đích",
+    "definitionEn": "the purpose of doing something; what somebody is trying to achieve",
+    "definitionVi": "mục đích làm điều gì đó; những gì ai đó đang cố gắng đạt được",
+    "synonyms": [
+      "objective"
+    ],
+    "exampleEn": "Sport Apparel developed athletic gear ___ at teenagers.",
+    "exampleVi": "Sport Apparel đã phát triển thiết bị thể thao nhắm tới thanh thiếu niên.",
+    "blankAnswer": "aimed"
+  },
+  {
+    "ordinal": 292,
+    "word": "strategy",
+    "pos": "n",
+    "ipa": "/ˈstrætədʒi/",
+    "meaningVi": "chiến lược, kế hoạch",
+    "definitionEn": "a plan that is intended to achieve a particular purpose",
+    "definitionVi": "một kế hoạch nhằm mục đích đạt được một mục đích cụ thể",
+    "synonyms": [
+      "plan"
+    ],
+    "exampleEn": "Management's ___ for expansion has been successful.",
+    "exampleVi": "Chiến lược mở rộng của ban quản lý đã thành công.",
+    "blankAnswer": "strategy"
+  },
+  {
+    "ordinal": 293,
+    "word": "indicate",
+    "pos": "v",
+    "ipa": "/ˈɪndɪkeɪt/",
+    "meaningVi": "chỉ ra, thể hiện",
+    "definitionEn": "to show that something is true or exists",
+    "definitionVi": "để cho thấy điều gì đó là đúng hoặc tồn tại",
+    "synonyms": [
+      "show"
+    ],
+    "exampleEn": "Studies ___ that consumers prefer attractively packaged products.",
+    "exampleVi": "Các nghiên cứu chỉ ra rằng người tiêu dùng thích các sản phẩm đóng gói hấp dẫn.",
+    "blankAnswer": "indicate"
+  },
+  {
+    "ordinal": 294,
+    "word": "attract",
+    "pos": "v",
+    "ipa": "/əˈtrækt/",
+    "meaningVi": "thu hút",
+    "definitionEn": "to make someone interested in something, or make them want to take part in something",
+    "definitionVi": "để khiến ai đó quan tâm đến điều gì đó hoặc khiến họ muốn tham gia",
+    "synonyms": [
+      "allure",
+      "lure",
+      "appeal"
+    ],
+    "exampleEn": "The automakers is making an effort to ___ younger buyers.",
+    "exampleVi": "Các nhà sản xuất ô tô đang nỗ lực thu hút những người mua trẻ hơn.",
+    "blankAnswer": "attract"
+  },
+  {
+    "ordinal": 295,
+    "word": "experience",
+    "pos": "v",
+    "ipa": "/ɪkˈspɪriəns/",
+    "meaningVi": "trải qua, (n) kinh nghiệm, trải nghiệm",
+    "definitionEn": "the knowledge and skill that you have gained through doing something for a period of time",
+    "definitionVi": "kiến thức và kỹ năng mà bạn đã đạt được bằng cách làm điều gì đó trong một khoảng thời gian",
+    "synonyms": [
+      "undergo",
+      "encounter"
+    ],
+    "exampleEn": "Customers can ___ the new service free for a limited time.",
+    "exampleVi": "Khách hàng có thể trải nghiệm dịch vụ mới trong thời gian giới hạn.",
+    "blankAnswer": "experience"
+  },
+  {
+    "ordinal": 296,
+    "word": "analyze",
+    "pos": "v",
+    "ipa": "/ˈænəlaɪz/",
+    "meaningVi": "phân tích",
+    "definitionEn": "to examine or think about something carefully",
+    "definitionVi": "để kiểm tra hoặc nghĩ về cái gì đó một cách cẩn thận",
+    "synonyms": [
+      "research",
+      "go over"
+    ],
+    "exampleEn": "Researchers were asked to ___ the survey data.",
+    "exampleVi": "Các nhà nghiên cứu được yêu cầu phân tích dữ liệu khảo sát.",
+    "blankAnswer": "analyze"
+  },
+  {
+    "ordinal": 297,
+    "word": "introduce",
+    "pos": "v",
+    "ipa": "/ˌɪntrəˈduːs/",
+    "meaningVi": "giới thiệu",
+    "definitionEn": "if you introduce someone to another person, you tell them each other's names for the first time",
+    "definitionVi": "nếu bạn giới thiệu một người nào đó cho người khác, bạn sẽ nói cho họ biết tên của nhau lần đầu tiên",
+    "synonyms": [
+      "present",
+      "bring in"
+    ],
+    "exampleEn": "The ElectroLife ___ a new line of vacuum cleaners.",
+    "exampleVi": "ElectroLife giới thiệu một dòng máy hút bụi mới.",
+    "blankAnswer": "introduced"
+  },
+  {
+    "ordinal": 298,
+    "word": "advise",
+    "pos": "v",
+    "ipa": "/ədˈvaɪz/",
+    "meaningVi": "khuyên, nhận ra",
+    "definitionEn": "to tell somebody what you think they should do in a particular situation",
+    "definitionVi": "nói với ai đó những gì bạn nghĩ họ nên làm trong một tình huống cụ thể",
+    "synonyms": [
+      "recommend",
+      "suggest"
+    ],
+    "exampleEn": "Coburn Law Firm ___ clients on intellectual property matters.",
+    "exampleVi": "Công ty luật Coburn đưa ra lời khuyên cho khách hàng về các vấn đề sở hữu trí tuệ.",
+    "blankAnswer": "advises"
+  },
+  {
+    "ordinal": 299,
+    "word": "subscribe",
+    "pos": "v",
+    "ipa": "/səbˈskraɪb/",
+    "meaningVi": "đăng ký",
+    "definitionEn": "to pay an amount of money regularly in order to receive or use something",
+    "definitionVi": "trả một khoản tiền thường xuyên để nhận hoặc sử dụng một cái gì đó",
+    "synonyms": [
+      "register"
+    ],
+    "exampleEn": "___ to the monthly fashion magazine costs only $40 a year.",
+    "exampleVi": "Đăng ký tạp chí thời trang hàng tháng chỉ tốn 40 đô la một năm.",
+    "blankAnswer": "Subscribing"
+  },
+  {
+    "ordinal": 300,
+    "word": "absence",
+    "pos": "n",
+    "ipa": "/ˈæbsəns/",
+    "meaningVi": "sự vắng mặt, thiếu",
+    "definitionEn": "when you are not in the place where people expect you",
+    "definitionVi": "khi bạn không ở nơi mọi người mong đợi bạn",
+    "synonyms": [
+      "nonappearance",
+      "lack"
+    ],
+    "exampleEn": "The ___ of competition will help product sales.",
+    "exampleVi": "Sự thiếu cạnh tranh sẽ giúp doanh số bán sản phẩm.",
+    "blankAnswer": "absence"
   }
 ]
