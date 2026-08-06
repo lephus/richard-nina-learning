@@ -9,6 +9,7 @@ const admin = createClient(URL, SERVICE);
 let alice: ReturnType<typeof createClient>;
 let bob: ReturnType<typeof createClient>;
 let aliceId = "";
+let testWordId = 0;
 
 beforeAll(async () => {
   const mk = async (email: string) => {
@@ -24,6 +25,26 @@ beforeAll(async () => {
   alice = a.client; bob = b.client; aliceId = a.id;
 
   await admin.from("profiles").insert({ id: aliceId, display_name: "Alice" });
+
+  // Chen truoc mot dong vocab_words bang service role (bo qua RLS) de khoa
+  // ngoai cua word_mastery.word_id khong con che khuat policy RLS o duoi.
+  // ordinal cao (9999) de khong dung du lieu seed that. Dung upsert de test
+  // idempotent — chay lai nhieu lan khong can `supabase db reset` giua cac
+  // lan van khong dinh loi trung khoa unique tren ordinal.
+  const { data: word, error: wordErr } = await admin.from("vocab_words").upsert({
+    ordinal: 9999,
+    word: "placeholder",
+    pos: "n",
+    ipa: "/test/",
+    meaning_vi: "test",
+    definition_en: "test definition",
+    definition_vi: "test dinh nghia",
+    example_en: "test example",
+    example_vi: "vi du test",
+    blank_answer: "placeholder",
+  }, { onConflict: "ordinal" }).select("id").single();
+  if (wordErr) throw wordErr;
+  testWordId = word!.id as number;
 });
 
 describe("RLS", () => {
@@ -39,7 +60,7 @@ describe("RLS", () => {
 
   it("Bob KHÔNG ghi đè được tiến độ của Alice", async () => {
     const { error } = await bob.from("word_mastery")
-      .insert({ user_id: aliceId, word_id: 1, correct_count: 999 });
+      .insert({ user_id: aliceId, word_id: testWordId, correct_count: 999 });
     expect(error).not.toBeNull();
   });
 
