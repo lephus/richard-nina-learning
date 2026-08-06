@@ -3838,5 +3838,1457 @@
     ],
     "answer": "D",
     "explanation": "Tên các tờ báo, tạp chí luôn dùng mạo từ 'the' đứng trước."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The accountant stayed late at ______ to finish the audit before the deadline.",
+    "options": [
+      "works",
+      "the work",
+      "work",
+      "a work"
+    ],
+    "answer": "C",
+    "explanation": "'Work' mang nghĩa nơi làm việc là danh từ không đếm được, cụm 'at work' không dùng mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The board discussed ______ importance of hiring a bilingual assistant for the regional office.",
+    "options": [
+      "no article",
+      "a",
+      "an",
+      "the"
+    ],
+    "answer": "D",
+    "explanation": "Danh từ trừu tượng thường không dùng mạo từ, nhưng khi bị giới hạn nghĩa bởi cụm 'of + danh từ' thì phải dùng 'the'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The new policy is designed to help ______ unemployed find jobs more quickly through skills training.",
+    "options": [
+      "a",
+      "an",
+      "no article",
+      "the"
+    ],
+    "answer": "D",
+    "explanation": "'The' + tính từ tạo thành danh từ chỉ một nhóm người trong xã hội, ở đây là 'the unemployed'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "______ Japanese are known for punctuality in business meetings, while our new intern simply speaks Japanese fluently.",
+    "options": [
+      "No article",
+      "A",
+      "An",
+      "The"
+    ],
+    "answer": "D",
+    "explanation": "'The' + tính từ chỉ quốc tịch (the Japanese) chỉ toàn thể người dân nước đó, khác với tên ngôn ngữ không dùng mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "After the workplace accident, the technician was rushed to ______ hospital for immediate treatment.",
+    "options": [
+      "the",
+      "a",
+      "an",
+      "no article"
+    ],
+    "answer": "A",
+    "explanation": "Trong tiếng Anh Mỹ, 'hospital' luôn đi với 'the' dù đi vì mục đích chính hay không, khác với tiếng Anh Anh."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The clients were treated to ______ excellent dinner at a downtown restaurant after the contract signing.",
+    "options": [
+      "an",
+      "the",
+      "no article",
+      "a"
+    ],
+    "answer": "A",
+    "explanation": "Danh từ chỉ bữa ăn thường không dùng mạo từ, nhưng khi có tính từ mô tả đứng trước thì phải dùng 'a/an' theo âm đầu tính từ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The founder built the company from scratch back in ______ 1980s, long before digital marketing existed.",
+    "options": [
+      "an",
+      "a",
+      "the",
+      "no article"
+    ],
+    "answer": "C",
+    "explanation": "Mạo từ 'the' luôn dùng trước một thập niên cụ thể, ví dụ 'in the 1980s'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "______ Johnsons have run this family-owned logistics company for three generations.",
+    "options": [
+      "A",
+      "No article",
+      "The",
+      "An"
+    ],
+    "answer": "C",
+    "explanation": "'The' + họ gia đình ở dạng số nhiều (the Johnsons) dùng để chỉ cả gia đình đó."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "During the company's annual gala, the CEO surprised everyone by playing ______ piano before his keynote speech.",
+    "options": [
+      "an",
+      "a",
+      "no article",
+      "the"
+    ],
+    "answer": "D",
+    "explanation": "Trước tên nhạc cụ khi nói đến việc chơi nhạc cụ đó, ta luôn dùng mạo từ 'the'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "Employees from the sales and finance departments meet every Friday to play ______ badminton in the office gym.",
+    "options": [
+      "a",
+      "no article",
+      "the",
+      "an"
+    ],
+    "answer": "B",
+    "explanation": "Tên các môn thể thao không đi kèm mạo từ, ví dụ 'play badminton', 'play tennis'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "Before exporting to new markets, the compliance officer checked the latest regulations issued by ______ WTO.",
+    "options": [
+      "the",
+      "an",
+      "no article",
+      "a"
+    ],
+    "answer": "A",
+    "explanation": "Tên viết tắt của các tổ chức quốc tế thường đi kèm mạo từ 'the', ví dụ 'the WTO', 'the UN'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The merger was first reported by ______ Financial Times before any official press release was issued.",
+    "options": [
+      "a",
+      "the",
+      "no article",
+      "an"
+    ],
+    "answer": "B",
+    "explanation": "Tên các tờ báo, tạp chí thường được dùng với mạo từ 'the', ví dụ 'the Financial Times'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The regional sales director will relocate to ______ Philippines to oversee operations across Southeast Asia.",
+    "options": [
+      "the",
+      "an",
+      "a",
+      "no article"
+    ],
+    "answer": "A",
+    "explanation": "Tên một số quốc gia mang hình thức số nhiều hoặc nghĩa quần đảo, như 'the Philippines', luôn đi kèm 'the'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "Our headquarters recently signed a supply contract with a manufacturer based in ______ United States.",
+    "options": [
+      "a",
+      "no article",
+      "an",
+      "the"
+    ],
+    "answer": "D",
+    "explanation": "Tên quốc gia gồm từ hai từ trở lên (trừ Great Britain) thường đi kèm 'the', ví dụ 'the United States'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The new distribution center will open in ______ Vietnam by the end of next quarter.",
+    "options": [
+      "no article",
+      "a",
+      "the",
+      "an"
+    ],
+    "answer": "A",
+    "explanation": "Tên quốc gia chỉ có một từ như 'Vietnam' không dùng mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "She earned her MBA from ______ University of Chicago before joining our finance team.",
+    "options": [
+      "the",
+      "a",
+      "no article",
+      "an"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc 'the + trường/đại học + of + danh từ riêng' luôn dùng mạo từ 'the'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "He completed his engineering degree at ______ Stanford University before joining our R&D department.",
+    "options": [
+      "no article",
+      "the",
+      "an",
+      "a"
+    ],
+    "answer": "A",
+    "explanation": "Khi tên trường bắt đầu bằng một tên riêng (Stanford University), ta không dùng mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The new factory sits along ______ Mekong River, giving it direct access to shipping routes.",
+    "options": [
+      "the",
+      "a",
+      "no article",
+      "an"
+    ],
+    "answer": "A",
+    "explanation": "Tên các con sông luôn đi kèm mạo từ 'the', ví dụ 'the Mekong River'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "Most staff commute to the industrial park ______ bus every morning.",
+    "options": [
+      "by an",
+      "by the",
+      "by a",
+      "by"
+    ],
+    "answer": "D",
+    "explanation": "Cụm từ chỉ phương tiện di chuyển 'by + danh từ' (by bus, by car) không dùng mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "You should take ______ 8 a.m. bus if you want to arrive at the client's office on time.",
+    "options": [
+      "a",
+      "the",
+      "no article",
+      "an"
+    ],
+    "answer": "B",
+    "explanation": "Khi phương tiện được xác định cụ thể bằng thông tin đi kèm (giờ khởi hành), phải dùng mạo từ 'the'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "______ Nguyen, our newly appointed CEO, will present the five-year growth strategy tomorrow.",
+    "options": [
+      "An",
+      "No article",
+      "The",
+      "A"
+    ],
+    "answer": "B",
+    "explanation": "Trước một tước vị/chức danh đi kèm tên riêng, ta không dùng mạo từ, ví dụ 'Mr. Nguyen', 'President Nguyen'."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "After the overtime shift, most warehouse workers just want to go ______ home and rest.",
+    "options": [
+      "the",
+      "no article",
+      "a",
+      "an"
+    ],
+    "answer": "B",
+    "explanation": "Cụm 'go home' mang nghĩa 'về nhà' không dùng mạo từ, khác với 'home' khi được mô tả cụ thể."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The night-shift supervisor didn't go ______ bed until the last shipment was confirmed.",
+    "options": [
+      "the",
+      "an",
+      "a",
+      "no article"
+    ],
+    "answer": "D",
+    "explanation": "Cụm 'go to bed' (đi ngủ) không dùng mạo từ vì mang nghĩa mục đích chính là ngủ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The former accountant was sent to ______ prison for embezzling company funds.",
+    "options": [
+      "the",
+      "an",
+      "no article",
+      "a"
+    ],
+    "answer": "C",
+    "explanation": "'Go to prison' mang nghĩa bị giam giữ, đây là mục đích chính nên không dùng mạo từ."
+  },
+  {
+    "lessonSlug": "mao-tu-luyen-tap",
+    "stem": "The new conference table in the boardroom is made of ______ oak imported from Canada.",
+    "options": [
+      "an",
+      "the",
+      "a",
+      "no article"
+    ],
+    "answer": "D",
+    "explanation": "Danh từ chỉ chất liệu như 'oak' (gỗ sồi) không dùng mạo từ khi nói chung."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The board decided ______ the merger negotiations until next quarter to gather more financial data.",
+    "options": [
+      "to postpone",
+      "postponed",
+      "postponing",
+      "postpone"
+    ],
+    "answer": "A",
+    "explanation": "'Decide' luôn theo sau bởi động từ nguyên mẫu có 'to' (to-infinitive)."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "Both companies agreed ______ the terms of the contract before the end of the fiscal year.",
+    "options": [
+      "finalize",
+      "to finalize",
+      "finalizing",
+      "finalized"
+    ],
+    "answer": "B",
+    "explanation": "'Agree' là động từ luôn theo sau bởi to-infinitive."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The supplier offered ______ a ten percent discount if we placed a bulk order.",
+    "options": [
+      "provide",
+      "providing",
+      "to provide",
+      "provided"
+    ],
+    "answer": "C",
+    "explanation": "'Offer' đi kèm động từ nguyên mẫu có 'to'."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The client refused ______ the additional fee for the express shipping service.",
+    "options": [
+      "paying",
+      "pay",
+      "paid",
+      "to pay"
+    ],
+    "answer": "D",
+    "explanation": "'Refuse' luôn theo sau bởi to-infinitive."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "Despite the tight deadline, the team managed ______ the project one day early.",
+    "options": [
+      "completing",
+      "complete",
+      "completed",
+      "to complete"
+    ],
+    "answer": "D",
+    "explanation": "'Manage' (xoay sở làm được việc gì) theo sau bởi to-infinitive."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "Most employees in the design department enjoy ______ with new software during their free time.",
+    "options": [
+      "experimented",
+      "experiment",
+      "experimenting",
+      "to experiment"
+    ],
+    "answer": "C",
+    "explanation": "'Enjoy' luôn theo sau bởi danh động từ (V-ing)."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The manager avoided ______ any specific numbers during the press conference.",
+    "options": [
+      "mentioning",
+      "mentioned",
+      "to mention",
+      "mention"
+    ],
+    "answer": "A",
+    "explanation": "'Avoid' theo sau bởi V-ing."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The consultant suggested ______ the marketing budget for the next campaign.",
+    "options": [
+      "increase",
+      "increasing",
+      "to increase",
+      "increased"
+    ],
+    "answer": "B",
+    "explanation": "'Suggest' theo sau bởi V-ing, không dùng to-infinitive."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The board is considering ______ operations to a lower-cost location overseas.",
+    "options": [
+      "move",
+      "moving",
+      "to move",
+      "moved"
+    ],
+    "answer": "B",
+    "explanation": "'Consider' (xem xét) đi kèm V-ing."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "Due to the storm warning, the organizers postponed ______ the outdoor company retreat.",
+    "options": [
+      "hold",
+      "held",
+      "holding",
+      "to hold"
+    ],
+    "answer": "C",
+    "explanation": "'Postpone' luôn theo sau bởi V-ing."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The regional director was pleased ______ that sales had exceeded expectations this quarter.",
+    "options": [
+      "hearing",
+      "to hear",
+      "hear",
+      "heard"
+    ],
+    "answer": "B",
+    "explanation": "Tính từ chỉ cảm xúc như 'pleased' thường theo sau bởi to-infinitive."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The logistics team is ready ______ the new shipment as soon as it arrives at the port.",
+    "options": [
+      "processed",
+      "process",
+      "to process",
+      "processing"
+    ],
+    "answer": "C",
+    "explanation": "'Ready' là tính từ theo sau bởi to-infinitive."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "She traveled to the branch office in Da Nang ______ the new staff on the updated safety procedures.",
+    "options": [
+      "to train",
+      "trained",
+      "for training",
+      "training"
+    ],
+    "answer": "A",
+    "explanation": "To-infinitive được dùng để diễn tả mục đích của hành động."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "It was thoughtful ______ the assistant manager to reschedule the meeting for the overseas partners.",
+    "options": [
+      "for",
+      "to",
+      "with",
+      "of"
+    ],
+    "answer": "D",
+    "explanation": "Cấu trúc 'It + be + adj chỉ tính cách + of + O + to-inf' dùng để nhận xét về người thực hiện hành động."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "It usually takes the accounting team about three days ______ the monthly financial statements.",
+    "options": [
+      "prepared",
+      "preparing",
+      "to prepare",
+      "prepare"
+    ],
+    "answer": "C",
+    "explanation": "Cấu trúc 'It takes + O + thời gian + to-inf' luôn dùng động từ nguyên mẫu có 'to'."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The proposal was too ambitious ______ within the current budget.",
+    "options": [
+      "implementing",
+      "implemented",
+      "implement",
+      "to implement"
+    ],
+    "answer": "D",
+    "explanation": "Cấu trúc 'too + adj + to-inf' diễn tả mức độ vượt quá khả năng thực hiện."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The new intern is skilled enough ______ the client presentation on her own.",
+    "options": [
+      "handled",
+      "handling",
+      "handle",
+      "to handle"
+    ],
+    "answer": "D",
+    "explanation": "Cấu trúc 'adj + enough + to-inf' diễn tả mức độ đủ để làm gì đó."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The team found it difficult ______ a consensus on the new vendor before the meeting ended.",
+    "options": [
+      "reached",
+      "to reach",
+      "reach",
+      "reaching"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc 'find/think + it + adj + to-inf' dùng 'it' làm tân ngữ giả, theo sau bởi to-infinitive."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The security guard saw the delivery driver ______ several boxes into the warehouse.",
+    "options": [
+      "carried",
+      "carrying",
+      "to carry",
+      "carry"
+    ],
+    "answer": "D",
+    "explanation": "Động từ chỉ tri giác như 'see' + tân ngữ + động từ nguyên mẫu không 'to' khi diễn tả hành động trọn vẹn."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The strict new policy makes every visitor ______ an ID badge before entering the building.",
+    "options": [
+      "to wear",
+      "wear",
+      "worn",
+      "wearing"
+    ],
+    "answer": "B",
+    "explanation": "'Make' + tân ngữ + động từ nguyên mẫu không 'to' ở dạng chủ động."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "______ overtime every weekend eventually affected the team's morale.",
+    "options": [
+      "Worked",
+      "To work",
+      "Work",
+      "Working"
+    ],
+    "answer": "D",
+    "explanation": "Danh động từ (V-ing) có thể làm chủ ngữ của câu."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The sales representative is responsible ______ following up with every new client within 48 hours.",
+    "options": [
+      "to",
+      "with",
+      "of",
+      "for"
+    ],
+    "answer": "D",
+    "explanation": "Sau giới từ, động từ phải ở dạng V-ing; 'responsible for' là cụm cố định."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The auditors spent nearly a week ______ the company's financial records.",
+    "options": [
+      "reviewed",
+      "reviewing",
+      "to review",
+      "review"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc 'spend + thời gian + V-ing' luôn dùng danh động từ."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-ly-thuyet",
+    "stem": "The whole department is looking forward ______ the annual bonus announcement next week.",
+    "options": [
+      "received",
+      "to receiving",
+      "to receive",
+      "receive"
+    ],
+    "answer": "B",
+    "explanation": "'Look forward to' là cụm cố định với giới từ 'to', nên theo sau phải là V-ing."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "On her way to the client meeting, the manager stopped ______ a coffee before heading into the building.",
+    "options": [
+      "bought",
+      "to buy",
+      "buying",
+      "buy"
+    ],
+    "answer": "B",
+    "explanation": "'Stop to do' nghĩa là dừng việc đang làm để làm việc khác, khác với 'stop doing' (ngừng hẳn việc đó)."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "After receiving several complaints, the factory stopped ______ the outdated packaging material.",
+    "options": [
+      "use",
+      "used",
+      "to use",
+      "using"
+    ],
+    "answer": "D",
+    "explanation": "'Stop + V-ing' nghĩa là ngừng hẳn việc đang làm, khác với 'stop to do' (dừng lại để làm việc khác)."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "Please remember ______ the invoice to the client before you leave the office today.",
+    "options": [
+      "sending",
+      "send",
+      "sent",
+      "to send"
+    ],
+    "answer": "D",
+    "explanation": "'Remember to do' nghĩa là nhớ để làm một việc sắp phải làm, khác với 'remember doing' (nhớ đã làm)."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "I clearly remember ______ that report to the director last Friday afternoon.",
+    "options": [
+      "to send",
+      "sending",
+      "send",
+      "sent"
+    ],
+    "answer": "B",
+    "explanation": "'Remember doing' nghĩa là nhớ lại một việc đã xảy ra trong quá khứ."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The new receptionist forgot ______ off the office lights before locking up last night.",
+    "options": [
+      "turn",
+      "turned",
+      "turning",
+      "to turn"
+    ],
+    "answer": "D",
+    "explanation": "'Forget to do' nghĩa là quên chưa làm việc gì đó, việc đó chưa xảy ra."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "We regret ______ you that your application for the position has not been successful.",
+    "options": [
+      "to inform",
+      "informing",
+      "inform",
+      "informed"
+    ],
+    "answer": "A",
+    "explanation": "'Regret to do' dùng khi báo tin không vui một cách trang trọng, việc sắp xảy ra ngay khi nói."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "When the online payment kept failing, the customer tried ______ a different browser to see if that would help.",
+    "options": [
+      "use",
+      "to use",
+      "using",
+      "used"
+    ],
+    "answer": "C",
+    "explanation": "'Try + V-ing' nghĩa là thử làm cách nào đó để xem có hiệu quả không."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The negotiator tried ______ the client into accepting the revised terms, but she refused.",
+    "options": [
+      "to talk",
+      "talked",
+      "talk",
+      "talking"
+    ],
+    "answer": "A",
+    "explanation": "'Try + to-inf' nghĩa là cố gắng làm điều gì đó, có thể không thành công, nhấn mạnh sự nỗ lực."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The IT department needs ______ the software before the security update is released.",
+    "options": [
+      "to test",
+      "tested",
+      "test",
+      "testing"
+    ],
+    "answer": "A",
+    "explanation": "'Need to do' mang nghĩa chủ động, chủ ngữ tự thực hiện hành động."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The photocopier in the meeting room needs ______ again; it keeps jamming every few pages.",
+    "options": [
+      "to repair",
+      "repair",
+      "repaired",
+      "repairing"
+    ],
+    "answer": "D",
+    "explanation": "'Need + V-ing' mang nghĩa bị động, tương đương 'need to be repaired'."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "Even after the merger was announced, the sales team went on ______ their normal weekly targets.",
+    "options": [
+      "to meet",
+      "meet",
+      "meeting",
+      "met"
+    ],
+    "answer": "C",
+    "explanation": "'Go on + V-ing' nghĩa là tiếp tục việc đang làm."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "After finishing the budget review, the CFO went on ______ the quarterly forecast to the board.",
+    "options": [
+      "present",
+      "presented",
+      "presenting",
+      "to present"
+    ],
+    "answer": "D",
+    "explanation": "'Go on + to-inf' nghĩa là chuyển sang làm một việc khác sau khi hoàn thành việc trước."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "I didn't mean ______ your presentation; I was simply asking a clarifying question.",
+    "options": [
+      "interrupt",
+      "interrupted",
+      "to interrupt",
+      "interrupting"
+    ],
+    "answer": "C",
+    "explanation": "'Mean to do' nghĩa là có ý định làm gì, chủ động dự tính."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "Cutting the marketing budget would mean ______ fewer clients through digital campaigns this quarter.",
+    "options": [
+      "to reach",
+      "reach",
+      "reaching",
+      "reached"
+    ],
+    "answer": "C",
+    "explanation": "'Mean + V-ing' nghĩa là kéo theo, đồng nghĩa với một kết quả tất yếu."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The manager had the technician ______ the projector before the client presentation began.",
+    "options": [
+      "check",
+      "to check",
+      "checking",
+      "checked"
+    ],
+    "answer": "A",
+    "explanation": "Cấu trúc 'have + O + V-bare' mang nghĩa nhờ ai đó chủ động làm việc gì."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The office manager had the broken air conditioner ______ before the summer heat arrived.",
+    "options": [
+      "fix",
+      "fixed",
+      "to fix",
+      "fixing"
+    ],
+    "answer": "B",
+    "explanation": "Cấu trúc 'have + O + V3/ed' mang nghĩa nhờ người khác làm việc gì cho mình, tân ngữ chịu tác động."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The supervisor finally got the new employee ______ the compliance training on time.",
+    "options": [
+      "complete",
+      "completed",
+      "completing",
+      "to complete"
+    ],
+    "answer": "D",
+    "explanation": "Cấu trúc 'get + O + to-inf' mang nghĩa thuyết phục hoặc nhờ ai đó làm việc gì, khác với 'have + O + V-bare'."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "Walking past the warehouse, she noticed several workers ______ boxes onto the delayed truck.",
+    "options": [
+      "loaded",
+      "loading",
+      "to load",
+      "load"
+    ],
+    "answer": "B",
+    "explanation": "Động từ tri giác + tân ngữ + V-ing diễn tả hành động đang diễn ra dở dang, khác với V-bare khi hành động trọn vẹn."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "From her office window, the director watched the delivery truck ______ into the loading dock and unload completely.",
+    "options": [
+      "pulling",
+      "to pull",
+      "pull",
+      "pulled"
+    ],
+    "answer": "C",
+    "explanation": "Động từ tri giác + tân ngữ + V-bare diễn tả hành động diễn ra và hoàn tất trọn vẹn."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The consultant recommended ______ the outdated inventory system before expanding to new markets.",
+    "options": [
+      "upgraded",
+      "to upgrade",
+      "upgrade",
+      "upgrading"
+    ],
+    "answer": "D",
+    "explanation": "'Recommend' khi không có tân ngữ trực tiếp thì theo sau bởi V-ing, chỉ dùng to-inf khi có tân ngữ đứng giữa."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The auditor recommended the finance team ______ the year-end figures once more before submission.",
+    "options": [
+      "to verify",
+      "verify",
+      "verifying",
+      "verified"
+    ],
+    "answer": "A",
+    "explanation": "Khi 'recommend' có tân ngữ đứng ngay sau, cấu trúc là 'recommend + O + to-inf'."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "The CEO would rather ______ the announcement herself than let a spokesperson do it.",
+    "options": [
+      "made",
+      "to make",
+      "making",
+      "make"
+    ],
+    "answer": "D",
+    "explanation": "'Would rather' luôn theo sau bởi động từ nguyên mẫu không 'to'."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "Looking back, the team would rather ______ more time testing the app before its launch.",
+    "options": [
+      "spend",
+      "spent",
+      "spending",
+      "have spent"
+    ],
+    "answer": "D",
+    "explanation": "'Would rather have + V3' diễn tả một điều tiếc nuối về quá khứ, khác với 'would rather + V-bare' cho hiện tại."
+  },
+  {
+    "lessonSlug": "dong-tu-nguyen-mau-danh-dong-tu-luyen-tap",
+    "stem": "After ten years in the industry, the manager is used to ______ under tight deadlines.",
+    "options": [
+      "working",
+      "worked",
+      "to work",
+      "work"
+    ],
+    "answer": "A",
+    "explanation": "'Be used to + V-ing' nghĩa là đã quen với việc gì, khác với 'used to + V-bare' chỉ thói quen trong quá khứ."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The consultant ______ reviewed our supply chain last month has just published a report on cost efficiency.",
+    "options": [
+      "which",
+      "whom",
+      "who",
+      "whose"
+    ],
+    "answer": "C",
+    "explanation": "'Who' làm chủ ngữ trong mệnh đề quan hệ, thay thế cho danh từ chỉ người."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The invoice ______ was sent to the wrong department caused a two-week delay in payment.",
+    "options": [
+      "who",
+      "which",
+      "whose",
+      "whom"
+    ],
+    "answer": "B",
+    "explanation": "'Which' làm chủ ngữ trong mệnh đề quan hệ khi thay thế cho danh từ chỉ vật."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The contract ______ the legal team drafted last week still needs the client's signature.",
+    "options": [
+      "whom",
+      "whose",
+      "which",
+      "who"
+    ],
+    "answer": "C",
+    "explanation": "'Which' làm tân ngữ trong mệnh đề quan hệ khi thay thế cho danh từ chỉ vật."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The employee ______ proposal won the innovation award will present it at the annual meeting.",
+    "options": [
+      "whose",
+      "whom",
+      "who",
+      "which"
+    ],
+    "answer": "A",
+    "explanation": "'Whose' dùng để chỉ sở hữu, đứng ngay trước danh từ mà nó bổ nghĩa."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "We rejected the vendor ______ prices were nearly double the market average.",
+    "options": [
+      "whom",
+      "whose",
+      "which",
+      "who"
+    ],
+    "answer": "B",
+    "explanation": "'Whose' dùng để chỉ sở hữu cho cả người lẫn vật, ở đây bổ nghĩa cho 'prices' của vendor."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The presentation covered the team members and the achievements ______ contributed to this year's success.",
+    "options": [
+      "who",
+      "which",
+      "that",
+      "whose"
+    ],
+    "answer": "C",
+    "explanation": "Khi danh từ đi trước gồm cả người và vật, mệnh đề quan hệ chỉ có thể dùng 'that'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The manager reviewed everything ______ the intern had submitted before the deadline.",
+    "options": [
+      "whose",
+      "who",
+      "that",
+      "which"
+    ],
+    "answer": "C",
+    "explanation": "Sau các đại từ bất định như 'everything', mệnh đề quan hệ dùng 'that'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "Mr. Tanaka, ______ has led the Tokyo office for a decade, will retire next spring.",
+    "options": [
+      "who",
+      "whom",
+      "that",
+      "which"
+    ],
+    "answer": "A",
+    "explanation": "Mệnh đề quan hệ không xác định (có dấu phẩy) không được dùng 'that', phải dùng 'who' cho chủ ngữ chỉ người."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The software platform on ______ our entire inventory system depends was upgraded last month.",
+    "options": [
+      "that",
+      "who",
+      "which",
+      "whom"
+    ],
+    "answer": "C",
+    "explanation": "Sau giới từ, mệnh đề quan hệ không được dùng 'that'; với danh từ chỉ vật phải dùng 'which'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "Nobody could explain the reason ______ the shipment was delayed at customs.",
+    "options": [
+      "where",
+      "which",
+      "why",
+      "when"
+    ],
+    "answer": "C",
+    "explanation": "'Why' mở đầu mệnh đề quan hệ chỉ lý do, thường thay cho danh từ 'the reason'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The warehouse ______ we store excess inventory is located twenty minutes from headquarters.",
+    "options": [
+      "when",
+      "which",
+      "where",
+      "why"
+    ],
+    "answer": "C",
+    "explanation": "'Where' thay thế cho danh từ chỉ nơi chốn trong mệnh đề quan hệ."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "Q4 is the period ______ our sales team submits the annual forecast to headquarters.",
+    "options": [
+      "which",
+      "when",
+      "why",
+      "where"
+    ],
+    "answer": "B",
+    "explanation": "'When' thay thế cho danh từ chỉ thời gian trong mệnh đề quan hệ."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The auditor to ______ you should direct all compliance questions is currently out of the office.",
+    "options": [
+      "whom",
+      "who",
+      "whose",
+      "which"
+    ],
+    "answer": "A",
+    "explanation": "Sau giới từ đứng ngay trước mệnh đề quan hệ, phải dùng 'whom' cho danh từ chỉ người, không dùng 'who'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The committee interviewed five finalists, two of ______ had previously worked at our headquarters.",
+    "options": [
+      "which",
+      "whose",
+      "who",
+      "whom"
+    ],
+    "answer": "D",
+    "explanation": "Cụm từ chỉ số lượng như 'two of' đứng trước đại từ quan hệ chỉ người phải dùng 'whom'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The proposal included three budget options, none of ______ satisfied the finance director.",
+    "options": [
+      "which",
+      "whom",
+      "who",
+      "whose"
+    ],
+    "answer": "A",
+    "explanation": "Cụm từ chỉ số lượng như 'none of' đứng trước đại từ quan hệ chỉ vật phải dùng 'which'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The vendor missed the shipping deadline twice, ______ seriously damaged our trust in the partnership.",
+    "options": [
+      "whom",
+      "which",
+      "whose",
+      "who"
+    ],
+    "answer": "B",
+    "explanation": "'Which' có thể dùng để thay thế cho toàn bộ mệnh đề đứng trước, không chỉ một danh từ."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "Employees ______ overtime hours must submit a request form to their supervisor in advance.",
+    "options": [
+      "worked",
+      "working",
+      "to work",
+      "work"
+    ],
+    "answer": "B",
+    "explanation": "Mệnh đề quan hệ chủ động (who work) có thể rút gọn thành cụm hiện tại phân từ 'V-ing'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The documents ______ by the compliance team last week are now ready for the client's review.",
+    "options": [
+      "reviewing",
+      "to review",
+      "review",
+      "reviewed"
+    ],
+    "answer": "D",
+    "explanation": "Mệnh đề quan hệ bị động (that were reviewed) có thể rút gọn thành cụm quá khứ phân từ 'V3/ed'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "She was the first employee ______ the new remote-work policy in our department.",
+    "options": [
+      "adopted",
+      "to adopt",
+      "adopt",
+      "adopting"
+    ],
+    "answer": "B",
+    "explanation": "Mệnh đề quan hệ sau 'the first/only/last' có thể rút gọn thành cụm động từ nguyên mẫu (to-infinitive)."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The vendor is looking for a distributor ______ has strong connections in the Southeast Asian market.",
+    "options": [
+      "which",
+      "who",
+      "whose",
+      "whom"
+    ],
+    "answer": "B",
+    "explanation": "'Who' làm chủ ngữ trong mệnh đề quan hệ, thay thế cho danh từ chỉ người hoặc vai trò được nhân cách hoá."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The marketing plan ______ the team proposed last quarter has already increased website traffic by 20 percent.",
+    "options": [
+      "which",
+      "whom",
+      "who",
+      "whose"
+    ],
+    "answer": "A",
+    "explanation": "'Which' làm tân ngữ trong mệnh đề quan hệ khi thay thế cho danh từ chỉ vật."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The applicant ______ portfolio impressed the hiring committee will start next Monday.",
+    "options": [
+      "who",
+      "whose",
+      "whom",
+      "which"
+    ],
+    "answer": "B",
+    "explanation": "'Whose' đứng trước danh từ để chỉ sở hữu của người được nhắc đến."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The distributor with ______ we signed the exclusive contract has requested a meeting next week.",
+    "options": [
+      "whom",
+      "who",
+      "whose",
+      "which"
+    ],
+    "answer": "A",
+    "explanation": "Sau giới từ 'with', mệnh đề quan hệ chỉ người phải dùng 'whom', không dùng 'who'."
+  },
+  {
+    "lessonSlug": "menh-de-quan-he",
+    "stem": "The IT team fixed something ______ had been causing the system to crash every morning.",
+    "options": [
+      "who",
+      "whose",
+      "which",
+      "that"
+    ],
+    "answer": "D",
+    "explanation": "Sau đại từ bất định 'something', mệnh đề quan hệ dùng 'that' theo quy tắc đã học."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If the client ______ the contract by Friday, we will begin production immediately.",
+    "options": [
+      "would sign",
+      "signs",
+      "signed",
+      "had signed"
+    ],
+    "answer": "B",
+    "explanation": "Câu điều kiện loại 1 dùng thì hiện tại đơn ở mệnh đề if để diễn tả điều kiện có thể xảy ra."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "The company will lose the account if the support team ______ to resolve the issue soon.",
+    "options": [
+      "failed",
+      "would fail",
+      "fails",
+      "will fail"
+    ],
+    "answer": "C",
+    "explanation": "Câu điều kiện loại 1: mệnh đề if chia thì hiện tại đơn, không dùng 'will' trong mệnh đề if."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If the shipment ______ late again, we will switch to a different supplier.",
+    "options": [
+      "would arrive",
+      "will arrive",
+      "arrived",
+      "arrives"
+    ],
+    "answer": "D",
+    "explanation": "Câu điều kiện loại 1 dùng thì hiện tại đơn ở mệnh đề if, mệnh đề chính dùng 'will'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "We will extend the warranty if customers ______ their products within thirty days.",
+    "options": [
+      "would register",
+      "register",
+      "registered",
+      "will register"
+    ],
+    "answer": "B",
+    "explanation": "Câu điều kiện loại 1: động từ ở mệnh đề if luôn chia ở thì hiện tại đơn."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If I ______ the final decision, I would postpone the product launch until next quarter.",
+    "options": [
+      "had made",
+      "made",
+      "would make",
+      "make"
+    ],
+    "answer": "B",
+    "explanation": "Câu điều kiện loại 2 dùng thì quá khứ đơn ở mệnh đề if để diễn tả điều không có thật ở hiện tại."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If she were the project manager, she ______ the deadline to allow more testing time.",
+    "options": [
+      "would extend",
+      "extended",
+      "will extend",
+      "extends"
+    ],
+    "answer": "A",
+    "explanation": "Câu điều kiện loại 2: mệnh đề chính dùng 'would + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "The department would hire more staff if the annual budget ______ larger.",
+    "options": [
+      "was",
+      "is",
+      "were",
+      "will be"
+    ],
+    "answer": "C",
+    "explanation": "Trong câu điều kiện loại 2, động từ 'to be' luôn chia là 'were' cho mọi ngôi."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If the company ______ more resources into R&D, it could compete with larger rivals.",
+    "options": [
+      "had invested",
+      "would invest",
+      "invested",
+      "invests"
+    ],
+    "answer": "C",
+    "explanation": "Câu điều kiện loại 2 dùng thì quá khứ đơn ở mệnh đề if để diễn tả điều không có thật ở hiện tại."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "We could finish the audit early if the finance team ______ us more time.",
+    "options": [
+      "gave",
+      "gives",
+      "had given",
+      "would give"
+    ],
+    "answer": "A",
+    "explanation": "Câu điều kiện loại 2: mệnh đề if chia thì quá khứ đơn, mệnh đề chính dùng 'could + V nguyên mẫu'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If the manager ______ the report earlier, the client wouldn't have missed the deadline.",
+    "options": [
+      "submits",
+      "submitted",
+      "would submit",
+      "had submitted"
+    ],
+    "answer": "D",
+    "explanation": "Câu điều kiện loại 3 dùng 'had + V3/ed' ở mệnh đề if để diễn tả điều không có thật trong quá khứ."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "The merger would have failed if the lawyers ______ the contradictory clauses in time.",
+    "options": [
+      "haven't caught",
+      "wouldn't catch",
+      "hadn't caught",
+      "didn't catch"
+    ],
+    "answer": "C",
+    "explanation": "Câu điều kiện loại 3: mệnh đề if dùng 'had (not) + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If we ______ the warning signs, we could have avoided the data breach.",
+    "options": [
+      "would notice",
+      "noticed",
+      "had noticed",
+      "have noticed"
+    ],
+    "answer": "C",
+    "explanation": "Câu điều kiện loại 3 dùng 'had + V3/ed' ở mệnh đề if, mệnh đề chính dùng 'could have + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "She would have received the promotion if she ______ the certification exam last year.",
+    "options": [
+      "had passed",
+      "has passed",
+      "passed",
+      "would pass"
+    ],
+    "answer": "A",
+    "explanation": "Câu điều kiện loại 3 dùng 'had + V3/ed' ở mệnh đề if để nói về một điều không có thật trong quá khứ."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If the factory ______ additional safety inspections, the accident might not have happened.",
+    "options": [
+      "conducted",
+      "would conduct",
+      "had conducted",
+      "conducts"
+    ],
+    "answer": "C",
+    "explanation": "Câu điều kiện loại 3: mệnh đề if dùng 'had + V3/ed', mệnh đề chính dùng 'might have + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If she ______ harder for the certification last year, she would be eligible for the promotion now.",
+    "options": [
+      "studies",
+      "studied",
+      "would study",
+      "had studied"
+    ],
+    "answer": "D",
+    "explanation": "Câu điều kiện hỗn hợp loại 3-2: điều kiện trái với quá khứ, kết quả trái với hiện tại nên if-clause dùng 'had + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If the company hadn't invested in automation years ago, it ______ so competitive today.",
+    "options": [
+      "wouldn't be",
+      "didn't be",
+      "wouldn't have been",
+      "hadn't been"
+    ],
+    "answer": "A",
+    "explanation": "Câu điều kiện hỗn hợp loại 3-2: mệnh đề chính nói về hiện tại nên dùng 'would + V nguyên mẫu', không dùng 'would have'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If I were you, I ______ that risky contract months ago.",
+    "options": [
+      "would have rejected",
+      "would reject",
+      "will reject",
+      "rejected"
+    ],
+    "answer": "A",
+    "explanation": "Câu điều kiện hỗn hợp loại 2-3: if-clause giả định trái với hiện tại, mệnh đề chính nói về kết quả trong quá khứ nên dùng 'would have + V3/ed'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "If the market ______ down sharply, investors typically move their funds into safer assets.",
+    "options": [
+      "goes",
+      "went",
+      "will go",
+      "would go"
+    ],
+    "answer": "A",
+    "explanation": "Câu điều kiện loại 0 diễn tả sự thật hiển nhiên, cả hai mệnh đề đều chia ở thì hiện tại đơn."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "Unless the client ______ the revised proposal by Monday, the project timeline will be pushed back.",
+    "options": [
+      "approves",
+      "will approve",
+      "doesn't approve",
+      "approved"
+    ],
+    "answer": "A",
+    "explanation": "'Unless' đã mang nghĩa phủ định (= if...not), nên động từ theo sau chia khẳng định ở thì hiện tại đơn."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "The team can launch the campaign on schedule provided that management ______ the final budget today.",
+    "options": [
+      "would approve",
+      "approved",
+      "approves",
+      "will approve"
+    ],
+    "answer": "C",
+    "explanation": "'Provided that' có nghĩa tương đương 'if', mệnh đề theo sau chia ở thì hiện tại đơn như câu điều kiện loại 1."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "______ the extra funding from headquarters, the branch office would not have survived the downturn.",
+    "options": [
+      "Without",
+      "Provided",
+      "If",
+      "Unless"
+    ],
+    "answer": "A",
+    "explanation": "'Without' mang nghĩa 'nếu không có', tương đương với 'If there hadn't been' trong câu điều kiện loại 3."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "Should the shipment ______ delayed again, please notify the client immediately.",
+    "options": [
+      "be",
+      "been",
+      "was",
+      "is"
+    ],
+    "answer": "A",
+    "explanation": "Đảo ngữ câu điều kiện loại 1: 'Should + S + V nguyên mẫu' thay cho 'If + S + should + V'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "______ the company to relocate its headquarters, hundreds of employees would need to find new housing.",
+    "options": [
+      "Should",
+      "Had",
+      "Were",
+      "If"
+    ],
+    "answer": "C",
+    "explanation": "Đảo ngữ câu điều kiện loại 2: 'Were + S + to + V nguyên mẫu' thay cho 'If + S + were to + V'."
+  },
+  {
+    "lessonSlug": "cau-dieu-kien-loai-1-2-3",
+    "stem": "Had the negotiators ______ more flexible, the deal might have closed sooner.",
+    "options": [
+      "was",
+      "were",
+      "be",
+      "been"
+    ],
+    "answer": "D",
+    "explanation": "Đảo ngữ câu điều kiện loại 3: 'Had + S + V3/ed' thay cho 'If + S + had + V3/ed'."
   }
 ]
