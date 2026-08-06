@@ -977,6 +977,10 @@ import type { RawQuestion } from "./types";
 
 const STEM = /^\s*(\d{1,3})\.\s+(.*\S)\s*$/;
 const OPT = /^\s*([A-D])\.\s+(.*\S)\s*$/;
+// 18/50 cau trong file ADJ-ADV in lua chon A NGAY TREN dong de bai:
+//   "50. The bank is _______ to offer low-interest loans. A. eager"
+// Khong tach ra thi mat ca cau (parser doi du 4 lua chon moi nhan).
+const INLINE_A = /^(.*?\S)\s+A\.\s+(\S.*)$/;
 
 export function parseQuestionDoc(text: string, sourceFile: string): RawQuestion[] {
   const out: RawQuestion[] = [];
@@ -989,7 +993,10 @@ export function parseQuestionDoc(text: string, sourceFile: string): RawQuestion[
     const s = line.match(STEM);
     if (s) {
       if (cur && cur.options.length === 4) out.push(cur);
-      cur = { index: Number(s[1]), stem: s[2]!, options: [], sourceFile };
+      const inline = s[2]!.match(INLINE_A);
+      cur = inline
+        ? { index: Number(s[1]), stem: inline[1]!, options: [inline[2]!], sourceFile }
+        : { index: Number(s[1]), stem: s[2]!, options: [], sourceFile };
       continue;
     }
     // de bai xuong dong: noi tiep vao stem khi chua co lua chon nao
