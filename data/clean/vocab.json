@@ -6590,5 +6590,945 @@
     "exampleEn": "Technology is becoming an ___ important factor in the nation's economy.",
     "exampleVi": "Công nghệ đang trở thành một yếu tố ngày càng quan trọng trong nền kinh tế của đất nước.",
     "blankAnswer": "increasingly"
+  },
+  {
+    "ordinal": 421,
+    "word": "invest",
+    "pos": "v",
+    "ipa": "/ɪnˈvest/",
+    "meaningVi": "đầu tư",
+    "definitionEn": "to buy property, shares in a company, etc. in the hope of making a profit",
+    "definitionVi": "để mua tài sản, cổ phần trong một công ty, v.v. với hy vọng kiếm lợi nhuận",
+    "synonyms": [
+      "fund",
+      "finance"
+    ],
+    "exampleEn": "Lamont Manufacturing ___ millions of dollars in improving its assembly line.",
+    "exampleVi": "Lamont Manufacturing đầu tư hàng triệu đô la để cải thiện dây chuyền lắp ráp.",
+    "blankAnswer": "invested"
+  },
+  {
+    "ordinal": 422,
+    "word": "various",
+    "pos": "adj",
+    "ipa": "/ˈveriəs/",
+    "meaningVi": "khác nhau",
+    "definitionEn": "having many different features",
+    "definitionVi": "có nhiều tính năng khác nhau",
+    "synonyms": [
+      "different"
+    ],
+    "exampleEn": "This car has ___ features not included in older models.",
+    "exampleVi": "Chiếc xe này có nhiều tính năng khác nhau không có trong các mẫu máy cũ.",
+    "blankAnswer": "various"
+  },
+  {
+    "ordinal": 423,
+    "word": "upgrade",
+    "pos": "n",
+    "ipa": "/ˈʌpɡreɪd/",
+    "meaningVi": "nâng cấp, cải thiện",
+    "definitionEn": "the act of making a piece of machinery, computer system, etc. more powerful and efficient",
+    "definitionVi": "hành động làm một phần máy móc, hệ thống máy tính, v.v. mạnh hơn và hiệu quả hơn",
+    "synonyms": [
+      "improve"
+    ],
+    "exampleEn": "Special customers are eligible for one free computer ___.",
+    "exampleVi": "Khách hàng đặc biệt đủ điều kiện để nâng cấp máy tính miễn phí.",
+    "blankAnswer": "upgrade"
+  },
+  {
+    "ordinal": 424,
+    "word": "manual",
+    "pos": "n",
+    "ipa": "/ˈmænjuəl/",
+    "meaningVi": "sách hướng dẫn",
+    "definitionEn": "operated or controlled by hand rather than automatically or using electricity",
+    "definitionVi": "vận hành hoặc điều khiển bằng tay thay vì tự động hoặc sử dụng điện",
+    "synonyms": [
+      "handbook"
+    ],
+    "exampleEn": "Rachel is writing the product ___ for the new air conditioner.",
+    "exampleVi": "Rachel đang viết sách hướng dẫn sử dụng sản phẩm cho máy điều hòa mới.",
+    "blankAnswer": "manual"
+  },
+  {
+    "ordinal": 425,
+    "word": "explore",
+    "pos": "v",
+    "ipa": "/ɪkˈsplɔːr/",
+    "meaningVi": "khám phá, xem qua",
+    "definitionEn": "to examine something completely or carefully in order to find out more about it",
+    "definitionVi": "kiểm tra một cái gì đó hoàn toàn hoặc cẩn thận để tìm hiểu thêm về nó",
+    "synonyms": [
+      "look"
+    ],
+    "exampleEn": "Clients seeking company information can ___ our Web site.",
+    "exampleVi": "Khách hàng tìm kiếm thông tin công ty có thể xem qua trang web của chúng tôi.",
+    "blankAnswer": "explore"
+  },
+  {
+    "ordinal": 426,
+    "word": "response",
+    "pos": "n",
+    "ipa": "/rɪˈspɑːns/",
+    "meaningVi": "sự phản hồi, đáp lại",
+    "definitionEn": "a spoken or written answer",
+    "definitionVi": "câu trả lời bằng giọng nói hoặc được viết",
+    "synonyms": [
+      "reply",
+      "answer"
+    ],
+    "exampleEn": "Those testing the new microwave are asked to submit written ___ to some questions.",
+    "exampleVi": "Những người thử nghiệm lò vi sóng mới được yêu cầu gửi phản hồi bằng văn bản cho một số câu hỏi.",
+    "blankAnswer": "responses"
+  },
+  {
+    "ordinal": 427,
+    "word": "appearance",
+    "pos": "n",
+    "ipa": "/əˈpɪrəns/",
+    "meaningVi": "sự xuất hiện, hiện diện, diện mạo",
+    "definitionEn": "an act of appearing in public, especially as a performer, politician",
+    "definitionVi": "một hành động xuất hiện trước công chúng, đặc biệt là người biểu diễn, chính trị gia",
+    "synonyms": [
+      "look",
+      "emergence"
+    ],
+    "exampleEn": "The design team completely modernized the product's ___.",
+    "exampleVi": "Nhóm thiết kế đã hoàn toàn hiện đại hóa diện mạo của sản phẩm.",
+    "blankAnswer": "appearance"
+  },
+  {
+    "ordinal": 428,
+    "word": "successful",
+    "pos": "adj",
+    "ipa": "/səkˈsesfl/",
+    "meaningVi": "thành công",
+    "definitionEn": "achieving your aims or what was intended",
+    "definitionVi": "đạt được mục tiêu của bạn hoặc những gì được dự định",
+    "synonyms": [
+      "thriving",
+      "prosperous"
+    ],
+    "exampleEn": "The floor lamps are the company's most ___ product.",
+    "exampleVi": "Các loại đèn sàn là sản phẩm thành công nhất của công ty.",
+    "blankAnswer": "successful"
+  },
+  {
+    "ordinal": 429,
+    "word": "hold",
+    "pos": "v",
+    "ipa": "/hoʊld/",
+    "meaningVi": "tổ chức, chứa",
+    "definitionEn": "to have enough space for something/somebody; to contain something/somebody",
+    "definitionVi": "có đủ không gian cho một cái gì đó/ai đó; để chứa một cái gì đó/ai đó",
+    "synonyms": [
+      "contain",
+      "accommodate"
+    ],
+    "exampleEn": "The washing machine ___ up to three kilograms of laundry.",
+    "exampleVi": "Máy giặt chứa đến ba kg đồ giặt.",
+    "blankAnswer": "holds"
+  },
+  {
+    "ordinal": 430,
+    "word": "advance",
+    "pos": "n",
+    "ipa": "/ədˈvæns/",
+    "meaningVi": "sự tiến bộ, cải tiến",
+    "definitionEn": "progress or a development in a particular activity or area of understanding",
+    "definitionVi": "tiến bộ hoặc sự phát triển trong một hoạt động cụ thể hoặc lĩnh vực hiểu biết",
+    "synonyms": [
+      "progress",
+      "improvement"
+    ],
+    "exampleEn": "The product development team researches ___ in computer technology.",
+    "exampleVi": "Nhóm phát triển sản phẩm nghiên cứu những tiến bộ trong công nghệ máy tính.",
+    "blankAnswer": "advances"
+  },
+  {
+    "ordinal": 431,
+    "word": "reliable",
+    "pos": "adj",
+    "ipa": "/rɪˈlaɪəbl/",
+    "meaningVi": "đáng tin cậy",
+    "definitionEn": "that can be trusted to do something well; that you can rely on",
+    "definitionVi": "điều đó có thể được tin cậy để làm điều gì đó tốt; mà bạn có thể dựa vào",
+    "synonyms": [
+      "trustworthy"
+    ],
+    "exampleEn": "Tests indicate that Branco's products are ___ and efficient.",
+    "exampleVi": "Các thử nghiệm cho thấy các sản phẩm của Branco đáng tin cậy và hiệu quả.",
+    "blankAnswer": "reliable"
+  },
+  {
+    "ordinal": 432,
+    "word": "domestic",
+    "pos": "adj",
+    "ipa": "/dəˈmestɪk/",
+    "meaningVi": "trong nước",
+    "definitionEn": "of or inside a particular country; not foreign or international",
+    "definitionVi": "trong hoặc bên trong một quốc gia cụ thể; không ngoại quốc hay quốc tế",
+    "synonyms": [
+      "national",
+      "home"
+    ],
+    "exampleEn": "Slow sales in the ___ market forced companies to expand overseas.",
+    "exampleVi": "Doanh số bán hàng chậm tại thị trường trong nước buộc các công ty phải mở rộng ra nước ngoài.",
+    "blankAnswer": "domestic"
+  },
+  {
+    "ordinal": 433,
+    "word": "development",
+    "pos": "n",
+    "ipa": "/dɪˈveləpmənt/",
+    "meaningVi": "sự phát triển",
+    "definitionEn": "the gradual growth of something so that it becomes more advanced, stronger",
+    "definitionVi": "sự tăng trưởng dần dần của một cái gì đó để nó trở nên tiên tiến hơn, mạnh mẽ hơn",
+    "synonyms": [
+      "growth"
+    ],
+    "exampleEn": "The project is in the final stage of ___.",
+    "exampleVi": "Dự án đang trong giai đoạn phát triển cuối cùng.",
+    "blankAnswer": "development"
+  },
+  {
+    "ordinal": 434,
+    "word": "availability",
+    "pos": "n",
+    "ipa": "/əˌveɪləˈbɪləti/",
+    "meaningVi": "sự có sẵn, tình trạng có sẵn",
+    "definitionEn": "the fact that something is possible to get, buy or find",
+    "definitionVi": "thực tế là một thứ có thể nhận được, mua hoặc tìm",
+    "synonyms": [
+      "accessibility",
+      "readiness"
+    ],
+    "exampleEn": "___ of product depends on market demand and supply.",
+    "exampleVi": "Sự có sẵn của sản phẩm phụ thuộc vào nhu cầu và nguồn cung của thị trường.",
+    "blankAnswer": "Availability"
+  },
+  {
+    "ordinal": 435,
+    "word": "update",
+    "pos": "v",
+    "ipa": "/ʌpˈdeɪt/",
+    "meaningVi": "cập nhật",
+    "definitionEn": "to make something more modern by adding new parts, etc.",
+    "definitionVi": "làm cho một cái gì đó hiện đại hơn bằng cách thêm các phần mới, v.v.",
+    "synonyms": [
+      "revise",
+      "modernize"
+    ],
+    "exampleEn": "The factory ___ the software of its equipment to speed up the production rate.",
+    "exampleVi": "Nhà máy đã cập nhật phần mềm của thiết bị để tăng tốc độ sản xuất.",
+    "blankAnswer": "updated"
+  },
+  {
+    "ordinal": 436,
+    "word": "accurate",
+    "pos": "adj",
+    "ipa": "/ˈækjərət/",
+    "meaningVi": "đúng, chính xác",
+    "definitionEn": "correct and true in every detail",
+    "definitionVi": "đúng và chính xác trong mọi chi tiết",
+    "synonyms": [
+      "precise",
+      "exact"
+    ],
+    "exampleEn": "The new accounting software is ___ and precise.",
+    "exampleVi": "Phần mềm kế toán mới chính xác và tỉ mỉ.",
+    "blankAnswer": "accurate"
+  },
+  {
+    "ordinal": 437,
+    "word": "complicated",
+    "pos": "adj",
+    "ipa": "/ˈkɑːmplɪkeɪtɪd/",
+    "meaningVi": "phức tạp",
+    "definitionEn": "made of many different things or parts that are connected; difficult to understand",
+    "definitionVi": "được làm từ nhiều thứ hoặc bộ phận khác nhau được kết nối; khó để hiểu",
+    "synonyms": [
+      "tricky"
+    ],
+    "exampleEn": "Project delays often create a ___ situation for the public relations department.",
+    "exampleVi": "Sự chậm trễ của dự án thường tạo ra một tình huống phức tạp cho bộ phận quan hệ công chúng.",
+    "blankAnswer": "complicated"
+  },
+  {
+    "ordinal": 438,
+    "word": "accomplished",
+    "pos": "adj",
+    "ipa": "/əˈkɑːmplɪʃt/",
+    "meaningVi": "có tài năng, dày dặn kinh nghiệm, hoàn thành",
+    "definitionEn": "an accomplished writer, painter, singer etc is very skilful",
+    "definitionVi": "một nhà văn, họa sĩ, ca sĩ xuất sắc... rất khéo léo",
+    "synonyms": [
+      "skilled",
+      "seasoned"
+    ],
+    "exampleEn": "The ___ chemist has been hired to develop a flexible battery.",
+    "exampleVi": "Nhà hóa học dày dặn kinh nghiệm đã được thuê để phát triển một loại pin linh hoạt.",
+    "blankAnswer": "accomplished"
+  },
+  {
+    "ordinal": 439,
+    "word": "inquiry",
+    "pos": "n",
+    "ipa": "/ɪnˈkwaɪəri/",
+    "meaningVi": "sự yêu cầu",
+    "definitionEn": "an official process to find out the cause of something or to find out information about something",
+    "definitionVi": "một quy trình chính thức để tìm ra nguyên nhân của một cái gì đó hoặc để tìm hiểu thông tin về một cái gì đó",
+    "synonyms": [
+      "question",
+      "query"
+    ],
+    "exampleEn": "Please call our customer representatives for service ___.",
+    "exampleVi": "Vui lòng gọi cho đại diện khách hàng của chúng tôi để biết các yêu cầu dịch vụ.",
+    "blankAnswer": "inquiries"
+  },
+  {
+    "ordinal": 440,
+    "word": "indication",
+    "pos": "n",
+    "ipa": "/ˌɪndɪˈkeɪʃn/",
+    "meaningVi": "dấu hiệu",
+    "definitionEn": "a remark or sign that shows that something is happening or what somebody is thinking or feeling",
+    "definitionVi": "một nhận xét hoặc dấu hiệu cho thấy rằng một cái gì đó đang xảy ra hoặc những gì ai đó đang suy nghĩ hoặc cảm thấy",
+    "synonyms": [
+      "sign",
+      "signal"
+    ],
+    "exampleEn": "Uneven printing is an ___ of a technical fault.",
+    "exampleVi": "In không đồng đều là dấu hiệu của lỗi kỹ thuật.",
+    "blankAnswer": "indication"
+  },
+  {
+    "ordinal": 441,
+    "word": "manufacturer",
+    "pos": "n",
+    "ipa": "/ˌmænjuˈfæktʃərər/",
+    "meaningVi": "nhà sản xuất",
+    "definitionEn": "a person or company that produces goods in large quantities",
+    "definitionVi": "một người hoặc công ty sản xuất hàng hóa với số lượng lớn",
+    "synonyms": [
+      "producer",
+      "maker"
+    ],
+    "exampleEn": "The ___ guarantees all its products for up to one year.",
+    "exampleVi": "Nhà sản xuất đảm bảo tất cả các sản phẩm của mình trong tối đa một năm.",
+    "blankAnswer": "manufacturer"
+  },
+  {
+    "ordinal": 442,
+    "word": "compatible",
+    "pos": "adj",
+    "ipa": "/kəmˈpætəbl/",
+    "meaningVi": "tương thích, thích hợp",
+    "definitionEn": "able to be used together with something else, especially machines or software",
+    "definitionVi": "có thể được sử dụng cùng nhau với một cái gì đó khác, đặc biệt là máy móc hoặc phần mềm",
+    "synonyms": [
+      "suitable",
+      "consistent"
+    ],
+    "exampleEn": "The remote control is ___ with all models.",
+    "exampleVi": "Điều khiển từ xa tương thích với tất cả các kiểu máy.",
+    "blankAnswer": "compatible"
+  },
+  {
+    "ordinal": 443,
+    "word": "superior",
+    "pos": "adj",
+    "ipa": "/suːˈpɪriər/",
+    "meaningVi": "tốt hơn",
+    "definitionEn": "better in quality than somebody/something else; greater than somebody/something else",
+    "definitionVi": "chất lượng tốt hơn ai đó/cái gì khác; tuyệt vời hơn ai đó/cái gì khác",
+    "synonyms": [
+      "better",
+      "greater"
+    ],
+    "exampleEn": "The company's latest television is ___ to those on the market today.",
+    "exampleVi": "Truyền hình mới nhất của công ty thì tốt hơn so với những kênh truyền hình trên thị trường hiện nay.",
+    "blankAnswer": "superior"
+  },
+  {
+    "ordinal": 444,
+    "word": "corrosion",
+    "pos": "n",
+    "ipa": "/kəˈroʊʒn/",
+    "meaningVi": "sự ăn mòn",
+    "definitionEn": "the process of destroying something slowly, especially by chemical action; the condition that results from this process",
+    "definitionVi": "quá trình phá hủy một cái gì đó từ từ, đặc biệt là bởi hành động hóa học; điều kiện kết quả từ quá trình này",
+    "synonyms": [
+      "rust",
+      "erosion"
+    ],
+    "exampleEn": "This steel roof is designed to be resistant to ___ from the weather.",
+    "exampleVi": "Mái nhà bằng thép này được thiết kế để có khả năng chống ăn mòn từ thời tiết.",
+    "blankAnswer": "corrosion"
+  },
+  {
+    "ordinal": 445,
+    "word": "absolute",
+    "pos": "adj",
+    "ipa": "/ˈæbsəluːt/",
+    "meaningVi": "tuyệt đối, hoàn toàn",
+    "definitionEn": "definite and without any doubt or confusion",
+    "definitionVi": "xác định và không nghi ngờ hoặc nhầm lẫn",
+    "synonyms": [
+      "complete",
+      "total"
+    ],
+    "exampleEn": "The latest technology keeps production costs to an ___ minimum.",
+    "exampleVi": "Công nghệ mới nhất giữ chi phí sản xuất ở mức tối thiểu tuyệt đối.",
+    "blankAnswer": "absolute"
+  },
+  {
+    "ordinal": 446,
+    "word": "broaden",
+    "pos": "v",
+    "ipa": "/ˈbrɔːdn/",
+    "meaningVi": "rộng",
+    "definitionEn": "to become wider",
+    "definitionVi": "để trở nên rộng hơn",
+    "synonyms": [
+      "widen",
+      "expand"
+    ],
+    "exampleEn": "The new CEO is ___ the scope of the company's research.",
+    "exampleVi": "CEO mới đang mở rộng phạm vi nghiên cứu của công ty.",
+    "blankAnswer": "broadening"
+  },
+  {
+    "ordinal": 447,
+    "word": "equipment",
+    "pos": "n",
+    "ipa": "/ɪˈkwɪpmənt/",
+    "meaningVi": "thiết bị",
+    "definitionEn": "the things that are needed for a particular purpose or activity",
+    "definitionVi": "những thứ cần thiết cho một mục đích hoặc hoạt động cụ thể",
+    "synonyms": [
+      "appliance"
+    ],
+    "exampleEn": "The company uses special ___ to load large crates onto freight trucks.",
+    "exampleVi": "Công ty sử dụng thiết bị đặc biệt để tải thùng lớn lên xe tải chở hàng.",
+    "blankAnswer": "equipment"
+  },
+  {
+    "ordinal": 448,
+    "word": "automate",
+    "pos": "v",
+    "ipa": "/ˈɔːtəmeɪt/",
+    "meaningVi": "tự động hóa",
+    "definitionEn": "to use machines and computers instead of people to do a job or task",
+    "definitionVi": "sử dụng máy móc và máy tính thay vì mọi người để thực hiện công việc hoặc nhiệm vụ",
+    "synonyms": [
+      "mechanize",
+      "computerize"
+    ],
+    "exampleEn": "The production plant will be fully ___ by next year.",
+    "exampleVi": "Nhà máy sản xuất sẽ được hoàn toàn tự động vào năm tới.",
+    "blankAnswer": "automated"
+  },
+  {
+    "ordinal": 449,
+    "word": "specification",
+    "pos": "n",
+    "ipa": "/ˌspesɪfɪˈkeɪʃn/",
+    "meaningVi": "đặc điểm kỹ thuật, thông số kỹ thuật",
+    "definitionEn": "a detailed description of how something is, or should be, designed or made",
+    "definitionVi": "một mô tả chi tiết về một cái gì đó là, hoặc nên được, được thiết kế hoặc thực hiện",
+    "synonyms": [
+      "detail",
+      "requirement"
+    ],
+    "exampleEn": "The quality control team checks if all items meet product ___.",
+    "exampleVi": "Nhóm kiểm soát chất lượng sẽ kiểm tra xem các mặt hàng có đáp ứng các đặc điểm kỹ thuật của sản phẩm hay không.",
+    "blankAnswer": "specifications"
+  },
+  {
+    "ordinal": 450,
+    "word": "properly",
+    "pos": "adv",
+    "ipa": "/ˈprɑːpərli/",
+    "meaningVi": "một cách thích hợp, đúng cách",
+    "definitionEn": "in a correct, acceptable, or satisfactory way",
+    "definitionVi": "theo cách đúng đắn, phù hợp hoặc thỏa đáng",
+    "synonyms": [
+      "correctly",
+      "adequately"
+    ],
+    "exampleEn": "Machinery must be well-maintained to operate ___.",
+    "exampleVi": "Máy móc phải được duy trì tốt để hoạt động đúng cách.",
+    "blankAnswer": "properly"
+  },
+  {
+    "ordinal": 451,
+    "word": "safety",
+    "pos": "n",
+    "ipa": "/ˈseɪfti/",
+    "meaningVi": "sự an toàn",
+    "definitionEn": "the state of being safe and protected from danger or harm",
+    "definitionVi": "trạng thái an toàn và được bảo vệ khỏi nguy hiểm hoặc tổn hại",
+    "synonyms": [
+      "security"
+    ],
+    "exampleEn": "Factory supervisors prioritize ___ over speed.",
+    "exampleVi": "Giám sát nhà máy ưu tiên sự an toàn hơn tốc độ.",
+    "blankAnswer": "safety"
+  },
+  {
+    "ordinal": 452,
+    "word": "precaution",
+    "pos": "n",
+    "ipa": "/prɪˈkɔːʃn/",
+    "meaningVi": "sự phòng ngừa, sự đề phòng",
+    "definitionEn": "something that is done in advance in order to prevent problems or to avoid danger",
+    "definitionVi": "một cái gì đó được thực hiện trước để ngăn chặn các vấn đề hoặc để tránh nguy hiểm",
+    "synonyms": [
+      "safeguard",
+      "protection"
+    ],
+    "exampleEn": "After the accident, the company introduced stricter safety ___.",
+    "exampleVi": "Sau tai nạn, công ty đã giới thiệu sự phòng ngừa an toàn chặt chẽ hơn.",
+    "blankAnswer": "precautions"
+  },
+  {
+    "ordinal": 453,
+    "word": "operate",
+    "pos": "v",
+    "ipa": "/ˈɑːpəreɪt/",
+    "meaningVi": "vận hành, quản lý, hoạt động",
+    "definitionEn": "to use or control a machine or make it work",
+    "definitionVi": "sử dụng hoặc điều khiển máy hoặc làm cho máy hoạt động",
+    "synonyms": [
+      "work"
+    ],
+    "exampleEn": "The assembly line ___ round the clock.",
+    "exampleVi": "Dây chuyền lắp ráp hoạt động suốt ngày đêm.",
+    "blankAnswer": "operates"
+  },
+  {
+    "ordinal": 454,
+    "word": "processing",
+    "pos": "n",
+    "ipa": "/ˈprɑːsesɪŋ/",
+    "meaningVi": "sự chế biến, xử lý",
+    "definitionEn": "the treatment of raw material, food, etc. in order to change it, preserve it",
+    "definitionVi": "việc xử lý nguyên liệu, thực phẩm, v.v. để thay đổi nó, bảo quản nó",
+    "synonyms": [
+      "treatment",
+      "handling"
+    ],
+    "exampleEn": "Food ___ requires a clean environment.",
+    "exampleVi": "Chế biến thực phẩm đòi hỏi một môi trường sạch sẽ.",
+    "blankAnswer": "processing"
+  },
+  {
+    "ordinal": 455,
+    "word": "capacity",
+    "pos": "n",
+    "ipa": "/kəˈpæsəti/",
+    "meaningVi": "có khả năng, công suất, sức chứa",
+    "definitionEn": "the number of things or people that a container or space can hold",
+    "definitionVi": "số lượng những thứ hoặc người mà vùng chứa hoặc không gian có thể chứa",
+    "synonyms": [
+      "volume",
+      "capability"
+    ],
+    "exampleEn": "The warehouse's ___ will double after the construction.",
+    "exampleVi": "Sức chứa của nhà kho sẽ tăng gấp đôi sau khi xây dựng.",
+    "blankAnswer": "capacity"
+  },
+  {
+    "ordinal": 456,
+    "word": "assemble",
+    "pos": "v",
+    "ipa": "/əˈsembl/",
+    "meaningVi": "tập hợp, lắp ráp",
+    "definitionEn": "to fit together all the separate parts of something, for example a piece of furniture",
+    "definitionVi": "để lắp ráp với nhau tất cả các phần riêng biệt của một cái gì đó, ví dụ một mảnh đồ nội thất",
+    "synonyms": [
+      "set up",
+      "gather"
+    ],
+    "exampleEn": "The manager ___ everyone in the department for a meeting.",
+    "exampleVi": "Người quản lý tập hợp tất cả mọi người trong bộ phận cho một cuộc họp.",
+    "blankAnswer": "assembled"
+  },
+  {
+    "ordinal": 457,
+    "word": "utilize",
+    "pos": "v",
+    "ipa": "/ˈjuːtəlaɪz/",
+    "meaningVi": "sử dụng",
+    "definitionEn": "to use something, especially for a practical purpose",
+    "definitionVi": "sử dụng một cái gì đó, đặc biệt là cho một mục đích thực tế",
+    "synonyms": [
+      "use"
+    ],
+    "exampleEn": "The technicians ___ computer technology to improve processes.",
+    "exampleVi": "Các kỹ thuật viên sử dụng công nghệ máy tính để cải thiện quy trình.",
+    "blankAnswer": "utilized"
+  },
+  {
+    "ordinal": 458,
+    "word": "place",
+    "pos": "n",
+    "ipa": "/pleɪs/",
+    "meaningVi": "địa điểm, đặt",
+    "definitionEn": "to give an order for something to be made, supplied, or delivered",
+    "definitionVi": "đặt hàng hoặc yêu cầu cung cấp một thứ gì đó",
+    "synonyms": [
+      "order",
+      "arrange"
+    ],
+    "exampleEn": "The office manager has to ___ an order for additional materials immediately.",
+    "exampleVi": "Người quản lý văn phòng phải đặt hàng thêm tài liệu ngay lập tức.",
+    "blankAnswer": "place"
+  },
+  {
+    "ordinal": 459,
+    "word": "fill",
+    "pos": "v",
+    "ipa": "/fɪl/",
+    "meaningVi": "đáp ứng, đổ đầy, bổ khuyết",
+    "definitionEn": "to provide what is needed to satisfy a request or an order",
+    "definitionVi": "cung cấp những gì cần thiết để đáp ứng một yêu cầu hoặc đơn đặt hàng",
+    "synonyms": [
+      "meet"
+    ],
+    "exampleEn": "It will take a week to ___ the hotel's order for bed sheets.",
+    "exampleVi": "Sẽ mất một tuần để đáp ứng đơn đặt hàng của khách sạn cho khăn trải giường.",
+    "blankAnswer": "fill"
+  },
+  {
+    "ordinal": 460,
+    "word": "manufacturing",
+    "pos": "n",
+    "ipa": "/ˌmænjuˈfæktʃərɪŋ/",
+    "meaningVi": "sản xuất",
+    "definitionEn": "the business or industry of producing goods in large quantities in factories",
+    "definitionVi": "doanh nghiệp hoặc ngành sản xuất hàng hóa với số lượng lớn trong các nhà máy",
+    "synonyms": [
+      "production",
+      "manufacture"
+    ],
+    "exampleEn": "The ___ process in the automotive industry has changed with computer advances.",
+    "exampleVi": "Quá trình sản xuất trong ngành công nghiệp ô tô đã thay đổi với những tiến bộ của máy tính.",
+    "blankAnswer": "manufacturing"
+  },
+  {
+    "ordinal": 461,
+    "word": "renovate",
+    "pos": "v",
+    "ipa": "/ˈrenəveɪt/",
+    "meaningVi": "cải tạo, sửa chữa lại",
+    "definitionEn": "to repair and paint an old building, a piece of furniture, etc. so that it is in good condition again",
+    "definitionVi": "sửa chữa và sơn một tòa nhà cũ, một mảnh đồ nội thất, v.v. để nó ở trong tình trạng tốt một lần nữa",
+    "synonyms": [
+      "restore",
+      "refurbish"
+    ],
+    "exampleEn": "The packaging area was ___ to use the space more effectively.",
+    "exampleVi": "Khu vực đóng gói đã được cải tạo để sử dụng không gian hiệu quả hơn.",
+    "blankAnswer": "renovated"
+  },
+  {
+    "ordinal": 462,
+    "word": "decision",
+    "pos": "n",
+    "ipa": "/dɪˈsɪʒn/",
+    "meaningVi": "sự quyết định",
+    "definitionEn": "a choice or judgement that you make after thinking and talking about what is the best thing to do",
+    "definitionVi": "một sự lựa chọn hoặc phán đoán mà bạn thực hiện sau khi suy nghĩ và nói về điều tốt nhất để làm",
+    "synonyms": [
+      "choice",
+      "judgment"
+    ],
+    "exampleEn": "The CEO's ___ was to release the computer in February.",
+    "exampleVi": "Quyết định của giám đốc điều hành là phát hành máy tính vào tháng Hai.",
+    "blankAnswer": "decision"
+  },
+  {
+    "ordinal": 463,
+    "word": "material",
+    "pos": "n",
+    "ipa": "/məˈtɪriəl/",
+    "meaningVi": "vật liệu, tài liệu",
+    "definitionEn": "things that are needed in order to do a particular activity",
+    "definitionVi": "những thứ cần thiết để thực hiện một hoạt động cụ thể",
+    "synonyms": [
+      "substance",
+      "matter"
+    ],
+    "exampleEn": "The designers selected the ___ because of its durability.",
+    "exampleVi": "Các nhà thiết kế đã chọn vật liệu này vì độ bền của nó.",
+    "blankAnswer": "material"
+  },
+  {
+    "ordinal": 464,
+    "word": "success",
+    "pos": "n",
+    "ipa": "/səkˈses/",
+    "meaningVi": "sự thành công",
+    "definitionEn": "the fact that you have achieved something that you want and have been trying to do or get",
+    "definitionVi": "thực tế là bạn đã đạt được một cái gì đó mà bạn muốn và đã cố gắng để làm hoặc nhận được",
+    "synonyms": [
+      "achievement",
+      "triumph"
+    ],
+    "exampleEn": "The company owes its ___ to strict quality control.",
+    "exampleVi": "Công ty công nhận thành công của mình là do kiểm soát chất lượng nghiêm ngặt.",
+    "blankAnswer": "success"
+  },
+  {
+    "ordinal": 465,
+    "word": "attribute",
+    "pos": "v",
+    "ipa": "/əˈtrɪbjuːt/",
+    "meaningVi": "quy cho, cho là do",
+    "definitionEn": "to say or think that something is the result of a particular thing",
+    "definitionVi": "nói hoặc nghĩ rằng một cái gì đó là kết quả của một điều cụ thể",
+    "synonyms": [
+      "ascribe",
+      "credit"
+    ],
+    "exampleEn": "Management has ___ last year's gains to increased development.",
+    "exampleVi": "Quản lý đã quy cho lợi nhuận của năm ngoái là do tăng cường sự phát triển.",
+    "blankAnswer": "attributed"
+  },
+  {
+    "ordinal": 466,
+    "word": "efficiency",
+    "pos": "n",
+    "ipa": "/ɪˈfɪʃnsi/",
+    "meaningVi": "hiệu quả, năng suất",
+    "definitionEn": "ways of wasting less time and money or of saving time or money",
+    "definitionVi": "cách lãng phí ít thời gian và tiền bạc hơn hoặc tiết kiệm thời gian hoặc tiền bạc",
+    "synonyms": [
+      "effectiveness",
+      "productivity"
+    ],
+    "exampleEn": "The consultant suggested measures to improve energy ___.",
+    "exampleVi": "Tư vấn đề xuất các biện pháp để cải thiện hiệu quả năng lượng.",
+    "blankAnswer": "efficiency"
+  },
+  {
+    "ordinal": 467,
+    "word": "limit",
+    "pos": "n",
+    "ipa": "/ˈlɪmɪt/",
+    "meaningVi": "sự giới hạn, hạn chế",
+    "definitionEn": "the greatest or smallest amount of something that is allowed",
+    "definitionVi": "lớn nhất hoặc nhỏ nhất được cho phép",
+    "synonyms": [
+      "restriction"
+    ],
+    "exampleEn": "There is a ___ to the amount of merchandise the factory can make in a day.",
+    "exampleVi": "Có giới hạn về số lượng hàng hóa mà nhà máy có thể thực hiện trong một ngày.",
+    "blankAnswer": "limit"
+  },
+  {
+    "ordinal": 468,
+    "word": "tailored",
+    "pos": "adj",
+    "ipa": "/ˈteɪlərd/",
+    "meaningVi": "tạo ra phù hợp cho",
+    "definitionEn": "made for a particular person or purpose",
+    "definitionVi": "được thực hiện cho một người hoặc mục đích cụ thể",
+    "synonyms": [
+      "customized",
+      "adapted"
+    ],
+    "exampleEn": "This equipment can be ___ to the company's production needs.",
+    "exampleVi": "Thiết bị này tạo ra phù hợp theo nhu cầu sản xuất của công ty.",
+    "blankAnswer": "tailored"
+  },
+  {
+    "ordinal": 469,
+    "word": "component",
+    "pos": "n",
+    "ipa": "/kəmˈpoʊnənt/",
+    "meaningVi": "thành phần",
+    "definitionEn": "used to describe one of several parts of which something is made",
+    "definitionVi": "được sử dụng để mô tả một trong nhiều phần trong đó một cái gì đó được tạo thành",
+    "synonyms": [
+      "part"
+    ],
+    "exampleEn": "The store returned the defective ___ to the manufacturer.",
+    "exampleVi": "Cửa hàng trả lại thành phần bị lỗi cho nhà sản xuất.",
+    "blankAnswer": "component"
+  },
+  {
+    "ordinal": 470,
+    "word": "capable",
+    "pos": "adj",
+    "ipa": "/ˈkeɪpəbl/",
+    "meaningVi": "có khả năng, có năng lực",
+    "definitionEn": "having the ability or qualities necessary for doing something",
+    "definitionVi": "có khả năng hoặc phẩm chất cần thiết để làm điều gì đó",
+    "synonyms": [
+      "skillful",
+      "skilled"
+    ],
+    "exampleEn": "Ferrum Corporation is ___ of processing all kinds of metals.",
+    "exampleVi": "Ferrum Corporation có khả năng xử lý tất cả các loại kim loại.",
+    "blankAnswer": "capable"
+  },
+  {
+    "ordinal": 471,
+    "word": "economize",
+    "pos": "v",
+    "ipa": "/ɪˈkɑːnəmaɪz/",
+    "meaningVi": "tiết kiệm",
+    "definitionEn": "to use less money, time, etc. than you normally use",
+    "definitionVi": "sử dụng ít tiền, thời gian, v.v. so với bình thường bạn sử dụng",
+    "synonyms": [
+      "save"
+    ],
+    "exampleEn": "Hybrid cars are becoming popular because they ___ on fuel.",
+    "exampleVi": "Xe chạy nhiên liệu hỗn hợp đang trở nên phổ biến vì chúng tiết kiệm nhiên liệu.",
+    "blankAnswer": "economize"
+  },
+  {
+    "ordinal": 472,
+    "word": "flexible",
+    "pos": "adj",
+    "ipa": "/ˈfleksəbl/",
+    "meaningVi": "linh hoạt",
+    "definitionEn": "able to change to suit new conditions or situations",
+    "definitionVi": "có thể thay đổi để phù hợp với điều kiện hoặc tình huống mới",
+    "synonyms": [
+      "versatile"
+    ],
+    "exampleEn": "Management is more ___ about granting vacations when business is slow.",
+    "exampleVi": "Quản lý linh hoạt hơn khi cấp các kỳ nghỉ khi doanh nghiệp khó khăn.",
+    "blankAnswer": "flexible"
+  },
+  {
+    "ordinal": 473,
+    "word": "comparable",
+    "pos": "adj",
+    "ipa": "/ˈkɑːmpərəbl/",
+    "meaningVi": "có thể so sánh",
+    "definitionEn": "similar to somebody/something else and able to be compared",
+    "definitionVi": "tương tự như ai đó/cái gì khác và có thể được so sánh",
+    "synonyms": [
+      "equal to"
+    ],
+    "exampleEn": "The car's quality standards are ___ to the industry average.",
+    "exampleVi": "Tiêu chuẩn chất lượng của xe có thể so sánh với mức trung bình của ngành.",
+    "blankAnswer": "comparable"
+  },
+  {
+    "ordinal": 474,
+    "word": "produce",
+    "pos": "v",
+    "ipa": "/prəˈduːs/",
+    "meaningVi": "sản xuất, tạo ra",
+    "definitionEn": "to make things to be sold, especially in large quantities",
+    "definitionVi": "tạo ra mọi thứ để được bán, đặc biệt là với số lượng lớn",
+    "synonyms": [
+      "make"
+    ],
+    "exampleEn": "The new machinery ___ 1,000 units per hour.",
+    "exampleVi": "Máy móc mới sản xuất 1.000 đơn vị mỗi giờ.",
+    "blankAnswer": "produces"
+  },
+  {
+    "ordinal": 475,
+    "word": "device",
+    "pos": "n",
+    "ipa": "/dɪˈvaɪs/",
+    "meaningVi": "thiết bị",
+    "definitionEn": "a machine or tool that does a special job",
+    "definitionVi": "máy hoặc công cụ thực hiện công việc đặc biệt",
+    "synonyms": [
+      "gadget",
+      "instrument"
+    ],
+    "exampleEn": "The new ___ was tested for possible defects.",
+    "exampleVi": "Thiết bị mới đã được kiểm tra các lỗi có thể xảy ra.",
+    "blankAnswer": "device"
+  },
+  {
+    "ordinal": 476,
+    "word": "respectively",
+    "pos": "adv",
+    "ipa": "/rɪˈspektɪvli/",
+    "meaningVi": "tương ứng",
+    "definitionEn": "in the same order as the people or things already mentioned",
+    "definitionVi": "cùng thứ tự như những người hoặc những thứ đã được đề cập",
+    "synonyms": [
+      "correspondingly",
+      "individually"
+    ],
+    "exampleEn": "The camera and tablet computer cost $225 and $350 ___.",
+    "exampleVi": "Máy ảnh và máy tính bảng có giá $225 và $350 tương ứng.",
+    "blankAnswer": "respectively"
+  },
+  {
+    "ordinal": 477,
+    "word": "trim",
+    "pos": "v",
+    "ipa": "/trɪm/",
+    "meaningVi": "cắt",
+    "definitionEn": "to make something neater, smaller, better, etc., by cutting parts from it",
+    "definitionVi": "làm cho một cái gì đó gọn gàng hơn, nhỏ hơn, tốt hơn, v.v., bằng cách cắt bớt các phần của nó",
+    "synonyms": [
+      "cut",
+      "clip"
+    ],
+    "exampleEn": "This mechanism ___ the plastic packaging to make it smaller.",
+    "exampleVi": "Cơ chế này cắt bao bì nhựa để làm cho nó nhỏ hơn.",
+    "blankAnswer": "trims"
+  },
+  {
+    "ordinal": 478,
+    "word": "launch",
+    "pos": "v",
+    "ipa": "/lɔːntʃ/",
+    "meaningVi": "tung ra, phát hành",
+    "definitionEn": "to make a product available to the public for the first time",
+    "definitionVi": "làm cho một sản phẩm có sẵn cho công chúng lần đầu tiên",
+    "synonyms": [
+      "introduce"
+    ],
+    "exampleEn": "Computer programmers fix technical malfunctions before ___ any software.",
+    "exampleVi": "Lập trình viên máy tính khắc phục sự cố kỹ thuật trước khi tung ra bất kỳ phần mềm nào.",
+    "blankAnswer": "launching"
+  },
+  {
+    "ordinal": 479,
+    "word": "separately",
+    "pos": "adv",
+    "ipa": "/ˈseprətli/",
+    "meaningVi": "riêng biệt",
+    "definitionEn": "as a separate person or thing; not together",
+    "definitionVi": "như một người hoặc điều riêng biệt; không cùng nhau",
+    "synonyms": [
+      "alone"
+    ],
+    "exampleEn": "The cushioning pads are made ___ as each shoe is slightly different.",
+    "exampleVi": "Các miếng đệm được làm riêng biệt vì mỗi chiếc giày hơi khác nhau.",
+    "blankAnswer": "separately"
+  },
+  {
+    "ordinal": 480,
+    "word": "expiration",
+    "pos": "n",
+    "ipa": "/ˌekspəˈreɪʃn/",
+    "meaningVi": "sự hết hạn",
+    "definitionEn": "the ending of a fixed period of time",
+    "definitionVi": "kết thúc của một khoảng thời gian cố định",
+    "synonyms": [
+      "termination",
+      "expiry"
+    ],
+    "exampleEn": "The ___ date is printed on the top of the milk carton.",
+    "exampleVi": "Ngày hết hạn được in trên đầu thùng sữa.",
+    "blankAnswer": "expiration"
   }
 ]
