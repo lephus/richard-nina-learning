@@ -2843,5 +2843,947 @@
     "exampleEn": "Ms. Atkins will ___ all year-end reports and submit them to Ms. Woo.",
     "exampleVi": "Cô Atkins sẽ thu thập/tập hợp tất cả các báo cáo cuối năm và gửi chúng cho bà Woo.",
     "blankAnswer": "compile"
+  },
+  {
+    "ordinal": 181,
+    "word": "subsequent",
+    "pos": "adj",
+    "ipa": "/ˈsʌbsɪkwənt/",
+    "meaningVi": "sau đó, tiếp theo",
+    "definitionEn": "happening or coming after something else",
+    "definitionVi": "xảy ra hoặc đến sau một cái gì đó khác",
+    "synonyms": [
+      "next",
+      "later"
+    ],
+    "exampleEn": "Some employees received separation pay ___ to the company's closing.",
+    "exampleVi": "Một số nhân viên đã nhận được trợ cấp thôi việc sau khi công ty đóng cửa.",
+    "blankAnswer": "subsequent"
+  },
+  {
+    "ordinal": 182,
+    "word": "overview",
+    "pos": "n",
+    "ipa": "/ˈoʊvərvjuː/",
+    "meaningVi": "tổng quan",
+    "definitionEn": "a general description or an outline of something",
+    "definitionVi": "một mô tả chung hoặc một phác thảo của một cái gì đó",
+    "synonyms": [
+      "summary",
+      "synopsis"
+    ],
+    "exampleEn": "Scott gave an ___ of the topic before the presentation.",
+    "exampleVi": "Scott đã đưa ra một cái nhìn tổng quan về chủ đề trước khi trình bày.",
+    "blankAnswer": "overview"
+  },
+  {
+    "ordinal": 183,
+    "word": "provider",
+    "pos": "n",
+    "ipa": "/prəˈvaɪdər/",
+    "meaningVi": "nhà cung cấp, người cung cấp",
+    "definitionEn": "a company or person that provides a service",
+    "definitionVi": "một công ty hoặc người cung cấp dịch vụ",
+    "synonyms": [
+      "vendor"
+    ],
+    "exampleEn": "There are numerous Internet and cable ___ in the city.",
+    "exampleVi": "Có rất nhiều nhà cung cấp Internet và truyền hình cáp trong thành phố.",
+    "blankAnswer": "providers"
+  },
+  {
+    "ordinal": 184,
+    "word": "matter",
+    "pos": "n",
+    "ipa": "/ˈmætər/",
+    "meaningVi": "vấn đề",
+    "definitionEn": "a subject or situation that you have to think about or deal with",
+    "definitionVi": "một chủ đề hoặc tình huống mà bạn phải suy nghĩ hoặc giải quyết",
+    "synonyms": [
+      "affair",
+      "issue"
+    ],
+    "exampleEn": "Please deal with personal ___ outside the office.",
+    "exampleVi": "Các vấn đề cá nhân nên được xử lý bên ngoài văn phòng.",
+    "blankAnswer": "matters"
+  },
+  {
+    "ordinal": 185,
+    "word": "expertise",
+    "pos": "n",
+    "ipa": "/ˌekspɜːrˈtiːz/",
+    "meaningVi": "chuyên môn",
+    "definitionEn": "special skills or knowledge in an area of work or study",
+    "definitionVi": "kỹ năng đặc biệt hoặc kiến thức trong một lĩnh vực công việc hoặc học tập",
+    "synonyms": [
+      "proficiency",
+      "know-how"
+    ],
+    "exampleEn": "This kind of project falls outside the firm's area of ___.",
+    "exampleVi": "Loại dự án này nằm ngoài chuyên môn của công ty.",
+    "blankAnswer": "expertise"
+  },
+  {
+    "ordinal": 186,
+    "word": "demonstrate",
+    "pos": "v",
+    "ipa": "/ˈdemənstreɪt/",
+    "meaningVi": "thể hiện, chứng minh, giải thích, trình bày",
+    "definitionEn": "to show something clearly by giving proof or evidence",
+    "definitionVi": "thể hiện một cái gì đó rõ ràng bằng cách đưa ra bằng chứng",
+    "synonyms": [
+      "show",
+      "indicate"
+    ],
+    "exampleEn": "Sales figures ___ that the advertising campaign was successful.",
+    "exampleVi": "Số liệu bán hàng chứng minh rằng chiến dịch quảng cáo đã thành công.",
+    "blankAnswer": "demonstrate"
+  },
+  {
+    "ordinal": 187,
+    "word": "remainder",
+    "pos": "n",
+    "ipa": "/rɪˈmeɪndər/",
+    "meaningVi": "phần còn lại, thời gian còn lại, người còn lại",
+    "definitionEn": "the remaining people, things or time",
+    "definitionVi": "những người còn lại, những thứ hoặc thời gian còn lại",
+    "synonyms": [
+      "rest"
+    ],
+    "exampleEn": "Audits will continue throughout the ___ of the month.",
+    "exampleVi": "Việc kiểm toán sẽ tiếp tục trong suốt thời gian còn lại của tháng.",
+    "blankAnswer": "remainder"
+  },
+  {
+    "ordinal": 188,
+    "word": "essential",
+    "pos": "adj",
+    "ipa": "/ɪˈsenʃl/",
+    "meaningVi": "cần thiết, thiết yếu",
+    "definitionEn": "completely necessary; extremely important in a particular situation or for a particular activity",
+    "definitionVi": "hoàn toàn cần thiết; cực kỳ quan trọng trong một tình huống cụ thể hoặc cho một hoạt động cụ thể",
+    "synonyms": [
+      "crucial",
+      "necessary"
+    ],
+    "exampleEn": "Perseverance is ___ to success in business.",
+    "exampleVi": "Sự kiên trì là điều cần thiết để thành công trong kinh doanh.",
+    "blankAnswer": "essential"
+  },
+  {
+    "ordinal": 189,
+    "word": "divide",
+    "pos": "v",
+    "ipa": "/dɪˈvaɪd/",
+    "meaningVi": "phân chia, chia tách",
+    "definitionEn": "to separate or make something separate into parts",
+    "definitionVi": "tách hoặc làm một cái gì đó tách thành các phần",
+    "synonyms": [
+      "split",
+      "separate"
+    ],
+    "exampleEn": "Required overtime will be ___ equally among employees.",
+    "exampleVi": "Làm thêm giờ cần thiết sẽ được chia đều cho nhân viên.",
+    "blankAnswer": "divided"
+  },
+  {
+    "ordinal": 190,
+    "word": "major",
+    "pos": "adj",
+    "ipa": "/ˈmeɪdʒər/",
+    "meaningVi": "phần lớn, quan trọng, chủ yếu",
+    "definitionEn": "very large or important",
+    "definitionVi": "rất lớn hoặc quan trọng",
+    "synonyms": [
+      "important",
+      "significant"
+    ],
+    "exampleEn": "The new manager has had a ___ impact on productivity.",
+    "exampleVi": "Người quản lý mới đã có một tác động lớn đến năng suất.",
+    "blankAnswer": "major"
+  },
+  {
+    "ordinal": 191,
+    "word": "compliance",
+    "pos": "n",
+    "ipa": "/kəmˈplaɪəns/",
+    "meaningVi": "sự tuân thủ",
+    "definitionEn": "the practice of obeying rules or requests made by people in authority",
+    "definitionVi": "việc thực hành tuân theo các quy tắc hoặc yêu cầu được thực hiện bởi những người có thẩm quyền",
+    "synonyms": [
+      "obey",
+      "comply"
+    ],
+    "exampleEn": "Government officials will inspect the plant's ___ with safety guidelines.",
+    "exampleVi": "Các quan chức chính phủ sẽ kiểm tra sự tuân thủ của nhà máy với các hướng dẫn an toàn.",
+    "blankAnswer": "compliance"
+  },
+  {
+    "ordinal": 192,
+    "word": "clarify",
+    "pos": "v",
+    "ipa": "/ˈklærəfaɪ/",
+    "meaningVi": "làm rõ",
+    "definitionEn": "to make something clearer or easier to understand",
+    "definitionVi": "làm cho một cái gì đó rõ ràng hơn hoặc dễ hiểu hơn",
+    "synonyms": [
+      "make clear",
+      "explain"
+    ],
+    "exampleEn": "The notice ___ some details of the vacation policy modifications.",
+    "exampleVi": "Thông báo đã làm rõ một số chi tiết về thay đổi chính sách nghỉ phép.",
+    "blankAnswer": "clarified"
+  },
+  {
+    "ordinal": 193,
+    "word": "face",
+    "pos": "v",
+    "ipa": "/feɪs/",
+    "meaningVi": "đối mặt, đương đầu, gặp phải",
+    "definitionEn": "if you face or are faced with a difficult situation, it is going to affect you and you must deal with it",
+    "definitionVi": "nếu bạn phải đối mặt hoặc đang đối mặt với một tình huống khó khăn, nó sẽ ảnh hưởng đến bạn và bạn phải đối phó với nó",
+    "synonyms": [
+      "encounter",
+      "confront"
+    ],
+    "exampleEn": "Businesses are ___ with the challenge of foreign competition.",
+    "exampleVi": "Các công ty đang đối mặt với thách thức của các đối thủ cạnh tranh nước ngoài.",
+    "blankAnswer": "faced"
+  },
+  {
+    "ordinal": 194,
+    "word": "follow",
+    "pos": "v",
+    "ipa": "/ˈfɑːloʊ/",
+    "meaningVi": "theo sau, làm theo, theo dõi, hiểu",
+    "definitionEn": "to come after someone or something, to act according to instructions, or to understand what is being said",
+    "definitionVi": "đi theo sau ai đó hoặc điều gì đó, làm theo hướng dẫn, hoặc hiểu những gì đang được nói",
+    "synonyms": [
+      "understand"
+    ],
+    "exampleEn": "Bill ___ the conversations at the meeting closely.",
+    "exampleVi": "Bill đã theo dõi các cuộc trò chuyện tại cuộc họp một cách chặt chẽ.",
+    "blankAnswer": "followed"
+  },
+  {
+    "ordinal": 195,
+    "word": "aspect",
+    "pos": "n",
+    "ipa": "/ˈæspekt/",
+    "meaningVi": "khía cạnh",
+    "definitionEn": "one part of a situation, idea, plan etc that has many parts",
+    "definitionVi": "một phần của một tình huống, ý tưởng, kế hoạch, v.v. có nhiều phần",
+    "synonyms": [
+      "facet",
+      "feature"
+    ],
+    "exampleEn": "Every ___ of the problem must be taken into consideration.",
+    "exampleVi": "Mọi khía cạnh của vấn đề phải được xem xét.",
+    "blankAnswer": "aspect"
+  },
+  {
+    "ordinal": 196,
+    "word": "apparently",
+    "pos": "adv",
+    "ipa": "/əˈpærəntli/",
+    "meaningVi": "rõ ràng",
+    "definitionEn": "used to say that you have heard that something is true, although you are not completely sure about it",
+    "definitionVi": "được sử dụng để nói rằng bạn đã nghe nói rằng điều gì đó là đúng, mặc dù bạn không hoàn toàn chắc chắn về điều đó",
+    "synonyms": [
+      "evidently"
+    ],
+    "exampleEn": "___, Mr. Jones was not invited to this meeting.",
+    "exampleVi": "Rõ ràng, ông Jones đã không được mời đến cuộc họp này.",
+    "blankAnswer": "Apparently"
+  },
+  {
+    "ordinal": 197,
+    "word": "aware",
+    "pos": "adj",
+    "ipa": "/əˈwer/",
+    "meaningVi": "nhận thức được, biết",
+    "definitionEn": "if you are aware that a situation exists, you realize or know that it exists",
+    "definitionVi": "nếu bạn nhận thức được một tình huống tồn tại, bạn nhận ra hoặc biết rằng nó tồn tại",
+    "synonyms": [
+      "conscious",
+      "know"
+    ],
+    "exampleEn": "Workers should be made ___ of safety procedures.",
+    "exampleVi": "Công nhân cần nhận biết các quy trình an toàn.",
+    "blankAnswer": "aware"
+  },
+  {
+    "ordinal": 198,
+    "word": "extended",
+    "pos": "adj",
+    "ipa": "/ɪkˈstendɪd/",
+    "meaningVi": "mở rộng, thêm",
+    "definitionEn": "long or longer than expected or planned",
+    "definitionVi": "dài hoặc dài hơn dự kiến hoặc kế hoạch",
+    "synonyms": [
+      "prolonged"
+    ],
+    "exampleEn": "The accounting department works ___ hours on the first week of every month.",
+    "exampleVi": "Bộ phận kế toán làm việc thêm giờ vào tuần đầu tiên hàng tháng.",
+    "blankAnswer": "extended"
+  },
+  {
+    "ordinal": 199,
+    "word": "accidentally",
+    "pos": "adv",
+    "ipa": "/ˌæksɪˈdentəli/",
+    "meaningVi": "vô tình",
+    "definitionEn": "in a way that was not planned or intended",
+    "definitionVi": "theo cách không có kế hoạch hoặc dự định",
+    "synonyms": [
+      "unintentionally",
+      "by chance"
+    ],
+    "exampleEn": "Alison ___ made some errors in the financial statements.",
+    "exampleVi": "Alison đã vô tình mắc một số lỗi trong báo cáo tài chính.",
+    "blankAnswer": "accidentally"
+  },
+  {
+    "ordinal": 200,
+    "word": "advisable",
+    "pos": "adj",
+    "ipa": "/ədˈvaɪzəbl/",
+    "meaningVi": "thích hợp, nên làm",
+    "definitionEn": "something that is advisable should be done in order to avoid problems or risks",
+    "definitionVi": "một cái gì đó nên được thực hiện để tránh các vấn đề hoặc rủi ro",
+    "synonyms": [
+      "appropriate"
+    ],
+    "exampleEn": "It is ___ to update computer equipment regularly.",
+    "exampleVi": "Điều nên làm là cập nhật thiết bị máy tính thường xuyên.",
+    "blankAnswer": "advisable"
+  },
+  {
+    "ordinal": 201,
+    "word": "concerned",
+    "pos": "adj",
+    "ipa": "/kənˈsɜːrnd/",
+    "meaningVi": "quan tâm, lo ngại, liên quan, dính líu",
+    "definitionEn": "worried and feeling concern about something",
+    "definitionVi": "lo lắng và cảm thấy lo lắng về điều gì đó",
+    "synonyms": [
+      "worried",
+      "anxious",
+      "involved"
+    ],
+    "exampleEn": "Management is ___ about security.",
+    "exampleVi": "Quản lý quan tâm đến an ninh.",
+    "blankAnswer": "concerned"
+  },
+  {
+    "ordinal": 202,
+    "word": "speak",
+    "pos": "v",
+    "ipa": "/spiːk/",
+    "meaningVi": "nói",
+    "definitionEn": "to talk to somebody about something; to have a conversation with somebody",
+    "definitionVi": "nói chuyện với ai đó về một cái gì đó; nói chuyện với ai đó",
+    "synonyms": [
+      "talk",
+      "say something"
+    ],
+    "exampleEn": "Mr. Brooke ___ to his clients about a new venture.",
+    "exampleVi": "Ông Brooke đã nói chuyện với khách hàng của mình về một dự án kinh doanh mới.",
+    "blankAnswer": "spoke"
+  },
+  {
+    "ordinal": 203,
+    "word": "collection",
+    "pos": "n",
+    "ipa": "/kəˈlekʃn/",
+    "meaningVi": "bộ sưu tập, tuyển tập",
+    "definitionEn": "a group of objects or people",
+    "definitionVi": "một nhóm các đối tượng hoặc người",
+    "synonyms": [
+      "assortment",
+      "compilation"
+    ],
+    "exampleEn": "The museum has a unique ___ of stamps.",
+    "exampleVi": "Bảo tàng có một bộ sưu tập tem độc đáo.",
+    "blankAnswer": "collection"
+  },
+  {
+    "ordinal": 204,
+    "word": "exhibition",
+    "pos": "n",
+    "ipa": "/ˌeksɪˈbɪʃn/",
+    "meaningVi": "cuộc triển lãm, trưng bày",
+    "definitionEn": "the act of showing something, for example works of art, to the public",
+    "definitionVi": "hành động thể hiện điều gì đó, ví dụ như tác phẩm nghệ thuật, cho công chúng",
+    "synonyms": [
+      "display",
+      "show"
+    ],
+    "exampleEn": "The gallery hosted an ___ of urban scenic photographs.",
+    "exampleVi": "Phòng trưng bày đã tổ chức một cuộc triển lãm các bức ảnh phong cảnh đô thị.",
+    "blankAnswer": "exhibition"
+  },
+  {
+    "ordinal": 205,
+    "word": "celebrity",
+    "pos": "n",
+    "ipa": "/səˈlebrəti/",
+    "meaningVi": "người nổi tiếng",
+    "definitionEn": "a famous person",
+    "definitionVi": "một người nổi tiếng",
+    "synonyms": [
+      "star",
+      "famous person"
+    ],
+    "exampleEn": "Many ___ attended the city's summer park festival.",
+    "exampleVi": "Nhiều người nổi tiếng đã tham dự lễ hội công viên mùa hè của thành phố.",
+    "blankAnswer": "celebrities"
+  },
+  {
+    "ordinal": 206,
+    "word": "live",
+    "pos": "adj",
+    "ipa": "/laɪv/",
+    "meaningVi": "phát sóng trực tiếp (TV), trực tiếp",
+    "definitionEn": "a live performance is one in which the entertainer performs for people who are watching, rather than for a film, record etc",
+    "definitionVi": "một buổi biểu diễn trực tiếp là một buổi trong đó nghệ sĩ giải trí biểu diễn cho những người đang xem, thay vì cho một bộ phim, bản ghi hình, v.v",
+    "synonyms": [
+      "in person",
+      "not recorded"
+    ],
+    "exampleEn": "Finnegan's café hosts a ___ music performance every Saturday.",
+    "exampleVi": "Quán cà phê của Finnegan tổ chức buổi biểu diễn nhạc sống mỗi thứ Bảy.",
+    "blankAnswer": "live"
+  },
+  {
+    "ordinal": 207,
+    "word": "improvise",
+    "pos": "v",
+    "ipa": "/ˈɪmprəvaɪz/",
+    "meaningVi": "ứng biến, ngẫu hứng",
+    "definitionEn": "to invent music, the words in a play, a statement, etc.",
+    "definitionVi": "để phát minh ra âm nhạc, các từ trong một vở kịch, một tuyên bố, v.v",
+    "synonyms": [
+      "ad-lib",
+      "extemporize"
+    ],
+    "exampleEn": "The performance ___ a jazz melody.",
+    "exampleVi": "Các nghệ sĩ biểu diễn đã ngẫu hứng những giai điệu jazz.",
+    "blankAnswer": "improvised"
+  },
+  {
+    "ordinal": 208,
+    "word": "popular",
+    "pos": "adj",
+    "ipa": "/ˈpɑːpjələr/",
+    "meaningVi": "nổi tiếng, phổ biến",
+    "definitionEn": "liked or enjoyed by a large number of people",
+    "definitionVi": "được thích hoặc yêu thích bởi một số lượng lớn người",
+    "synonyms": [
+      "well-known"
+    ],
+    "exampleEn": "Broadway musicals are so ___ that they frequently go on tour.",
+    "exampleVi": "Nhạc kịch của Broadway rất nổi tiếng đến mức họ thường xuyên đi lưu diễn.",
+    "blankAnswer": "popular"
+  },
+  {
+    "ordinal": 209,
+    "word": "donation",
+    "pos": "n",
+    "ipa": "/doʊˈneɪʃn/",
+    "meaningVi": "sự quyên góp, trợ cấp",
+    "definitionEn": "something that is given to a person or an organization such as a charity, in order to help them",
+    "definitionVi": "một cái gì đó được trao cho một người hoặc tổ chức như một tổ chức từ thiện, để giúp họ",
+    "synonyms": [
+      "grant"
+    ],
+    "exampleEn": "The library is accepting ___ of children's books.",
+    "exampleVi": "Thư viện đang chấp nhận quyên góp sách thiếu nhi.",
+    "blankAnswer": "donations"
+  },
+  {
+    "ordinal": 210,
+    "word": "alumni",
+    "pos": "n",
+    "ipa": "/əˈlʌmnaɪ/",
+    "meaningVi": "cựu sinh viên",
+    "definitionEn": "the former male and female students of a school, college or university",
+    "definitionVi": "các cựu sinh viên nam và nữ của một trường học, cao đẳng hoặc đại học",
+    "synonyms": [
+      "graduates",
+      "former students"
+    ],
+    "exampleEn": "St. John's University ___ were invited to the graduation ceremony.",
+    "exampleVi": "Cựu sinh viên Đại học St. John đã được mời đến lễ tốt nghiệp.",
+    "blankAnswer": "alumni"
+  },
+  {
+    "ordinal": 211,
+    "word": "present",
+    "pos": "v",
+    "ipa": "/prɪˈzent/",
+    "meaningVi": "xuất trình",
+    "definitionEn": "to give, show, or offer something to someone, especially in a formal way",
+    "definitionVi": "đưa, xuất trình hoặc trao một cái gì đó cho ai đó, đặc biệt một cách trang trọng",
+    "synonyms": [
+      "show"
+    ],
+    "exampleEn": "Please ___ valid tickets at the door.",
+    "exampleVi": "Vui lòng xuất trình vé hợp lệ tại cửa.",
+    "blankAnswer": "present"
+  },
+  {
+    "ordinal": 212,
+    "word": "admission",
+    "pos": "n",
+    "ipa": "/ədˈmɪʃn/",
+    "meaningVi": "sự vào cửa, sự vào cổng, tiền vào cửa",
+    "definitionEn": "the act of accepting somebody into an institution, organization, etc",
+    "definitionVi": "hành động chấp nhận ai đó vào một tổ chức, cơ quan, v.v",
+    "synonyms": [
+      "entry",
+      "entrance"
+    ],
+    "exampleEn": "Those wishing to visit the exhibit will be charged an extra ___ fee.",
+    "exampleVi": "Những người muốn tham quan triển lãm sẽ phải trả thêm phí vào cổng.",
+    "blankAnswer": "admission"
+  },
+  {
+    "ordinal": 213,
+    "word": "banquet",
+    "pos": "n",
+    "ipa": "/ˈbæŋkwɪt/",
+    "meaningVi": "tiệc, bữa tiệc",
+    "definitionEn": "a formal meal for a large number of people, usually for a special occasion",
+    "definitionVi": "một bữa ăn chính thức cho một số lượng lớn người, thường là cho một dịp đặc biệt",
+    "synonyms": [
+      "party"
+    ],
+    "exampleEn": "The hotel has facilities for large-scale wedding ___.",
+    "exampleVi": "Khách sạn có cơ sở cho tiệc cưới quy mô lớn.",
+    "blankAnswer": "banquets"
+  },
+  {
+    "ordinal": 214,
+    "word": "anniversary",
+    "pos": "n",
+    "ipa": "/ˌænɪˈvɜːrsəri/",
+    "meaningVi": "ngày kỷ niệm, lễ kỷ niệm",
+    "definitionEn": "a date that is an exact number of years after the date of an important or special event",
+    "definitionVi": "một ngày là số năm chính xác sau ngày diễn ra sự kiện quan trọng hoặc đặc biệt",
+    "synonyms": [
+      "commemoration",
+      "jubilee"
+    ],
+    "exampleEn": "The couple celebrated their 50th ___ with a party.",
+    "exampleVi": "Cặp đôi kỷ niệm 50 năm ngày kỷ niệm của họ với một bữa tiệc.",
+    "blankAnswer": "anniversary"
+  },
+  {
+    "ordinal": 215,
+    "word": "required",
+    "pos": "adj",
+    "ipa": "/rɪˈkwaɪərd/",
+    "meaningVi": "cần thiết, bắt buộc, yêu cầu",
+    "definitionEn": "necessary according to a rule, law, or particular situation",
+    "definitionVi": "cần thiết theo quy định, luật lệ hoặc tình huống cụ thể",
+    "synonyms": [
+      "obligatory",
+      "mandatory"
+    ],
+    "exampleEn": "Proper swimming attire is ___ when using the hotel pool.",
+    "exampleVi": "Đồ bơi phù hợp là điều bắt buộc khi sử dụng hồ bơi của khách sạn.",
+    "blankAnswer": "required"
+  },
+  {
+    "ordinal": 216,
+    "word": "succeed",
+    "pos": "v",
+    "ipa": "/səkˈsiːd/",
+    "meaningVi": "thành công, kế nghiệp, kế vị",
+    "definitionEn": "to achieve something that you have been trying to do or get",
+    "definitionVi": "đạt được một cái gì đó mà bạn đã cố gắng để làm hoặc nhận được",
+    "synonyms": [
+      "replace",
+      "take over from"
+    ],
+    "exampleEn": "Peggy ___ in convincing her family to visit Hawaii.",
+    "exampleVi": "Peggy đã thành công trong việc thuyết phục gia đình đến thăm Hawaii.",
+    "blankAnswer": "succeeded"
+  },
+  {
+    "ordinal": 217,
+    "word": "rest",
+    "pos": "v",
+    "ipa": "/rest/",
+    "meaningVi": "nghỉ ngơi",
+    "definitionEn": "to stop doing an activity for a period of time in order to relax or recover strength",
+    "definitionVi": "ngừng làm một hoạt động trong một khoảng thời gian để thư giãn hoặc hồi phục sức lực",
+    "synonyms": [
+      "relax"
+    ],
+    "exampleEn": "Hikers can ___ on the bench halfway up the hill.",
+    "exampleVi": "Người đi bộ đường dài có thể nghỉ ngơi trên băng ghế giữa chừng lên đồi.",
+    "blankAnswer": "rest"
+  },
+  {
+    "ordinal": 218,
+    "word": "fund-raising",
+    "pos": "n",
+    "ipa": "/ˈfʌndreɪzɪŋ/",
+    "meaningVi": "gây quỹ",
+    "definitionEn": "the activity of collecting money for a charity or organization, often by organizing social events or entertainments",
+    "definitionVi": "hoạt động thu tiền cho tổ chức từ thiện hoặc tổ chức, thường bằng cách tổ chức các sự kiện xã hội hoặc giải trí",
+    "synonyms": [
+      "fundraiser",
+      "charity drive"
+    ],
+    "exampleEn": "Auctions are a popular form of ___.",
+    "exampleVi": "Đấu giá là một hình thức phổ biến của việc gây quỹ.",
+    "blankAnswer": "fund-raising"
+  },
+  {
+    "ordinal": 219,
+    "word": "resume",
+    "pos": "v",
+    "ipa": "/rɪˈzuːm/",
+    "meaningVi": "tiếp tục, bắt đầu lại",
+    "definitionEn": "to start doing something again after stopping or being interrupted",
+    "definitionVi": "bắt đầu làm lại điều gì đó sau khi dừng hoặc bị gián đoạn",
+    "synonyms": [
+      "begin again",
+      "start again"
+    ],
+    "exampleEn": "The play will ___ after a short intermission.",
+    "exampleVi": "Vở kịch sẽ tiếp tục sau một thời gian tạm ngưng ngắn.",
+    "blankAnswer": "resume"
+  },
+  {
+    "ordinal": 220,
+    "word": "issue",
+    "pos": "n",
+    "ipa": "/ˈɪʃuː/",
+    "meaningVi": "số báo, sự phát hành, vấn đề",
+    "definitionEn": "one of a regular series of magazines or newspapers",
+    "definitionVi": "một trong số các tạp chí hoặc báo chí thường xuyên",
+    "synonyms": [
+      "matter",
+      "edition",
+      "publication"
+    ],
+    "exampleEn": "Jack's cake recipe was in the April ___ of Baker Monthly.",
+    "exampleVi": "Công thức bánh của Jack có trong số báo tháng Tư của Baker Monthly.",
+    "blankAnswer": "issue"
+  },
+  {
+    "ordinal": 221,
+    "word": "subscription",
+    "pos": "n",
+    "ipa": "/səbˈskrɪpʃn/",
+    "meaningVi": "sự đăng ký, đặt mua báo dài hạn",
+    "definitionEn": "an amount of money you pay, usually once a year, to receive regular copies of a newspaper or magazine",
+    "definitionVi": "số tiền bạn trả, thường là mỗi năm một lần, để nhận được các bản báo hoặc tạp chí thông thường",
+    "synonyms": [
+      "enrollment",
+      "membership"
+    ],
+    "exampleEn": "I would like to get a ___ to the Weekly Herald.",
+    "exampleVi": "Tôi muốn thực hiện đăng ký mua tờ Weekly Herald.",
+    "blankAnswer": "subscription"
+  },
+  {
+    "ordinal": 222,
+    "word": "appear",
+    "pos": "v",
+    "ipa": "/əˈpɪr/",
+    "meaningVi": "xuất hiện, hiện ra",
+    "definitionEn": "to start to be seen",
+    "definitionVi": "bắt đầu được nhìn thấy",
+    "synonyms": [
+      "be revealed",
+      "emerge"
+    ],
+    "exampleEn": "The novelist ___ at the bookstore to sign autographs.",
+    "exampleVi": "Tiểu thuyết gia xuất hiện tại hiệu sách để ký tặng.",
+    "blankAnswer": "appeared"
+  },
+  {
+    "ordinal": 223,
+    "word": "accompany",
+    "pos": "v",
+    "ipa": "/əˈkʌmpəni/",
+    "meaningVi": "đi cùng, đi kèm, hộ tống",
+    "definitionEn": "to travel or go somewhere with somebody",
+    "definitionVi": "đi du lịch hoặc đi đâu đó với ai đó",
+    "synonyms": [
+      "go with"
+    ],
+    "exampleEn": "Mary ___ her grandmother to the mall.",
+    "exampleVi": "Mary đi cùng bà ngoại đến trung tâm mua sắm.",
+    "blankAnswer": "accompanied"
+  },
+  {
+    "ordinal": 224,
+    "word": "edition",
+    "pos": "n",
+    "ipa": "/ɪˈdɪʃn/",
+    "meaningVi": "ấn bản, phiên bản",
+    "definitionEn": "the form in which a book is published",
+    "definitionVi": "hình thức trong đó một cuốn sách được xuất bản",
+    "synonyms": [
+      "version"
+    ],
+    "exampleEn": "A revised ___ of the economics book will be published soon.",
+    "exampleVi": "Một phiên bản sửa đổi của cuốn sách kinh tế sẽ sớm được công bố.",
+    "blankAnswer": "edition"
+  },
+  {
+    "ordinal": 225,
+    "word": "specifically",
+    "pos": "adv",
+    "ipa": "/spəˈsɪfɪkli/",
+    "meaningVi": "một cách cụ thể, riêng biệt",
+    "definitionEn": "in a detailed and exact way",
+    "definitionVi": "một cách chi tiết và chính xác",
+    "synonyms": [
+      "especially"
+    ],
+    "exampleEn": "Campgrounds around the lake are worth visiting, ___ the Milligan site.",
+    "exampleVi": "Các khu vực xung quanh hồ có giá trị tham quan, đặc biệt là địa điểm Milligan.",
+    "blankAnswer": "specifically"
+  },
+  {
+    "ordinal": 226,
+    "word": "anonymous",
+    "pos": "adj",
+    "ipa": "/əˈnɑːnɪməs/",
+    "meaningVi": "ẩn danh",
+    "definitionEn": "with a name that is not known or that is not made public",
+    "definitionVi": "có tên chưa được biết hoặc không được công khai",
+    "synonyms": [
+      "unnamed",
+      "of unknown name"
+    ],
+    "exampleEn": "The charity received $6,000 from an ___ donor.",
+    "exampleVi": "Tổ chức từ thiện nhận 6.000 đô la từ một nhà tài trợ ẩn danh.",
+    "blankAnswer": "anonymous"
+  },
+  {
+    "ordinal": 227,
+    "word": "commit",
+    "pos": "v",
+    "ipa": "/kəˈmɪt/",
+    "meaningVi": "cam kết",
+    "definitionEn": "to promise sincerely that you will definitely do something",
+    "definitionVi": "hứa một cách chân thành rằng bạn chắc chắn sẽ làm điều gì đó",
+    "synonyms": [
+      "dedicate",
+      "devote"
+    ],
+    "exampleEn": "The store is ___ to providing excellent customer service.",
+    "exampleVi": "Cửa hàng cam kết cung cấp dịch vụ khách hàng tuyệt vời.",
+    "blankAnswer": "committed"
+  },
+  {
+    "ordinal": 228,
+    "word": "informative",
+    "pos": "adj",
+    "ipa": "/ɪnˈfɔːrmətɪv/",
+    "meaningVi": "cung cấp nhiều thông tin hữu ích",
+    "definitionEn": "giving useful information",
+    "definitionVi": "cung cấp thông tin hữu ích",
+    "synonyms": [
+      "instructive",
+      "educational"
+    ],
+    "exampleEn": "The documentary was ___ and interesting.",
+    "exampleVi": "Bộ phim tài liệu cung cấp nhiều thông tin hữu ích và thú vị.",
+    "blankAnswer": "informative"
+  },
+  {
+    "ordinal": 229,
+    "word": "audience",
+    "pos": "n",
+    "ipa": "/ˈɔːdiəns/",
+    "meaningVi": "thính giả, khán giả",
+    "definitionEn": "the group of people who have gathered to watch or listen to something",
+    "definitionVi": "nhóm người đã tụ tập để xem hoặc nghe một điều gì đó",
+    "synonyms": [
+      "spectators"
+    ],
+    "exampleEn": "The ___ applauded the singer enthusiastically.",
+    "exampleVi": "Khán giả hoan nghênh ca sĩ nhiệt tình.",
+    "blankAnswer": "audience"
+  },
+  {
+    "ordinal": 230,
+    "word": "author",
+    "pos": "n",
+    "ipa": "/ˈɔːθər/",
+    "meaningVi": "tác giả",
+    "definitionEn": "a person who writes books or the person who wrote a particular book",
+    "definitionVi": "một người viết sách hoặc người đã viết một cuốn sách cụ thể",
+    "synonyms": [
+      "writer"
+    ],
+    "exampleEn": "All of the ___'s short stories are popular.",
+    "exampleVi": "Tất cả các truyện ngắn của tác giả đều nổi tiếng.",
+    "blankAnswer": "author"
+  },
+  {
+    "ordinal": 231,
+    "word": "note",
+    "pos": "v",
+    "ipa": "/noʊt/",
+    "meaningVi": "lưu ý, chú ý",
+    "definitionEn": "to notice or pay careful attention to something",
+    "definitionVi": "để ý hoặc chú ý cẩn thận đến điều gì đó",
+    "synonyms": [
+      "take notice of",
+      "pay attention to"
+    ],
+    "exampleEn": "Please ___ the intricate details of the architecture.",
+    "exampleVi": "Xin lưu ý các chi tiết phức tạp của kiến trúc.",
+    "blankAnswer": "note"
+  },
+  {
+    "ordinal": 232,
+    "word": "antique",
+    "pos": "n",
+    "ipa": "/ænˈtiːk/",
+    "meaningVi": "đồ cổ",
+    "definitionEn": "an object that is old and often valuable",
+    "definitionVi": "một vật cũ và thường có giá trị",
+    "synonyms": [
+      "collector's item",
+      "period piece"
+    ],
+    "exampleEn": "___ are popular for home décor.",
+    "exampleVi": "Đồ cổ được ưa chuộng cho trang trí nhà.",
+    "blankAnswer": "Antiques"
+  },
+  {
+    "ordinal": 233,
+    "word": "manuscript",
+    "pos": "n",
+    "ipa": "/ˈmænjuskrɪpt/",
+    "meaningVi": "bản thảo, bản viết tay",
+    "definitionEn": "a copy of a book, piece of music, etc. before it has been printed",
+    "definitionVi": "một bản sao của một cuốn sách, một đoạn nhạc, v.v. trước khi nó được in",
+    "synonyms": [
+      "draft",
+      "typescript"
+    ],
+    "exampleEn": "The author is working on several ___.",
+    "exampleVi": "Tác giả đang làm việc trên vài bản thảo.",
+    "blankAnswer": "manuscripts"
+  },
+  {
+    "ordinal": 234,
+    "word": "beneficial",
+    "pos": "adj",
+    "ipa": "/ˌbenɪˈfɪʃl/",
+    "meaningVi": "có lợi, mang lại hữu ích",
+    "definitionEn": "improving a situation; having a helpful or useful effect",
+    "definitionVi": "cải thiện tình hình; có tác dụng hữu ích",
+    "synonyms": [
+      "useful",
+      "of benefit"
+    ],
+    "exampleEn": "The organization's work is ___ to the community.",
+    "exampleVi": "Công việc của tổ chức có lợi cho cộng đồng.",
+    "blankAnswer": "beneficial"
+  },
+  {
+    "ordinal": 235,
+    "word": "upcoming",
+    "pos": "adj",
+    "ipa": "/ˈʌpkʌmɪŋ/",
+    "meaningVi": "sắp tới",
+    "definitionEn": "going to happen soon",
+    "definitionVi": "sắp xảy ra",
+    "synonyms": [
+      "forthcoming"
+    ],
+    "exampleEn": "A reporter spoke to a candidate for the ___ election.",
+    "exampleVi": "Một phóng viên đã nói chuyện với một ứng cử viên cho cuộc bầu cử sắp tới.",
+    "blankAnswer": "upcoming"
+  },
+  {
+    "ordinal": 236,
+    "word": "lend",
+    "pos": "v",
+    "ipa": "/lend/",
+    "meaningVi": "cho mượn",
+    "definitionEn": "to give something to somebody or allow them to use something that belongs to you, which they have to return to you later",
+    "definitionVi": "đưa một cái gì đó cho ai đó hoặc cho phép họ sử dụng thứ gì đó thuộc về bạn, họ phải trả lại cho bạn sau",
+    "synonyms": [
+      "loan",
+      "let someone use"
+    ],
+    "exampleEn": "The library ___ a variety of audio-visual materials.",
+    "exampleVi": "Thư viện cho mượn nhiều tài liệu nghe nhìn.",
+    "blankAnswer": "lends"
+  },
+  {
+    "ordinal": 237,
+    "word": "current",
+    "pos": "adj",
+    "ipa": "/ˈkɜːrənt/",
+    "meaningVi": "hiện tại",
+    "definitionEn": "happening now; of the present time",
+    "definitionVi": "đang xảy ra; thuộc về thời điểm hiện tại",
+    "synonyms": [
+      "present",
+      "ongoing"
+    ],
+    "exampleEn": "___ subscribers to the magazine will receive a free supplement.",
+    "exampleVi": "Người đăng ký hiện tại của tạp chí sẽ nhận được phần bổ sung miễn phí.",
+    "blankAnswer": "Current"
+  },
+  {
+    "ordinal": 238,
+    "word": "local",
+    "pos": "adj",
+    "ipa": "/ˈloʊkl/",
+    "meaningVi": "địa phương",
+    "definitionEn": "relating to the particular area you live in, or the area you are talking about",
+    "definitionVi": "liên quan đến khu vực cụ thể bạn sinh sống hoặc khu vực bạn đang nói về",
+    "synonyms": [
+      "regional"
+    ],
+    "exampleEn": "The tournament will be held at the ___ high school.",
+    "exampleVi": "Giải đấu sẽ được tổ chức tại trường trung học địa phương.",
+    "blankAnswer": "local"
+  },
+  {
+    "ordinal": 239,
+    "word": "variety",
+    "pos": "n",
+    "ipa": "/vəˈraɪəti/",
+    "meaningVi": "đa dạng, nhiều",
+    "definitionEn": "several different sorts of the same thing",
+    "definitionVi": "một số loại khác nhau của cùng một điều",
+    "synonyms": [
+      "diversity"
+    ],
+    "exampleEn": "The newsstand sells a ___ of magazines and newspapers.",
+    "exampleVi": "Sạp báo bán nhiều loại tạp chí và báo.",
+    "blankAnswer": "variety"
+  },
+  {
+    "ordinal": 240,
+    "word": "advocate",
+    "pos": "n",
+    "ipa": "/ˈædvəkət/",
+    "meaningVi": "người ủng hộ",
+    "definitionEn": "a person who publicly supports a particular cause or course of action",
+    "definitionVi": "một người công khai ủng hộ một mục đích hoặc hướng hành động cụ thể",
+    "synonyms": [
+      "supporter"
+    ],
+    "exampleEn": "The writer is an ___ of public education.",
+    "exampleVi": "Người viết là người ủng hộ giáo dục cộng đồng.",
+    "blankAnswer": "advocate"
   }
 ]
