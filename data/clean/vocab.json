@@ -8470,5 +8470,1027 @@
     "exampleEn": "The beds in this hotel are very ___.",
     "exampleVi": "Các giường trong khách sạn này rất thoải mái.",
     "blankAnswer": "comfortable"
+  },
+  {
+    "ordinal": 541,
+    "word": "declare",
+    "pos": "v",
+    "ipa": "/dɪˈkler/",
+    "meaningVi": "khai báo",
+    "definitionEn": "to say something officially or publicly",
+    "definitionVi": "để nói điều gì đó chính thức hoặc công khai",
+    "synonyms": [
+      "announce"
+    ],
+    "exampleEn": "Goods subject to import fees must be ___.",
+    "exampleVi": "Hàng hóa phải chịu lệ phí nhập khẩu phải được khai báo.",
+    "blankAnswer": "declared"
+  },
+  {
+    "ordinal": 542,
+    "word": "specify",
+    "pos": "v",
+    "ipa": "/ˈspesɪfaɪ/",
+    "meaningVi": "chỉ rõ, ghi rõ",
+    "definitionEn": "to state something, especially by giving an exact measurement, time, exact instructions",
+    "definitionVi": "nêu rõ điều gì đó, đặc biệt bằng cách đưa ra một phép đo chính xác, thời gian, hướng dẫn chính xác, v.v",
+    "synonyms": [
+      "clarify",
+      "indicate"
+    ],
+    "exampleEn": "Travelers can ___ on the form which cities they would like to visit.",
+    "exampleVi": "Du khách có thể ghi rõ trên biểu mẫu thành phố họ muốn ghé thăm.",
+    "blankAnswer": "specify"
+  },
+  {
+    "ordinal": 543,
+    "word": "depart",
+    "pos": "v",
+    "ipa": "/dɪˈpɑːrt/",
+    "meaningVi": "khởi hành",
+    "definitionEn": "to leave a place, especially to start a trip",
+    "definitionVi": "rời khỏi một nơi, đặc biệt là bắt đầu một chuyến đi",
+    "synonyms": [
+      "leave",
+      "exit"
+    ],
+    "exampleEn": "Flight QF302 to Sydney ___ from London Heathrow airport at 10:45 P.M.",
+    "exampleVi": "Chuyến bay QF302 đến Sydney khởi hành từ sân bay London Heathrow lúc 10:45 tối.",
+    "blankAnswer": "departs"
+  },
+  {
+    "ordinal": 544,
+    "word": "emergency",
+    "pos": "n",
+    "ipa": "/ɪˈmɜːrdʒənsi/",
+    "meaningVi": "sự khẩn cấp, tình trạng khẩn cấp",
+    "definitionEn": "a sudden serious and dangerous event or situation which needs immediate action to deal with it",
+    "definitionVi": "một sự kiện hoặc tình huống nghiêm trọng và nguy hiểm đột ngột cần hành động ngay lập tức để giải quyết nó",
+    "synonyms": [
+      "crisis",
+      "urgent situation"
+    ],
+    "exampleEn": "In case of ___, oxygen masks will automatically drop from above.",
+    "exampleVi": "Trong trường hợp khẩn cấp, mặt nạ oxy sẽ tự động rơi từ trên xuống.",
+    "blankAnswer": "emergency"
+  },
+  {
+    "ordinal": 545,
+    "word": "passenger",
+    "pos": "n",
+    "ipa": "/ˈpæsɪndʒər/",
+    "meaningVi": "hành khách",
+    "definitionEn": "a person who is travelling in a car, bus, train, plane or ship and who is not driving it or working on it",
+    "definitionVi": "một người đi du lịch trong xe hơi, xe buýt, tàu hỏa, máy bay hoặc tàu và những người không lái xe hoặc làm việc trên đó",
+    "synonyms": [
+      "traveler",
+      "commuter"
+    ],
+    "exampleEn": "___ boarding the cruise ship were welcomed by the captain.",
+    "exampleVi": "Hành khách lên tàu đã được thuyền trưởng chào đón.",
+    "blankAnswer": "Passengers"
+  },
+  {
+    "ordinal": 546,
+    "word": "outgoing",
+    "pos": "adj",
+    "ipa": "/ˈaʊtɡoʊɪŋ/",
+    "meaningVi": "sắp khởi hành, sắp thôi việc",
+    "definitionEn": "going away from a particular place rather than arriving in it",
+    "definitionVi": "đi từ một nơi cụ thể hơn là đến trong đó",
+    "synonyms": [
+      "departing"
+    ],
+    "exampleEn": "___ trains leave from platforms three to five.",
+    "exampleVi": "Các chuyến tàu đi xuất phát từ các thềm ga/sân ga từ ba đến năm chuyến.",
+    "blankAnswer": "Outgoing"
+  },
+  {
+    "ordinal": 547,
+    "word": "tightly",
+    "pos": "adv",
+    "ipa": "/ˈtaɪtli/",
+    "meaningVi": "chặt",
+    "definitionEn": "closely and firmly; in a tight manner",
+    "definitionVi": "chặt chẽ và vững chắc; một cách chặt chẽ",
+    "synonyms": [
+      "firmly",
+      "securely"
+    ],
+    "exampleEn": "Please ensure your hotel room door is locked ___.",
+    "exampleVi": "Hãy đảm bảo cửa phòng khách sạn của bạn bị khóa chặt.",
+    "blankAnswer": "tightly"
+  },
+  {
+    "ordinal": 548,
+    "word": "tour",
+    "pos": "n",
+    "ipa": "/tʊr/",
+    "meaningVi": "chuyến đi du lịch/chuyến tham quan",
+    "definitionEn": "a journey made for pleasure during which several different towns, countries, etc. are visited",
+    "definitionVi": "một cuộc hành trình được thực hiện cho sự vui chơi trong suốt cái mà một vài thị trấn, quốc gia khác nhau, v.v",
+    "synonyms": [
+      "trip",
+      "excursion"
+    ],
+    "exampleEn": "The guide gave us a ___ of the manufacturing plant.",
+    "exampleVi": "Người hướng dẫn đã đem lại cho chúng tôi một chuyến tham quan của nhà máy sản xuất.",
+    "blankAnswer": "tour"
+  },
+  {
+    "ordinal": 549,
+    "word": "carrier",
+    "pos": "n",
+    "ipa": "/ˈkæriər/",
+    "meaningVi": "hãng vận tải, nhà chuyên chở",
+    "definitionEn": "a person or thing that carries something",
+    "definitionVi": "một người hay vật mang thứ gì đó",
+    "synonyms": [
+      "airline",
+      "transporter"
+    ],
+    "exampleEn": "Flyway Airlines is a popular ___ among travelers because it is inexpensive.",
+    "exampleVi": "Flyway Airlines là một hãng vận tải hàng không nổi tiếng giữa các khách du lịch bởi vì nó rẻ.",
+    "blankAnswer": "carrier"
+  },
+  {
+    "ordinal": 550,
+    "word": "customarily",
+    "pos": "adv",
+    "ipa": "/ˈkʌstəmerəli/",
+    "meaningVi": "thường",
+    "definitionEn": "according to what is usual in a particular place or situation",
+    "definitionVi": "theo những gì thường thấy ở một địa điểm hoặc tình huống cụ thể",
+    "synonyms": [
+      "usually"
+    ],
+    "exampleEn": "Italians ___ greet one another with a kiss on the cheek.",
+    "exampleVi": "Người Ý thường chào hỏi nhau với một nụ hôn trên má.",
+    "blankAnswer": "customarily"
+  },
+  {
+    "ordinal": 551,
+    "word": "confuse",
+    "pos": "v",
+    "ipa": "/kənˈfjuːz/",
+    "meaningVi": "nhầm lẫn",
+    "definitionEn": "to make somebody unable to think clearly or understand something",
+    "definitionVi": "để làm cho ai đó không thể suy nghĩ rõ ràng hoặc hiểu một cái gì đó",
+    "synonyms": [
+      "puzzle",
+      "bewilder"
+    ],
+    "exampleEn": "The building's lack of signs ___ visitors.",
+    "exampleVi": "Việc thiếu bảng hiệu của tòa nhà khiến khách truy cập nhầm lẫn.",
+    "blankAnswer": "confused"
+  },
+  {
+    "ordinal": 552,
+    "word": "arrive",
+    "pos": "v",
+    "ipa": "/əˈraɪv/",
+    "meaningVi": "đến",
+    "definitionEn": "to get to a place, especially at the end of a journey",
+    "definitionVi": "để đến một nơi, đặc biệt là vào cuối cuộc hành trình",
+    "synonyms": [
+      "reach",
+      "get to"
+    ],
+    "exampleEn": "The tour bus will ___ at its destination on time.",
+    "exampleVi": "Xe buýt du lịch sẽ đến nơi đúng giờ.",
+    "blankAnswer": "arrive"
+  },
+  {
+    "ordinal": 553,
+    "word": "brochure",
+    "pos": "n",
+    "ipa": "/broʊˈʃʊr/",
+    "meaningVi": "tài liệu quảng cáo",
+    "definitionEn": "a small magazine or book containing pictures and information about something or advertising something",
+    "definitionVi": "một tạp chí nhỏ hoặc sách chứa hình ảnh và thông tin về thứ gì đó hoặc quảng cáo thứ gì đó",
+    "synonyms": [
+      "flyer"
+    ],
+    "exampleEn": "Pick up a sightseeing ___ at the information center.",
+    "exampleVi": "Hãy lấy một tài liệu quảng cáo chuyến tham quan tại trung tâm thông tin.",
+    "blankAnswer": "brochure"
+  },
+  {
+    "ordinal": 554,
+    "word": "involve",
+    "pos": "v",
+    "ipa": "/ɪnˈvɑːlv/",
+    "meaningVi": "bao gồm, dính líu",
+    "definitionEn": "to include or affect someone or something",
+    "definitionVi": "để bao gồm hoặc ảnh hưởng đến ai đó hoặc một cái gì đó",
+    "synonyms": [
+      "include"
+    ],
+    "exampleEn": "The opening ceremony ___ many local native dances.",
+    "exampleVi": "Lễ khai mạc đã bao gồm nhiều điệu múa bản xứ địa phương.",
+    "blankAnswer": "involved"
+  },
+  {
+    "ordinal": 555,
+    "word": "ship",
+    "pos": "n",
+    "ipa": "/ʃɪp/",
+    "meaningVi": "tàu",
+    "definitionEn": "a large boat that carries people or goods by sea",
+    "definitionVi": "một chiếc thuyền lớn chở người hoặc hàng hóa bằng đường biển",
+    "synonyms": [
+      "vessel",
+      "boat"
+    ],
+    "exampleEn": "The cruise ___ has a swimming pool and spa.",
+    "exampleVi": "Tàu du lịch có hồ bơi và spa.",
+    "blankAnswer": "ship"
+  },
+  {
+    "ordinal": 556,
+    "word": "suitcase",
+    "pos": "n",
+    "ipa": "/ˈsuːtkeɪs/",
+    "meaningVi": "hành lý, vali",
+    "definitionEn": "a case with flat sides and a handle, used for carrying clothes",
+    "definitionVi": "một cái hộp có mặt phẳng và tay cầm, được sử dụng để mang quần áo",
+    "synonyms": [
+      "luggage",
+      "case"
+    ],
+    "exampleEn": "Each person is allowed to check in one ___.",
+    "exampleVi": "Mỗi người được phép đăng ký một va li.",
+    "blankAnswer": "suitcase"
+  },
+  {
+    "ordinal": 557,
+    "word": "unavailable",
+    "pos": "adj",
+    "ipa": "/ˌʌnəˈveɪləbl/",
+    "meaningVi": "không có sẵn, đã hết",
+    "definitionEn": "not able or not willing to see, meet or talk to somebody",
+    "definitionVi": "có thể hoặc không sẵn sàng để xem, gặp gỡ hoặc nói chuyện với ai đó",
+    "synonyms": [
+      "unobtainable",
+      "inaccessible"
+    ],
+    "exampleEn": "The luxury suite is currently ___.",
+    "exampleVi": "Căn hộ sang trọng hiện tại không có sẵn.",
+    "blankAnswer": "unavailable"
+  },
+  {
+    "ordinal": 558,
+    "word": "fill out",
+    "pos": "v",
+    "ipa": "/fɪl aʊt/",
+    "meaningVi": "điền vào",
+    "definitionEn": "to add information such as your name or address in the empty spaces on an official document",
+    "definitionVi": "để thêm thông tin như tên hoặc địa chỉ của bạn vào khoảng trống trên tài liệu chính thức",
+    "synonyms": [
+      "complete",
+      "fill in"
+    ],
+    "exampleEn": "Please ___ the form prior to landing.",
+    "exampleVi": "Vui lòng điền vào mẫu đơn trước khi đem hàng hóa xuống.",
+    "blankAnswer": "fill out"
+  },
+  {
+    "ordinal": 559,
+    "word": "customs",
+    "pos": "n",
+    "ipa": "/ˈkʌstəmz/",
+    "meaningVi": "hải quan",
+    "definitionEn": "the government department that collects taxes on goods bought and sold and on goods brought into the country",
+    "definitionVi": "bộ phận chính phủ thu thuế đối với hàng hóa mua và bán và hàng hóa được đưa vào trong nước",
+    "synonyms": [
+      "checkpoint",
+      "border control"
+    ],
+    "exampleEn": "Hundreds of passengers go through ___ every hour.",
+    "exampleVi": "Hàng trăm hành khách đi qua hải quan mỗi giờ.",
+    "blankAnswer": "customs"
+  },
+  {
+    "ordinal": 560,
+    "word": "away",
+    "pos": "adv",
+    "ipa": "/əˈweɪ/",
+    "meaningVi": "xa, cách xa",
+    "definitionEn": "to or at a distance from somebody/something in space or time",
+    "definitionVi": "đến hoặc ở một khoảng cách từ ai đó / một cái gì đó trong không gian hoặc thời gian",
+    "synonyms": [
+      "apart",
+      "distant"
+    ],
+    "exampleEn": "The city hall is located about fifteen miles ___ from the convention center.",
+    "exampleVi": "Hội trường thành phố có vị trí xa cách trung tâm hội nghị khoảng 15 dặm.",
+    "blankAnswer": "away"
+  },
+  {
+    "ordinal": 561,
+    "word": "dramatic",
+    "pos": "adj",
+    "ipa": "/drəˈmætɪk/",
+    "meaningVi": "tuyệt vời, đáng kể",
+    "definitionEn": "very impressive, striking, or noteworthy",
+    "definitionVi": "gây ấn tượng mạnh, nổi bật hoặc đáng chú ý",
+    "synonyms": [
+      "substantial"
+    ],
+    "exampleEn": "This tour includes admiring the country's most ___ scenery.",
+    "exampleVi": "Chuyến tham quan này bao gồm chiêm ngưỡng khung cảnh tuyệt đẹp của đất nước.",
+    "blankAnswer": "dramatic"
+  },
+  {
+    "ordinal": 562,
+    "word": "hospitality",
+    "pos": "n",
+    "ipa": "/ˌhɑːspɪˈtæləti/",
+    "meaningVi": "lòng hiếu khách",
+    "definitionEn": "friendly and generous behaviour towards guests",
+    "definitionVi": "hành vi thân thiện và hào phóng đối với khách",
+    "synonyms": [
+      "warmth",
+      "friendliness"
+    ],
+    "exampleEn": "The guests appreciated the ___ extended to them during their stay.",
+    "exampleVi": "Các vị khách đánh giá cao sự hiếu khách được đưa ra cho họ trong suốt thời gian lưu trú của họ.",
+    "blankAnswer": "hospitality"
+  },
+  {
+    "ordinal": 563,
+    "word": "indulge",
+    "pos": "v",
+    "ipa": "/ɪnˈdʌldʒ/",
+    "meaningVi": "thỏa mãn, hài lòng",
+    "definitionEn": "to satisfy a particular desire, interest",
+    "definitionVi": "để đáp ứng một mong muốn, sở thích",
+    "synonyms": [
+      "satisfy"
+    ],
+    "exampleEn": "___ in a getaway to the jungles and reefs of Belize.",
+    "exampleVi": "Thỏa mãn một nơi nghỉ ngơi trong rừng rậm và rạn san hô của Belize.",
+    "blankAnswer": "Indulge"
+  },
+  {
+    "ordinal": 564,
+    "word": "proximity",
+    "pos": "n",
+    "ipa": "/prɑːkˈsɪməti/",
+    "meaningVi": "gần",
+    "definitionEn": "the state of being near somebody/something in distance or time",
+    "definitionVi": "trạng thái gần ai đó / cái gì đó trong khoảng cách hay thời gian",
+    "synonyms": [
+      "closeness",
+      "nearness"
+    ],
+    "exampleEn": "The conference center is in close ___ to the hotel.",
+    "exampleVi": "Trung tâm hội nghị nằm gần khách sạn.",
+    "blankAnswer": "proximity"
+  },
+  {
+    "ordinal": 565,
+    "word": "seating",
+    "pos": "n",
+    "ipa": "/ˈsiːtɪŋ/",
+    "meaningVi": "chỗ ngồi, ghế ngồi",
+    "definitionEn": "places to sit",
+    "definitionVi": "nơi để ngồi",
+    "synonyms": [
+      "seats",
+      "places to sit"
+    ],
+    "exampleEn": "The ___ capacity of this airplane is 250 passengers.",
+    "exampleVi": "Sức chứa chỗ ngồi của chiếc máy bay này là 250 hành khách.",
+    "blankAnswer": "seating"
+  },
+  {
+    "ordinal": 566,
+    "word": "proposal",
+    "pos": "n",
+    "ipa": "/prəˈpoʊzl/",
+    "meaningVi": "sự đề xuất",
+    "definitionEn": "a formal suggestion or plan; the act of making a suggestion",
+    "definitionVi": "một đề nghị hoặc kế hoạch chính thức; hành động đưa ra đề nghị",
+    "synonyms": [
+      "suggestion",
+      "plan"
+    ],
+    "exampleEn": "Ms. Chryssom liked the ___ so much that she decided to invest immediately.",
+    "exampleVi": "Cô Chryssom thích đề xuất này quá nhiều đến mức cô quyết định đầu tư ngay lập tức.",
+    "blankAnswer": "proposal"
+  },
+  {
+    "ordinal": 567,
+    "word": "alliance",
+    "pos": "n",
+    "ipa": "/əˈlaɪəns/",
+    "meaningVi": "sự liên minh",
+    "definitionEn": "an agreement between countries, political parties, etc. to work together in order to achieve something that they all want",
+    "definitionVi": "một thỏa thuận giữa các quốc gia, các đảng chính trị, v.v... để làm việc cùng nhau để đạt được điều gì đó mà tất cả họ muốn",
+    "synonyms": [
+      "affiliation",
+      "partnership"
+    ],
+    "exampleEn": "The corporations formed an ___ to protect themselves from competitors.",
+    "exampleVi": "Các công ty thành lập một liên minh để tự bảo vệ mình khỏi các đối thủ cạnh tranh.",
+    "blankAnswer": "alliance"
+  },
+  {
+    "ordinal": 568,
+    "word": "stipulation",
+    "pos": "n",
+    "ipa": "/ˌstɪpjuˈleɪʃn/",
+    "meaningVi": "điều khoản, điều quy định",
+    "definitionEn": "a clear and firm statement that something must be done, or about how it must be done",
+    "definitionVi": "một tuyên bố rõ ràng và chắc chắn rằng một cái gì đó phải được thực hiện, hoặc về cách nó phải được thực hiện",
+    "synonyms": [
+      "condition"
+    ],
+    "exampleEn": "One of the ___ was that the goods must be insured.",
+    "exampleVi": "Một trong những quy định là hàng hóa phải được bảo hiểm.",
+    "blankAnswer": "stipulations"
+  },
+  {
+    "ordinal": 569,
+    "word": "term",
+    "pos": "n",
+    "ipa": "/tɜːrm/",
+    "meaningVi": "điều khoản, nhiệm kỳ",
+    "definitionEn": "a condition or requirement stated as part of an agreement or contract",
+    "definitionVi": "một điều kiện hoặc yêu cầu được nêu ra như một phần của thỏa thuận hay hợp đồng",
+    "synonyms": [
+      "provisions"
+    ],
+    "exampleEn": "We cannot agree to the ___ offered.",
+    "exampleVi": "Chúng tôi không thể đồng ý với các điều khoản được cung cấp.",
+    "blankAnswer": "terms"
+  },
+  {
+    "ordinal": 570,
+    "word": "compromise",
+    "pos": "n",
+    "ipa": "/ˈkɑːmprəmaɪz/",
+    "meaningVi": "sự thỏa hiệp, sự đồng ý",
+    "definitionEn": "a solution to a problem in which two or more things cannot exist together as they are, in which each thing is reduced or changed slightly so that they can exist together",
+    "definitionVi": "một giải pháp cho một vấn đề trong đó hai hoặc nhiều thứ không thể tồn tại cùng nhau, trong đó mỗi thứ được giảm hoặc thay đổi một chút để chúng có thể tồn tại cùng nhau",
+    "synonyms": [
+      "agreement"
+    ],
+    "exampleEn": "The contractors and management finally reached a ___ following several talks.",
+    "exampleVi": "Các nhà thầu và quản lý cuối cùng đã đạt được một thỏa hiệp sau một số cuộc đàm phán.",
+    "blankAnswer": "compromise"
+  },
+  {
+    "ordinal": 571,
+    "word": "negotiation",
+    "pos": "n",
+    "ipa": "/nɪˌɡoʊʃiˈeɪʃn/",
+    "meaningVi": "sự đàm phán",
+    "definitionEn": "formal discussion between people who are trying to reach an agreement",
+    "definitionVi": "thảo luận chính thức giữa những người đang cố gắng đạt được thỏa thuận",
+    "synonyms": [
+      "discussion"
+    ],
+    "exampleEn": "___ are now in process.",
+    "exampleVi": "Các cuộc đàm phán hiện đang tiến hành.",
+    "blankAnswer": "Negotiations"
+  },
+  {
+    "ordinal": 572,
+    "word": "agreement",
+    "pos": "n",
+    "ipa": "/əˈɡriːmənt/",
+    "meaningVi": "hợp đồng, sự thỏa thuận",
+    "definitionEn": "an arrangement, a promise or a contract made with somebody",
+    "definitionVi": "một sự sắp xếp, một lời hứa hoặc một hợp đồng được thực hiện với ai đó",
+    "synonyms": [
+      "contract"
+    ],
+    "exampleEn": "The business partners reached an ___ after hours of discussion.",
+    "exampleVi": "Các đối tác kinh doanh đã đạt được thỏa thuận sau nhiều giờ thảo luận.",
+    "blankAnswer": "agreement"
+  },
+  {
+    "ordinal": 573,
+    "word": "deadlock",
+    "pos": "n",
+    "ipa": "/ˈdedlɑːk/",
+    "meaningVi": "sự đình trệ hoàn toàn, bế tắc",
+    "definitionEn": "a complete failure to reach agreement or settle an argument",
+    "definitionVi": "hoàn toàn không đạt được thỏa thuận hoặc giải quyết một cuộc tranh cãi",
+    "synonyms": [
+      "stalemate",
+      "impasse"
+    ],
+    "exampleEn": "Friday's negotiations ended in a ___.",
+    "exampleVi": "Các cuộc đàm phán hôm thứ Sáu kết thúc trong bế tắc.",
+    "blankAnswer": "deadlock"
+  },
+  {
+    "ordinal": 574,
+    "word": "review",
+    "pos": "v",
+    "ipa": "/rɪˈvjuː/",
+    "meaningVi": "xem qua, xem lại",
+    "definitionEn": "to examine something carefully, with the intention of changing it if necessary",
+    "definitionVi": "kiểm tra một cái gì đó cẩn thận, với ý định thay đổi nó nếu cần thiết",
+    "synonyms": [
+      "view",
+      "reconsider",
+      "reexamine"
+    ],
+    "exampleEn": "Please ___ all of the documents carefully.",
+    "exampleVi": "Vui lòng xem xét lại cẩn thận tất cả các tài liệu.",
+    "blankAnswer": "review"
+  },
+  {
+    "ordinal": 575,
+    "word": "contract",
+    "pos": "n",
+    "ipa": "/ˈkɑːntrækt/",
+    "meaningVi": "hợp đồng",
+    "definitionEn": "an official written agreement",
+    "definitionVi": "một thỏa thuận chính thức bằng văn bản",
+    "synonyms": [
+      "agreement"
+    ],
+    "exampleEn": "The law requires all participants in the transaction to sign a ___.",
+    "exampleVi": "Luật yêu cầu tất cả người tham gia giao dịch ký hợp đồng.",
+    "blankAnswer": "contract"
+  },
+  {
+    "ordinal": 576,
+    "word": "signature",
+    "pos": "n",
+    "ipa": "/ˈsɪɡnətʃər/",
+    "meaningVi": "chữ ký",
+    "definitionEn": "your name as you usually write it, for example at the end of a letter",
+    "definitionVi": "tên của bạn như bạn thường viết, ví dụ ở cuối thư",
+    "synonyms": [
+      "autograph",
+      "signing"
+    ],
+    "exampleEn": "The CEO's ___ finalized the long-awaited deal.",
+    "exampleVi": "Chữ ký của CEO đã hoàn tất thỏa thuận được chờ đợi từ lâu.",
+    "blankAnswer": "signature"
+  },
+  {
+    "ordinal": 577,
+    "word": "originally",
+    "pos": "adv",
+    "ipa": "/əˈrɪdʒənəli/",
+    "meaningVi": "ban đầu, lúc đầu tiên",
+    "definitionEn": "used to describe the situation that existed at the beginning of a particular period or activity, especially before something was changed",
+    "definitionVi": "được sử dụng để mô tả tình huống tồn tại vào đầu một giai đoạn hoặc hoạt động cụ thể, đặc biệt là trước khi một cái gì đó được thay đổi",
+    "synonyms": [
+      "initially"
+    ],
+    "exampleEn": "The company wants to change the conditions ___ agreed upon.",
+    "exampleVi": "Công ty muốn thay đổi các điều kiện đã được thỏa thuận ban đầu.",
+    "blankAnswer": "originally"
+  },
+  {
+    "ordinal": 578,
+    "word": "direction",
+    "pos": "n",
+    "ipa": "/dɪˈrekʃn/",
+    "meaningVi": "hướng, lời chỉ dẫn",
+    "definitionEn": "instructions about how to do something, where to go, etc",
+    "definitionVi": "hướng dẫn về cách làm một cái gì đó, đi đâu, vv",
+    "synonyms": [
+      "guidance",
+      "instructions"
+    ],
+    "exampleEn": "Hoping for a settlement, lawyers led the discussion in a different ___.",
+    "exampleVi": "Hy vọng cho một sự giải quyết, các luật sư đã dẫn dắt cuộc thảo luận theo một hướng khác.",
+    "blankAnswer": "direction"
+  },
+  {
+    "ordinal": 579,
+    "word": "initially",
+    "pos": "adv",
+    "ipa": "/ɪˈnɪʃəli/",
+    "meaningVi": "ban đầu",
+    "definitionEn": "at the beginning",
+    "definitionVi": "lúc bắt đầu",
+    "synonyms": [
+      "originally"
+    ],
+    "exampleEn": "Managers ___ thought the legal issues would be resolved quickly.",
+    "exampleVi": "Ban giám đốc ban đầu nghĩ rằng các vấn đề pháp lý sẽ được giải quyết nhanh chóng.",
+    "blankAnswer": "initially"
+  },
+  {
+    "ordinal": 580,
+    "word": "expire",
+    "pos": "v",
+    "ipa": "/ɪkˈspaɪər/",
+    "meaningVi": "hết hạn",
+    "definitionEn": "(of a document, an agreement, etc.) to be no longer valid because the period of time for which it could be used has ended",
+    "definitionVi": "(của một tài liệu, một thỏa thuận, v.v.) sẽ không còn hiệu lực vì khoảng thời gian mà nó có thể được sử dụng đã kết thúc",
+    "synonyms": [
+      "lapse",
+      "end"
+    ],
+    "exampleEn": "The previous lease ___ a few weeks ago.",
+    "exampleVi": "Hợp đồng thuê trước đã hết hạn một vài tuần trước.",
+    "blankAnswer": "expired"
+  },
+  {
+    "ordinal": 581,
+    "word": "collaborate",
+    "pos": "v",
+    "ipa": "/kəˈlæbəreɪt/",
+    "meaningVi": "cộng tác, hợp tác",
+    "definitionEn": "to work together with somebody in order to produce or achieve something",
+    "definitionVi": "hợp tác với ai đó để sản xuất hoặc đạt được điều gì đó",
+    "synonyms": [
+      "cooperate",
+      "team up"
+    ],
+    "exampleEn": "Moksel Company and Boston University ___ on the research project.",
+    "exampleVi": "Công ty Moksel và Đại học Boston hợp tác trong dự án nghiên cứu.",
+    "blankAnswer": "collaborated"
+  },
+  {
+    "ordinal": 582,
+    "word": "dedicate",
+    "pos": "v",
+    "ipa": "/ˈdedɪkeɪt/",
+    "meaningVi": "cống hiến, dành cho",
+    "definitionEn": "to give a lot of your time and effort to a particular activity or purpose because you think it is important",
+    "definitionVi": "dành nhiều thời gian và công sức của bạn cho một hoạt động hoặc mục đích cụ thể bởi vì bạn nghĩ nó quan trọng",
+    "synonyms": [
+      "devote",
+      "commit"
+    ],
+    "exampleEn": "Ms. Barton ___ herself to ensuring clients get good deals.",
+    "exampleVi": "Bà Barton cống hiến bản thân để đảm bảo khách hàng có được những giao dịch tốt.",
+    "blankAnswer": "dedicates"
+  },
+  {
+    "ordinal": 583,
+    "word": "revised",
+    "pos": "adj",
+    "ipa": "/rɪˈvaɪzd/",
+    "meaningVi": "được chỉnh sửa, sửa đổi",
+    "definitionEn": "changed or corrected, for example because of something learned or reconsidered",
+    "definitionVi": "đã được thay đổi hoặc sửa lại, ví dụ vì những điều đã học được hoặc xem xét lại",
+    "synonyms": [
+      "edited"
+    ],
+    "exampleEn": "The company president accepted the ___ project proposal.",
+    "exampleVi": "Chủ tịch công ty chấp nhận đề xuất dự án đã được sửa đổi.",
+    "blankAnswer": "revised"
+  },
+  {
+    "ordinal": 584,
+    "word": "imperative",
+    "pos": "adj",
+    "ipa": "/ɪmˈperətɪv/",
+    "meaningVi": "bắt buộc, cần thiết",
+    "definitionEn": "very important and needing immediate attention or action",
+    "definitionVi": "rất quan trọng và cần sự chú ý hoặc hành động ngay lập tức",
+    "synonyms": [
+      "essential",
+      "mandatory"
+    ],
+    "exampleEn": "It is ___ that the agreement be fully honored.",
+    "exampleVi": "Điều bắt buộc là thỏa thuận được đánh giá đầy đủ.",
+    "blankAnswer": "imperative"
+  },
+  {
+    "ordinal": 585,
+    "word": "cooperatively",
+    "pos": "adv",
+    "ipa": "/koʊˈɑːpərətɪvli/",
+    "meaningVi": "cộng tác",
+    "definitionEn": "together with others towards a shared aim",
+    "definitionVi": "cùng với những người khác hướng tới một mục tiêu chung",
+    "synonyms": [
+      "jointly",
+      "collaboratively"
+    ],
+    "exampleEn": "The company worked ___ with Pacific Corporation to build the railway.",
+    "exampleVi": "Công ty đã làm việc cộng tác với Tập đoàn Thái Bình Dương để xây dựng tuyến đường sắt.",
+    "blankAnswer": "cooperatively"
+  },
+  {
+    "ordinal": 586,
+    "word": "commission",
+    "pos": "n",
+    "ipa": "/kəˈmɪʃn/",
+    "meaningVi": "ủy ban/hội đồng, tiền hoa hồng",
+    "definitionEn": "an official group of people who have been given responsibility to control something, or to find out about something, usually for the government",
+    "definitionVi": "một nhóm chính thức của những người được giao trách nhiệm kiểm soát một cái gì đó, hoặc để tìm hiểu về một cái gì đó, thường là cho chính phủ",
+    "synonyms": [
+      "committee",
+      "board"
+    ],
+    "exampleEn": "A ___ has been organized to look into funding sources.",
+    "exampleVi": "Một ủy ban đã được tổ chức để xem xét các nguồn tài trợ.",
+    "blankAnswer": "commission"
+  },
+  {
+    "ordinal": 587,
+    "word": "omit",
+    "pos": "v",
+    "ipa": "/əˈmɪt/",
+    "meaningVi": "bỏ đi, bỏ qua",
+    "definitionEn": "to not include something/somebody, either deliberately or because you have forgotten it/them",
+    "definitionVi": "không bao gồm một cái gì đó / ai đó, hoặc cố tình hoặc vì bạn đã quên nó / họ",
+    "synonyms": [
+      "eliminate",
+      "erase"
+    ],
+    "exampleEn": "Kata rewrote the draft to include details ___ from the original.",
+    "exampleVi": "Kata viết lại bản nháp để bao gồm những chi tiết bị bỏ sót từ bản gốc.",
+    "blankAnswer": "omitted"
+  },
+  {
+    "ordinal": 588,
+    "word": "conflict",
+    "pos": "n",
+    "ipa": "/ˈkɑːnflɪkt/",
+    "meaningVi": "sự xung đột, sự mâu thuẫn",
+    "definitionEn": "a situation in which people, groups or countries are involved in a serious disagreement or argument",
+    "definitionVi": "một tình huống trong đó mọi người, các nhóm hoặc quốc gia có liên quan đến một sự bất đồng hoặc tranh luận nghiêm trọng",
+    "synonyms": [
+      "dispute",
+      "disagreement"
+    ],
+    "exampleEn": "The executives had a ___ over when to expand the business internationally.",
+    "exampleVi": "Các giám đốc điều hành đã có một cuộc mâu thuẫn khi nào để mở rộng kinh doanh quốc tế.",
+    "blankAnswer": "conflict"
+  },
+  {
+    "ordinal": 589,
+    "word": "renew",
+    "pos": "v",
+    "ipa": "/rɪˈnuː/",
+    "meaningVi": "gia hạn, làm mới lại",
+    "definitionEn": "to begin something again after a pause or an interruption",
+    "definitionVi": "để bắt đầu lại một cái gì đó sau khi tạm dừng hoặc gián đoạn",
+    "synonyms": [
+      "extend",
+      "prolong"
+    ],
+    "exampleEn": "The retail company ___ the six-month contract after discussions.",
+    "exampleVi": "Công ty bán lẻ đã gia hạn hợp đồng sáu tháng sau khi thảo luận.",
+    "blankAnswer": "renewed"
+  },
+  {
+    "ordinal": 590,
+    "word": "proficient",
+    "pos": "adj",
+    "ipa": "/prəˈfɪʃnt/",
+    "meaningVi": "thông thạo, thành thạo",
+    "definitionEn": "able to do something well because of training and practice",
+    "definitionVi": "có thể làm một cái gì đó tốt vì đào tạo và thực hành",
+    "synonyms": [
+      "experienced",
+      "competent"
+    ],
+    "exampleEn": "David is ___ in several languages, which helps with international negotiations.",
+    "exampleVi": "David thông thạo nhiều ngôn ngữ, giúp giải quyết các cuộc đàm phán quốc tế.",
+    "blankAnswer": "proficient"
+  },
+  {
+    "ordinal": 591,
+    "word": "confidentiality",
+    "pos": "n",
+    "ipa": "/ˌkɑːnfɪˌdenʃiˈæləti/",
+    "meaningVi": "sự bí mật, bảo mật",
+    "definitionEn": "a situation in which you expect somebody to keep information secret",
+    "definitionVi": "một tình huống mà bạn mong đợi ai đó sẽ giữ bí mật thông tin",
+    "synonyms": [
+      "secrecy",
+      "privacy"
+    ],
+    "exampleEn": "Study subjects had to sign a ___ agreement before participating.",
+    "exampleVi": "Các chủ đề nghiên cứu phải ký một thỏa thuận bảo mật trước khi tham gia.",
+    "blankAnswer": "confidentiality"
+  },
+  {
+    "ordinal": 592,
+    "word": "dispute",
+    "pos": "n",
+    "ipa": "/dɪˈspjuːt/",
+    "meaningVi": "sự tranh luận/tranh chấp",
+    "definitionEn": "an argument or a disagreement between two people, groups or countries; discussion about a subject where there is disagreement",
+    "definitionVi": "một cuộc tranh cãi hoặc bất đồng giữa hai người, nhóm hoặc quốc gia; thảo luận về một chủ đề có bất đồng",
+    "synonyms": [
+      "debate",
+      "argument"
+    ],
+    "exampleEn": "A ___ between the two countries about the border.",
+    "exampleVi": "Sự tranh chấp giữa hai nước về biên giới.",
+    "blankAnswer": "dispute"
+  },
+  {
+    "ordinal": 593,
+    "word": "objection",
+    "pos": "n",
+    "ipa": "/əbˈdʒekʃn/",
+    "meaningVi": "sự phản đối",
+    "definitionEn": "a reason why you do not like or are opposed to something; a statement about this",
+    "definitionVi": "một lý do tại sao bạn không thích hoặc phản đối một cái gì đó; một tuyên bố về điều này",
+    "synonyms": [
+      "disagreement",
+      "disapproval"
+    ],
+    "exampleEn": "The deal proceeded despite the board of directors' ___.",
+    "exampleVi": "Thỏa thuận này diễn ra bất chấp sự phản đối của ban giám đốc.",
+    "blankAnswer": "objections"
+  },
+  {
+    "ordinal": 594,
+    "word": "define",
+    "pos": "v",
+    "ipa": "/dɪˈfaɪn/",
+    "meaningVi": "xác định, định rõ",
+    "definitionEn": "to describe or show something accurately",
+    "definitionVi": "để mô tả hoặc thể hiện một cái gì đó chính xác",
+    "synonyms": [
+      "determine",
+      "describe"
+    ],
+    "exampleEn": "The contract ___ the roles of all parties involved.",
+    "exampleVi": "Hợp đồng đã xác định vai trò của tất cả các bên liên quan.",
+    "blankAnswer": "defined"
+  },
+  {
+    "ordinal": 595,
+    "word": "impression",
+    "pos": "n",
+    "ipa": "/ɪmˈpreʃn/",
+    "meaningVi": "sự ấn tượng",
+    "definitionEn": "an idea, a feeling or an opinion that you get about somebody/something, or that somebody/something gives you",
+    "definitionVi": "một ý tưởng, một cảm giác hoặc một ý kiến mà bạn nhận được về ai đó / một cái gì đó, hoặc rằng ai đó / một cái gì đó mang lại cho bạn",
+    "synonyms": [
+      "feeling",
+      "sense"
+    ],
+    "exampleEn": "The representative's presentation gave the ___ that his company is well-organized.",
+    "exampleVi": "Bài thuyết trình của đại diện đã tạo ấn tượng rằng công ty của anh ấy đã được tổ chức tốt.",
+    "blankAnswer": "impression"
+  },
+  {
+    "ordinal": 596,
+    "word": "security",
+    "pos": "n",
+    "ipa": "/səˈkjʊrəti/",
+    "meaningVi": "sự an toàn, sự an ninh",
+    "definitionEn": "the activities involved in protecting a country, building or person against attack, danger, etc",
+    "definitionVi": "các hoạt động liên quan đến bảo vệ một quốc gia, tòa nhà hoặc người chống lại sự tấn công, nguy hiểm, v.v",
+    "synonyms": [
+      "safety"
+    ],
+    "exampleEn": "___ is a priority during next week's sensitive negotiation meetings.",
+    "exampleVi": "Sự an ninh là ưu tiên trong các cuộc họp đàm phán nhạy cảm trong tuần tới.",
+    "blankAnswer": "Security"
+  },
+  {
+    "ordinal": 597,
+    "word": "option",
+    "pos": "n",
+    "ipa": "/ˈɑːpʃn/",
+    "meaningVi": "sự tùy chọn/lựa chọn",
+    "definitionEn": "something that you can choose to have or do; the freedom to choose what you do",
+    "definitionVi": "một cái gì đó mà bạn có thể chọn để có hoặc làm; tự do lựa chọn những gì bạn làm",
+    "synonyms": [
+      "choice",
+      "selection"
+    ],
+    "exampleEn": "The agreement provides Banister with the ___ to discuss rate adjustments after one year.",
+    "exampleVi": "Thỏa thuận này cung cấp cho Banister sự lựa chọn để thảo luận về điều chỉnh giá sau một năm.",
+    "blankAnswer": "option"
+  },
+  {
+    "ordinal": 598,
+    "word": "proceed",
+    "pos": "v",
+    "ipa": "/proʊˈsiːd/",
+    "meaningVi": "tiếp tục, thực hiện",
+    "definitionEn": "to continue doing something that has already been started; to continue being done",
+    "definitionVi": "để tiếp tục làm một cái gì đó đã được bắt đầu; để tiếp tục được thực hiện",
+    "synonyms": [
+      "act",
+      "do"
+    ],
+    "exampleEn": "Talks concerning the companies' merger are ___ well.",
+    "exampleVi": "Các cuộc nói chuyện liên quan đến việc sáp nhập công ty đang tiếp tục diễn ra tốt.",
+    "blankAnswer": "proceeding"
+  },
+  {
+    "ordinal": 599,
+    "word": "modify",
+    "pos": "v",
+    "ipa": "/ˈmɑːdɪfaɪ/",
+    "meaningVi": "chỉnh sửa, thay đổi",
+    "definitionEn": "to change something slightly, especially in order to make it more suitable for a particular purpose",
+    "definitionVi": "thay đổi một chút gì đó, đặc biệt là để làm cho nó phù hợp hơn cho một mục đích cụ thể",
+    "synonyms": [
+      "change",
+      "adjust"
+    ],
+    "exampleEn": "The parties agreed to ___ the wording of some clauses.",
+    "exampleVi": "Các bên đồng ý sửa đổi từ ngữ của một số điều khoản.",
+    "blankAnswer": "modify"
+  },
+  {
+    "ordinal": 600,
+    "word": "narrow",
+    "pos": "v",
+    "ipa": "/ˈnæroʊ/",
+    "meaningVi": "thu hẹp, giới hạn",
+    "definitionEn": "to make something smaller in number, amount, or extent",
+    "definitionVi": "làm cho một cái gì đó nhỏ hơn về số lượng hoặc phạm vi",
+    "synonyms": [
+      "limited"
+    ],
+    "exampleEn": "The number of potential building sites has been ___ down to three.",
+    "exampleVi": "Số lượng các địa điểm xây dựng tiềm năng đã được thu hẹp xuống còn ba.",
+    "blankAnswer": "narrowed"
+  },
+  {
+    "ordinal": 601,
+    "word": "bid",
+    "pos": "n",
+    "ipa": "/bɪd/",
+    "meaningVi": "sự đấu thầu",
+    "definitionEn": "an offer to pay a particular price for something, especially at an auction, or to do a piece of work for a stated price",
+    "definitionVi": "một lời đề nghị trả một mức giá cụ thể cho thứ gì đó, đặc biệt là trong một cuộc đấu giá, hoặc để thực hiện một công việc với mức giá đã nêu",
+    "synonyms": [
+      "offer",
+      "tender"
+    ],
+    "exampleEn": "The construction firm Martin & Sons put in a ___ for the contract.",
+    "exampleVi": "Công ty xây dựng Martin & Sons đưa ra sự đấu thầu cho hợp đồng.",
+    "blankAnswer": "bid"
+  },
+  {
+    "ordinal": 602,
+    "word": "settle",
+    "pos": "v",
+    "ipa": "/ˈsetl/",
+    "meaningVi": "dàn xếp, giải quyết",
+    "definitionEn": "to put an end to an argument or a disagreement",
+    "definitionVi": "chấm dứt tranh luận hoặc bất đồng",
+    "synonyms": [
+      "deal with",
+      "handle"
+    ],
+    "exampleEn": "The management made attempts to ___ the unfair dismissal case.",
+    "exampleVi": "Ban quản lý đã cố gắng giải quyết vụ kiện sa thải bất công.",
+    "blankAnswer": "settle"
+  },
+  {
+    "ordinal": 603,
+    "word": "terminate",
+    "pos": "v",
+    "ipa": "/ˈtɜːrmɪneɪt/",
+    "meaningVi": "chấm dứt",
+    "definitionEn": "to end; to make something end",
+    "definitionVi": "kết thúc; để làm một cái gì đó kết thúc",
+    "synonyms": [
+      "discontinue",
+      "stop"
+    ],
+    "exampleEn": "The company ___ the agreement when the project wasn't completed.",
+    "exampleVi": "Công ty đã chấm dứt thỏa thuận khi dự án không hoàn thành.",
+    "blankAnswer": "terminated"
+  },
+  {
+    "ordinal": 604,
+    "word": "challenging",
+    "pos": "adj",
+    "ipa": "/ˈtʃælɪndʒɪŋ/",
+    "meaningVi": "đầy thách thức, khó khăn",
+    "definitionEn": "difficult in an interesting way that tests your ability",
+    "definitionVi": "khó khăn một cách thú vị kiểm tra khả năng của bạn",
+    "synonyms": [
+      "difficult"
+    ],
+    "exampleEn": "Renovating the new wing proved to be a ___ project.",
+    "exampleVi": "Cải tạo dãy nhà mới được chứng minh là một dự án đầy thử thách.",
+    "blankAnswer": "challenging"
+  },
+  {
+    "ordinal": 605,
+    "word": "foundation",
+    "pos": "n",
+    "ipa": "/faʊnˈdeɪʃn/",
+    "meaningVi": "sự thành lập, sáng lập",
+    "definitionEn": "the establishment of an organization, business, school etc",
+    "definitionVi": "thành lập một tổ chức, kinh doanh, trường học vv",
+    "synonyms": [
+      "establishment",
+      "founding"
+    ],
+    "exampleEn": "The organization has grown enormously since its ___ in 1955.",
+    "exampleVi": "Tổ chức đã phát triển rất nhiều kể từ khi thành lập vào năm 1955.",
+    "blankAnswer": "foundation"
   }
 ]
