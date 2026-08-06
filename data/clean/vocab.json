@@ -4723,5 +4723,936 @@
     "exampleEn": "The ___ of competition will help product sales.",
     "exampleVi": "Sự thiếu cạnh tranh sẽ giúp doanh số bán sản phẩm.",
     "blankAnswer": "absence"
+  },
+  {
+    "ordinal": 301,
+    "word": "means",
+    "pos": "n",
+    "ipa": "/miːnz/",
+    "meaningVi": "biện pháp, cách thức",
+    "definitionEn": "a way of doing or achieving something",
+    "definitionVi": "một cách để làm hoặc đạt được điều gì đó",
+    "synonyms": [
+      "method",
+      "way"
+    ],
+    "exampleEn": "Direct surveys are one ___ of gathering consumer feedback.",
+    "exampleVi": "Khảo sát trực tiếp là một cách thức thu thập phản hồi của người tiêu dùng.",
+    "blankAnswer": "means"
+  },
+  {
+    "ordinal": 302,
+    "word": "prefer",
+    "pos": "v",
+    "ipa": "/prɪˈfɜːr/",
+    "meaningVi": "thích",
+    "definitionEn": "to like someone or something more than someone or something else",
+    "definitionVi": "thích một ai đó hoặc một cái gì đó nhiều hơn một ai đó hoặc một cái gì đó khác",
+    "synonyms": [
+      "like"
+    ],
+    "exampleEn": "Customers ___ Luster Shampoo to any other competing brand.",
+    "exampleVi": "Khách hàng thích Luster Shampoo hơn bất kỳ thương hiệu cạnh tranh nào khác.",
+    "blankAnswer": "prefer"
+  },
+  {
+    "ordinal": 303,
+    "word": "advantage",
+    "pos": "n",
+    "ipa": "/ədˈvæntɪdʒ/",
+    "meaningVi": "lợi thế, sự thuận lợi",
+    "definitionEn": "a thing that helps you to be better or more successful than other people",
+    "definitionVi": "một điều giúp bạn trở nên tốt hơn hoặc thành công hơn những người khác",
+    "synonyms": [
+      "benefit",
+      "edge"
+    ],
+    "exampleEn": "One ___ of consumer testing is the development of marketing insight.",
+    "exampleVi": "Một lợi thế của việc kiểm tra người tiêu dùng là sự phát triển của cái nhìn sâu sắc về tiếp thị.",
+    "blankAnswer": "advantage"
+  },
+  {
+    "ordinal": 304,
+    "word": "forward",
+    "pos": "adv",
+    "ipa": "/ˈfɔːrwərd/",
+    "meaningVi": "về phía trước",
+    "definitionEn": "towards a good result",
+    "definitionVi": "hướng tới một kết quả tốt",
+    "synonyms": [
+      "send"
+    ],
+    "exampleEn": "Our company's research program has moved ___ substantially.",
+    "exampleVi": "Chương trình nghiên cứu của công ty chúng tôi đã tiến triển về phía trước đáng kể.",
+    "blankAnswer": "forward"
+  },
+  {
+    "ordinal": 305,
+    "word": "contemporary",
+    "pos": "adj",
+    "ipa": "/kənˈtempəreri/",
+    "meaningVi": "đương thời, hiện đại",
+    "definitionEn": "belonging to the same time",
+    "definitionVi": "thuộc cùng một thời điểm",
+    "synonyms": [
+      "modern"
+    ],
+    "exampleEn": "The fashion brand's ___ look appeals to young consumers.",
+    "exampleVi": "Phong cách hiện đại của thương hiệu thời trang thu hút sự chú ý của người tiêu dùng trẻ.",
+    "blankAnswer": "contemporary"
+  },
+  {
+    "ordinal": 306,
+    "word": "discussion",
+    "pos": "n",
+    "ipa": "/dɪˈskʌʃn/",
+    "meaningVi": "cuộc thảo luận",
+    "definitionEn": "a conversation about somebody/something",
+    "definitionVi": "một cuộc trò chuyện về ai đó hoặc một cái gì đó",
+    "synonyms": [
+      "dialogue",
+      "debate"
+    ],
+    "exampleEn": "A ___ was held to decide how to promote the product.",
+    "exampleVi": "Một cuộc thảo luận được tổ chức để quyết định cách quảng bá sản phẩm.",
+    "blankAnswer": "discussion"
+  },
+  {
+    "ordinal": 307,
+    "word": "initial",
+    "pos": "adj",
+    "ipa": "/ɪˈnɪʃl/",
+    "meaningVi": "ban đầu",
+    "definitionEn": "happening at the beginning; first",
+    "definitionVi": "xảy ra ngay từ đầu; đầu tiên",
+    "synonyms": [
+      "introductory",
+      "first"
+    ],
+    "exampleEn": "___ findings show that customers are satisfied with the service.",
+    "exampleVi": "Những kết quả ban đầu cho thấy khách hàng hài lòng với dịch vụ.",
+    "blankAnswer": "Initial"
+  },
+  {
+    "ordinal": 308,
+    "word": "steadily",
+    "pos": "adv",
+    "ipa": "/ˈstedɪli/",
+    "meaningVi": "đều đặn, liên tục",
+    "definitionEn": "without any change or interruption",
+    "definitionVi": "không có bất kỳ thay đổi hoặc gián đoạn nào",
+    "synonyms": [
+      "gradually"
+    ],
+    "exampleEn": "Ron ___ answered investors' questions about his business idea.",
+    "exampleVi": "Ron liên tục trả lời câu hỏi của nhà đầu tư về ý tưởng kinh doanh của mình.",
+    "blankAnswer": "steadily"
+  },
+  {
+    "ordinal": 309,
+    "word": "necessarily",
+    "pos": "adv",
+    "ipa": "/ˌnesəˈserəli/",
+    "meaningVi": "nhất thiết, tất yếu, chắc chắn",
+    "definitionEn": "used to say that something cannot be avoided",
+    "definitionVi": "được sử dụng để nói rằng một điều gì đó không thể tránh khỏi",
+    "synonyms": [
+      "inevitably"
+    ],
+    "exampleEn": "Increased production does not ___ lead to greater revenues.",
+    "exampleVi": "Việc gia tăng sản phẩm không nhất thiết dẫn đến doanh thu cao hơn.",
+    "blankAnswer": "necessarily"
+  },
+  {
+    "ordinal": 310,
+    "word": "resolve",
+    "pos": "v",
+    "ipa": "/rɪˈzɑːlv/",
+    "meaningVi": "giải quyết",
+    "definitionEn": "to find an acceptable solution to a problem or difficulty",
+    "definitionVi": "tìm một giải pháp có thể chấp nhận được cho một vấn đề hoặc khó khăn",
+    "synonyms": [
+      "settle",
+      "deal with"
+    ],
+    "exampleEn": "The new facial cream promises to ___ 90 percent of common skin problems.",
+    "exampleVi": "Kem dưỡng da mặt mới hứa hẹn sẽ giải quyết 90% các vấn đề về da phổ biến.",
+    "blankAnswer": "resolve"
+  },
+  {
+    "ordinal": 311,
+    "word": "detect",
+    "pos": "v",
+    "ipa": "/dɪˈtekt/",
+    "meaningVi": "phát hiện, tìm ra",
+    "definitionEn": "to discover or notice something, especially something that is not easy to see, hear, etc.",
+    "definitionVi": "khám phá hoặc nhận thấy điều gì đó, đặc biệt là điều gì đó không dễ thấy, nghe, v.v",
+    "synonyms": [
+      "discover",
+      "find"
+    ],
+    "exampleEn": "Only a few people ___ any actual differences between the two models.",
+    "exampleVi": "Chỉ một vài người phát hiện bất kỳ sự khác biệt thực sự nào giữa hai mô hình.",
+    "blankAnswer": "detected"
+  },
+  {
+    "ordinal": 312,
+    "word": "intensify",
+    "pos": "v",
+    "ipa": "/ɪnˈtensɪfaɪ/",
+    "meaningVi": "tăng cường, củng cố, gia tăng",
+    "definitionEn": "to increase in degree or strength; to make something increase in degree or strength",
+    "definitionVi": "tăng mức độ hoặc sức mạnh; làm cho một cái gì đó tăng mức độ hoặc sức mạnh",
+    "synonyms": [
+      "strengthen",
+      "increase"
+    ],
+    "exampleEn": "The movie studio ___ its promotional activities to draw in a wider audience.",
+    "exampleVi": "Hãng phim đã tăng cường các hoạt động quảng cáo để thu hút lượng người xem lớn hơn.",
+    "blankAnswer": "intensified"
+  },
+  {
+    "ordinal": 313,
+    "word": "favorably",
+    "pos": "adv",
+    "ipa": "/ˈfeɪvərəbli/",
+    "meaningVi": "tốt, thuận lợi",
+    "definitionEn": "in a way that is good for something and makes it likely to be successful or have an advantage",
+    "definitionVi": "theo cách tốt cho một thứ gì đó và làm cho nó có khả năng thành công hoặc có lợi thế",
+    "synonyms": [
+      "Extremely good"
+    ],
+    "exampleEn": "The product demonstration was ___ received by consumers.",
+    "exampleVi": "Giới thiệu sản phẩm đã được người tiêu dùng đón nhận tốt.",
+    "blankAnswer": "favorably"
+  },
+  {
+    "ordinal": 314,
+    "word": "cover",
+    "pos": "v",
+    "ipa": "/ˈkʌvər/",
+    "meaningVi": "bao gồm, bao phủ, chi trả, giải quyết",
+    "definitionEn": "to include something; to deal with something",
+    "definitionVi": "bao gồm một cái gì đó; đối phó với một cái gì đó",
+    "synonyms": [
+      "pay for",
+      "include",
+      "deal with"
+    ],
+    "exampleEn": "The rental deposit ___ the cost of repairing damage to the equipment.",
+    "exampleVi": "Tiền đặt cọc cho thuê nhà bao gồm chi phí sửa chữa thiệt hại cho thiết bị.",
+    "blankAnswer": "covers"
+  },
+  {
+    "ordinal": 315,
+    "word": "less",
+    "pos": "adj",
+    "ipa": "/les/",
+    "meaningVi": "ít",
+    "definitionEn": "not so much or to a smaller degree",
+    "definitionVi": "không quá nhiều hoặc đến một mức độ nhỏ hơn",
+    "synonyms": [
+      "not so much"
+    ],
+    "exampleEn": "___ competition among insurance companies led to higher premiums.",
+    "exampleVi": "Ít cạnh tranh giữa các công ty bảo hiểm dẫn đến phí bảo hiểm cao hơn.",
+    "blankAnswer": "Less"
+  },
+  {
+    "ordinal": 316,
+    "word": "majority",
+    "pos": "n",
+    "ipa": "/məˈdʒɔːrəti/",
+    "meaningVi": "phần lớn",
+    "definitionEn": "the largest part of a group of people or things",
+    "definitionVi": "phần lớn nhất của một nhóm người hoặc vật",
+    "synonyms": [
+      "larger part/number",
+      "most"
+    ],
+    "exampleEn": "The ___ of registered clients pay their dues regularly.",
+    "exampleVi": "Phần lớn khách hàng đã đăng ký trả tiền thường xuyên đúng kỳ hạn.",
+    "blankAnswer": "majority"
+  },
+  {
+    "ordinal": 317,
+    "word": "adopt",
+    "pos": "v",
+    "ipa": "/əˈdɑːpt/",
+    "meaningVi": "chấp nhận, thông qua, bắt đầu",
+    "definitionEn": "formally accept a suggestion or policy by voting",
+    "definitionVi": "chính thức chấp nhận đề xuất hoặc chính sách bằng cách bỏ phiếu",
+    "synonyms": [
+      "accept",
+      "start"
+    ],
+    "exampleEn": "Plenty of research must be done before ___ a particular marketing strategy.",
+    "exampleVi": "Nhiều nghiên cứu được thực hiện trước khi bắt đầu một chiến lược tiếp thị đặc biệt.",
+    "blankAnswer": "adopting"
+  },
+  {
+    "ordinal": 318,
+    "word": "largely",
+    "pos": "adv",
+    "ipa": "/ˈlɑːrdʒli/",
+    "meaningVi": "phần lớn, chủ yếu",
+    "definitionEn": "to a great extent; mostly or mainly",
+    "definitionVi": "đến một phạm vi lớn; chủ yếu hoặc phần lớn",
+    "synonyms": [
+      "mostly",
+      "mainly"
+    ],
+    "exampleEn": "The public reaction to the charity foundation was ___ positive.",
+    "exampleVi": "Phản ứng của công chúng đối với quỹ từ thiện phần lớn là tích cực.",
+    "blankAnswer": "largely"
+  },
+  {
+    "ordinal": 319,
+    "word": "disregard",
+    "pos": "v",
+    "ipa": "/ˌdɪsrɪˈɡɑːrd/",
+    "meaningVi": "bỏ qua, xem thường",
+    "definitionEn": "to not consider something; to treat something as unimportant",
+    "definitionVi": "không xem xét điều gì đó; xem điều gì đó là không quan trọng",
+    "synonyms": [
+      "pay no attention"
+    ],
+    "exampleEn": "The company should not ___ customers' opinions if it wants to improve the service quality.",
+    "exampleVi": "Công ty không nên bỏ qua ý kiến của khách hàng nếu muốn cải thiện chất lượng dịch vụ.",
+    "blankAnswer": "disregard"
+  },
+  {
+    "ordinal": 320,
+    "word": "effort",
+    "pos": "n",
+    "ipa": "/ˈefərt/",
+    "meaningVi": "nỗ lực",
+    "definitionEn": "an attempt to do something especially when it is difficult to do",
+    "definitionVi": "một nỗ lực để làm một cái gì đó đặc biệt là khi nó khó khăn để làm",
+    "synonyms": [
+      "endeavor",
+      "try"
+    ],
+    "exampleEn": "TV commercials were run in an ___ to broaden consumer awareness of new brands.",
+    "exampleVi": "Quảng cáo truyền hình được phát trong nỗ lực để tăng nhận thức của người tiêu dùng về các thương hiệu mới.",
+    "blankAnswer": "effort"
+  },
+  {
+    "ordinal": 321,
+    "word": "incentive",
+    "pos": "adj",
+    "ipa": "/ɪnˈsentɪv/",
+    "meaningVi": "khuyến khích, thúc đẩy",
+    "definitionEn": "something that encourages you to do something",
+    "definitionVi": "điều gì đó khuyến khích bạn làm điều gì đó",
+    "synonyms": [
+      "spur",
+      "encouragement"
+    ],
+    "exampleEn": "Financial ___ such as coupons may encourage purchases.",
+    "exampleVi": "Các khuyến khích tài chính như phiếu giảm giá có thể khuyến khích mua hàng.",
+    "blankAnswer": "incentives"
+  },
+  {
+    "ordinal": 322,
+    "word": "need",
+    "pos": "v",
+    "ipa": "/niːd/",
+    "meaningVi": "cần",
+    "definitionEn": "to require something/somebody because they are essential or very important, not just because you would like to have them",
+    "definitionVi": "yêu cầu một cái gì đó hoặc ai đó bởi vì họ rất cần thiết hoặc rất quan trọng, không chỉ vì bạn muốn có chúng",
+    "synonyms": [
+      "demand"
+    ],
+    "exampleEn": "The company is in ___ of an untapped market.",
+    "exampleVi": "Công ty thì cần một thị trường chưa mở, chưa khai thác.",
+    "blankAnswer": "need"
+  },
+  {
+    "ordinal": 323,
+    "word": "mastermind",
+    "pos": "n",
+    "ipa": "/ˈmæstərmaɪnd/",
+    "meaningVi": "người lập kế hoạch, người khởi xướng",
+    "definitionEn": "an intelligent person who plans and directs a complicated project or activity, often one that involves a crime",
+    "definitionVi": "một người thông minh lập kế hoạch và chỉ đạo một dự án hoặc hoạt động phức tạp, thường là một dự án liên quan đến tội phạm",
+    "synonyms": [
+      "organizer"
+    ],
+    "exampleEn": "Mr. Dance is the ___ behind the innovative design.",
+    "exampleVi": "Mr. Dance là người khởi xướng đằng sau thiết kế sáng tạo.",
+    "blankAnswer": "mastermind"
+  },
+  {
+    "ordinal": 324,
+    "word": "stagnant",
+    "pos": "adj",
+    "ipa": "/ˈstæɡnənt/",
+    "meaningVi": "trì trệ, không phát triển, chậm chạp",
+    "definitionEn": "not developing, growing or changing",
+    "definitionVi": "không phát triển, phát triển hoặc thay đổi",
+    "synonyms": [
+      "sluggish"
+    ],
+    "exampleEn": "Profits are down this year as sales have been ___.",
+    "exampleVi": "Lợi nhuận giảm trong năm nay khi doanh số bán hàng bị trì trệ.",
+    "blankAnswer": "stagnant"
+  },
+  {
+    "ordinal": 325,
+    "word": "dramatically",
+    "pos": "adv",
+    "ipa": "/drəˈmætɪkli/",
+    "meaningVi": "đáng kể",
+    "definitionEn": "very suddenly and to a very great and often surprising degree",
+    "definitionVi": "rất bất ngờ và đến một mức độ rất lớn, thường gây ngạc nhiên",
+    "synonyms": [
+      "significantly",
+      "substantially",
+      "sharply"
+    ],
+    "exampleEn": "Interest rates climbed ___.",
+    "exampleVi": "Lãi suất tăng đáng kể.",
+    "blankAnswer": "dramatically"
+  },
+  {
+    "ordinal": 326,
+    "word": "brisk",
+    "pos": "adj",
+    "ipa": "/brɪsk/",
+    "meaningVi": "nhanh, phát đạt",
+    "definitionEn": "quick; busy",
+    "definitionVi": "nhanh; sôi động",
+    "synonyms": [
+      "lively",
+      "bustling"
+    ],
+    "exampleEn": "A ___ market is developing in online shopping.",
+    "exampleVi": "Một thị trường phát đạt đang phát triển trong mua sắm trực tuyến.",
+    "blankAnswer": "brisk"
+  },
+  {
+    "ordinal": 327,
+    "word": "unstable",
+    "pos": "adj",
+    "ipa": "/ʌnˈsteɪbl/",
+    "meaningVi": "không ổn định",
+    "definitionEn": "likely to change suddenly",
+    "definitionVi": "có khả năng thay đổi đột ngột",
+    "synonyms": [
+      "fluctuating"
+    ],
+    "exampleEn": "Gas prices have been ___ in recent years.",
+    "exampleVi": "Giá gas đã không ổn định trong những năm gần đây.",
+    "blankAnswer": "unstable"
+  },
+  {
+    "ordinal": 328,
+    "word": "rapidly",
+    "pos": "adv",
+    "ipa": "/ˈræpɪdli/",
+    "meaningVi": "nhanh chóng, mau lẹ",
+    "definitionEn": "very quickly; at a great rate",
+    "definitionVi": "rất nhanh; với một tỷ lệ lớn",
+    "synonyms": [
+      "quickly",
+      "fast"
+    ],
+    "exampleEn": "Energy demand increased ___.",
+    "exampleVi": "Nhu cầu về năng lượng tăng nhanh.",
+    "blankAnswer": "rapidly"
+  },
+  {
+    "ordinal": 329,
+    "word": "soar",
+    "pos": "v",
+    "ipa": "/sɔːr/",
+    "meaningVi": "tăng vọt",
+    "definitionEn": "if the value, amount or level of something soars, it rises very quickly",
+    "definitionVi": "nếu giá trị, số lượng hoặc mức độ của một cái gì đó tăng vọt, nó tăng rất nhanh",
+    "synonyms": [
+      "skyrocket"
+    ],
+    "exampleEn": "Interest rates have ___ due to inflation.",
+    "exampleVi": "Lãi suất đã tăng vọt do lạm phát.",
+    "blankAnswer": "soared"
+  },
+  {
+    "ordinal": 330,
+    "word": "assert",
+    "pos": "v",
+    "ipa": "/əˈsɜːrt/",
+    "meaningVi": "khẳng định, quả quyết",
+    "definitionEn": "to state clearly and firmly that something is true",
+    "definitionVi": "nêu rõ ràng và chắc chắn rằng điều gì đó đúng",
+    "synonyms": [
+      "declare"
+    ],
+    "exampleEn": "The report ___ that corporate growth will continue.",
+    "exampleVi": "Báo cáo khẳng định rằng tăng trưởng của công ty sẽ tiếp tục.",
+    "blankAnswer": "asserts"
+  },
+  {
+    "ordinal": 331,
+    "word": "boost",
+    "pos": "v",
+    "ipa": "/buːst/",
+    "meaningVi": "thúc đẩy, tăng",
+    "definitionEn": "to make something increase, or become better or more successful",
+    "definitionVi": "làm cho một cái gì đó tăng lên, hoặc trở nên tốt hơn hoặc thành công hơn",
+    "synonyms": [
+      "foster",
+      "improve"
+    ],
+    "exampleEn": "The real estate industry has helped ___ the economy.",
+    "exampleVi": "Ngành bất động sản đã giúp thúc đẩy nền kinh tế.",
+    "blankAnswer": "boost"
+  },
+  {
+    "ordinal": 332,
+    "word": "analyst",
+    "pos": "n",
+    "ipa": "/ˈænəlɪst/",
+    "meaningVi": "nhà phân tích",
+    "definitionEn": "a person whose job involves examining facts or materials in order to give an opinion on them",
+    "definitionVi": "một người có công việc liên quan đến việc kiểm tra sự kiện hoặc tài liệu để đưa ra ý kiến về chúng",
+    "synonyms": [
+      "expert",
+      "specialist"
+    ],
+    "exampleEn": "___ recommend buying stock in energy companies.",
+    "exampleVi": "Các nhà phân tích khuyên bạn nên mua cổ phiếu trong các công ty năng lượng.",
+    "blankAnswer": "Analysts"
+  },
+  {
+    "ordinal": 333,
+    "word": "potential",
+    "pos": "adj",
+    "ipa": "/pəˈtenʃl/",
+    "meaningVi": "tiềm năng",
+    "definitionEn": "that can develop into something or be developed in the future",
+    "definitionVi": "có thể phát triển thành một thứ gì đó hoặc được phát triển trong tương lai",
+    "synonyms": [
+      "undeveloped"
+    ],
+    "exampleEn": "___ earnings from the trade deal could reach billions of dollars.",
+    "exampleVi": "Thu nhập tiềm năng từ giao dịch thương mại có thể đạt hàng tỷ đô la.",
+    "blankAnswer": "Potential"
+  },
+  {
+    "ordinal": 334,
+    "word": "pleased",
+    "pos": "adj",
+    "ipa": "/pliːzd/",
+    "meaningVi": "hài lòng, vui mừng",
+    "definitionEn": "feeling happy about something",
+    "definitionVi": "cảm thấy hạnh phúc về điều gì đó",
+    "synonyms": [
+      "satisfied",
+      "delighted"
+    ],
+    "exampleEn": "Investors are ___ with the market's performance.",
+    "exampleVi": "Các nhà đầu tư hài lòng với hiệu suất của thị trường.",
+    "blankAnswer": "pleased"
+  },
+  {
+    "ordinal": 335,
+    "word": "remain",
+    "pos": "v",
+    "ipa": "/rɪˈmeɪn/",
+    "meaningVi": "vẫn",
+    "definitionEn": "to continue to be in the same state or condition",
+    "definitionVi": "tiếp tục ở trong cùng một trạng thái hoặc điều kiện",
+    "synonyms": [
+      "stay",
+      "continue"
+    ],
+    "exampleEn": "The cost of living will ___ stable over the next decade.",
+    "exampleVi": "Chi phí sinh hoạt sẽ vẫn ổn định trong thập kỷ tới.",
+    "blankAnswer": "remain"
+  },
+  {
+    "ordinal": 336,
+    "word": "limited",
+    "pos": "adj",
+    "ipa": "/ˈlɪmɪtɪd/",
+    "meaningVi": "giới hạn, hạn chế",
+    "definitionEn": "restricted to a particular limit of time, numbers, etc.",
+    "definitionVi": "giới hạn ở một giới hạn thời gian, số lượng, v.v",
+    "synonyms": [
+      "restricted"
+    ],
+    "exampleEn": "The island nation has ___ natural resources.",
+    "exampleVi": "Quốc đảo này có nguồn tài nguyên thiên nhiên hạn chế.",
+    "blankAnswer": "limited"
+  },
+  {
+    "ordinal": 337,
+    "word": "costly",
+    "pos": "adj",
+    "ipa": "/ˈkɔːstli/",
+    "meaningVi": "đắt đỏ, tốn kém",
+    "definitionEn": "costing a lot of money, especially more than you want to pay",
+    "definitionVi": "chi phí rất nhiều tiền, đặc biệt là nhiều hơn bạn muốn trả",
+    "synonyms": [
+      "expensive"
+    ],
+    "exampleEn": "Starting a business is ___.",
+    "exampleVi": "Bắt đầu một doanh nghiệp thì rất tốn kém.",
+    "blankAnswer": "costly"
+  },
+  {
+    "ordinal": 338,
+    "word": "particular",
+    "pos": "adj",
+    "ipa": "/pərˈtɪkjələr/",
+    "meaningVi": "đặc biệt, riêng biệt",
+    "definitionEn": "used to emphasize that you are referring to one individual person, thing or type of thing and not others",
+    "definitionVi": "được sử dụng để nhấn mạnh rằng bạn đang đề cập đến một cá nhân, điều hoặc loại điều cụ thể và không phải là người khác",
+    "synonyms": [
+      "specific",
+      "certain"
+    ],
+    "exampleEn": "Import taxes are higher for ___ products that are luxury goods.",
+    "exampleVi": "Thuế nhập khẩu cao hơn cho các sản phẩm đặc biệt là hàng xa xỉ.",
+    "blankAnswer": "particular"
+  },
+  {
+    "ordinal": 339,
+    "word": "drastic",
+    "pos": "adj",
+    "ipa": "/ˈdræstɪk/",
+    "meaningVi": "quyết liệt",
+    "definitionEn": "extreme in a way that has a sudden, serious or violent effect on something",
+    "definitionVi": "cực đoan theo cách có hiệu ứng đột ngột, nghiêm trọng hoặc bạo lực đối với điều gì đó",
+    "synonyms": [
+      "heavy",
+      "severe"
+    ],
+    "exampleEn": "Resolving the financial crisis will require ___ action.",
+    "exampleVi": "Giải quyết khủng hoảng tài chính sẽ đòi hỏi hành động quyết liệt.",
+    "blankAnswer": "drastic"
+  },
+  {
+    "ordinal": 340,
+    "word": "evenly",
+    "pos": "adv",
+    "ipa": "/ˈiːvnli/",
+    "meaningVi": "bằng nhau, đều",
+    "definitionEn": "in a smooth, regular or equal way",
+    "definitionVi": "theo cách trơn tru, bình thường hoặc bình đẳng",
+    "synonyms": [
+      "equally"
+    ],
+    "exampleEn": "Economic wealth is not ___ distributed.",
+    "exampleVi": "Tài sản kinh tế không được phân phối đều.",
+    "blankAnswer": "evenly"
+  },
+  {
+    "ordinal": 341,
+    "word": "evidence",
+    "pos": "n",
+    "ipa": "/ˈevɪdəns/",
+    "meaningVi": "bằng chứng",
+    "definitionEn": "the facts, signs or objects that make you believe that something is true",
+    "definitionVi": "sự kiện, dấu hiệu hoặc đồ vật khiến bạn tin rằng điều gì đó đúng",
+    "synonyms": [
+      "proof"
+    ],
+    "exampleEn": "The latest employment data shows ___ that the economy is improving.",
+    "exampleVi": "Dữ liệu việc làm mới nhất cho thấy bằng chứng cho thấy nền kinh tế đang cải thiện.",
+    "blankAnswer": "evidence"
+  },
+  {
+    "ordinal": 342,
+    "word": "prospect",
+    "pos": "n",
+    "ipa": "/ˈprɑːspekt/",
+    "meaningVi": "viễn cảnh, triển vọng",
+    "definitionEn": "the possibility that something will happen",
+    "definitionVi": "khả năng một điều gì đó sẽ xảy ra",
+    "synonyms": [
+      "vision"
+    ],
+    "exampleEn": "Bolton Industries is facing the ___ of having to reduce its workforce.",
+    "exampleVi": "Bolton Industries đang đối mặt với viễn cảnh phải giảm công việc của mình.",
+    "blankAnswer": "prospect"
+  },
+  {
+    "ordinal": 343,
+    "word": "lead",
+    "pos": "v",
+    "ipa": "/liːd/",
+    "meaningVi": "dẫn dắt, dẫn đến, hướng dẫn",
+    "definitionEn": "to go with or in front of a person or an animal to show the way or to make them go in the right direction",
+    "definitionVi": "đi với hoặc ở phía trước của một người hoặc một con vật để chỉ đường hoặc để làm cho họ đi đúng hướng",
+    "synonyms": [
+      "guide"
+    ],
+    "exampleEn": "Ms. Vasquez helped ___ the company to success.",
+    "exampleVi": "Bà Vasquez đã giúp dẫn dắt công ty thành công.",
+    "blankAnswer": "lead"
+  },
+  {
+    "ordinal": 344,
+    "word": "fall",
+    "pos": "v",
+    "ipa": "/fɔːl/",
+    "meaningVi": "giảm",
+    "definitionEn": "to become lower in amount, number, or level",
+    "definitionVi": "trở nên thấp hơn về số lượng hoặc mức độ",
+    "synonyms": [
+      "decrease"
+    ],
+    "exampleEn": "The rate of unemployment has ___ steadily this quarter.",
+    "exampleVi": "Tỷ lệ thất nghiệp đã giảm đều trong quý này.",
+    "blankAnswer": "fallen"
+  },
+  {
+    "ordinal": 345,
+    "word": "period",
+    "pos": "n",
+    "ipa": "/ˈpɪriəd/",
+    "meaningVi": "giai đoạn, thời gian",
+    "definitionEn": "a particular length of time",
+    "definitionVi": "một khoảng thời gian cụ thể",
+    "synonyms": [
+      "phase"
+    ],
+    "exampleEn": "For a ___ of three years, the company underwent rapid expansion.",
+    "exampleVi": "Trong khoảng thời gian ba năm, công ty đã trải qua việc mở rộng nhanh chóng.",
+    "blankAnswer": "period"
+  },
+  {
+    "ordinal": 346,
+    "word": "indicator",
+    "pos": "n",
+    "ipa": "/ˈɪndɪkeɪtər/",
+    "meaningVi": "chỉ số, dấu hiệu",
+    "definitionEn": "a sign that shows you what something is like or how a situation is changing",
+    "definitionVi": "một dấu hiệu cho bạn thấy một cái gì đó giống như thế nào hoặc tình hình đang thay đổi như thế nào",
+    "synonyms": [
+      "sign"
+    ],
+    "exampleEn": "Current economic ___ show rising growth in mining.",
+    "exampleVi": "Các chỉ số kinh tế hiện tại cho thấy sự tăng trưởng mạnh mẽ trong khai thác mỏ.",
+    "blankAnswer": "indicators"
+  },
+  {
+    "ordinal": 347,
+    "word": "industry",
+    "pos": "n",
+    "ipa": "/ˈɪndəstri/",
+    "meaningVi": "ngành công nghiệp",
+    "definitionEn": "the production of goods from raw materials, especially in factories",
+    "definitionVi": "sản xuất hàng hóa từ nguyên liệu, đặc biệt là trong các nhà máy",
+    "synonyms": [
+      "sector",
+      "trade"
+    ],
+    "exampleEn": "Jobs in the newspaper ___ are declining rapidly.",
+    "exampleVi": "Việc làm trong ngành công nghiệp báo chí đang giảm nhanh chóng.",
+    "blankAnswer": "industry"
+  },
+  {
+    "ordinal": 348,
+    "word": "likely",
+    "pos": "adj",
+    "ipa": "/ˈlaɪkli/",
+    "meaningVi": "có thể, có khả năng",
+    "definitionEn": "probable or expected",
+    "definitionVi": "có thể xảy ra hoặc dự kiến",
+    "synonyms": [
+      "probable"
+    ],
+    "exampleEn": "The new CEO is ___ to confront major challenges.",
+    "exampleVi": "CEO mới có khả năng đối đầu với những thách thức lớn.",
+    "blankAnswer": "likely"
+  },
+  {
+    "ordinal": 349,
+    "word": "boom",
+    "pos": "n",
+    "ipa": "/buːm/",
+    "meaningVi": "bùng nổ",
+    "definitionEn": "a sudden increase in trade and economic activity; a period of wealth and success",
+    "definitionVi": "sự gia tăng đột ngột trong hoạt động thương mại và kinh tế; một thời kỳ giàu có và thành công",
+    "synonyms": [
+      "growth",
+      "boost"
+    ],
+    "exampleEn": "Land developers are taking advantage of the housing ___.",
+    "exampleVi": "Các nhà phát triển đất đang tận dụng lợi thế của sự bùng nổ nhà ở.",
+    "blankAnswer": "boom"
+  },
+  {
+    "ordinal": 350,
+    "word": "director",
+    "pos": "n",
+    "ipa": "/dəˈrektər/",
+    "meaningVi": "giám đốc, đạo diễn",
+    "definitionEn": "a person who is in charge of a particular activity or department in a company, a college, etc.",
+    "definitionVi": "một người phụ trách một hoạt động hoặc bộ phận cụ thể trong một công ty, một trường đại học, v.v",
+    "synonyms": [
+      "manager"
+    ],
+    "exampleEn": "The company ___ are discussing a new business strategy.",
+    "exampleVi": "Giám đốc công ty đang thảo luận về chiến lược kinh doanh mới.",
+    "blankAnswer": "directors"
+  },
+  {
+    "ordinal": 351,
+    "word": "substitute",
+    "pos": "n",
+    "ipa": "/ˈsʌbstɪtuːt/",
+    "meaningVi": "thay thế",
+    "definitionEn": "a person or thing that you use or have instead of the one you normally use or have",
+    "definitionVi": "một người hoặc vật mà bạn sử dụng hoặc có thay thế cho người/vật mà bạn thường sử dụng hoặc có",
+    "synonyms": [
+      "replacement"
+    ],
+    "exampleEn": "Corn syrup is used as a ___ for sugar in many food products.",
+    "exampleVi": "Corn syrup được sử dụng làm chất thay thế đường trong nhiều sản phẩm thực phẩm.",
+    "blankAnswer": "substitute"
+  },
+  {
+    "ordinal": 352,
+    "word": "consequence",
+    "pos": "n",
+    "ipa": "/ˈkɑːnsɪkwens/",
+    "meaningVi": "kết quả, hậu quả",
+    "definitionEn": "a result of something that has happened",
+    "definitionVi": "kết quả của một điều gì đó đã xảy ra",
+    "synonyms": [
+      "result"
+    ],
+    "exampleEn": "Profits grew as a ___ of increased business.",
+    "exampleVi": "Lợi nhuận đã tăng do kết quả của việc tăng các giao dịch.",
+    "blankAnswer": "consequence"
+  },
+  {
+    "ordinal": 353,
+    "word": "fairly",
+    "pos": "adv",
+    "ipa": "/ˈferli/",
+    "meaningVi": "khá, công bằng",
+    "definitionEn": "in a fair and reasonable way; honestly",
+    "definitionVi": "một cách công bằng và hợp lý; thành thật",
+    "synonyms": [
+      "quite",
+      "relatively"
+    ],
+    "exampleEn": "Concerns over the bankruptcy are ___ widespread.",
+    "exampleVi": "Mối lo ngại về phá sản khá rộng rãi.",
+    "blankAnswer": "fairly"
+  },
+  {
+    "ordinal": 354,
+    "word": "economical",
+    "pos": "adj",
+    "ipa": "/ˌiːkəˈnɑːmɪkl/",
+    "meaningVi": "tiết kiệm",
+    "definitionEn": "using no more of something than is necessary",
+    "definitionVi": "không sử dụng nhiều thứ hơn là cần thiết",
+    "synonyms": [
+      "cheap",
+      "inexpensive"
+    ],
+    "exampleEn": "Companies are searching for ___ ways to utilize energy.",
+    "exampleVi": "Các công ty đang tìm kiếm các cách tiết kiệm để sử dụng năng lượng.",
+    "blankAnswer": "economical"
+  },
+  {
+    "ordinal": 355,
+    "word": "thrive",
+    "pos": "v",
+    "ipa": "/θraɪv/",
+    "meaningVi": "thịnh vượng, phát đạt",
+    "definitionEn": "to become, and continue to be, successful, strong, healthy",
+    "definitionVi": "trở thành và tiếp tục thành công, mạnh mẽ, khỏe mạnh",
+    "synonyms": [
+      "flourish"
+    ],
+    "exampleEn": "The delivery service industry is ___.",
+    "exampleVi": "Ngành dịch vụ giao hàng đang thịnh vượng.",
+    "blankAnswer": "thriving"
+  },
+  {
+    "ordinal": 356,
+    "word": "implication",
+    "pos": "n",
+    "ipa": "/ˌɪmplɪˈkeɪʃn/",
+    "meaningVi": "sự ảnh hưởng, ngụ ý",
+    "definitionEn": "a possible effect or result of an action or a decision",
+    "definitionVi": "một hiệu ứng hoặc kết quả có thể có của một hành động hoặc một quyết định",
+    "synonyms": [
+      "effect"
+    ],
+    "exampleEn": "The Supreme Court ruling has ___ for small businesses.",
+    "exampleVi": "Phán quyết của Tòa án tối cao có ảnh hưởng đối với các doanh nghiệp nhỏ.",
+    "blankAnswer": "implications"
+  },
+  {
+    "ordinal": 357,
+    "word": "wane",
+    "pos": "n",
+    "ipa": "/weɪn/",
+    "meaningVi": "giảm dần",
+    "definitionEn": "to become gradually weaker or less important",
+    "definitionVi": "dần trở nên yếu hơn hoặc ít quan trọng hơn",
+    "synonyms": [
+      "decline",
+      "dwindle"
+    ],
+    "exampleEn": "Consumer spending is on the ___.",
+    "exampleVi": "Chi tiêu của người tiêu dùng đang giảm dần.",
+    "blankAnswer": "wane"
+  },
+  {
+    "ordinal": 358,
+    "word": "prosperity",
+    "pos": "n",
+    "ipa": "/prɑːˈsperəti/",
+    "meaningVi": "phồn thịnh, thịnh vượng",
+    "definitionEn": "the state of being successful, especially in making money",
+    "definitionVi": "tình trạng thành công, đặc biệt là trong việc kiếm tiền",
+    "synonyms": [
+      "affluence",
+      "thrive"
+    ],
+    "exampleEn": "Strong economic growth is a prerequisite for national ___.",
+    "exampleVi": "Tăng trưởng kinh tế mạnh là điều kiện tiên quyết cho sự thịnh vượng của đất nước.",
+    "blankAnswer": "prosperity"
+  },
+  {
+    "ordinal": 359,
+    "word": "depression",
+    "pos": "n",
+    "ipa": "/dɪˈpreʃn/",
+    "meaningVi": "tình trạng suy thoái",
+    "definitionEn": "a period when there is little economic activity and many people are poor or without jobs",
+    "definitionVi": "một khoảng thời gian có ít hoạt động kinh tế và nhiều người nghèo hoặc không có việc làm",
+    "synonyms": [
+      "recession",
+      "slump"
+    ],
+    "exampleEn": "The entire industry is going through an economic ___.",
+    "exampleVi": "Toàn bộ ngành công nghiệp đang trải qua một cuộc suy thoái kinh tế.",
+    "blankAnswer": "depression"
+  },
+  {
+    "ordinal": 360,
+    "word": "dwindle",
+    "pos": "v",
+    "ipa": "/ˈdwɪndl/",
+    "meaningVi": "yếu dần, giảm dần",
+    "definitionEn": "to become gradually less or smaller",
+    "definitionVi": "trở nên dần dần ít hơn hoặc nhỏ hơn",
+    "synonyms": [
+      "decrease"
+    ],
+    "exampleEn": "The company's profits ___ in the 1990s.",
+    "exampleVi": "Lợi nhuận của công ty giảm trong những năm 1990.",
+    "blankAnswer": "dwindled"
   }
 ]
