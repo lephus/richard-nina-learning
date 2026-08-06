@@ -7530,5 +7530,945 @@
     "exampleEn": "The ___ date is printed on the top of the milk carton.",
     "exampleVi": "Ngày hết hạn được in trên đầu thùng sữa.",
     "blankAnswer": "expiration"
+  },
+  {
+    "ordinal": 481,
+    "word": "maneuver",
+    "pos": "v",
+    "ipa": "/məˈnuːvər/",
+    "meaningVi": "di chuyển, điều khiển",
+    "definitionEn": "a movement or set of movements needing skill and care",
+    "definitionVi": "một phong trào hoặc tập hợp các phong trào cần kỹ năng và sự chăm sóc",
+    "synonyms": [
+      "manipulate",
+      "operate"
+    ],
+    "exampleEn": "Assembly line workers ___ the machinery into place.",
+    "exampleVi": "Công nhân dây chuyền lắp ráp đã di chuyển máy móc vào trong vị trí.",
+    "blankAnswer": "maneuvered"
+  },
+  {
+    "ordinal": 482,
+    "word": "coming",
+    "pos": "adj",
+    "ipa": "/ˈkʌmɪŋ/",
+    "meaningVi": "sắp đến, sắp tới",
+    "definitionEn": "the coming of something is the time when something new begins",
+    "definitionVi": "sự xuất hiện của một cái gì đó khi thời điểm một cái gì đó mới bắt đầu",
+    "synonyms": [
+      "impending"
+    ],
+    "exampleEn": "Factory output will double in the ___ year.",
+    "exampleVi": "Sản lượng nhà máy sẽ tăng gấp đôi trong năm tới.",
+    "blankAnswer": "coming"
+  },
+  {
+    "ordinal": 483,
+    "word": "damaged",
+    "pos": "adj",
+    "ipa": "/ˈdæmɪdʒd/",
+    "meaningVi": "bị hỏng, thiệt hại",
+    "definitionEn": "harmed, broken, or spoiled, especially as a result of an accident or rough treatment",
+    "definitionVi": "bị hư hỏng, gãy vỡ hoặc hư hại, đặc biệt là do tai nạn hoặc bị va đập",
+    "synonyms": [
+      "broken",
+      "harmed"
+    ],
+    "exampleEn": "The conveyor belts were ___ from excessive use.",
+    "exampleVi": "Băng tải bị hư hỏng do sử dụng quá mức.",
+    "blankAnswer": "damaged"
+  },
+  {
+    "ordinal": 484,
+    "word": "power",
+    "pos": "n",
+    "ipa": "/ˈpaʊər/",
+    "meaningVi": "điện, sức mạnh",
+    "definitionEn": "electrical energy that is supplied to homes, businesses, and machines",
+    "definitionVi": "năng lượng điện được cung cấp cho nhà ở, doanh nghiệp và máy móc",
+    "synonyms": [
+      "electricity"
+    ],
+    "exampleEn": "The plant was closed for half a business day due to a ___ outage.",
+    "exampleVi": "Nhà máy bị đóng cửa trong nửa ngày làm việc do mất điện.",
+    "blankAnswer": "power"
+  },
+  {
+    "ordinal": 485,
+    "word": "chemical",
+    "pos": "n",
+    "ipa": "/ˈkemɪkl/",
+    "meaningVi": "hóa chất",
+    "definitionEn": "a substance used in chemistry or produced by a chemical process",
+    "definitionVi": "một chất được sử dụng trong hóa học hoặc được sản xuất bởi một quá trình hóa học",
+    "synonyms": [
+      "substance",
+      "compound"
+    ],
+    "exampleEn": "Protective gear is needed when working with dangerous ___.",
+    "exampleVi": "Dụng cụ bảo vệ là cần thiết khi làm việc với hóa chất nguy hiểm.",
+    "blankAnswer": "chemicals"
+  },
+  {
+    "ordinal": 486,
+    "word": "complaint",
+    "pos": "n",
+    "ipa": "/kəmˈpleɪnt/",
+    "meaningVi": "sự phàn nàn, đơn khiếu nại, phàn nàn",
+    "definitionEn": "a reason for not being satisfied; a statement that somebody makes saying that they are not satisfied",
+    "definitionVi": "một lý do để không hài lòng; một tuyên bố rằng ai đó nói rằng họ không hài lòng",
+    "synonyms": [
+      "grievance",
+      "objection"
+    ],
+    "exampleEn": "Customers can register ___ at the customer service center or online.",
+    "exampleVi": "Khách hàng có thể đăng ký đơn khiếu nại tại trung tâm dịch vụ khách hàng hoặc trực tuyến.",
+    "blankAnswer": "complaints"
+  },
+  {
+    "ordinal": 487,
+    "word": "deal",
+    "pos": "v",
+    "ipa": "/diːl/",
+    "meaningVi": "giải quyết, ưu đãi, khuyến mãi",
+    "definitionEn": "to take action in order to solve a problem or handle a situation",
+    "definitionVi": "thực hiện hành động để giải quyết một vấn đề hoặc xử lý một tình huống",
+    "synonyms": [
+      "handle",
+      "manage"
+    ],
+    "exampleEn": "The problem will be ___ with immediately.",
+    "exampleVi": "Vấn đề sẽ được xử lý ngay lập tức.",
+    "blankAnswer": "dealt"
+  },
+  {
+    "ordinal": 488,
+    "word": "argumentative",
+    "pos": "adj",
+    "ipa": "/ˌɑːrɡjuˈmentətɪv/",
+    "meaningVi": "gây tranh cãi",
+    "definitionEn": "used to describe a person who likes arguing or often starts arguments",
+    "definitionVi": "dùng để miêu tả một người thích tranh luận hoặc thường bắt đầu tranh luận",
+    "synonyms": [
+      "combative",
+      "contentious"
+    ],
+    "exampleEn": "Service personnel must avoid becoming ___ with upset customers.",
+    "exampleVi": "Nhân viên dịch vụ phải tránh trở nên gây tranh cãi với khách hàng khó chịu.",
+    "blankAnswer": "argumentative"
+  },
+  {
+    "ordinal": 489,
+    "word": "appropriately",
+    "pos": "adv",
+    "ipa": "/əˈproʊpriətli/",
+    "meaningVi": "một cách thích hợp",
+    "definitionEn": "in a way that is suitable, acceptable, or correct for the particular circumstances",
+    "definitionVi": "theo cách phù hợp, được chấp nhận hoặc chính xác cho các trường hợp cụ thể",
+    "synonyms": [
+      "suitably",
+      "properly"
+    ],
+    "exampleEn": "Telephone representatives should know how to handle customer complaints ___.",
+    "exampleVi": "Đại diện điện thoại nên biết cách xử lý khiếu nại của khách hàng một cách thích hợp.",
+    "blankAnswer": "appropriately"
+  },
+  {
+    "ordinal": 490,
+    "word": "respond",
+    "pos": "v",
+    "ipa": "/rɪˈspɑːnd/",
+    "meaningVi": "phản hồi, trả lời",
+    "definitionEn": "to give a spoken or written answer to somebody/something",
+    "definitionVi": "đưa ra câu trả lời bằng giọng nói hoặc bằng văn bản cho ai đó, điều gì đó",
+    "synonyms": [
+      "reply to"
+    ],
+    "exampleEn": "Sales staff should ___ promptly to questions from customers.",
+    "exampleVi": "Nhân viên bán hàng phải trả lời ngay lập tức các câu hỏi của khách hàng.",
+    "blankAnswer": "respond"
+  },
+  {
+    "ordinal": 491,
+    "word": "infuriate",
+    "pos": "v",
+    "ipa": "/ɪnˈfjʊrieɪt/",
+    "meaningVi": "làm tức giận",
+    "definitionEn": "to make somebody extremely angry",
+    "definitionVi": "làm cho ai đó cực kỳ tức giận",
+    "synonyms": [
+      "enrage",
+      "anger"
+    ],
+    "exampleEn": "The attendant's incompetence ___ the customer.",
+    "exampleVi": "Sự bất lực của người trợ giúp làm cho khách hàng tức giận.",
+    "blankAnswer": "infuriated"
+  },
+  {
+    "ordinal": 492,
+    "word": "courteous",
+    "pos": "adj",
+    "ipa": "/ˈkɜːrtiəs/",
+    "meaningVi": "lịch sự",
+    "definitionEn": "polite, especially in a way that shows respect",
+    "definitionVi": "lịch sự, đặc biệt là theo cách thể hiện sự tôn trọng",
+    "synonyms": [
+      "polite"
+    ],
+    "exampleEn": "All inquiries must be handled in a ___ manner.",
+    "exampleVi": "Tất cả các yêu cầu phải được xử lý một cách lịch sự.",
+    "blankAnswer": "courteous"
+  },
+  {
+    "ordinal": 493,
+    "word": "satisfaction",
+    "pos": "n",
+    "ipa": "/ˌsætɪsˈfækʃn/",
+    "meaningVi": "sự hài lòng",
+    "definitionEn": "the act of fulfilling a need or desire",
+    "definitionVi": "hành động đáp ứng nhu cầu hoặc mong muốn",
+    "synonyms": [
+      "fulfillment"
+    ],
+    "exampleEn": "We hope our assistance was to your ___.",
+    "exampleVi": "Chúng tôi hy vọng sự hỗ trợ của chúng tôi là sự hài lòng của bạn.",
+    "blankAnswer": "satisfaction"
+  },
+  {
+    "ordinal": 494,
+    "word": "inconvenience",
+    "pos": "n",
+    "ipa": "/ˌɪnkənˈviːniəns/",
+    "meaningVi": "sự bất tiện",
+    "definitionEn": "trouble or problems, especially concerning what you need or would like",
+    "definitionVi": "rắc rối hoặc vấn đề, đặc biệt là liên quan đến những gì bạn cần hoặc muốn",
+    "synonyms": [
+      "trouble",
+      "hassle"
+    ],
+    "exampleEn": "We apologize for the ___ during construction.",
+    "exampleVi": "Chúng tôi xin lỗi vì sự bất tiện trong quá trình xây dựng.",
+    "blankAnswer": "inconvenience"
+  },
+  {
+    "ordinal": 495,
+    "word": "complete",
+    "pos": "v",
+    "ipa": "/kəmˈpliːt/",
+    "meaningVi": "hoàn thành, hoàn tất",
+    "definitionEn": "to reach the end of something; to make something fully finished",
+    "definitionVi": "đã hoàn thành, kết thúc đầy đủ",
+    "synonyms": [
+      "finished",
+      "ended"
+    ],
+    "exampleEn": "The paperwork must be ___ within one month.",
+    "exampleVi": "Giấy tờ phải được hoàn thành trong vòng một tháng.",
+    "blankAnswer": "completed"
+  },
+  {
+    "ordinal": 496,
+    "word": "specific",
+    "pos": "adj",
+    "ipa": "/spəˈsɪfɪk/",
+    "meaningVi": "cụ thể",
+    "definitionEn": "detailed and exact",
+    "definitionVi": "chi tiết và chính xác",
+    "synonyms": [
+      "detailed"
+    ],
+    "exampleEn": "When seeking help online, clients must be very ___ in describing problems.",
+    "exampleVi": "Khi tìm kiếm trợ giúp trực tuyến, khách hàng phải rất cụ thể trong việc mô tả sự cố.",
+    "blankAnswer": "specific"
+  },
+  {
+    "ordinal": 497,
+    "word": "return",
+    "pos": "v",
+    "ipa": "/rɪˈtɜːrn/",
+    "meaningVi": "trả lại",
+    "definitionEn": "to bring, give, put, or send something back to somebody/something",
+    "definitionVi": "mang, đưa hoặc gửi một cái gì đó trở lại cho ai đó, một cái gì đó",
+    "synonyms": [
+      "give back",
+      "send back"
+    ],
+    "exampleEn": "Merchandise can be ___ at the counter.",
+    "exampleVi": "Hàng hóa có thể được trả lại tại quầy.",
+    "blankAnswer": "returned"
+  },
+  {
+    "ordinal": 498,
+    "word": "replace",
+    "pos": "v",
+    "ipa": "/rɪˈpleɪs/",
+    "meaningVi": "thay thế",
+    "definitionEn": "to be used instead of something/somebody else; to do something instead of somebody/something else",
+    "definitionVi": "được sử dụng thay cho cái gì đó, người khác; để làm điều gì đó thay vì ai đó, cái gì khác",
+    "synonyms": [
+      "substitute",
+      "change"
+    ],
+    "exampleEn": "The mechanic ___ the generator's motor with a new one.",
+    "exampleVi": "Người thợ máy thay thế động cơ của máy phát điện bằng động cơ mới.",
+    "blankAnswer": "replaced"
+  },
+  {
+    "ordinal": 499,
+    "word": "presentation",
+    "pos": "n",
+    "ipa": "/ˌpriːzenˈteɪʃn/",
+    "meaningVi": "bài thuyết trình, sự giới thiệu",
+    "definitionEn": "the act of showing something or of giving something to somebody",
+    "definitionVi": "hành động thể hiện điều gì đó hoặc đưa cái gì đó cho ai đó",
+    "synonyms": [
+      "introduction"
+    ],
+    "exampleEn": "Melissa gave the employees a ___ about handling difficult clients.",
+    "exampleVi": "Melissa cung cấp cho nhân viên một bài thuyết trình về việc xử lý các khách hàng khó khăn.",
+    "blankAnswer": "presentation"
+  },
+  {
+    "ordinal": 500,
+    "word": "evaluation",
+    "pos": "n",
+    "ipa": "/ɪˌvæljuˈeɪʃn/",
+    "meaningVi": "sự đánh giá",
+    "definitionEn": "the act of forming an opinion of the amount, value, or quality of something after thinking about it carefully",
+    "definitionVi": "hành động hình thành ý kiến về số lượng, giá trị hoặc chất lượng của một cái gì đó sau khi suy nghĩ cẩn thận",
+    "synonyms": [
+      "assessment"
+    ],
+    "exampleEn": "Please fill out the ___ form.",
+    "exampleVi": "Vui lòng điền vào mẫu đánh giá.",
+    "blankAnswer": "evaluation"
+  },
+  {
+    "ordinal": 501,
+    "word": "confident",
+    "pos": "adj",
+    "ipa": "/ˈkɑːnfɪdənt/",
+    "meaningVi": "tự tin, tin cậy",
+    "definitionEn": "feeling sure about your own ability to do things and be successful",
+    "definitionVi": "cảm thấy chắc chắn về khả năng của riêng bạn để làm mọi thứ và thành công",
+    "synonyms": [
+      "self-assured",
+      "certain"
+    ],
+    "exampleEn": "Enthusiasm and a ___ manner are essential for this sales position.",
+    "exampleVi": "Sự nhiệt tình và tự tin là điều cần thiết cho vị trí bán hàng này.",
+    "blankAnswer": "confident"
+  },
+  {
+    "ordinal": 502,
+    "word": "cause",
+    "pos": "n",
+    "ipa": "/kɔːz/",
+    "meaningVi": "nguyên nhân, gây ra",
+    "definitionEn": "the person or thing that makes something happen",
+    "definitionVi": "người hoặc vật khiến điều gì đó xảy ra",
+    "synonyms": [
+      "reason",
+      "source"
+    ],
+    "exampleEn": "Researchers tried to find the ___ of the error.",
+    "exampleVi": "Các nhà nghiên cứu đã cố gắng tìm ra nguyên nhân của lỗi.",
+    "blankAnswer": "cause"
+  },
+  {
+    "ordinal": 503,
+    "word": "commentary",
+    "pos": "n",
+    "ipa": "/ˈkɑːmənteri/",
+    "meaningVi": "bài bình luận",
+    "definitionEn": "a criticism or discussion of something",
+    "definitionVi": "một lời chỉ trích hoặc thảo luận về điều gì đó",
+    "synonyms": [
+      "explanation",
+      "comment"
+    ],
+    "exampleEn": "Richard added ___ to the service training film.",
+    "exampleVi": "Richard thêm một bài bình luận cho bộ phim đào tạo dịch vụ.",
+    "blankAnswer": "commentary"
+  },
+  {
+    "ordinal": 504,
+    "word": "notification",
+    "pos": "n",
+    "ipa": "/ˌnoʊtɪfɪˈkeɪʃn/",
+    "meaningVi": "sự thông báo",
+    "definitionEn": "the act of giving or receiving official information about something",
+    "definitionVi": "hành động đưa ra hoặc nhận thông tin chính thức về điều gì đó",
+    "synonyms": [
+      "announcement",
+      "notice"
+    ],
+    "exampleEn": "We require written ___ of any order cancellations.",
+    "exampleVi": "Chúng tôi yêu cầu thông báo bằng văn bản về bất kỳ lệnh hủy nào.",
+    "blankAnswer": "notification"
+  },
+  {
+    "ordinal": 505,
+    "word": "apologize",
+    "pos": "v",
+    "ipa": "/əˈpɑːlədʒaɪz/",
+    "meaningVi": "xin lỗi",
+    "definitionEn": "to say that you are sorry for doing something wrong or causing a problem",
+    "definitionVi": "để nói rằng bạn xin lỗi vì đã làm điều gì đó sai hoặc gây ra sự cố",
+    "synonyms": [
+      "say sorry",
+      "express regret"
+    ],
+    "exampleEn": "We ___ for the late delivery service.",
+    "exampleVi": "Chúng tôi xin lỗi vì dịch vụ chuyển phát trễ.",
+    "blankAnswer": "apologize"
+  },
+  {
+    "ordinal": 506,
+    "word": "interact",
+    "pos": "v",
+    "ipa": "/ˌɪntərˈækt/",
+    "meaningVi": "tương tác",
+    "definitionEn": "to communicate with somebody, especially while you work, play, or spend time with them",
+    "definitionVi": "giao tiếp với ai đó, đặc biệt là khi bạn làm việc, chơi hoặc dành thời gian với họ",
+    "synonyms": [
+      "communicate",
+      "engage"
+    ],
+    "exampleEn": "When ___ with shoppers, clerks should deal with them in a pleasant manner.",
+    "exampleVi": "Khi tương tác với người mua sắm, nhân viên bán hàng nên giải quyết với họ một cách dễ chịu.",
+    "blankAnswer": "interacting"
+  },
+  {
+    "ordinal": 507,
+    "word": "certain",
+    "pos": "adj",
+    "ipa": "/ˈsɜːrtn/",
+    "meaningVi": "chắc chắn, nhất định",
+    "definitionEn": "firmly believing something; having no doubts",
+    "definitionVi": "tin chắc một điều gì đó, không có nghi ngờ",
+    "synonyms": [
+      "sure",
+      "specific"
+    ],
+    "exampleEn": "Sharon was not ___ where she had bought the blouse.",
+    "exampleVi": "Sharon không chắc nơi cô đã mua áo.",
+    "blankAnswer": "certain"
+  },
+  {
+    "ordinal": 508,
+    "word": "commitment",
+    "pos": "n",
+    "ipa": "/kəˈmɪtmənt/",
+    "meaningVi": "sự cam kết, tận tụy",
+    "definitionEn": "a promise to do something or to behave in a particular way; a promise to support somebody/something",
+    "definitionVi": "một lời hứa để làm một cái gì đó hoặc hành xử theo một cách cụ thể, một lời hứa để hỗ trợ ai đó",
+    "synonyms": [
+      "dedication"
+    ],
+    "exampleEn": "Brand Bank has a longstanding ___ to providing excellent client assistance.",
+    "exampleVi": "Ngân hàng thương hiệu có cam kết lâu dài để cung cấp hỗ trợ khách hàng tuyệt vời.",
+    "blankAnswer": "commitment"
+  },
+  {
+    "ordinal": 509,
+    "word": "applaud",
+    "pos": "v",
+    "ipa": "/əˈplɔːd/",
+    "meaningVi": "hoan nghênh, tán thành, vỗ tay",
+    "definitionEn": "to express praise for somebody/something because you approve of them or it",
+    "definitionVi": "để bày tỏ lời khen ngợi cho ai đó, một cái gì đó bởi vì bạn chấp nhận họ hoặc nó",
+    "synonyms": [
+      "clap"
+    ],
+    "exampleEn": "The staff ___ management's decision to increase overtime pay.",
+    "exampleVi": "Các nhân viên hoan nghênh quyết định của quản lý về việc tăng lương làm thêm giờ.",
+    "blankAnswer": "applauded"
+  },
+  {
+    "ordinal": 510,
+    "word": "biography",
+    "pos": "n",
+    "ipa": "/baɪˈɑːɡrəfi/",
+    "meaningVi": "tiểu sử, lý lịch",
+    "definitionEn": "a book that tells what has happened in someone's life, written by someone else",
+    "definitionVi": "một cuốn sách kể về những gì đã xảy ra trong cuộc sống của một ai đó, được viết bởi người khác",
+    "synonyms": [
+      "life history"
+    ],
+    "exampleEn": "A short ___ on the guest speaker was included in the program.",
+    "exampleVi": "Một tiểu sử ngắn về diễn giả khách mời đã được đưa vào chương trình.",
+    "blankAnswer": "biography"
+  },
+  {
+    "ordinal": 511,
+    "word": "critical",
+    "pos": "adj",
+    "ipa": "/ˈkrɪtɪkl/",
+    "meaningVi": "chỉ trích, phê bình",
+    "definitionEn": "expressing disapproval of somebody/something and saying what you think is bad about them",
+    "definitionVi": "thể hiện sự không tán thành của ai đó, điều gì đó và nói những gì bạn nghĩ là xấu về họ",
+    "synonyms": [
+      "disapproving",
+      "judgmental"
+    ],
+    "exampleEn": "Many customers were ___ of the new services.",
+    "exampleVi": "Nhiều khách hàng đã chỉ trích, phê bình đối với các dịch vụ mới.",
+    "blankAnswer": "critical"
+  },
+  {
+    "ordinal": 512,
+    "word": "depend on",
+    "pos": "v",
+    "ipa": "/dɪˈpend ɑːn/",
+    "meaningVi": "phụ thuộc",
+    "definitionEn": "to trust someone or something and know that that person or thing will help you or do what you want or expect",
+    "definitionVi": "tin tưởng một ai đó hoặc một cái gì đó và biết rằng người hoặc vật đó sẽ giúp bạn hoặc làm những gì bạn muốn hoặc mong đợi",
+    "synonyms": [
+      "rely on",
+      "count on"
+    ],
+    "exampleEn": "The success of a restaurant ___ the quality of the food and the customer service.",
+    "exampleVi": "Sự thành công của một nhà hàng phụ thuộc vào chất lượng của thực phẩm và dịch vụ khách hàng.",
+    "blankAnswer": "depends on"
+  },
+  {
+    "ordinal": 513,
+    "word": "combine",
+    "pos": "v",
+    "ipa": "/kəmˈbaɪn/",
+    "meaningVi": "kết hợp, phối hợp",
+    "definitionEn": "to come together to form a single thing or group; to join two or more things or groups together",
+    "definitionVi": "đến với nhau để tạo thành một điều hay một nhóm, tham gia hai hoặc nhiều thứ hoặc nhóm với nhau",
+    "synonyms": [
+      "mix"
+    ],
+    "exampleEn": "The store sometimes allows customers to ___ two special offers.",
+    "exampleVi": "Cửa hàng đôi khi cho phép khách hàng kết hợp hai ưu đãi đặc biệt.",
+    "blankAnswer": "combine"
+  },
+  {
+    "ordinal": 514,
+    "word": "priority",
+    "pos": "n",
+    "ipa": "/praɪˈɔːrəti/",
+    "meaningVi": "sự ưu tiên",
+    "definitionEn": "something that you think is more important than other things and should be dealt with first",
+    "definitionVi": "thứ gì đó mà bạn nghĩ là quan trọng hơn những thứ khác và nên được xử lý trước tiên",
+    "synonyms": [
+      "first place"
+    ],
+    "exampleEn": "___ for the service will be provided according to a first come, first served basis.",
+    "exampleVi": "Dịch vụ sẽ được cung cấp theo cơ sở ai đến trước được phục vụ trước.",
+    "blankAnswer": "Priority"
+  },
+  {
+    "ordinal": 515,
+    "word": "observe",
+    "pos": "v",
+    "ipa": "/əbˈzɜːrv/",
+    "meaningVi": "tuân theo, quan sát",
+    "definitionEn": "to watch something or someone carefully",
+    "definitionVi": "để xem một cái gì đó hoặc một người nào đó cẩn thận",
+    "synonyms": [
+      "see",
+      "comply with"
+    ],
+    "exampleEn": "All staff must ___ the dress code of the company.",
+    "exampleVi": "Tất cả nhân viên phải tuân theo quy định về trang phục của công ty.",
+    "blankAnswer": "observe"
+  },
+  {
+    "ordinal": 516,
+    "word": "defective",
+    "pos": "adj",
+    "ipa": "/dɪˈfektɪv/",
+    "meaningVi": "lỗi, khuyết điểm",
+    "definitionEn": "having a fault or faults; not perfect or complete",
+    "definitionVi": "có lỗi hoặc lỗi, không hoàn hảo hoặc hoàn thiện",
+    "synonyms": [
+      "faulty",
+      "malfunctioning"
+    ],
+    "exampleEn": "The buyer requested a refund for the ___ hair dryer.",
+    "exampleVi": "Người mua yêu cầu hoàn lại tiền cho máy sấy tóc bị lỗi.",
+    "blankAnswer": "defective"
+  },
+  {
+    "ordinal": 517,
+    "word": "reflect",
+    "pos": "v",
+    "ipa": "/rɪˈflekt/",
+    "meaningVi": "thể hiện, phản chiếu",
+    "definitionEn": "to show the image of somebody/something on the surface of something such as a mirror, water, or glass",
+    "definitionVi": "để hiển thị hình ảnh của ai đó, một cái gì đó trên bề mặt của một cái gì đó như gương, nước hoặc thủy tinh",
+    "synonyms": [
+      "indicate",
+      "show"
+    ],
+    "exampleEn": "Kimdale Corporation's statement of purpose ___ its commitment to quality.",
+    "exampleVi": "Tuyên bố về mục đích của Kimdale Corporation thể hiện sự cam kết về chất lượng.",
+    "blankAnswer": "reflects"
+  },
+  {
+    "ordinal": 518,
+    "word": "attitude",
+    "pos": "v",
+    "ipa": "/ˈætɪtuːd/",
+    "meaningVi": "thái độ, quan điểm",
+    "definitionEn": "the opinions and feelings that you usually have about something, especially when this is shown in your behaviour",
+    "definitionVi": "ý kiến và cảm xúc mà bạn thường có về một cái gì đó, đặc biệt khi điều này được thể hiện trong hành vi của bạn",
+    "synonyms": [
+      "view"
+    ],
+    "exampleEn": "Salespeople with a positive ___ tend to sell more products.",
+    "exampleVi": "Người bán hàng có thái độ tích cực có xu hướng bán nhiều sản phẩm hơn.",
+    "blankAnswer": "attitude"
+  },
+  {
+    "ordinal": 519,
+    "word": "disappoint",
+    "pos": "v",
+    "ipa": "/ˌdɪsəˈpɔɪnt/",
+    "meaningVi": "thất vọng",
+    "definitionEn": "to make someone feel unhappy because something they hoped for did not happen or was not as good as they expected",
+    "definitionVi": "làm cho ai đó cảm thấy không vui vì điều họ hy vọng đã không xảy ra hoặc không tốt như mong đợi",
+    "synonyms": [
+      "let down",
+      "dishearten"
+    ],
+    "exampleEn": "The poor terms of the computer warranty ___ many buyers.",
+    "exampleVi": "Các điều khoản kém của bảo hành máy tính đã gây thất vọng cho nhiều người mua.",
+    "blankAnswer": "disappointed"
+  },
+  {
+    "ordinal": 520,
+    "word": "inquire",
+    "pos": "v",
+    "ipa": "/ɪnˈkwaɪər/",
+    "meaningVi": "hỏi về",
+    "definitionEn": "to ask somebody for some information",
+    "definitionVi": "hỏi ai đó về một số thông tin",
+    "synonyms": [
+      "ask for"
+    ],
+    "exampleEn": "Several people called in to ___ about the store's latest promotions.",
+    "exampleVi": "Một số người gọi để hỏi về các chương trình khuyến mãi mới nhất của cửa hàng.",
+    "blankAnswer": "inquire"
+  },
+  {
+    "ordinal": 521,
+    "word": "insert",
+    "pos": "v",
+    "ipa": "/ɪnˈsɜːrt/",
+    "meaningVi": "chèn, đưa vào",
+    "definitionEn": "to put something into something else or between two things",
+    "definitionVi": "để đặt thứ gì đó vào thứ khác hoặc giữa hai thứ",
+    "synonyms": [
+      "put in",
+      "place"
+    ],
+    "exampleEn": "Please read all the instructions before ___ the CD into your computer.",
+    "exampleVi": "Vui lòng đọc tất cả các hướng dẫn trước khi đưa đĩa CD vào máy tính của bạn.",
+    "blankAnswer": "inserting"
+  },
+  {
+    "ordinal": 522,
+    "word": "disclose",
+    "pos": "v",
+    "ipa": "/dɪsˈkloʊz/",
+    "meaningVi": "tiết lộ, công khai, công bố",
+    "definitionEn": "to give somebody information about something, especially something that was previously secret",
+    "definitionVi": "để cung cấp cho ai đó thông tin về điều gì đó, đặc biệt là điều gì đó trước đây đã bí mật",
+    "synonyms": [
+      "reveal"
+    ],
+    "exampleEn": "Customers will be asked to ___ some personal details when ordering online.",
+    "exampleVi": "Khách hàng sẽ được yêu cầu công khai một số chi tiết cá nhân khi đặt hàng trực tuyến.",
+    "blankAnswer": "disclose"
+  },
+  {
+    "ordinal": 523,
+    "word": "guarantee",
+    "pos": "v",
+    "ipa": "/ˌɡærənˈtiː/",
+    "meaningVi": "đảm bảo, sự đảm bảo",
+    "definitionEn": "to promise that something will happen or that something is true",
+    "definitionVi": "hứa rằng điều gì đó sẽ xảy ra hoặc điều gì đó là đúng sự thật",
+    "synonyms": [
+      "assure",
+      "promise"
+    ],
+    "exampleEn": "Customer satisfaction is ___.",
+    "exampleVi": "Sự hài lòng của khách hàng được đảm bảo.",
+    "blankAnswer": "guaranteed"
+  },
+  {
+    "ordinal": 524,
+    "word": "politely",
+    "pos": "adv",
+    "ipa": "/pəˈlaɪtli/",
+    "meaningVi": "một cách lịch sự",
+    "definitionEn": "in a way that shows good manners and respect for the feelings of others",
+    "definitionVi": "theo cách thể hiện cách cư xử tốt và tôn trọng cảm xúc của người khác",
+    "synonyms": [
+      "courteously",
+      "respectfully"
+    ],
+    "exampleEn": "Store personnel must always speak to customers ___.",
+    "exampleVi": "Nhân viên cửa hàng phải luôn nói chuyện với khách hàng một cách lịch sự.",
+    "blankAnswer": "politely"
+  },
+  {
+    "ordinal": 525,
+    "word": "seriously",
+    "pos": "adv",
+    "ipa": "/ˈsɪriəsli/",
+    "meaningVi": "nghiêm trọng, nghiêm túc",
+    "definitionEn": "in a serious way, without joking or carelessness",
+    "definitionVi": "theo một cách nghiêm túc",
+    "synonyms": [
+      "gravely",
+      "earnestly"
+    ],
+    "exampleEn": "The manager takes customer feedback very ___.",
+    "exampleVi": "Người quản lý đánh giá phản hồi của khách hàng rất nghiêm túc.",
+    "blankAnswer": "seriously"
+  },
+  {
+    "ordinal": 526,
+    "word": "international",
+    "pos": "adj",
+    "ipa": "/ˌɪntərˈnæʃnəl/",
+    "meaningVi": "quốc tế",
+    "definitionEn": "connected with or involving two or more countries",
+    "definitionVi": "được kết nối với hoặc liên quan đến hai hoặc nhiều quốc gia",
+    "synonyms": [
+      "worldwide"
+    ],
+    "exampleEn": "Passengers for ___ flights check in at counter three.",
+    "exampleVi": "Hành khách cho các chuyến bay quốc tế nhận phòng tại quầy 3.",
+    "blankAnswer": "international"
+  },
+  {
+    "ordinal": 527,
+    "word": "attraction",
+    "pos": "n",
+    "ipa": "/əˈtrækʃn/",
+    "meaningVi": "sự thu hút",
+    "definitionEn": "a feeling of liking somebody, especially sexually",
+    "definitionVi": "cảm giác thích ai đó, đặc biệt là tình dục",
+    "synonyms": [
+      "eye-appeal",
+      "draw"
+    ],
+    "exampleEn": "Mutual ___.",
+    "exampleVi": "Sự thu hút lẫn nhau.",
+    "blankAnswer": "attraction"
+  },
+  {
+    "ordinal": 528,
+    "word": "itinerary",
+    "pos": "n",
+    "ipa": "/aɪˈtɪnəreri/",
+    "meaningVi": "hành trình",
+    "definitionEn": "a plan of a journey, including the route and the places that you visit",
+    "definitionVi": "một kế hoạch của một hành trình, bao gồm cả tuyến đường và những nơi bạn ghé thăm",
+    "synonyms": [
+      "travel plan",
+      "schedule",
+      "timetable"
+    ],
+    "exampleEn": "The ___ includes a visit to Boston.",
+    "exampleVi": "Hành trình bao gồm một chuyến viếng thăm Boston.",
+    "blankAnswer": "itinerary"
+  },
+  {
+    "ordinal": 529,
+    "word": "exotic",
+    "pos": "adj",
+    "ipa": "/ɪɡˈzɑːtɪk/",
+    "meaningVi": "ngoại lai, kì lạ, ở nước ngoài",
+    "definitionEn": "from or in another country, especially a tropical one; seeming exciting and unusual because it is connected with foreign countries",
+    "definitionVi": "từ hoặc ở một quốc gia khác, đặc biệt là một quốc gia nhiệt đới, có vẻ thú vị và bất thường vì nó được kết nối với nước ngoài",
+    "synonyms": [
+      "foreign"
+    ],
+    "exampleEn": "Our Web site contains information on numerous ___ vacation spots.",
+    "exampleVi": "Trang web của chúng tôi chứa thông tin về nhiều điểm kỳ nghỉ ở nước ngoài.",
+    "blankAnswer": "exotic"
+  },
+  {
+    "ordinal": 530,
+    "word": "diverse",
+    "pos": "adj",
+    "ipa": "/daɪˈvɜːrs/",
+    "meaningVi": "đa dạng, nhiều, khác nhau",
+    "definitionEn": "very different from each other and of various kinds",
+    "definitionVi": "rất khác nhau và các loại khác nhau",
+    "synonyms": [
+      "different",
+      "varied"
+    ],
+    "exampleEn": "A ___ selection of tours is available for London.",
+    "exampleVi": "Một tuyển tập đa dạng các chuyến du ngoạn có sẵn cho London.",
+    "blankAnswer": "diverse"
+  },
+  {
+    "ordinal": 531,
+    "word": "superb",
+    "pos": "adj",
+    "ipa": "/suːˈpɜːrb/",
+    "meaningVi": "tốt, tuyệt vời",
+    "definitionEn": "excellent; of very good quality",
+    "definitionVi": "tuyệt vời, có chất lượng rất tốt",
+    "synonyms": [
+      "excellent"
+    ],
+    "exampleEn": "The service at the hotel was ___.",
+    "exampleVi": "Các dịch vụ tại khách sạn là tuyệt vời.",
+    "blankAnswer": "superb"
+  },
+  {
+    "ordinal": 532,
+    "word": "baggage",
+    "pos": "n",
+    "ipa": "/ˈbæɡɪdʒ/",
+    "meaningVi": "hành lý",
+    "definitionEn": "bags, cases, etc. that contain somebody's clothes and things when they are travelling",
+    "definitionVi": "túi, vỏ, v.v. có chứa quần áo và đồ vật của ai đó khi họ đang đi du lịch",
+    "synonyms": [
+      "luggage"
+    ],
+    "exampleEn": "Stow ___ under the seat in front of you.",
+    "exampleVi": "Xếp hành lý dưới ghế trước mặt bạn.",
+    "blankAnswer": "baggage"
+  },
+  {
+    "ordinal": 533,
+    "word": "destination",
+    "pos": "n",
+    "ipa": "/ˌdestɪˈneɪʃn/",
+    "meaningVi": "điểm đến",
+    "definitionEn": "a place to which somebody/something is going or being sent",
+    "definitionVi": "một nơi mà ai đó, một cái gì đó đang đi đến hoặc đang được gửi tới",
+    "synonyms": [
+      "endpoint",
+      "terminus"
+    ],
+    "exampleEn": "Travel agents can provide information about a travel ___.",
+    "exampleVi": "Đại lý du lịch có thể cung cấp thông tin về điểm đến du lịch.",
+    "blankAnswer": "destination"
+  },
+  {
+    "ordinal": 534,
+    "word": "missing",
+    "pos": "adj",
+    "ipa": "/ˈmɪsɪŋ/",
+    "meaningVi": "mất, thiếu",
+    "definitionEn": "that cannot be found or that is not in its usual place, or at home",
+    "definitionVi": "không thể tìm thấy hoặc không ở nơi thông thường, hoặc ở nhà",
+    "synonyms": [
+      "lost"
+    ],
+    "exampleEn": "The ___ luggage will be sent to the hotel when it is found.",
+    "exampleVi": "Hành lý bị mất sẽ được gửi đến khách sạn khi nó được tìm thấy.",
+    "blankAnswer": "missing"
+  },
+  {
+    "ordinal": 535,
+    "word": "locate",
+    "pos": "v",
+    "ipa": "/ˈloʊkeɪt/",
+    "meaningVi": "xác định vị trí",
+    "definitionEn": "to find the exact position of somebody/something",
+    "definitionVi": "để tìm vị trí chính xác của ai đó, một cái gì đó",
+    "synonyms": [
+      "find",
+      "pinpoint"
+    ],
+    "exampleEn": "Airline staff have tried to ___ the lost luggage.",
+    "exampleVi": "Nhân viên hãng hàng không đã cố gắng xác định vị trí hành lý bị mất.",
+    "blankAnswer": "locate"
+  },
+  {
+    "ordinal": 536,
+    "word": "approximately",
+    "pos": "adv",
+    "ipa": "/əˈprɑːksɪmətli/",
+    "meaningVi": "khoảng, xấp xỉ, gần",
+    "definitionEn": "used to show that something is almost, but not completely, accurate or correct",
+    "definitionVi": "được sử dụng để cho thấy một cái gì đó gần như, nhưng không hoàn toàn, chính xác",
+    "synonyms": [
+      "roughly",
+      "about"
+    ],
+    "exampleEn": "A nonstop flight takes ___ 13 hours.",
+    "exampleVi": "Một chuyến bay thẳng mất khoảng 13 giờ.",
+    "blankAnswer": "approximately"
+  },
+  {
+    "ordinal": 537,
+    "word": "duty",
+    "pos": "n",
+    "ipa": "/ˈduːti/",
+    "meaningVi": "nhiệm vụ",
+    "definitionEn": "something that you feel you have to do because it is your moral or legal responsibility",
+    "definitionVi": "một cái gì đó mà bạn cảm thấy bạn phải làm bởi vì đó là trách nhiệm đạo đức hoặc pháp lý của bạn",
+    "synonyms": [
+      "task",
+      "assignment"
+    ],
+    "exampleEn": "Security personnel are on ___ at the airport around the clock.",
+    "exampleVi": "Nhân viên an ninh đang làm nhiệm vụ tại sân bay suốt ngày đêm.",
+    "blankAnswer": "duty"
+  },
+  {
+    "ordinal": 538,
+    "word": "process",
+    "pos": "n",
+    "ipa": "/ˈprɑːses/",
+    "meaningVi": "quy trình, quá trình, xử lý",
+    "definitionEn": "a series of things that are done in order to achieve a particular result",
+    "definitionVi": "một loạt những điều được thực hiện để đạt được một kết quả cụ thể",
+    "synonyms": [
+      "procedure",
+      "deal with"
+    ],
+    "exampleEn": "The entire airline ticketing ___ can be done online.",
+    "exampleVi": "Toàn bộ quá trình bán vé máy bay có thể được thực hiện trực tuyến.",
+    "blankAnswer": "process"
+  },
+  {
+    "ordinal": 539,
+    "word": "board",
+    "pos": "n",
+    "ipa": "/bɔːrd/",
+    "meaningVi": "hội đồng, ủy ban, ban",
+    "definitionEn": "a group of people who manage or supervise an organization or company",
+    "definitionVi": "một nhóm người quản lý hoặc giám sát một tổ chức hoặc công ty",
+    "synonyms": [
+      "committee",
+      "panel"
+    ],
+    "exampleEn": "Tourism Scotland's ___ of directors approved the budget proposal.",
+    "exampleVi": "Ban giám đốc của Scotland đã phê duyệt đề xuất ngân sách.",
+    "blankAnswer": "board"
+  },
+  {
+    "ordinal": 540,
+    "word": "comfortable",
+    "pos": "adj",
+    "ipa": "/ˈkʌmftəbl/",
+    "meaningVi": "thoải mái",
+    "definitionEn": "making you feel physically relaxed; pleasant to wear, sit on",
+    "definitionVi": "làm cho bạn cảm thấy thoải mái về thể chất, dễ chịu để mặc, ngồi trên",
+    "synonyms": [
+      "cozy",
+      "relaxing"
+    ],
+    "exampleEn": "The beds in this hotel are very ___.",
+    "exampleVi": "Các giường trong khách sạn này rất thoải mái.",
+    "blankAnswer": "comfortable"
   }
 ]
