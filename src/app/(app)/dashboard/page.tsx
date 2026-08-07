@@ -70,18 +70,25 @@ export default async function DashboardPage() {
       <ol className="flex flex-col gap-2">
         {lessons.map((lesson) => {
           const status = statuses.get(lesson.id) ?? "locked";
-          return (
-            <li
-              key={lesson.id}
-              data-testid="lesson-row"
-              data-status={status}
-              className="flex items-center justify-between rounded border border-slate-200 bg-white px-4 py-3"
-            >
+          const inner = (
+            <>
               <span>
                 <span className="mr-2 font-medium">Buổi {lesson.ordinal}</span>
                 <span className="text-slate-600">{lesson.grammar_lessons?.title}</span>
               </span>
               <span className="text-sm text-slate-500">{LABEL[status]}</span>
+            </>
+          );
+          const shell = "flex items-center justify-between rounded border border-slate-200 px-4 py-3";
+          return (
+            <li key={lesson.id} data-testid="lesson-row" data-status={status}>
+              {status === "locked" ? (
+                <div className={`${shell} bg-slate-100 text-slate-400`}>{inner}</div>
+              ) : (
+                <Link href={`/learn/${lesson.id}`} className={`${shell} bg-white hover:border-slate-400`}>
+                  {inner}
+                </Link>
+              )}
             </li>
           );
         })}
