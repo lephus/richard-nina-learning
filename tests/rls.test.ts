@@ -6,8 +6,8 @@ const ANON = process.env.SUPABASE_ANON_KEY!;
 const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const admin = createClient(URL, SERVICE);
-let alice: ReturnType<typeof createClient>;
-let bob: ReturnType<typeof createClient>;
+let alice: any;
+let bob: any;
 let aliceId = "";
 let bobId = "";
 let testWordId = 0;
