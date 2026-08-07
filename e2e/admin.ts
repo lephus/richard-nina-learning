@@ -12,7 +12,11 @@ export function adminClient(): SupabaseClient {
 
 /** Xoá tài khoản kiểm thử nếu còn sót từ lần chạy trước. */
 export async function deleteTestUser(admin: SupabaseClient): Promise<void> {
-  const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  const found = data?.users.find((u) => u.email === TEST_EMAIL);
+  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  // Nuốt lỗi ở đây thì `found` luôn undefined, không xoá gì, và teardown báo
+  // thành công giả — để lại tài khoản thật (mật khẩu nằm trong
+  // e2e/test-user.ts, đã commit) sống trong bảng auth production.
+  if (error) throw error;
+  const found = data.users.find((u) => u.email === TEST_EMAIL);
   if (found) await admin.auth.admin.deleteUser(found.id);
 }

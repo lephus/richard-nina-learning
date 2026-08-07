@@ -4,6 +4,12 @@
 -- khong co profiles — nguoi dung dang nhap duoc nhung app vo o moi cho join.
 --
 -- Dat bat bien nay o database, khong o ma ung dung, de khong duong nao pha duoc.
+--
+-- File nay duoc dan tay qua Supabase SQL Editor tren production, khong qua
+-- `supabase migration up`, nen phai TU no chay lai duoc nhieu lan ma khong
+-- loi: ham dung CREATE OR REPLACE (da idempotent san), con trigger thi
+-- CREATE TRIGGER thuong khong idempotent — chay lan hai se loi "trigger
+-- already exists". Vi vay DROP TRIGGER IF EXISTS truoc khi tao lai.
 
 create or replace function public.handle_new_user()
 returns trigger
@@ -27,6 +33,8 @@ begin
   return new;
 end;
 $$;
+
+drop trigger if exists on_auth_user_created on auth.users;
 
 create trigger on_auth_user_created
   after insert on auth.users

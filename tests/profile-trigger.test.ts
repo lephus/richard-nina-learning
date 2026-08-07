@@ -11,7 +11,10 @@ describe.skipIf(!hasEnv)("trigger tao profiles", () => {
   const admin = createClient(URL ?? "http://localhost", SERVICE ?? "noop", {
     auth: { persistSession: false },
   });
-  const email = "trigger-probe@test.local";
+  // Email cố định: một lần chạy bị ngắt giữa chừng (trước afterAll) để lại
+  // dòng auth.users mồ côi trên production, và mọi lần chạy sau đụng độ
+  // email trùng cho tới khi ai đó xoá tay. Gắn timestamp như tests/rls.test.ts.
+  const email = `trigger-probe-${Date.now()}@test.local`;
   let userId = "";
 
   beforeAll(async () => {
