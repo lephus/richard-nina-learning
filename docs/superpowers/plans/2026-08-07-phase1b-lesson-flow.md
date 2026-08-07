@@ -586,8 +586,8 @@ git commit -m "feat(1b): dung cau hoi + phuong an nhieu 3 bac du phong"
 - Consumes: `BuiltItem` từ `@/lib/lesson/build-item`
 - Produces:
   - `interface GradeResult { correct: boolean; correctAnswer: string }`
+  - `interface Secrets { correctOption: string }` — **một chuỗi duy nhất**, là đáp án đúng của item đang chấm. Với câu nghĩa là `meaningVi`, câu đồng nghĩa là `synonyms[0]`, câu điền là `blankAnswer`, câu ngữ pháp là nội dung phương án đúng. Giá trị này chỉ tồn tại ở server.
   - `gradeItem(item: BuiltItem, answer: string, secrets: Secrets): GradeResult`
-  - `interface Secrets { blankAnswer?: string; grammarAnswer?: string; grammarOptions?: string[] }`
   - `interface MasteryRow { correctCount: number; wrongCount: number; mastered: boolean }`
   - `masteryDelta(current: MasteryRow | null, correct: boolean): MasteryRow`
   - `const MASTERY_THRESHOLD = 3`
