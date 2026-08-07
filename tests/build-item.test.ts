@@ -81,6 +81,12 @@ describe("buildItem", () => {
     expect(item.word.id).toBe(lessonWords[3]!.id);
   });
 
+  it("thẻ gặp từ không mang blankAnswer xuống client", () => {
+    const item = buildItem({ kind: "flashcard", index: 3 }, ctx);
+    if (item.kind !== "flashcard") throw new Error("sai nhánh");
+    expect(item.word).not.toHaveProperty("blankAnswer");
+  });
+
   it("câu nghĩa có 4 phương án, trong đó đúng một phương án là nghĩa đúng", () => {
     const item = buildItem({ kind: "meaning", index: 0 }, ctx);
     if (item.kind !== "meaning") throw new Error("sai nhánh");
@@ -124,5 +130,22 @@ describe("buildItem", () => {
     const a = buildItem({ kind: "meaning", index: 5 }, ctx);
     const b = buildItem({ kind: "meaning", index: 5 }, ctx);
     expect(a).toEqual(b);
+  });
+
+  it("câu nghĩa và câu đồng nghĩa của cùng một từ (cùng index) không dùng chung hoán vị phương án", () => {
+    // item-plan.ts cố ý cho meaning và synonym của cùng một từ chung index.
+    // Nếu seed chỉ phụ thuộc index (bỏ qua kind), seededShuffle sẽ cho ra
+    // cùng một hoán vị 4 phần tử cho cả hai câu — đáp án đúng luôn rơi vào
+    // cùng một vị trí, học viên đoán được câu sau mà không cần biết nghĩa.
+    const meaning = buildItem({ kind: "meaning", index: 0 }, ctx);
+    const synonym = buildItem({ kind: "synonym", index: 0 }, ctx);
+    if (meaning.kind !== "meaning") throw new Error("sai nhánh");
+    if (synonym.kind !== "synonym") throw new Error("sai nhánh");
+
+    const meaningPos = meaning.options.indexOf(lessonWords[0]!.meaningVi);
+    const synonymPos = synonym.options.indexOf(lessonWords[0]!.synonyms[0]!);
+    expect(meaningPos).not.toBe(-1);
+    expect(synonymPos).not.toBe(-1);
+    expect(meaningPos).not.toBe(synonymPos);
   });
 });

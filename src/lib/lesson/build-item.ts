@@ -33,7 +33,9 @@ export interface BuildContext {
 }
 
 export type BuiltItem =
-  | { kind: "flashcard"; word: VocabLite }
+  // `Omit<VocabLite, "blankAnswer">`: cấm ở tầng kiểu, không chỉ theo quy ước
+  // — xem 0004_rls.sql:41-44, cột này không được cấp cho `authenticated`.
+  | { kind: "flashcard"; word: Omit<VocabLite, "blankAnswer"> }
   | { kind: "meaning"; wordId: number; word: string; options: string[] }
   | { kind: "synonym"; wordId: number; word: string; options: string[] }
   | { kind: "fill"; wordId: number; sentence: string }
@@ -89,10 +91,17 @@ function meaningItem(
 }
 
 export function buildItem(spec: ItemSpec, ctx: BuildContext): BuiltItem {
-  const seed = ctx.seed + spec.index * 7919; // 7919 là số nguyên tố, tách seed giữa các item
+  // Băm theo cả `kind` lẫn `index`: meaning và synonym của cùng một từ có
+  // CÙNG index (xem item-plan.ts), nên chỉ băm theo index sẽ cho hai câu hỏi
+  // cùng một hoán vị 4 phương án — đáp án đúng luôn rơi vào cùng vị trí, học
+  // viên đoán được câu sau nhờ nhớ vị trí ở câu trước chứ không cần biết nghĩa.
+  const seed = hashString(`${ctx.seed}:${spec.kind}:${spec.index}`);
 
   if (spec.kind === "flashcard") {
-    return { kind: "flashcard", word: at(ctx.lessonWords, spec.index) };
+    // Loại `blankAnswer` khỏi payload — cột này không được cấp cho
+    // `authenticated`, không được phép rời khỏi server.
+    const { blankAnswer: _blankAnswer, ...safeWord } = at(ctx.lessonWords, spec.index);
+    return { kind: "flashcard", word: safeWord };
   }
 
   if (spec.kind === "meaning") {
