@@ -319,6 +319,11 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.ts"],
     setupFiles: ["tests/setup-env.ts"],
+    // GIU NGUYEN khoi chu thich va fileParallelism: false dang co trong tep.
+    // Do la ban sua cho mot loi that: rls.test.ts va db-integrity.test.ts giam
+    // len nhau tren cung mot database khi chay song song. Xoa dong nay thi
+    // db-integrity do ngau nhien tro lai.
+    fileParallelism: false,
   },
   resolve: {
     alias: {
@@ -328,6 +333,8 @@ export default defineConfig({
   },
 });
 ```
+
+**Chỉ thêm dòng alias `"@"`.** Mọi thứ khác trong tệp giữ nguyên — đặc biệt là `fileParallelism: false` và khối chú thích của nó.
 
 Thứ tự quan trọng: `@content` phải đứng trước `@`, nếu không `@content/types` bị `@` nuốt thành `src/content/types` — lần này thì trùng nhau nên vô hại, nhưng đừng dựa vào may mắn.
 
