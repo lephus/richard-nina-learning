@@ -32,6 +32,12 @@ export default async function DashboardPage() {
   if (lessonsRes.error) throw lessonsRes.error;
   if (progressRes.error) throw progressRes.error;
 
+  // Không có generic Database trên client nên postgrest-js suy luận MỌI quan
+  // hệ nhúng có sub-field là mảng, bất kể FK thật sự là 1-1 hay 1-n (xem
+  // node_modules/@supabase/postgrest-js/src/select-query-parser/result.ts).
+  // Ép qua `unknown` trước vì TS không cho ép thẳng hai kiểu không giao nhau
+  // đủ. Runtime thực sự trả về một đối tượng vì lessons.grammar_lesson_id là
+  // khoá ngoại `unique` (supabase/migrations/0002_curriculum.sql:4).
   const lessons = (lessonsRes.data ?? []) as unknown as LessonWithGrammar[];
   const progress = (progressRes.data ?? []) as ProgressRow[];
   const statuses = lessonStatuses(lessons, progress);
