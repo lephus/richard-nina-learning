@@ -37,11 +37,12 @@ export default async function LearnPage({
   const statuses = lessonStatuses(lessons, (progressRes.data ?? []) as ProgressRow[]);
   if (statuses.get(id) === "locked") redirect("/dashboard");
 
-  const { data: prog } = await supabase
+  const { data: prog, error: progError } = await supabase
     .from("user_lesson_progress")
     .select("position, final_correct")
     .eq("lesson_id", id)
     .maybeSingle();
+  if (progError) throw progError;
 
   const position = prog?.position ?? 0;
   const done = position >= TOTAL_ITEMS;
