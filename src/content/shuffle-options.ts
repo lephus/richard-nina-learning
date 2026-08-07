@@ -27,7 +27,7 @@ function mulberry32(seed: number): () => number {
 }
 
 /** Xáo trộn Fisher-Yates tất định theo seed. Không sửa mảng gốc, trả về mảng mới. */
-function seededShuffle<T>(arr: readonly T[], seed: number): T[] {
+export function seededShuffle<T>(arr: readonly T[], seed: number): T[] {
   const out = [...arr];
   const rand = mulberry32(seed);
   for (let i = out.length - 1; i > 0; i--) {
