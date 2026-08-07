@@ -8,6 +8,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "phase0:render": "tsx scripts/phase0/01-render-ocr.ts",
     "phase0:vocab": "tsx scripts/phase0/02-parse-vocab.ts",
     "phase0:grammar": "tsx scripts/phase0/03-extract-grammar.ts",
@@ -16,6 +17,7 @@
     "phase0:seed": "tsx scripts/phase0/05-seed.ts"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.10.2",
     "@types/react": "^19.2.18",
