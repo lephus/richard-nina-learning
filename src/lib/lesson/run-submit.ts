@@ -47,13 +47,22 @@ export async function runSubmit(
   //    dùng (lessonStatuses), không tin riêng sự tồn tại của dòng tiến độ.
   //    Đây là điểm thực thi duy nhất: một trang chỉ chặn được giao diện,
   //    còn Server Action gọi được độc lập với mọi trang.
+  //
+  //    'completed' PHẢI được cho qua cùng với 'available'/'in_progress': vì
+  //    status='completed' chỉ được ghi CÙNG LÚC với position=135
+  //    (advancePosition), completed ⟺ position===135 — chặn 'completed' ở
+  //    đây sẽ khiến nhánh position>=TOTAL_ITEMS bên dưới KHÔNG BAO GIỜ chạy
+  //    tới, biến một cú double-click vô hại ở câu 135 thành throw vĩnh viễn
+  //    (client kẹt ở 135/135, nút vẫn bật, mọi lần thử lại đều lỗi) cho tới
+  //    khi tải lại trang. Chỉ 'locked' (hoặc buổi không tồn tại) mới bị chặn.
   const { lessons, progressRows } = await loadLessonChain(supabase);
   const forStatus: ProgressRow[] = progressRows.map((r) => ({
     lesson_id: r.lessonId,
     status: r.status,
   }));
   const status = lessonStatuses(lessons, forStatus).get(lessonId);
-  if (status !== "available" && status !== "in_progress") {
+  const unlocked = status === "available" || status === "in_progress" || status === "completed";
+  if (!unlocked) {
     throw new Error("buổi chưa mở khoá");
   }
 
@@ -68,16 +77,26 @@ export async function runSubmit(
   //    không tốn một lượt ghi nào. Đây là kiểm tra Ở TẦNG ỨNG DỤNG — nhanh,
   //    nhưng một mình nó không đủ (xem bước 4b: so-sánh-rồi-đổi ở tầng DB).
   if (clientPosition !== position) {
+    const done = position >= TOTAL_ITEMS;
     return {
       ok: false,
       position,
-      item: position >= TOTAL_ITEMS ? null : buildItem(itemAt(position), ctx),
-      done: position >= TOTAL_ITEMS,
+      item: done ? null : buildItem(itemAt(position), ctx),
+      done,
+      // Buổi đã đóng: kèm điểm, không thì client hiển thị "0%" thay vì điểm
+      // thật khi một cú double-click ở câu cuối rơi vào nhánh này.
+      score: done ? Math.round(((prog?.finalCorrect ?? 0) / 15) * 100) : undefined,
     };
   }
 
   if (position >= TOTAL_ITEMS) {
-    return { ok: true, position, item: null, done: true };
+    return {
+      ok: true,
+      position,
+      item: null,
+      done: true,
+      score: Math.round(((prog?.finalCorrect ?? 0) / 15) * 100),
+    };
   }
 
   // 3. Buổi chưa có dòng nào (lần chấm đầu tiên) → tạo trước, KHÔNG đụng dòng
@@ -110,10 +129,7 @@ export async function runSubmit(
   const item = buildItem(spec, ctx);
   const result = gradeItem(item, answer, { correctOption });
 
-  // 6. Cập nhật mastery.
-  await applyMastery(supabase, userId, item, result.correct);
-
-  // 7. final_correct chỉ đếm trong 15 item chốt buổi — theo spec.kind của
+  // 6. final_correct chỉ đếm trong 15 item chốt buổi — theo spec.kind của
   //    ItemSpec (final-meaning | grammar), KHÔNG theo item.kind của BuiltItem
   //    (một item final-meaning dựng ra BuiltItem có kind "meaning", giống hệt
   //    item luyện tập thường — item.kind không phân biệt được hai loại này).
@@ -121,13 +137,27 @@ export async function runSubmit(
   const finalCorrect =
     (prog?.finalCorrect ?? 0) + (isFinal && result.correct ? 1 : 0);
 
-  // 4b. Ghi vị trí SO-SÁNH-RỒI-ĐỔI: `.eq("position", position)` biến lượt ghi
-  //     thành CAS thật ở tầng database, không chỉ đọc-rồi-ghi ở tầng ứng dụng.
-  //     Một yêu cầu trễ (retry) mà request khác đã ghi trước sẽ khớp 0 dòng —
-  //     coi như gửi trùng, KHÔNG ghi đè, không chấm lại mastery lần hai.
+  // 4b. Ghi vị trí SO-SÁNH-RỒI-ĐỔI TRƯỚC KHI chấm mastery: `.eq("position",
+  //     position)` biến lượt ghi thành CAS thật ở tầng database, không chỉ
+  //     đọc-rồi-ghi ở tầng ứng dụng. Một yêu cầu trễ (retry) mà request khác
+  //     đã ghi trước sẽ khớp 0 dòng — coi như gửi trùng, KHÔNG ghi đè.
+  //
+  //     Thứ tự này CỐ Ý: applyMastery (bước 7) đọc rồi ghi word_mastery
+  //     bằng giá trị TUYỆT ĐỐI (masteryDelta cộng dồn từ một SELECT trước
+  //     đó), không tự CAS. Nếu chạy applyMastery TRƯỚC khi biết CAS có thắng
+  //     hay không, request THUA cuộc trong một cặp đua vẫn đọc-sửa-ghi
+  //     word_mastery — và cả hai kiểu chen ngang đều hỏng dữ liệu: SELECT
+  //     của kẻ thua đọc TRƯỚC UPSERT của kẻ thắng → UPSERT của kẻ thua đè
+  //     lên sau, MẤT một lần cộng; đọc SAU UPSERT của kẻ thắng → kẻ thua
+  //     cộng thêm lên trên số kẻ thắng đã cộng, ĐẾM ĐÔI một câu trả lời (và
+  //     có thể đẩy `mastered` lên sớm). Chỉ chấm mastery SAU KHI CAS xác
+  //     nhận mình thắng — kẻ thua return ở dòng dưới, không bao giờ tới bước 7.
   const done = nextPosition >= TOTAL_ITEMS;
   const advanced = await advancePosition(supabase, userId, lessonId, position, nextPosition, finalCorrect, done);
   if (!advanced) return staleResult(supabase, userId, lessonId, ctx);
+
+  // 7. Cập nhật mastery — chỉ tới đây khi CAS ở bước 4b đã thắng.
+  await applyMastery(supabase, userId, item, result.correct);
 
   return {
     ok: true,
@@ -225,7 +255,13 @@ async function advancePosition(
   return (data?.length ?? 0) > 0;
 }
 
-/** Đọc lại trạng thái THẬT từ database sau khi so-sánh-rồi-đổi thất bại, trả về y hệt hình dạng nhánh gửi trùng ở bước 2. */
+/**
+ * Đọc lại trạng thái THẬT từ database sau khi so-sánh-rồi-đổi thất bại, trả
+ * về y hệt hình dạng nhánh gửi trùng ở bước 2 — kể cả `score` khi buổi đã
+ * đóng. Đọc `final_correct` TƯƠI ở đây, không dùng biến `finalCorrect` cục
+ * bộ đã tính trước CAS: chính vì CAS thua nên giá trị cục bộ đó đã cũ, thuộc
+ * về request đã thắng, không phải trạng thái thật hiện tại.
+ */
 async function staleResult(
   supabase: SupabaseClient,
   userId: string,
@@ -234,18 +270,21 @@ async function staleResult(
 ): Promise<SubmitResult> {
   const { data, error } = await supabase
     .from("user_lesson_progress")
-    .select("position")
+    .select("position, final_correct")
     .eq("user_id", userId)
     .eq("lesson_id", lessonId)
     .maybeSingle();
   if (error) throw error;
 
   const position = (data?.position as number | undefined) ?? 0;
+  const finalCorrect = (data?.final_correct as number | undefined) ?? 0;
+  const done = position >= TOTAL_ITEMS;
   return {
     ok: false,
     position,
-    item: position >= TOTAL_ITEMS ? null : buildItem(itemAt(position), ctx),
-    done: position >= TOTAL_ITEMS,
+    item: done ? null : buildItem(itemAt(position), ctx),
+    done,
+    score: done ? Math.round((finalCorrect / 15) * 100) : undefined,
   };
 }
 

@@ -229,6 +229,9 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
     const position = 60;
     const spec = itemAt(position);
     expect(spec.kind).not.toBe("flashcard");
+    // Phải là item chấm mastery theo TỪ (không phải grammar) để phép kiểm
+    // word_mastery bên dưới thật sự bắt được lỗi đếm đôi/mất cập nhật.
+    expect(["meaning", "synonym", "fill"]).toContain(spec.kind);
 
     await seed(position, 2);
     const correctAnswer = await secretFor(user, spec, ctx);
@@ -252,5 +255,55 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
     // Đúng MỘT bước, không phải 0 (cả hai đều thua, kẹt) hay 2 (cả hai đều
     // thắng, đẩy vị trí vượt quá một item cho một lần trả lời).
     expect(row!.position).toBe(position + 1);
+
+    // word_mastery phải tăng ĐÚNG MỘT LẦN — kẻ thua trong CAS không được
+    // chấm mastery. Nếu applyMastery vẫn chạy trước CAS (bug đã sửa), số
+    // này có thể là 2 (đếm đôi) hoặc 0 (kẻ thua ghi đè mất cập nhật của kẻ
+    // thắng), tuỳ SELECT của kẻ thua chen vào trước hay sau UPSERT của kẻ
+    // thắng.
+    const wordId = ctx.lessonWords[spec.index]!.id;
+    const { data: wm } = await admin.from("word_mastery")
+      .select("correct_count, wrong_count")
+      .eq("user_id", userId).eq("word_id", wordId).maybeSingle();
+    expect(wm).toEqual({ correct_count: 1, wrong_count: 0 });
+  });
+
+  it("buổi đã đóng, gọi lại đúng vị trí 135: đi qua nhánh sẵn có (không throw), trả điểm THẬT", async () => {
+    // Trước fix: cổng khoá từ chối status='completed', nên lần gọi lại này
+    // (ví dụ trang tải lại rồi tự động gọi lại) sẽ throw thay vì đi vào
+    // nhánh position>=TOTAL_ITEMS đã có sẵn.
+    await admin.from("user_lesson_progress").upsert(
+      {
+        user_id: userId, lesson_id: lesson1, position: TOTAL_ITEMS,
+        final_correct: 12, status: "completed", score: 80,
+        completed_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,lesson_id" },
+    );
+
+    const result = await runSubmit(user, userId, lesson1, TOTAL_ITEMS, "bat-ky-cau-tra-loi-nao");
+    expect(result.ok).toBe(true);
+    expect(result.done).toBe(true);
+    expect(result.item).toBeNull();
+    expect(result.score).toBe(80); // round(12/15*100)
+  });
+
+  it("buổi đã đóng, double-click gửi vị trí cũ: ok:false nhưng vẫn kèm điểm THẬT, không phải 0%", async () => {
+    await admin.from("user_lesson_progress").upsert(
+      {
+        user_id: userId, lesson_id: lesson1, position: TOTAL_ITEMS,
+        final_correct: 15, status: "completed", score: 100,
+        completed_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,lesson_id" },
+    );
+
+    // Client vẫn tưởng mình đang ở câu cuối (134) — ví dụ double-click gửi
+    // request thứ hai với vị trí cũ, trong khi request thứ nhất đã đóng buổi.
+    const result = await runSubmit(user, userId, lesson1, TOTAL_ITEMS - 1, "bat-ky-cau-tra-loi-nao");
+    expect(result.ok).toBe(false);
+    expect(result.done).toBe(true);
+    expect(result.position).toBe(TOTAL_ITEMS);
+    expect(result.score).toBe(100); // KHÔNG phải undefined — client hiển thị score ?? 0
   });
 });
