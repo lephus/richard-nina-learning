@@ -33,9 +33,13 @@ export interface BuildContext {
 }
 
 export type BuiltItem =
-  // `Omit<VocabLite, "blankAnswer">`: cấm ở tầng kiểu, không chỉ theo quy ước
-  // — xem 0004_rls.sql:41-44, cột này không được cấp cho `authenticated`.
-  | { kind: "flashcard"; word: Omit<VocabLite, "blankAnswer"> }
+  // `Omit<VocabLite, "blankAnswer">` một mình không đủ: gán thẳng một
+  // `VocabLite` (rộng hơn) vào một trường có kiểu hẹp hơn vẫn hợp lệ theo
+  // structural typing — kiểm tra excess-property của TS chỉ áp dụng cho
+  // object literal, không áp dụng khi gán một biến đã có kiểu sẵn. Thêm
+  // `blankAnswer?: never` để field đó thực sự KHÔNG THỂ gán được, biến việc
+  // rò rỉ thành lỗi biên dịch chứ không chỉ là quy ước — xem 0004_rls.sql:41-44.
+  | { kind: "flashcard"; word: Omit<VocabLite, "blankAnswer"> & { blankAnswer?: never } }
   | { kind: "meaning"; wordId: number; word: string; options: string[] }
   | { kind: "synonym"; wordId: number; word: string; options: string[] }
   | { kind: "fill"; wordId: number; sentence: string }
