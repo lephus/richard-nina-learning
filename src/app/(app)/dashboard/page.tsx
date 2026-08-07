@@ -42,7 +42,15 @@ export default async function DashboardPage() {
   const progress = (progressRes.data ?? []) as ProgressRow[];
   const statuses = lessonStatuses(lessons, progress);
 
-  const next = lessons.find((l) => statuses.get(l.id) !== "completed");
+  // Chỉ trỏ "Học tiếp" vào buổi THẬT SỰ học được (available/in_progress).
+  // "!== completed" là bẫy: một dòng user_lesson_progress mới được ghi tay mà
+  // chưa set status rơi vào default 'locked' của cột (xem
+  // supabase/migrations/0003_user_state.sql:14) — dòng đó cũng "!== completed"
+  // nên vẫn lọt qua, dẫn thẳng người học vào một buổi đang khoá.
+  const next = lessons.find((l) => {
+    const status = statuses.get(l.id);
+    return status === "available" || status === "in_progress";
+  });
 
   return (
     <main className="flex flex-col gap-6">

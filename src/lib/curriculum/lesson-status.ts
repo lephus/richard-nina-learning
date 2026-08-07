@@ -23,6 +23,13 @@ export interface ProgressRow {
  *
  * Buổi n suy từ trạng thái ĐÃ TÍNH của buổi n−1, không phải từ dòng thô, nên
  * chuỗi khoá lan đúng qua những buổi chưa có dòng nào.
+ *
+ * BẤT BIẾN cho mọi code ghi user_lesson_progress trong tương lai: cột status
+ * mặc định 'locked' (supabase/migrations/0003_user_state.sql:14), nên một
+ * INSERT không set status rõ ràng sẽ tạo ra đúng cái bẫy mà hàm này không thể
+ * tự sửa — dòng thô luôn thắng luật suy diễn ở trên. Vì vậy: (1) LUÔN set
+ * status tường minh khi ghi dòng mới; (2) KHÔNG BAO GIỜ lưu 'locked' cho một
+ * buổi mà buổi liền trước đã 'completed'.
  */
 export function lessonStatuses(
   lessons: LessonRow[],
