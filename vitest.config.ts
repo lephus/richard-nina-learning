@@ -19,5 +19,10 @@ export default defineConfig({
     // mili giay nen mat mat khong dang ke.
     fileParallelism: false,
   },
-  resolve: { alias: { "@content": resolve(__dirname, "src/content") } },
+  resolve: {
+    alias: {
+      "@content": resolve(__dirname, "src/content"),
+      "@": resolve(__dirname, "src"),
+    },
+  },
 });
