@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { pickDistractors, buildItem } from "@/lib/lesson/build-item";
-import type { VocabLite, GrammarLite } from "@/lib/lesson/build-item";
+import type { VocabLite, GrammarLite, BuildContext } from "@/lib/lesson/build-item";
 
 // exampleEn mô phỏng dữ liệu thật: Phase 0 đã khoét sẵn đúng một "___" khi
 // dựng nội dung, và blankAnswer — chỉ dùng để chấm điểm ở server — không
@@ -112,6 +112,30 @@ describe("buildItem", () => {
     if (item.kind !== "fill") throw new Error("sai nhánh");
     expect(item.sentence).toBe(lessonWords[0]!.exampleEn);
     expect(item.sentence.match(/___/g)).toHaveLength(1);
+  });
+
+  it("câu điền giữ nguyên exampleEn ngay cả khi blankAnswer rỗng — đường đi công khai thật của session.ts", () => {
+    // session.ts luôn gửi blankAnswer: "" cho item công khai (không mang
+    // xuống trình duyệt). Đây mới là ca thật gây lỗi: blankOut cũ dùng
+    // RegExp("", "gi") khớp ở MỌI vị trí khi answer rỗng, chèn "___" xen
+    // giữa từng ký tự. Bài test ở trên (blankAnswer không rỗng và không
+    // xuất hiện trong exampleEn) KHÔNG phát hiện được lỗi này — với answer
+    // không rỗng và không khớp, blankOut cũ chỉ là no-op, không splice.
+    const word: VocabLite = {
+      id: 999,
+      word: "resume",
+      pos: "n",
+      ipa: "/ˈrezəmeɪ/",
+      meaningVi: "bản sơ yếu lý lịch",
+      definitionEn: "a written record of your education and the jobs you have done",
+      synonyms: ["summary"],
+      exampleEn: "Fax your ___ and cover letter to the above number.",
+      blankAnswer: "", // đúng như session.ts gửi cho item công khai
+    };
+    const localCtx: BuildContext = { lessonWords: [word], bank: [word], grammar: [], seed: 1 };
+    const item = buildItem({ kind: "fill", index: 0 }, localCtx);
+    if (item.kind !== "fill") throw new Error("sai nhánh");
+    expect(item.sentence).toBe(word.exampleEn);
   });
 
   it("10 câu chốt buổi lấy từ cả 30 từ và không trùng nhau", () => {
