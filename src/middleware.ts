@@ -35,19 +35,31 @@ export async function middleware(request: NextRequest) {
 
   // Phải gọi SỚM, trước khi sinh response. Nếu token làm mới xong sau khi
   // response đã chốt thì phiên mới không ghi được vào cookie.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const {
+      data: { user: fetchedUser },
+    } = await supabase.auth.getUser();
+    user = fetchedUser;
+  } catch {
+    // getUser() gọi mạng tới Supabase Auth — có thể lỗi mạng/timeout tạm
+    // thời. Fail closed: coi như CHƯA đăng nhập, không bao giờ coi như đã
+    // đăng nhập khi có lỗi. Route bảo vệ sẽ bị chuyển hướng /login (an
+    // toàn), route công khai vẫn render bình thường.
+    user = null;
+  }
 
   const isProtected = PROTECTED.some((p) => request.nextUrl.pathname.startsWith(p));
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    return NextResponse.redirect(url);
+    response = NextResponse.redirect(url);
   }
 
-  // Vercel chạy sau CDN; response của route xác thực không được cache.
+  // Vercel chạy sau CDN; response của route xác thực không được cache. Gán
+  // header ở MỘT chỗ duy nhất sau khi `response` đã chốt (dù là redirect
+  // hay fallthrough) để hai nhánh không thể lệch nhau.
   response.headers.set("Cache-Control", "private, no-store");
   return response;
 }
