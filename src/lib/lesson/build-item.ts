@@ -75,12 +75,6 @@ export function pickDistractors(
   ].slice(0, count);
 }
 
-/** Khoét mọi lần xuất hiện của từ đích khỏi câu ví dụ, không phân biệt hoa thường. */
-function blankOut(sentence: string, answer: string): string {
-  const escaped = answer.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return sentence.replace(new RegExp(escaped, "gi"), "___");
-}
-
 function meaningItem(
   word: VocabLite,
   ctx: BuildContext,
@@ -133,11 +127,15 @@ export function buildItem(spec: ItemSpec, ctx: BuildContext): BuiltItem {
   }
 
   if (spec.kind === "fill") {
+    // Phase 0 đã khoét sẵn `exampleEn` (chứa đúng một "___") khi dựng nội
+    // dung — không khoét lại ở đây. `blankAnswer` chỉ dùng để chấm điểm ở
+    // server, không xuất hiện trong exampleEn (đã kiểm chứng trên cả 605
+    // dòng vocab_words) nên không có gì để khoét thêm.
     const word = at(ctx.lessonWords, spec.index);
     return {
       kind: "fill",
       wordId: word.id,
-      sentence: blankOut(word.exampleEn, word.blankAnswer),
+      sentence: word.exampleEn,
     };
   }
 

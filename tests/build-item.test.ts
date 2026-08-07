@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { pickDistractors, buildItem } from "@/lib/lesson/build-item";
 import type { VocabLite, GrammarLite } from "@/lib/lesson/build-item";
 
+// exampleEn mô phỏng dữ liệu thật: Phase 0 đã khoét sẵn đúng một "___" khi
+// dựng nội dung, và blankAnswer — chỉ dùng để chấm điểm ở server — không
+// xuất hiện trong exampleEn (đã kiểm chứng trên cả 605 dòng vocab_words).
 const w = (id: number, pos: string): VocabLite => ({
   id,
   word: `word${id}`,
@@ -10,8 +13,8 @@ const w = (id: number, pos: string): VocabLite => ({
   meaningVi: `nghĩa ${id}`,
   definitionEn: `definition ${id}`,
   synonyms: [`syn${id}`],
-  exampleEn: `A word${id} sentence.`,
-  blankAnswer: `word${id}`,
+  exampleEn: `A ___ sentence for item ${id}.`,
+  blankAnswer: `answer${id}`,
 });
 
 // 30 từ: 20 danh từ (id 1..20), 9 động từ (21..29), 1 giới từ (30)
@@ -101,11 +104,14 @@ describe("buildItem", () => {
     expect(item.options).toContain(lessonWords[0]!.synonyms[0]);
   });
 
-  it("câu điền khoét từ đích khỏi câu ví dụ", () => {
+  it("câu điền dùng nguyên văn exampleEn đã khoét sẵn từ Phase 0, không khoét lại", () => {
+    // exampleEn trong dữ liệu thật đã chứa đúng một "___" — buildItem không
+    // được tự khoét thêm (đó chính là lỗi từng khiến "___" chen vào giữa
+    // mọi ký tự khi blankAnswer là chuỗi rỗng, xem RegExp("", "gi")).
     const item = buildItem({ kind: "fill", index: 0 }, ctx);
     if (item.kind !== "fill") throw new Error("sai nhánh");
-    expect(item.sentence).not.toContain(lessonWords[0]!.blankAnswer);
-    expect(item.sentence).toContain("___");
+    expect(item.sentence).toBe(lessonWords[0]!.exampleEn);
+    expect(item.sentence.match(/___/g)).toHaveLength(1);
   });
 
   it("10 câu chốt buổi lấy từ cả 30 từ và không trùng nhau", () => {
