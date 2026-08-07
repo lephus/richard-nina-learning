@@ -31,10 +31,11 @@ Phase 0 đã chuẩn bị đầy đủ dữ liệu cho web app học tiếng Anh
 - **Task 12**: Triển khai Row-Level Security (RLS) toàn bộ
 - **Task 13**: Soạn script seed dữ liệu
 - **Task 14**: Kiểm thử toàn vẹn nội dung
+- **Task 15**: Áp migration + seed lên Supabase production, kiểm chứng RLS trên môi trường thật
 
 ---
 
-## Các bước còn lại của Task 15
+## Task 15 — đã hoàn tất
 
 Task 15 gồm 7 bước. Bốn bước đầu tiên cần khoá Supabase, ba bước sau không cần và có thể làm trước:
 
@@ -164,13 +165,55 @@ Nếu có test đỏ, điều đó có nghĩa là RLS chưa hoạt động đún
 
 | Step | Trạng thái | Cần khoá? | Lệnh |
 |------|----------|---------|------|
-| 1 | ⏳ Chờ | ✅ Có | `cp .env.local.example .env.local` |
-| 2 | ⏳ Chờ | ✅ Có | `git check-ignore -v .env.local` |
-| 3 | ⏳ Chờ | ✅ Có | `supabase link ...` → `supabase db push` |
-| 4 | ⏳ Chờ | ✅ Có | `npm run phase0:seed` |
-| 5 | ⏳ Chờ | ✅ Có | `npm test -- rls` |
+| 1 | ✅ Xong | ✅ Có | `cp .env.local.example .env.local` |
+| 2 | ✅ Xong | ✅ Có | `git check-ignore -v .env.local` |
+| 3 | ✅ Xong | ✅ Có | Dán SQL lên dashboard (xem ghi chú dưới) |
+| 4 | ✅ Xong | ✅ Có | `npm run phase0:seed` |
+| 5 | ✅ Xong | ✅ Có | `npm test` |
 | 6 | ✅ Xong | ❌ Không | `.github/workflows/keepalive.yml` tạo xong |
 | 7 | ✅ Xong | ❌ Không | Commit workflow |
+
+### Ghi chú: Step 3 đi đường dashboard, không dùng `supabase link`
+
+Supabase CLI trên máy đang đăng nhập bằng tài khoản khác — `supabase projects list`
+không thấy project này, nên `supabase link` không dùng được. Thay vào đó, 4 file
+trong `supabase/migrations/` được gộp theo thứ tự `0001 → 0004` rồi dán vào
+Supabase Dashboard → SQL Editor → Run. Kết quả tương đương `supabase db push`.
+
+Nếu sau này cần chạy lại migration trên project khác, đường dashboard vẫn hợp lệ:
+
+```bash
+cat supabase/migrations/0001_content.sql \
+    supabase/migrations/0002_curriculum.sql \
+    supabase/migrations/0003_user_state.sql \
+    supabase/migrations/0004_rls.sql | pbcopy
+```
+
+### Ghi chú: `.env.local` không tự được nạp
+
+Điền khoá vào `.env.local` là chưa đủ — ban đầu không có gì đọc file đó:
+
+- `scripts/phase0/05-seed.ts` dùng `import "dotenv/config"`, mà lệnh đó chỉ đọc
+  `.env` chứ không đọc `.env.local` → seed chết ngay ở dòng kiểm tra biến.
+- `vitest.config.ts` không có `setupFiles` → `tests/rls.test.ts` fail lúc thu thập
+  test, còn `tests/db-integrity.test.ts` bị bỏ qua **im lặng** (9 test không chạy).
+
+Đã sửa: cả hai nay gọi `config({ path: ".env.local" })`, qua `tests/setup-env.ts`
+cho phía test.
+
+### Kết quả thực tế sau Step 4 và Step 5
+
+| Bảng | Số dòng |
+|------|--------|
+| `vocab_words` | 605 |
+| `grammar_lessons` | 20 |
+| `grammar_questions` | 537 |
+| `lessons` | 20 |
+| `lesson_words` | 600 (30 từ × 20 buổi) |
+
+`npm test`: **66/66 xanh**, gồm 5 test RLS và 9 test `db-integrity` chạy trên
+project thật. Không còn tài khoản `@test.local` sót lại, không có dòng rác
+`ordinal 9999` trong `vocab_words`.
 
 ---
 

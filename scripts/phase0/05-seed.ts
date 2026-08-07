@@ -1,7 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
-import "dotenv/config";
+import { config } from "dotenv";
 import type { GrammarLesson, GrammarQuestion, LessonPlan, VocabWord } from "../../src/content/types.js";
+
+// Khoa nam trong .env.local (da gitignore), khong phai .env. `dotenv/config`
+// chi doc .env nen truoc day script luon chet o dong kiem tra ben duoi.
+config({ path: ".env.local" });
 
 const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
