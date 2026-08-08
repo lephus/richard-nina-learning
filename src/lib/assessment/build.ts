@@ -27,6 +27,21 @@ export function buildAssessmentItems(
 ): AssessmentItemSpec[] {
   const need = COUNTS[type];
 
+  // Thiếu nguồn thì phải NỔ ngay, không được lặng lẽ trả về đề ngắn hơn: một
+  // đề "review" 18 câu thay vì 25 câu trông vẫn hợp lệ với mọi test kiểm tra
+  // độ dài dựa trên chính output, và học viên chỉ phát hiện ra khi đã mở đề.
+  // pickDistractors từng có đúng loại lỗi âm thầm-thiếu này ở lát trước.
+  if (words.length < need.vocab) {
+    throw new Error(
+      `buildAssessmentItems("${type}"): cần ${need.vocab} từ vựng, chỉ có ${words.length}`,
+    );
+  }
+  if (grammar.length < need.grammar) {
+    throw new Error(
+      `buildAssessmentItems("${type}"): cần ${need.grammar} câu ngữ pháp, chỉ có ${grammar.length}`,
+    );
+  }
+
   const chosenWords = seededShuffle(words, seed).slice(0, need.vocab);
   const chosenGrammar = seededShuffle(grammar, seed + 1).slice(0, need.grammar);
 

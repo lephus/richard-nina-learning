@@ -267,23 +267,47 @@ describe("corpus — đề ôn tập và kiểm tra trên dữ liệu thật", (
 
       const words = wordsForLessons(slot.lessons);
       const grammar = grammarForLessons(slot.lessons);
+      const wordById = new Map(words.map((w) => [w.id, w]));
       const items = buildAssessmentItems(slot.kind, words, grammar, s * 7919);
+      const label = `slot ${s} (${slot.kind} buổi ${JSON.stringify(slot.lessons)})`;
 
+      // "4 phương án phân biệt" một mình không đủ: bốn phương án đều SAI
+      // (đáp án đúng bị đánh rơi khỏi options) vẫn qua được khẳng định đó —
+      // câu hỏi trở nên không thể trả lời đúng mà test này vẫn xanh. Vì vậy
+      // với mỗi câu từ vựng phải tra lại `meaningVi` thật của refId rồi soi
+      // nó có mặt trong options đúng một lần — cùng cách khẳng định
+      // "câu nghĩa: đúng một phương án là nghĩa của từ đích" ở trên đã làm
+      // cho từng buổi học.
+      const bad: string[] = [];
       for (const it of items) {
-        expect(
-          it.payload.options,
-          `slot ${s} (${slot.kind} buổi ${JSON.stringify(slot.lessons)}) — ${it.itemType} #${it.refId}`,
-        ).toHaveLength(4);
-        expect(
-          new Set(it.payload.options).size,
-          `slot ${s} (${slot.kind} buổi ${JSON.stringify(slot.lessons)}) — ${it.itemType} #${it.refId}: ${JSON.stringify(it.payload.options)}`,
-        ).toBe(4);
+        if (it.payload.options.length !== 4 || new Set(it.payload.options).size !== 4) {
+          bad.push(`${label} — ${it.itemType} #${it.refId}: ${JSON.stringify(it.payload.options)}`);
+          continue;
+        }
+        if (it.itemType === "vocab") {
+          const word = wordById.get(it.refId);
+          if (!word) {
+            bad.push(`${label} — vocab #${it.refId}: không tìm thấy trong tập nguồn của đề`);
+            continue;
+          }
+          const hits = it.payload.options.filter((o) => o === word.meaningVi);
+          if (hits.length !== 1) {
+            bad.push(
+              `${label} — vocab #${it.refId} "${word.word}": ${hits.length} phương án đúng ` +
+                `(muốn đúng 1) trong ${JSON.stringify(it.payload.options)}`,
+            );
+          }
+        }
       }
-      const ids = items.filter((i) => i.itemType === "vocab").map((i) => i.refId);
-      expect(
-        new Set(ids).size,
-        `slot ${s} (${slot.kind} buổi ${JSON.stringify(slot.lessons)}) có từ vựng bị hỏi lặp lại`,
-      ).toBe(ids.length);
+      expect(bad).toEqual([]);
+
+      const vocabIds = items.filter((i) => i.itemType === "vocab").map((i) => i.refId);
+      expect(new Set(vocabIds).size, `${label} có từ vựng bị hỏi lặp lại`).toBe(vocabIds.length);
+
+      const grammarIds = items.filter((i) => i.itemType === "grammar").map((i) => i.refId);
+      expect(new Set(grammarIds).size, `${label} có câu ngữ pháp bị hỏi lặp lại`).toBe(
+        grammarIds.length,
+      );
     }
   });
 });

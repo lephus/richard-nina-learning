@@ -77,3 +77,17 @@ describe("buildRemedialItems", () => {
     expect(rem[0]!.payload).toEqual(wrong[0]!.payload);
   });
 });
+
+describe("buildAssessmentItems — nguồn không đủ phải nổ, không được lặng lẽ rút ngắn đề", () => {
+  it("ném lỗi khi không đủ từ vựng cho loại đề", () => {
+    expect(() =>
+      buildAssessmentItems("review", words.slice(0, 10), grammar.slice(0, 40), 1),
+    ).toThrow(/20 từ vựng, chỉ có 10/);
+  });
+
+  it("ném lỗi khi không đủ câu ngữ pháp cho loại đề", () => {
+    expect(() =>
+      buildAssessmentItems("review", words.slice(0, 60), grammar.slice(0, 2), 1),
+    ).toThrow(/5 câu ngữ pháp, chỉ có 2/);
+  });
+});
