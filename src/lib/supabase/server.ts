@@ -42,3 +42,40 @@ export async function createClient() {
     },
   );
 }
+
+/**
+ * Client Supabase KHÔNG BAO GIỜ ghi cookie phiên — `setAll` là no-op tuyệt
+ * đối, không đụng tới `cookies()` của Next dù `@supabase/ssr` gọi tới.
+ *
+ * Chỉ dùng cho `signUp()` trong `(auth)/actions.ts`. Lý do: `setAll` trong
+ * `createClient()` ở trên chỉ được `@supabase/ssr` gọi khi có phiên để ghi
+ * (xem `node_modules/@supabase/ssr/dist/main/createServerClient.js` —
+ * `applyServerStorage` chỉ gọi `setAll` lúc `setItems`/`removedItems` khác
+ * rỗng). Đăng ký địa chỉ MỚI khi autoconfirm bật khiến Supabase trả kèm
+ * session ngay → `setAll` chạy → response mang `Set-Cookie`. Đăng ký địa
+ * chỉ ĐÃ tồn tại thì lỗi bật ra trước khi có session nào để ghi → `setAll`
+ * không bao giờ chạy → response không có `Set-Cookie`. Có `Set-Cookie` hay
+ * không tự nó đã là kênh dò email — độc lập với nội dung trang HTML, đọc
+ * được bằng curl/Python mà không cần trình duyệt. Gọi `signOut()` bù lại
+ * sau đó (cách làm cũ) vẫn để lại ít nhất một `Set-Cookie` (cookie bị xoá
+ * cũng phải phát `Set-Cookie` với ngày hết hạn trong quá khứ), nên không
+ * đóng được kênh này — phải chặn từ gốc bằng cách không bao giờ cho
+ * `setAll` chạm tới `cookies()`.
+ */
+export async function createNonPersistingClient() {
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        // Cố tình để trống — xem giải thích ở JSDoc phía trên hàm.
+        setAll() {},
+      },
+    },
+  );
+}

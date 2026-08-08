@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { isAuthRetryableFetchError } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createNonPersistingClient } from "@/lib/supabase/server";
 
 // AuthState mang hai loại thông điệp: "error" (đỏ, role="alert",
 // data-testid="auth-error" — Playwright chọn qua testid này) và "success"
@@ -49,8 +49,16 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   if (!displayName) return { status: "error", message: "Vui lòng nhập tên hiển thị." };
   if (password.length < 8) return { status: "error", message: "Mật khẩu phải có ít nhất 8 ký tự." };
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
+  // Client KHÔNG BAO GIỜ ghi cookie — xem JSDoc của createNonPersistingClient
+  // trong src/lib/supabase/server.ts. Bắt buộc phải dùng client này ở đây:
+  // dùng createClient() bình thường thì dù có bù lại bằng signOut() sau khi
+  // thấy data.session, response vẫn phát Set-Cookie cho nhánh "email mới"
+  // (lúc ghi phiên) mà không phát cho nhánh "email đã đăng ký" (lỗi bật ra
+  // trước khi có phiên nào để ghi) — kênh dò email chuyển từ nội dung trang
+  // sang chính header phản hồi, đọc được bằng curl/Python, trình duyệt
+  // không cần chạy JS cũng thấy.
+  const supabase = await createNonPersistingClient();
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     // Trigger on_auth_user_created đọc đúng khoá này để đặt profiles.display_name.
@@ -59,32 +67,30 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
 
   if (error) {
     if (isAuthRetryableFetchError(error)) return { status: "error", message: RETRYABLE_ERROR };
-    // Email này đã có tài khoản. Với "Confirm email" tắt trên project hiện
-    // tại, Supabase trả lỗi `user_already_exists` riêng cho đúng trường hợp
-    // này — nửa đầu của kênh dò email: địa chỉ mới không lỗi, địa chỉ cũ
-    // luôn lỗi. Trả CÙNG thông điệp trung lập với nhánh thành công bên
-    // dưới, byte-for-byte, để hai kết quả hết phân biệt được.
+    // Email này đã có tài khoản (quan sát trực tiếp trên project thật:
+    // error.code === "user_already_exists", error.status === 422, khi
+    // "Confirm email" tắt — không suy từ JSDoc của thư viện). Trả CÙNG
+    // thông điệp trung lập với nhánh thành công bên dưới, byte-for-byte, để
+    // hai kết quả hết phân biệt được cả ở nội dung trang lẫn ở việc có
+    // Set-Cookie hay không (client không bao giờ ghi cookie, xem trên).
     if (error.code === "user_already_exists") {
       return { status: "success", message: SIGNUP_DONE_MESSAGE };
     }
     return { status: "error", message: GENERIC_SIGNUP_ERROR };
   }
 
-  // Nửa sau của kênh dò email: khi "Confirm email" tắt, signUp() thành công
-  // trả về NGAY một session — tự động đăng nhập. Nếu redirect /dashboard ở
-  // đây như trước, request tiếp theo tới /dashboard sẽ thành công cho địa
-  // chỉ mới và thất bại cho địa chỉ đã đăng ký (không có session) — vẫn là
-  // hai kết quả phân biệt được dù trang HTML trả về giống hệt nhau. Phải huỷ
-  // ngay session vừa được tự tạo, không redirect, và trả đúng thông điệp
-  // trung lập ở trên cho MỌI lần đăng ký hợp lệ.
+  // Thành công (email mới hoặc không): dù "Confirm email" tắt trên project
+  // khiến Supabase trả kèm session ngay (tự động đăng nhập), client ở trên
+  // không bao giờ ghi cookie nên phiên đó không tới được trình duyệt — chỉ
+  // tồn tại trong response của lần gọi signUp() này rồi biến mất, không ai
+  // cầm được token. Không cần signOut() bù lại (không có gì để xoá), và
+  // không redirect. Trả đúng thông điệp trung lập cho MỌI lần đăng ký hợp
+  // lệ, dù mới hay trùng email.
   //
   // Giá phải trả, chấp nhận được: người dùng THẬT SỰ mới giờ phải bấm đăng
-  // nhập thêm một bước sau khi đăng ký, thay vì được đưa thẳng vào
-  // /dashboard. Đổi lấy việc đóng hẳn kênh dò email.
-  if (data.session) {
-    await supabase.auth.signOut();
-  }
-
+  // nhập thêm một bước sau khi đăng ký (dùng createClient() bình thường,
+  // ghi cookie thật), thay vì được đưa thẳng vào /dashboard. Đổi lấy việc
+  // đóng hẳn kênh dò email — cả ở nội dung trang lẫn ở header phản hồi.
   return { status: "success", message: SIGNUP_DONE_MESSAGE };
 }
 
