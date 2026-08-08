@@ -242,6 +242,15 @@ test("đáp án không lộ ra qua thân phản hồi mạng khi bấm chọn m�
   await expect.poll(() => capturedBody !== null, { timeout: 10_000 }).toBe(true);
   const body = capturedBody!;
 
+  // BẮT BUỘC (review round 3, finding 6): xác nhận round trip THẬT SỰ THÀNH
+  // CÔNG trước khi tin bất kỳ điều gì về NỘI DUNG thân phản hồi — một phản
+  // hồi lỗi/redirect (bài đã hết hạn, mất phiên, …) cũng có thân KHÔNG rỗng
+  // và cũng không chứa "correct", nên hai khẳng định dưới đây tự chúng có
+  // thể pass trên một round trip THẤT BẠI. Chỉ khi answerAction thật sự ghi
+  // nhận câu trả lời, trang mới tự động sang câu 2 — đây là bằng chứng độc
+  // lập với nội dung `body`.
+  await expect(page.getByTestId("assessment-progress")).toHaveText("2 / 25");
+
   // Thân KHÔNG được rỗng — nếu không, `not.toContain("correct")` phía dưới
   // đúng một cách vô nghĩa (chuỗi rỗng không chứa gì cả). Đây là khẳng định
   // xác nhận bài test THẬT SỰ đọc được nội dung phản hồi, không phải phép so
@@ -431,33 +440,55 @@ test("request treo không giữ người học quá hạn — có cửa sổ d�
   // tới được dòng này.
   expect(submitAt - expiryDeadline).toBeLessThan(10_000);
 
+  // Gỡ route treo NGAY khi đã có bằng chứng đường dự phòng thật sự bắn ra
+  // request (review round 3, finding 3): kịch bản này chỉ định treo
+  // `answerAction` để buộc đường dự phòng phải hoạt động — nó KHÔNG có ý định
+  // kiểm tra `finalize` (chấm + backfill + đóng bài, chạy trên Supabase thật)
+  // hoàn tất trong đúng `RAW_FETCH_TIMEOUT_MS`. Nếu Supabase production chậm
+  // bất thường đúng lúc này, `fetch` của `submitViaRawFetch` có thể tự
+  // `AbortController` trước khi server ghi xong, trang tải lại trong lúc dòng
+  // `assessments` vẫn `in_progress`, và (residual finding 5 đã sửa) đường
+  // NHANH trên trang tải lại sẽ tự thử lại qua route thô — nhưng nếu vẫn còn
+  // route treo `pageUrl` từ trước, một `submitAction` sót lại ở đâu đó (hiện
+  // tại không còn, nhưng đây là lớp phòng thủ cho TƯƠNG LAI) sẽ lại kẹt. Gỡ
+  // route ở đây tách bạch rõ: từ điểm này trở đi, kịch bản chỉ còn đo "trang
+  // có tới được màn hình kết quả hay không", không còn phụ thuộc độ trễ thật
+  // của Supabase production kết hợp với việc route có bị treo hay không.
+  await page.unroute(pageUrl);
+
   // Bằng chứng MẠNH hơn một request đơn thuần đã rời trình duyệt: người học
   // THẬT SỰ thoát khỏi màn hình khoá cứng (mọi nút `disabled={pending}`
   // vĩnh viễn) và thấy được kết quả — route xử lý thô nộp xong rồi tự
-  // `window.location.reload()`.
-  await expect(page.getByTestId("assessment-verdict")).toBeVisible({ timeout: 15_000 });
+  // `window.location.reload()`. 20s (không phải 15s): chừa thêm biên cho khả
+  // năng `finalize` chưa hoàn tất trước khi trang tải lại lần đầu, khiến
+  // trang phải thử lại một round trip nữa (giờ không còn bị route nào chặn).
+  await expect(page.getByTestId("assessment-verdict")).toBeVisible({ timeout: 20_000 });
 });
 
-test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, không đứng hình vĩnh viễn", async ({
+test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, và TỰ THỬ LẠI sau khi tải lại", async ({
   page,
 }) => {
   test.setTimeout(90_000);
   // Kịch bản trên chỉ treo `answerAction`, để `/api/assessment/[id]/submit`
   // hoàn tất bình thường — chứng minh route thô hoạt động, nhưng KHÔNG chứng
-  // minh được `AbortSignal.timeout` trong `submitViaRawFetch` (review round
-  // 2, finding 1). Nếu CHÍNH route thô cũng treo (mất mạng thật, không phải
-  // kẹt hàng đợi Next — ví dụ Wi-Fi captive portal), `fetch()` không có hạn
-  // sẽ đứng chờ vĩnh viễn và `window.location.reload()` không bao giờ tới
+  // minh được `AbortController`/`setTimeout` trong `submitViaRawFetch` (review
+  // round 2, finding 1). Nếu CHÍNH route thô cũng treo (mất mạng thật, không
+  // phải kẹt hàng đợi Next — ví dụ Wi-Fi captive portal), `fetch()` không có
+  // hạn sẽ đứng chờ vĩnh viễn và `window.location.reload()` không bao giờ tới
   // lượt — đúng lỗi gốc, chỉ dời xuống một tầng. Kịch bản này treo CẢ HAI
   // route (cả `pageUrl` lẫn route thô) để buộc phải đi qua đúng nhánh
-  // `AbortSignal`/`catch` mới thoát được.
+  // `catch` mới thoát được.
   //
   // Vì cả hai route đều treo VĨNH VIỄN, `submitAssessment` không bao giờ
   // thực sự chạy — bài KHÔNG được nộp, nên không thể khẳng định
   // `assessment-verdict` xuất hiện (đó là một điều SAI trong hoàn cảnh này).
-  // Điều ĐÚNG và vẫn đo được: trình duyệt phải tự TẢI LẠI trang (một GET mới
-  // tới đúng URL) trong một cửa sổ có biên — bằng chứng client không đứng
-  // hình chờ mãi mãi, dù server có phản hồi hay không.
+  // Điều ĐÚNG và vẫn đo được: trình duyệt phải tự TẢI LẠI trang VÀ TỰ THỬ LẠI
+  // việc nộp bài SAU LẦN TẢI LẠI ĐÓ (review round 3, finding 5 — residual:
+  // trước bản sửa này, đường "nhanh" trên trang tải lại vẫn gọi `submitAction`
+  // — một Server Action, đi qua đúng hàng đợi hành động bị kẹt y hệt lần
+  // đầu — nên một mạng còn xấu SAU reload làm người học kẹt lại đúng chỗ cũ,
+  // một lần tải lại sau. Chỉ khẳng định "có MỘT lượt POST/reload" không bắt
+  // được lỗi đó, vì lỗi đó nằm ở CÁI GÌ XẢY RA SAU lượt đầu tiên).
   const admin = adminClient();
   const userId = await getUserId(admin);
   await unlockTestSlot(admin, userId);
@@ -478,8 +509,10 @@ test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, khôn
   const pageUrl = page.url();
   const fallbackSubmitUrl = new URL(`/api/assessment/${assessmentId}/submit`, pageUrl).toString();
 
+  const fallbackPostTimestamps: number[] = [];
   const freshLoadTimestamps: number[] = [];
   page.on("request", (req) => {
+    if (req.method() === "POST" && req.url() === fallbackSubmitUrl) fallbackPostTimestamps.push(Date.now());
     if (req.method() === "GET" && req.url() === pageUrl) freshLoadTimestamps.push(Date.now());
   });
 
@@ -493,10 +526,12 @@ test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, khôn
     await route.continue(); // GET (tải trang thường lẫn tải lại) phải qua bình thường
   });
   // Route thô của đường dự phòng CŨNG treo vĩnh viễn — không gọi
-  // route.continue()/route.fulfill() ở đây.
+  // route.continue()/route.fulfill() ở đây. Đăng ký NGUYÊN VĂN, không tự huỷ
+  // sau lượt đầu — kịch bản này CỐ Ý để mạng "xấu vĩnh viễn" qua NHIỀU lượt
+  // tải lại, đúng điều cần đo cho finding 5.
   await page.route(fallbackSubmitUrl, async () => {
     await new Promise(() => {
-      /* mô phỏng route thô cũng mất mạng giữa chừng */
+      /* mô phỏng route thô cũng mất mạng giữa chừng, MỌI lần gọi */
     });
   });
 
@@ -505,22 +540,41 @@ test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, khôn
   const remainingAtStart = parseMmSs(await countdown.innerText());
   expect(remainingAtStart).toBeGreaterThan(10);
 
+  // Mốc TRƯỚC khi bấm (review round 3, finding 7b): `freshLoadTimestamps`
+  // đếm MỌI GET tới đúng `pageUrl` kể từ lúc đăng ký listener — nếu một GET
+  // "lạc" nào đó (ví dụ do một thay đổi tương lai ở phần setup phía trên)
+  // từng lọt vào trước khi bấm, khẳng định độ trễ dựa trên
+  // `freshLoadTimestamps[0]` sẽ đúng một cách vô nghĩa. So với `clickAt`
+  // loại khả năng đó.
+  const clickAt = Date.now();
   await page.getByTestId("choice-option").first().click();
 
-  // Hạn của CHÍNH `expect.poll` (không phải khẳng định độ trễ ở dòng dưới)
-  // phải rộng hơn TỔNG mọi thứ có thể cộng dồn ở trường hợp XẤU NHẤT: tối đa
-  // `desiredRemainingMs` (30s, nếu setup nhanh bất thường và gần như cả 30s
-  // còn nguyên lúc bấm) + 5s hẹn giờ dự phòng + 8s (RAW_FETCH_TIMEOUT_MS
-  // trong assessment-runner.tsx — không import được từ file "use client" vào
-  // Node, lặp lại con số ở đây có chủ đích, xem comment tại nơi định nghĩa) +
-  // biên hao phí ≈ 46-47s. 60s chừa đủ biên. KHÔNG đạt được nếu ai đó gỡ
-  // `AbortSignal.timeout` khỏi `submitViaRawFetch`: khi đó `fetch()` treo vô
-  // thời hạn giống hệt `answerAction`, không bao giờ vào `catch`, không bao
-  // giờ reload, và `expect.poll` dưới đây hết hạn (60s) trước khi thấy GET
-  // nào.
-  await expect.poll(() => freshLoadTimestamps.length, { timeout: 60_000 }).toBeGreaterThanOrEqual(1);
+  // Chờ LƯỢT THỨ HAI, không phải lượt đầu (review round 3, finding 5):
+  // lượt đầu (từ hẹn giờ dự phòng của lần MOUNT ban đầu) chỉ chứng minh
+  // "route thô cũng có hạn" — không chứng minh gì về việc trang có tự cứu
+  // được mình SAU KHI đã tải lại một lần. Lượt thứ hai chỉ có thể tới từ
+  // đường "nhanh" của lần MOUNT LẠI (component fresh, `pending=false` ngay
+  // từ đầu, `expired` bật gần như tức thời vì `expires_at` vẫn trong quá
+  // khứ) — CHÍNH đường mà residual finding 5 sửa để dùng route thô thay vì
+  // `submitAction`. Nếu bản sửa đó bị gỡ, lượt thứ hai không bao giờ tới
+  // (đường nhanh quay lại gọi `submitAction`, kẹt trong hàng đợi hành động —
+  // route `pageUrl` ở trên vẫn treo mọi POST), và `expect.poll` dưới đây hết
+  // hạn.
+  //
+  // Ngân sách 65s: tối đa `desiredRemainingMs` (30s) + 5s hẹn giờ dự phòng +
+  // 8s (RAW_FETCH_TIMEOUT_MS, xem comment tại nơi định nghĩa) cho lượt đầu +
+  // vài giây cho việc tải lại/mount lại (bản build production) + gần như tức
+  // thời cho lượt hai (không cần đợi thêm hẹn giờ 5s — đường nhanh chạy ngay)
+  // + 8s (RAW_FETCH_TIMEOUT_MS) cho chính lượt hai + biên hao phí.
+  await expect.poll(() => fallbackPostTimestamps.length, { timeout: 65_000 }).toBeGreaterThanOrEqual(2);
+
+  expect(freshLoadTimestamps.length).toBeGreaterThanOrEqual(1);
   const reloadAt = freshLoadTimestamps[0]!;
+  expect(reloadAt).toBeGreaterThan(clickAt); // finding 7b — loại khả năng GET "lạc" từ trước khi bấm
   expect(reloadAt - expiryDeadline).toBeLessThan(20_000);
+
+  const secondPostAt = fallbackPostTimestamps[1]!;
+  expect(secondPostAt).toBeGreaterThan(reloadAt); // lượt hai phải THẬT SỰ đến SAU lần tải lại đầu tiên
 });
 
 test("bảng số câu dùng được trên điện thoại — không tràn ngang, đủ 4 phương án, ba trạng thái phân biệt bằng computed style", async ({
@@ -598,16 +652,28 @@ test("đồng hồ chuyển đỏ khi còn dưới 5 phút", async ({ page }) =>
   // nữa): cả hai đọc từ CÙNG một stylesheet đã tải trên trang, nên phép so
   // sánh đúng bất kể định dạng màu computed style trả về là gì.
   //
-  // Probe THỨ HAI (`text-slate-500`, đúng lớp `assessment-progress` đang dùng
-  // ngay cạnh) là KIỂM SOÁT ÂM, bắt buộc phải có: nếu `text-red-600` có ngày
-  // nào biến mất khỏi CSS đã biên dịch (ví dụ Tailwind purge nhầm vì class
-  // được ghép chuỗi động ở countdown.tsx, không phải literal tĩnh), cả
-  // countdown lẫn probe đỏ sẽ CÙNG rơi về màu kế thừa mặc định của trình
-  // duyệt — và phép so `toBe(referenceRed)` một mình vẫn "khớp" một cách giả
-  // tạo (đúng lỗi trước, không phân biệt được). Probe xám chắc chắn PHẢI khác
-  // countdown — nếu cả hai probe cùng màu nhau (cả hai đều rơi về mặc định),
-  // khẳng định âm này bắt được ngay điều khẳng định dương phía trên bỏ lọt.
-  const [countdownColor, referenceRed, referenceSlate] = await Promise.all([
+  // KIỂM SOÁT ÂM đúng chỗ (review round 3, finding 1 — bản `text-slate-500`
+  // ở vòng trước KHÔNG bắt được lỗi nó tự nhận là bắt): nếu `text-red-600`
+  // biến mất khỏi CSS đã biên dịch, span probe mang class đó sẽ KHÔNG rơi về
+  // "mặc định của trình duyệt" (thường là đen) — nó rơi về màu THỪA KẾ từ
+  // `<body>`, mà `src/app/layout.tsx` đặt là `text-slate-900`
+  // (rgb(15,23,42)). Probe `text-slate-500` (rgb(100,116,139)) khác
+  // `text-slate-900` — nên dù `text-red-600` có mất, `referenceSlate` (vẫn
+  // còn nguyên trong CSS) vẫn khác `countdownColor` (giờ rơi về
+  // text-slate-900) một cách TÌNH CỜ, không phải vì kiểm soát hoạt động
+  // đúng; phép `not.toBe` cũ pass giả cho đúng ca nó định bắt.
+  //
+  // Kiểm soát ĐÚNG: so `referenceRed` với màu THỪA KẾ THẬT (một span KHÔNG
+  // gán class nào, đọc `getComputedStyle` ngay dưới `<body>`) — bình thường
+  // đỏ (rgb(220,38,38)) phải khác thừa kế (rgb(15,23,42)); nếu `text-red-600`
+  // bị purge khỏi CSS, probe đỏ TỰ NÓ rơi về đúng màu thừa kế đó, và phép so
+  // sánh này rớt NGAY tại probe, trước khi kịp so với countdown — đúng lỗi
+  // review round 3 mô tả: hôm nay `text-red-600` là literal tĩnh ở
+  // `countdown.tsx:50` (Tailwind quét tĩnh thấy được, không có rủi ro purge
+  // thật), nhưng kiểm soát này phòng cho TƯƠNG LAI — ví dụ nếu ai đó đổi
+  // sang ghép chuỗi động kiểu `text-${color}-600`, Tailwind sẽ không quét
+  // thấy và âm thầm loại class đó khỏi bản build.
+  const [countdownColor, referenceRed, inherited] = await Promise.all([
     countdown.evaluate((el) => getComputedStyle(el).color),
     page.evaluate(() => {
       const probe = document.createElement("span");
@@ -618,8 +684,7 @@ test("đồng hồ chuyển đỏ khi còn dưới 5 phút", async ({ page }) =>
       return color;
     }),
     page.evaluate(() => {
-      const probe = document.createElement("span");
-      probe.className = "text-slate-500";
+      const probe = document.createElement("span"); // không gán class nào
       document.body.appendChild(probe);
       const color = getComputedStyle(probe).color;
       probe.remove();
@@ -627,8 +692,8 @@ test("đồng hồ chuyển đỏ khi còn dưới 5 phút", async ({ page }) =>
     }),
   ]);
 
+  expect(referenceRed).not.toBe(inherited); // xác nhận `text-red-600` THẬT SỰ đổi màu, không chỉ trùng hợp với mặc định
   expect(countdownColor).toBe(referenceRed);
-  expect(countdownColor).not.toBe(referenceSlate);
 });
 
 test("bài ôn tập không hiển thị đồng hồ đếm ngược", async ({ page }) => {

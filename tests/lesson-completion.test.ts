@@ -72,9 +72,19 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
   // một lỗi trông như flaky ở một test khác hoàn toàn. Đặt trong `afterEach`
   // thì dù thân test throw ở đâu, Vitest vẫn luôn chạy hook này.
   afterEach(async () => {
-    await admin.from("word_mastery").delete().eq("user_id", userId);
-    await admin.from("grammar_mastery").delete().eq("user_id", userId);
-    await admin.from("user_lesson_progress").delete().eq("user_id", userId).in("lesson_id", [lesson1, lesson2]);
+    // Mỗi lượt xoá đọc `error` riêng và ném ngay — không nuốt lỗi Supabase
+    // (review Task 8 round 3, finding 7: cùng constraint đã áp cho hai tệp
+    // e2e ở round 2, giờ áp nốt cho tệp này).
+    const delWord = await admin.from("word_mastery").delete().eq("user_id", userId);
+    if (delWord.error) throw delWord.error;
+    const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", userId);
+    if (delGrammar.error) throw delGrammar.error;
+    const delProgress = await admin
+      .from("user_lesson_progress")
+      .delete()
+      .eq("user_id", userId)
+      .in("lesson_id", [lesson1, lesson2]);
+    if (delProgress.error) throw delProgress.error;
   });
 
   // CHỈ xoá theo user_id của chính tài khoản này — xem Global Constraints.
