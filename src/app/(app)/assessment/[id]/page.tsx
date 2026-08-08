@@ -25,7 +25,9 @@ export default async function AssessmentPage({
 
   const { data: assessment, error: assessError } = await supabase
     .from("assessments")
-    .select("id, type, status, score, passed, expires_at")
+    // Không chọn `id`: đã có `assessmentId` từ params, chọn thêm cột không ai
+    // đọc chỉ là rác.
+    .select("type, status, score, passed, expires_at")
     .eq("id", assessmentId)
     // Tường minh dù RLS đã chặn — không dựa vào một lớp phòng thủ duy nhất.
     .eq("user_id", user.id)
@@ -35,7 +37,15 @@ export default async function AssessmentPage({
 
   const type = assessment.type as AssessmentType;
 
-  if (assessment.status === "submitted") {
+  // Rẽ nhánh theo "KHÔNG còn đang làm" chứ không phải "đã nộp": enum
+  // `assessment_status` có ba giá trị (`run.ts` đọc thấy `'expired'` ngay
+  // trong định nghĩa cột), và dù hiện tại không có đường ghi nào đặt trạng
+  // thái đó (chỉ `finalize` ghi, và nó luôn ghi 'submitted'), một dòng lỡ
+  // mang 'expired' vẫn phải ra màn hình kết quả — không phải một bài làm dở
+  // mà mọi lượt chọn đều bị `answerItem` từ chối lặng lẽ, không lời giải
+  // thích, không điểm. `?? 0` / `?? false` đọc fail-closed, cùng cách
+  // `nextStep` đọc hai cột này.
+  if (assessment.status !== "in_progress") {
     return (
       <main>
         <AssessmentDone
