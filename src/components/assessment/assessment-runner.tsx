@@ -78,26 +78,64 @@ export function AssessmentRunner({
     });
   }, [assessmentId, router]);
 
-  // Cổng DUY NHẤT dẫn tới `submitNow` cho đường tự nộp — cả đường nhanh lẫn
-  // đường dự phòng bên dưới đều gọi qua đây, nên `autoSubmittedRef` đảm bảo
-  // dù cái nào thắng, `submitAction` cũng chỉ thật sự chạy đúng một lần.
-  const triggerAutoSubmit = useCallback(() => {
-    if (autoSubmittedRef.current) return;
-    autoSubmittedRef.current = true;
-    if (autoSubmitTimerRef.current !== null) {
-      clearTimeout(autoSubmitTimerRef.current);
-      autoSubmitTimerRef.current = null;
+  // Đường DỰ PHÒNG dùng route xử lý thô (`/api/assessment/[id]/submit`),
+  // KHÔNG dùng `submitAction` — xem JSDoc đầy đủ tại route đó. Tóm tắt: mọi
+  // Server Action (kể cả `submitAction`, kể cả `router.refresh()`) đi qua
+  // CHUNG một hàng đợi hành động duy nhất của App Router
+  // (next/dist/client/app-call-server.js → app-router-instance.js). Nếu
+  // `answerAction` trước đó đang TREO, nó chiếm vĩnh viễn hàng đợi, và gọi lại
+  // `submitAction` qua đúng cơ chế đó (bản `submitNow` ở trên) sẽ chỉ bị xếp
+  // hàng — không bao giờ thật sự bắn request. `fetch()` thẳng tới route xử lý
+  // thô không đi qua hàng đợi đó; `window.location.reload()` (thay vì
+  // `router.refresh()`) cũng không đi qua bất kỳ hàng đợi JS nào của Next —
+  // cả hai đều miễn nhiễm với một Server Action khác đang treo phía trước, và
+  // reload còn dựng lại toàn bộ state React từ đầu nên người học không kẹt
+  // lại màn hình khoá cứng dù request nộp bài này có thành công hay không.
+  //
+  // Phát hiện được CHỈ khi chạy qua trình duyệt thật (Playwright Task 8): mã
+  // JS của bản `submitNow`/hẹn giờ dự phòng cũ chạy đúng logic (đã xác nhận
+  // bằng console.log — `submitAction` được GỌI), nhưng không có request thứ
+  // hai nào từng rời trình duyệt, vì hàng đợi hành động của Next đã chặn nó ở
+  // tầng dưới mã ứng dụng, chỗ không đọc thấy được nếu chỉ đọc mã nguồn.
+  const submitViaRawFetch = useCallback(async () => {
+    try {
+      await fetch(`/api/assessment/${assessmentId}/submit`, { method: "POST" });
+    } catch {
+      // Mất mạng thật (không phải kẹt hàng đợi) — vẫn tải lại trang bên dưới:
+      // page.tsx đọc lại đúng trạng thái hiện có trong database, dù request
+      // nộp bài này có tới nơi hay không.
     }
-    submitNow();
-  }, [submitNow]);
+    window.location.reload();
+  }, [assessmentId]);
 
-  // Đường NHANH: hết giờ mà không còn round trip nào dở dang → nộp ngay,
-  // không đợi cửa sổ dự phòng ở dưới. Chạy lại mỗi khi `pending` đổi, nên nếu
-  // lúc hết giờ đúng lúc một answerAction đang bay, effect này tự thử lại
-  // ngay khi round trip đó XONG (dù đúng ra hết hạn hay lỗi) — đây là trường
-  // hợp thường gặp và effect nắm bắt được ngay, không cần chờ hết cửa sổ.
+  // Cổng DUY NHẤT dẫn tới việc tự nộp — cả đường nhanh lẫn đường dự phòng đều
+  // gọi qua đây, nên `autoSubmittedRef` đảm bảo dù cái nào thắng, việc nộp
+  // cũng chỉ thật sự chạy đúng một lần. `strategy` chọn CÁCH nộp, không chọn
+  // CÓ nộp hay không — quyết định "có nộp" luôn là guard `autoSubmittedRef`.
+  const triggerAutoSubmit = useCallback(
+    (strategy: "fast" | "fallback") => {
+      if (autoSubmittedRef.current) return;
+      autoSubmittedRef.current = true;
+      if (autoSubmitTimerRef.current !== null) {
+        clearTimeout(autoSubmitTimerRef.current);
+        autoSubmitTimerRef.current = null;
+      }
+      if (strategy === "fast") submitNow();
+      else void submitViaRawFetch();
+    },
+    [submitNow, submitViaRawFetch],
+  );
+
+  // Đường NHANH: hết giờ mà không còn round trip nào dở dang → nộp ngay qua
+  // Server Action bình thường (mượt hơn — router.refresh(), không tải lại cả
+  // trang), không đợi cửa sổ dự phòng ở dưới. `!pending` nghĩa là hàng đợi
+  // hành động của Next đang RỖNG lúc gọi, nên submitAction dispatch được
+  // ngay, không có gì để kẹt. Chạy lại mỗi khi `pending` đổi, nên nếu lúc hết
+  // giờ đúng lúc một answerAction đang bay, effect này tự thử lại ngay khi
+  // round trip đó XONG (dù đúng ra hết hạn hay lỗi) — trường hợp thường gặp,
+  // effect nắm bắt được ngay, không cần chờ hết cửa sổ.
   useEffect(() => {
-    if (expired && !pending) triggerAutoSubmit();
+    if (expired && !pending) triggerAutoSubmit("fast");
   }, [expired, pending, triggerAutoSubmit]);
 
   // Đường DỰ PHÒNG, bắt buộc phải có: một request KHÔNG BAO GIỜ resolve hay
@@ -107,12 +145,13 @@ export function AssessmentRunner({
   // trước/sau, bảng số câu, cả nút "Nộp bài") đều `disabled={pending}`, không
   // có lối thoát nào khác trong lúc dashboard (Task 7) chưa nối tới
   // `closeExpired`. Hẹn giờ CỐ ĐỊNH ngay khi `expired` bật: hết
-  // `AUTO_SUBMIT_FALLBACK_MS` là tự nộp bất kể `pending` đang là gì —
-  // `triggerAutoSubmit` không đọc `pending` nữa nên nhánh này thật sự VÔ
-  // ĐIỀU KIỆN.
+  // `AUTO_SUBMIT_FALLBACK_MS` là tự nộp bất kể `pending` đang là gì, và BẰNG
+  // CHIẾN LƯỢC "fallback" (bỏ qua hàng đợi hành động của Next — xem
+  // `submitViaRawFetch`) vì chính lúc này là lúc nhiều khả năng có một action
+  // khác đang treo phía trước.
   useEffect(() => {
     if (!expired) return;
-    const t = setTimeout(triggerAutoSubmit, AUTO_SUBMIT_FALLBACK_MS);
+    const t = setTimeout(() => triggerAutoSubmit("fallback"), AUTO_SUBMIT_FALLBACK_MS);
     autoSubmitTimerRef.current = t;
     return () => {
       clearTimeout(t);

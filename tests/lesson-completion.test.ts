@@ -257,6 +257,48 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
     expect(row).toEqual([]);
   });
 
+  it("buổi 1,2 tự completed nhưng KHÔNG có bài ôn tập nào: buổi 3 vẫn BỊ TỪ CHỐI — hồi quy cho gate Task 7", async () => {
+    // Khác test "buổi đang khoá" ở dưới (không completed buổi nào, nên xanh
+    // dưới CẢ cổng cũ lẫn cổng mới — không phân biệt được gì): ca này gieo
+    // THẲNG buổi 1 VÀ buổi 2 'completed' qua user_lesson_progress, KHÔNG tạo
+    // bất kỳ dòng assessments nào. Cổng CŨ (chỉ hỏi lessonStatuses, nối
+    // buổi→buổi) sẽ thấy buổi 3 "available" vì buổi 2 đã xong, và cho qua —
+    // đúng lỗ hổng mà dashboard-link/URL/run-submit đã lần lượt bị vá ở Task
+    // 7 (ba "cửa" trên cùng một hố). Cổng MỚI (bước 0 của runSubmit, đọc
+    // thêm `assessments` rồi hỏi `nextStep`) phải từ chối: chuỗi 35 hoạt động
+    // còn đứng ở ôn tập(1,2), chưa từng có lần thử nào.
+    await admin.from("user_lesson_progress").upsert(
+      [
+        {
+          user_id: userId, lesson_id: lesson1, position: 135,
+          final_correct: 12, status: "completed", score: 80,
+          completed_at: new Date().toISOString(),
+        },
+        {
+          user_id: userId, lesson_id: lesson2, position: 135,
+          final_correct: 12, status: "completed", score: 80,
+          completed_at: new Date().toISOString(),
+        },
+      ],
+      { onConflict: "user_id,lesson_id" },
+    );
+
+    const { data: l3 } = await admin.from("lessons").select("id").eq("ordinal", 3).single();
+    const lesson3 = l3!.id as number;
+
+    await expect(runSubmit(user, userId, lesson3, 0, "bat-ky-cau-tra-loi-nao")).rejects.toThrow();
+
+    const { data: row } = await admin.from("user_lesson_progress")
+      .select("lesson_id").eq("user_id", userId).eq("lesson_id", lesson3);
+    expect(row).toEqual([]);
+
+    // Dọn riêng ngay tại đây: afterEach của tệp này (đầu describe) CHỈ xoá
+    // dòng của buổi 1 — buổi 2 phải tự dọn ở đây để không rò trạng thái
+    // 'completed' sang bất kỳ test nào được thêm sau này trong cùng tệp.
+    await admin.from("user_lesson_progress").delete()
+      .eq("user_id", userId).in("lesson_id", [lesson1, lesson2]);
+  });
+
   it("hai yêu cầu đua nhau từ CÙNG vị trí: chỉ một được ghi, vị trí không bị đẩy lùi hay vượt quá 1 bước", async () => {
     // Mô phỏng đúng kịch bản Finding 2: hai request cùng tin mình đang ở vị
     // trí `position` (double-click, hoặc request gốc + một lần thử lại).
