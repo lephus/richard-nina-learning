@@ -81,6 +81,9 @@ export async function startAssessment(
   now: Date,
 ): Promise<number> {
   // 1. Một người chỉ có MỘT bài `in_progress` tại một thời điểm — spec mục 7.
+  //    Lần đọc này KHÔNG phải hàng rào thật, chỉ là lớp cho thông báo lỗi tử tế
+  //    trong trường hợp thường gặp; hàng rào thật là chỉ số duy nhất một phần
+  //    `assessments_one_in_progress` ở bước 2.
   const open = await openAssessmentId(supabase, userId);
   if (open !== null) throw new AssessmentInProgressError(open);
 
@@ -100,7 +103,22 @@ export async function startAssessment(
     })
     .select("id")
     .single();
-  if (error) throw error;
+  if (error) {
+    // 23505 = unique_violation. Bước 1 đọc-rồi-chèn KHÔNG nguyên tử: hai yêu
+    // cầu "bắt đầu" song song (bấm đúp, hai tab, một lần thử lại sau timeout)
+    // đều thấy "chưa có bài nào dở" rồi đều chèn. Chỉ số duy nhất một phần
+    // trong 0007 chặn dòng thứ hai ở tầng database; ở đây chỉ đổi lỗi thô đó
+    // về ĐÚNG loại lỗi mà bước 1 đã ném, để tầng gọi chỉ phải xử lý một tình
+    // huống chứ không phải hai lối vào của cùng một tình huống.
+    //
+    // Không tìm lại được dòng đang dở thì để lỗi gốc nổi lên — nói thật còn hơn
+    // dựng ra một AssessmentInProgressError trỏ vào một id không có thật.
+    if (error.code === "23505") {
+      const raced = await openAssessmentId(supabase, userId);
+      if (raced !== null) throw new AssessmentInProgressError(raced);
+    }
+    throw error;
+  }
   const assessmentId = data.id as number;
 
   try {

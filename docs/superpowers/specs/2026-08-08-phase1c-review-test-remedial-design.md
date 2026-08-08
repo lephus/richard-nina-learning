@@ -140,7 +140,13 @@ Trạng thái dùng lại bốn giá trị hiện có (`locked` / `available` / 
 
 `startAssessment(type, scope)` tạo một dòng `assessments` với `expires_at`, sinh đủ N câu, ghi xuống `assessment_items`: `position`, `item_type` (`vocab` | `grammar`), `ref_id` (id từ hoặc id câu ngữ pháp), `payload` (đề bài kèm 4 phương án đã xáo).
 
-**`payload` không chứa đáp án.** Đáp án vẫn lấy qua hai RPC `security definer` đã dựng ở 1b — `answer_for_word` và `answer_for_question`.
+**`payload` không chứa đáp án.** Nhưng "lấy đáp án ở đâu" phụ thuộc vào LOẠI CÂU, không phải vào lát:
+
+- **Câu từ vựng** của 1c là câu **chọn nghĩa** (mục 4), nên đáp án đúng chính là `vocab_words.meaning_vi` — đọc thẳng, không qua RPC. Cột đó vốn đã được cấp cho `authenticated` (`0004_rls.sql:41-44`) và bản thân đáp án đúng đã nằm sẵn trong 4 phương án gửi xuống trình duyệt, nên không có gì để rò rỉ thêm. `secretFor` ở 1b cũng làm đúng như vậy với item `kind === "meaning"`.
+- **Câu ngữ pháp** vẫn lấy qua RPC `answer_for_question` — `grammar_questions.answer` đã bị thu hồi khỏi `authenticated`.
+- **`answer_for_word` KHÔNG dùng ở lát này.** Nó trả `blank_answer`, phục vụ câu ĐIỀN TỪ của luồng buổi học ở 1b.
+
+Cái bẫy, ghi ra để người sau khỏi "dọn dẹp" mất sự phân biệt này: cả hai RPC đều tên là "đáp án của…", nên đọc lướt rất dễ kết luận mọi đáp án của 1c đều đi qua chúng. Nhưng `answer_for_word` trả về từ bị khoét khỏi câu ví dụ, mà chuỗi đó **không nằm trong 4 phương án** của câu chọn nghĩa — chấm bằng nó thì 20/25 câu ôn tập và 48/60 câu kiểm tra luôn sai, điểm trần còn 20%, và **không ai qua nổi ngưỡng 80%/70% của bất kỳ bài nào**. Lỗi đó im lặng với mọi test chỉ trả lời sai, nên phải có ít nhất một test trả lời ĐÚNG mới bắt được (`tests/assessment-run.test.ts`).
 
 ### 6.2 Đồng hồ ở server, và nó tự đóng bài
 

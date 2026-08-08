@@ -399,6 +399,20 @@ describe.skipIf(!hasEnv)("vong lam bai danh gia", () => {
     const second = await startAssessment(user, userId, "review", [7, 8], null, now);
     const secondRefs = (await itemsOf(second)).map((r) => r.ref_id);
 
-    expect(secondRefs).not.toEqual(firstRefs);
+    // So theo TẬP, không theo thứ tự. `expect(secondRefs).not.toEqual(firstRefs)`
+    // vẫn XANH khi hai đề là đúng 25 câu ấy chỉ đảo chỗ nhau — mà đảo thứ tự
+    // không phải "đề khác" theo bất kỳ nghĩa nào người học cảm nhận được. Tính
+    // chất cần ghim là "làm lại thì RÚT ĐƯỢC CÂU KHÁC".
+    const sorted = (ids: number[]): number[] =>
+      [...new Set(ids)].sort((a, b) => a - b);
+    expect(sorted(secondRefs)).not.toEqual(sorted(firstRefs));
+
+    // Và khác một cách thực chất, không phải lệch đúng một câu. Đề ôn tập rút
+    // 20 từ trong 60 và 5 câu ngữ pháp trong ~40, nên kỳ vọng có ~13 câu mới;
+    // ngưỡng 5 đặt thấp hẳn so với kỳ vọng để test không bao giờ chớp nháy,
+    // nhưng vẫn bắt ngay được trường hợp hạt giống không đổi theo lần thử.
+    const firstSet = new Set(firstRefs);
+    const newOnes = secondRefs.filter((id) => !firstSet.has(id));
+    expect(newOnes.length).toBeGreaterThanOrEqual(5);
   });
 });
