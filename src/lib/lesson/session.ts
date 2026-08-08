@@ -18,12 +18,28 @@ export async function loadContext(
   lessonId: number,
   userId: string,
 ): Promise<BuildContext> {
-  const { data: lw, error: lwErr } = await supabase
-    .from("lesson_words")
-    .select("position, vocab_words(id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en)")
-    .eq("lesson_id", lessonId)
-    .order("position");
-  if (lwErr) throw lwErr;
+  // `grammarLessonIdOf` phải xong trước vì truy vấn câu ngữ pháp lọc theo nó.
+  // Trước đây nó được `await` NGAY TRONG đối số của `.eq()`, khiến ba truy vấn
+  // chạy nối đuôi nhau; nay chỉ còn một lượt chờ rồi hai truy vấn còn lại đi
+  // song song.
+  const grammarLessonId = await grammarLessonIdOf(supabase, lessonId);
+
+  const [lwRes, gqRes] = await Promise.all([
+    supabase
+      .from("lesson_words")
+      .select(
+        "position, vocab_words(id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en, example_vi)",
+      )
+      .eq("lesson_id", lessonId)
+      .order("position"),
+    supabase
+      .from("grammar_questions")
+      .select("id, stem, options, lesson_id")
+      .eq("lesson_id", grammarLessonId)
+      .order("id"),
+  ]);
+  if (lwRes.error) throw lwRes.error;
+  if (gqRes.error) throw gqRes.error;
 
   // Không có generic Database trên client nên postgrest-js suy luận MỌI quan
   // hệ nhúng có sub-field là mảng, bất kể FK thật sự là 1-1 hay 1-n (xem
@@ -32,29 +48,19 @@ export async function loadContext(
   // trước vì TS không cho ép thẳng hai kiểu không giao nhau đủ. Runtime thực
   // sự trả về một đối tượng vì lesson_words.word_id là khoá ngoại tới
   // vocab_words(id) (supabase/migrations/0002_curriculum.sql:9-14).
-  const lessonWordRows = (lw ?? []) as unknown as LessonWordRow[];
+  const lessonWordRows = (lwRes.data ?? []) as unknown as LessonWordRow[];
   const lessonWords = lessonWordRows.map((r) => toVocabLite(r.vocab_words));
 
-  const { data: bankRows, error: bankErr } = await supabase
-    .from("vocab_words")
-    .select("id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en")
-    .order("ordinal");
-  if (bankErr) throw bankErr;
-  const bank = (bankRows ?? []).map(toVocabLite);
-
-  const { data: gq, error: gqErr } = await supabase
-    .from("grammar_questions")
-    .select("id, stem, options, lesson_id")
-    .eq("lesson_id", await grammarLessonIdOf(supabase, lessonId))
-    .order("id");
-  if (gqErr) throw gqErr;
-  const grammar: GrammarLite[] = (gq ?? []).map((q) => ({
+  const grammar: GrammarLite[] = (gqRes.data ?? []).map((q) => ({
     id: q.id as number,
     stem: q.stem as string,
     options: q.options as string[],
   }));
 
-  return { lessonWords, bank, grammar, seed: hashString(`${userId}:${lessonId}`) };
+  // KHÔNG tải kho 605 từ ở đây. Bậc 3 của pickDistractors chỉ chạy khi bậc
+  // 1+2 thiếu ứng viên, mà một buổi luôn có đúng 30 từ → 29 ứng viên cho 3 chỗ
+  // nhiễu. `ctx.bank` để trống nghĩa là "không có bậc 3", đúng với thực tế.
+  return { lessonWords, grammar, grammarLessonId, seed: hashString(`${userId}:${lessonId}`) };
 }
 
 interface LessonWordRow {
@@ -68,6 +74,7 @@ interface LessonWordRow {
     definition_en: string;
     synonyms: string[];
     example_en: string;
+    example_vi: string;
   };
 }
 
@@ -89,6 +96,7 @@ function toVocabLite(row: unknown): VocabLite {
     definitionEn: r.definition_en as string,
     synonyms: r.synonyms as string[],
     exampleEn: r.example_en as string,
+    exampleVi: r.example_vi as string,
     blankAnswer: "", // điền riêng ở secretFor — không mang xuống client
   };
 }

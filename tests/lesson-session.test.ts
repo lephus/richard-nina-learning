@@ -59,11 +59,28 @@ describe.skipIf(!hasEnv)("session.ts qua client authenticated that", () => {
     const ctx = await loadContext(user, lessonId, userId);
     expect(ctx.lessonWords).toHaveLength(30);
     expect(ctx.grammar.length).toBeGreaterThan(0);
-    expect(ctx.bank.length).toBeGreaterThanOrEqual(ctx.lessonWords.length);
+    // Kho 605 từ KHÔNG còn được tải: bậc 3 của pickDistractors lười, và buổi
+    // 30 từ thì bậc 1+2 luôn đủ ứng viên.
+    expect(ctx.bank).toBeUndefined();
     for (const w of ctx.lessonWords) {
       expect(w.blankAnswer).toBe("");
       expect(w.meaningVi.length).toBeGreaterThan(0);
+      // example_vi được cấp cho `authenticated` (0004_rls.sql:41-44) và nay
+      // hiện dưới câu ví dụ trên thẻ gặp từ.
+      expect(w.exampleVi.length).toBeGreaterThan(0);
     }
+  });
+
+  it("loadContext mang theo grammar_lesson_id — khoá của grammar_mastery", async () => {
+    // Trước đây loadContext đọc cột này rồi VỨT ĐI, nên applyMastery không có
+    // khoá để ghi và 100 câu ngữ pháp mỗi người học không để lại dấu vết nào.
+    const ctx = await loadContext(user, lessonId, userId);
+    expect(ctx.grammarLessonId).toBeGreaterThan(0);
+
+    const { data, error } = await admin
+      .from("lessons").select("grammar_lesson_id").eq("id", lessonId).single();
+    if (error) throw error;
+    expect(ctx.grammarLessonId).toBe(data!.grammar_lesson_id);
   });
 
   it("secretFor(fill) qua client thường khớp RPC answer_for_word", async () => {

@@ -46,7 +46,12 @@ export function Flashcard({
       <p className="mt-3 text-lg">{word.meaningVi}</p>
       <p className="mt-1 text-slate-600">{word.definitionEn}</p>
       <p className="mt-3 text-sm text-slate-500">Đồng nghĩa: {word.synonyms.join(", ")}</p>
-      <p className="mt-3 italic text-slate-700">{word.exampleEn}</p>
+      {/* Câu ví dụ ĐẦY ĐỦ: buildItem đã điền lại từ vào chỗ "___" mà Phase 0
+          khoét sẵn cho câu điền từ. Kèm bản dịch — thẻ gặp từ là nơi dạy. */}
+      <p data-testid="flashcard-example" className="mt-3 italic text-slate-700">
+        {word.exampleEn}
+      </p>
+      <p className="mt-1 text-sm text-slate-500">{word.exampleVi}</p>
       <button
         data-testid="next-button"
         onClick={onNext}

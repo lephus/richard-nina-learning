@@ -14,7 +14,17 @@ const w = (id: number, pos: string): VocabLite => ({
   definitionEn: `definition ${id}`,
   synonyms: [`syn${id}`],
   exampleEn: `A ___ sentence for item ${id}.`,
+  exampleVi: `Một câu ví dụ cho mục ${id}.`,
   blankAnswer: `answer${id}`,
+});
+
+/** Bậc 3 nay LƯỜI — truyền vào dạng hàm, và chỉ được gọi khi bậc 1+2 thiếu. */
+const bankOf = (words: readonly VocabLite[]) => () => words;
+/** Cấu hình mặc định của câu nghĩa: phân biệt theo CHỮ HIỂN THỊ, không theo id. */
+const byMeaning = (target: VocabLite, bank?: readonly VocabLite[]) => ({
+  textOf: (c: VocabLite) => c.meaningVi,
+  taken: [target.meaningVi],
+  ...(bank ? { bank: bankOf(bank) } : {}),
 });
 
 // 30 từ: 20 danh từ (id 1..20), 9 động từ (21..29), 1 giới từ (30)
@@ -28,14 +38,14 @@ const bank: VocabLite[] = [...lessonWords, ...Array.from({ length: 50 }, (_, i) 
 describe("pickDistractors", () => {
   it("lấy đủ 3 phương án và không bao giờ lấy chính từ đích", () => {
     const target = lessonWords[0]!;
-    const picked = pickDistractors(target, lessonWords, bank, 42);
+    const picked = pickDistractors(target, lessonWords, 42, byMeaning(target, bank));
     expect(picked).toHaveLength(3);
     expect(picked.some((p) => p.id === target.id)).toBe(false);
   });
 
   it("bậc 1: ưu tiên từ cùng buổi cùng loại từ", () => {
     const target = lessonWords[0]!; // danh từ, còn 19 danh từ khác cùng buổi
-    const picked = pickDistractors(target, lessonWords, bank, 42);
+    const picked = pickDistractors(target, lessonWords, 42, byMeaning(target, bank));
     expect(picked.every((p) => p.pos === "n")).toBe(true);
   });
 
@@ -43,28 +53,65 @@ describe("pickDistractors", () => {
     // Giới từ chỉ có 1 từ trong buổi — toàn kho thật cũng chỉ có 2 giới từ.
     const target = lessonWords[29]!;
     expect(target.pos).toBe("prep");
-    const picked = pickDistractors(target, lessonWords, bank, 42);
+    const picked = pickDistractors(target, lessonWords, 42, byMeaning(target, bank));
     expect(picked).toHaveLength(3);
     expect(picked.every((p) => lessonWords.some((l) => l.id === p.id))).toBe(true);
   });
 
   it("bậc 3: buổi quá nhỏ thì mở rộng ra toàn kho", () => {
     const tiny = [lessonWords[0]!, lessonWords[1]!];
-    const got = pickDistractors(tiny[0]!, tiny, bank, 42);
+    const got = pickDistractors(tiny[0]!, tiny, 42, byMeaning(tiny[0]!, bank));
     expect(got).toHaveLength(3);
     expect(got.some((p) => !tiny.some((t) => t.id === p.id))).toBe(true);
   });
 
   it("tất định: cùng seed luôn cho cùng kết quả", () => {
-    const a = pickDistractors(lessonWords[0]!, lessonWords, bank, 7);
-    const b = pickDistractors(lessonWords[0]!, lessonWords, bank, 7);
+    const a = pickDistractors(lessonWords[0]!, lessonWords, 7, byMeaning(lessonWords[0]!, bank));
+    const b = pickDistractors(lessonWords[0]!, lessonWords, 7, byMeaning(lessonWords[0]!, bank));
     expect(a.map((x) => x.id)).toEqual(b.map((x) => x.id));
   });
 
   it("seed khác thì kết quả khác", () => {
-    const a = pickDistractors(lessonWords[0]!, lessonWords, bank, 1);
-    const b = pickDistractors(lessonWords[0]!, lessonWords, bank, 999);
+    const a = pickDistractors(lessonWords[0]!, lessonWords, 1, byMeaning(lessonWords[0]!, bank));
+    const b = pickDistractors(lessonWords[0]!, lessonWords, 999, byMeaning(lessonWords[0]!, bank));
     expect(a.map((x) => x.id)).not.toEqual(b.map((x) => x.id));
+  });
+
+  it("không lấy ứng viên trùng CHỮ HIỂN THỊ với đáp án đúng, dù khác id", () => {
+    // 17 chuỗi meaningVi trong kho thật bị hai dòng khác nhau dùng chung. Lọc
+    // theo id thì hai dòng đó vẫn hiện ra hai nút y hệt nhau, và một trong hai
+    // nút "đúng" bị chấm sai.
+    const target = w(1, "n");
+    const clone = { ...w(2, "n"), meaningVi: target.meaningVi };
+    const pool = [target, clone, w(3, "n"), w(4, "n"), w(5, "n")];
+    const picked = pickDistractors(target, pool, 42, byMeaning(target));
+    expect(picked).toHaveLength(3);
+    expect(picked.some((p) => p.meaningVi === target.meaningVi)).toBe(false);
+  });
+
+  it("không lấy hai ứng viên trùng chữ hiển thị với nhau", () => {
+    const target = w(1, "n");
+    const twins = [w(2, "n"), w(3, "n")].map((x) => ({ ...x, meaningVi: "trùng nhau" }));
+    const pool = [target, ...twins, w(4, "n"), w(5, "n")];
+    const picked = pickDistractors(target, pool, 42, byMeaning(target));
+    expect(picked).toHaveLength(3);
+    expect(new Set(picked.map((p) => p.meaningVi)).size).toBe(3);
+  });
+
+  it("bậc 3 là LƯỜI: bậc 1+2 đủ thì không đụng tới kho", () => {
+    // Đây là lý do bỏ được truy vấn tải 605 từ ở loadContext: mỗi buổi 30 từ
+    // nên bậc 1+2 luôn có 29 ứng viên cho 3 chỗ.
+    let calls = 0;
+    const picked = pickDistractors(lessonWords[0]!, lessonWords, 42, {
+      textOf: (c) => c.meaningVi,
+      taken: [lessonWords[0]!.meaningVi],
+      bank: () => {
+        calls++;
+        return bank;
+      },
+    });
+    expect(picked).toHaveLength(3);
+    expect(calls).toBe(0);
   });
 });
 
@@ -74,7 +121,7 @@ const grammar: GrammarLite[] = Array.from({ length: 8 }, (_, i) => ({
   options: ["A1", "B1", "C1", "D1"],
 }));
 
-const ctx = { lessonWords, bank, grammar, seed: 12345 };
+const ctx: BuildContext = { lessonWords, grammar, seed: 12345, grammarLessonId: 7, bank: bankOf(bank) };
 
 describe("buildItem", () => {
   it("thẻ gặp từ mang đủ dữ liệu hiển thị và không có phương án", () => {
@@ -130,9 +177,12 @@ describe("buildItem", () => {
       definitionEn: "a written record of your education and the jobs you have done",
       synonyms: ["summary"],
       exampleEn: "Fax your ___ and cover letter to the above number.",
+      exampleVi: "Hãy gửi sơ yếu lý lịch của bạn và thư xin việc đến số điện thoại trên.",
       blankAnswer: "", // đúng như session.ts gửi cho item công khai
     };
-    const localCtx: BuildContext = { lessonWords: [word], bank: [word], grammar: [], seed: 1 };
+    const localCtx: BuildContext = {
+      lessonWords: [word], grammar: [], seed: 1, grammarLessonId: 1,
+    };
     const item = buildItem({ kind: "fill", index: 0 }, localCtx);
     if (item.kind !== "fill") throw new Error("sai nhánh");
     expect(item.sentence).toBe(word.exampleEn);
@@ -177,5 +227,67 @@ describe("buildItem", () => {
     expect(meaningPos).not.toBe(-1);
     expect(synonymPos).not.toBe(-1);
     expect(meaningPos).not.toBe(synonymPos);
+  });
+
+  it("thẻ gặp từ điền lại từ vào chỗ trống — câu ví dụ hiện ra ĐẦY ĐỦ", () => {
+    // Phase 0 khoét "___" vào cả 605 câu ví dụ để phục vụ câu điền từ. Thẻ
+    // gặp từ là nơi DẠY, không phải nơi hỏi, nên nó phải điền ngược lại.
+    const item = buildItem({ kind: "flashcard", index: 3 }, ctx);
+    if (item.kind !== "flashcard") throw new Error("sai nhánh");
+    expect(item.word.exampleEn).not.toContain("___");
+    expect(item.word.exampleEn).toBe(`A ${lessonWords[3]!.word} sentence for item 4.`);
+    expect(item.word.exampleVi).toBe(lessonWords[3]!.exampleVi);
+  });
+
+  it("thẻ gặp từ không đụng tới exampleEn dùng cho câu điền từ", () => {
+    // Chỉ bản sao trong item bị điền, ctx.lessonWords phải còn nguyên — nếu
+    // không, câu điền từ ở cùng buổi sẽ mất chỗ trống.
+    buildItem({ kind: "flashcard", index: 3 }, ctx);
+    const fill = buildItem({ kind: "fill", index: 3 }, ctx);
+    if (fill.kind !== "fill") throw new Error("sai nhánh");
+    expect(fill.sentence).toContain("___");
+  });
+
+  it("câu đồng nghĩa: KHÔNG phương án nhiễu nào cũng là đồng nghĩa của từ đích", () => {
+    // Lỗi thật đã đo được trên kho 605 từ: "revolutionary" (đồng nghĩa
+    // groundbreaking, innovative) từng được chào cả hai từ đó làm phương án
+    // nhiễu, nên chọn đúng vẫn bị báo "Chưa đúng" + một wrong_count oan.
+    const target: VocabLite = { ...w(1, "n"), synonyms: ["alpha", "beta"] };
+    const pool = [
+      target,
+      { ...w(2, "n"), word: "beta" },
+      { ...w(3, "n"), word: "gamma" },
+      { ...w(4, "n"), word: "delta" },
+      { ...w(5, "n"), word: "epsilon" },
+    ];
+    const localCtx: BuildContext = {
+      lessonWords: pool, grammar: [], seed: 99, grammarLessonId: 1,
+    };
+    const item = buildItem({ kind: "synonym", index: 0 }, localCtx);
+    if (item.kind !== "synonym") throw new Error("sai nhánh");
+    expect(item.options).toContain("alpha");
+    expect(item.options).not.toContain("beta");
+  });
+
+  it("câu đồng nghĩa: loại cả ứng viên NHẬN từ đích làm đồng nghĩa của mình", () => {
+    // Chiều ngược lại: "eligible" liệt kê "qualified" nên nó cũng là một đáp
+    // án đúng cho câu hỏi về "qualified", dù "qualified" không liệt kê nó.
+    // 17 cặp như vậy nằm chung buổi trong kho thật.
+    const target: VocabLite = { ...w(1, "n"), word: "qualified", synonyms: ["skilled"] };
+    const mirror: VocabLite = { ...w(2, "n"), word: "eligible", synonyms: ["qualified", "suitable"] };
+    const pool = [
+      target,
+      mirror,
+      { ...w(3, "n"), word: "gamma" },
+      { ...w(4, "n"), word: "delta" },
+      { ...w(5, "n"), word: "epsilon" },
+    ];
+    const localCtx: BuildContext = {
+      lessonWords: pool, grammar: [], seed: 3, grammarLessonId: 1,
+    };
+    const item = buildItem({ kind: "synonym", index: 0 }, localCtx);
+    if (item.kind !== "synonym") throw new Error("sai nhánh");
+    expect(item.options).toHaveLength(4);
+    expect(item.options).not.toContain("eligible");
   });
 });

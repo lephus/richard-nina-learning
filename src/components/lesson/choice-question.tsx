@@ -22,9 +22,14 @@ export function ChoiceQuestion({
     <div className="flex flex-col gap-3">
       <p className="text-lg">{prompt}</p>
       <div className="flex flex-col gap-2">
-        {item.options.map((o) => (
+        {/* Khoá theo VỊ TRÍ, không theo nội dung: pickDistractors nay bảo đảm
+            4 phương án khác nhau từng chữ, nhưng React không được phép hỏng
+            (hai nút trùng key) nếu bảo đảm đó vỡ. Danh sách này tĩnh trong
+            suốt vòng đời component — LessonRunner gắn key={position} nên mỗi
+            câu hỏi là một component mới — nên khoá theo chỉ số là an toàn. */}
+        {item.options.map((o, i) => (
           <button
-            key={o}
+            key={`${i}-${o}`}
             data-testid="choice-option"
             disabled={disabled}
             onClick={() => onPick(o)}
