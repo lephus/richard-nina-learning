@@ -41,15 +41,22 @@ test("đăng nhập sai thì báo lỗi và vẫn ở /login", async ({ page }) 
   await expect(page).toHaveURL(/\/login$/);
 });
 
-test("đăng nhập đúng thì thấy 20 buổi, buổi 1 mở, buổi 2 khoá, và buổi 1 có tên bài ngữ pháp", async ({
+test("đăng nhập đúng thì thấy 35 hoạt động, trong đó 20 dòng buổi học với buổi 1 mở, buổi 2 khoá, và buổi 1 có tên bài ngữ pháp", async ({
   page,
 }) => {
   await login(page);
 
+  // Lát 1c biến 20 buổi thành 35 hoạt động (buổi + ôn tập + kiểm tra) — mọi
+  // dòng, bất kể loại, đều mang data-testid="lesson-row".
   const rows = page.getByTestId("lesson-row");
-  await expect(rows).toHaveCount(20);
-  await expect(rows.nth(0)).toHaveAttribute("data-status", "available");
-  await expect(rows.nth(1)).toHaveAttribute("data-status", "locked");
+  await expect(rows).toHaveCount(35);
+
+  // Chỉ đếm riêng dòng buổi học qua data-kind, không đếm mọi lesson-row nữa —
+  // 20 buổi vẫn phải còn nguyên trong chuỗi 35 hoạt động.
+  const lessonRows = page.locator('[data-kind="lesson"]');
+  await expect(lessonRows).toHaveCount(20);
+  await expect(lessonRows.nth(0)).toHaveAttribute("data-status", "available");
+  await expect(lessonRows.nth(1)).toHaveAttribute("data-status", "locked");
 
   // Canh cửa cho ép kiểu `as unknown as LessonWithGrammar[]` trong
   // dashboard/page.tsx: nếu postgrest-js một ngày nào đó trả quan hệ nhúng
@@ -57,8 +64,8 @@ test("đăng nhập đúng thì thấy 20 buổi, buổi 1 mở, buổi 2 khoá,
   // này render RỖNG. Assertion phải đọc đúng span chứa tên bài, không phải
   // toàn bộ text của dòng — dòng còn chứa nhãn trạng thái ("Sẵn sàng") nên
   // luôn "không rỗng" dù thiếu tên bài.
-  await expect(rows.nth(0)).toContainText("Buổi 1");
-  const title = await rows.nth(0).locator(".text-slate-600").innerText();
+  await expect(lessonRows.nth(0)).toContainText("Buổi 1");
+  const title = await lessonRows.nth(0).locator(".text-slate-600").innerText();
   expect(title.trim().length).toBeGreaterThan(0);
 });
 
