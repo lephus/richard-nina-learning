@@ -25,6 +25,8 @@ import { itemAt, TOTAL_ITEMS } from "@/lib/lesson/item-plan";
 import { buildItem } from "@/lib/lesson/build-item";
 import type { BuildContext, BuiltItem, GrammarLite, VocabLite } from "@/lib/lesson/build-item";
 import type { GrammarQuestion, LessonPlan, VocabWord } from "@content/types";
+import { buildAssessmentItems } from "@/lib/assessment/build";
+import { slotAt, TOTAL_SLOTS } from "@/lib/assessment/slots";
 
 const read = <T>(p: string): T => JSON.parse(readFileSync(p, "utf8")) as T;
 
@@ -63,14 +65,18 @@ const grammarFor = (slug: string): GrammarLite[] =>
     .filter(({ q }) => q.lessonSlug === slug)
     .map(({ q, id }) => ({ id, stem: q.stem, options: q.options }));
 
-function contextFor(p: LessonPlan, userId: string): BuildContext {
-  const lessonWords = p.wordOrdinals.map((ord) => {
+/** Danh sách từ (VocabLite) của một buổi, theo đúng thứ tự `wordOrdinals`. */
+function wordsForLesson(p: LessonPlan): VocabLite[] {
+  return p.wordOrdinals.map((ord) => {
     const w = byOrdinal.get(ord);
     if (!w) throw new Error(`lesson-plan.json trỏ tới ordinal ${ord} không có trong vocab.json`);
     return toLite(w);
   });
+}
+
+function contextFor(p: LessonPlan, userId: string): BuildContext {
   return {
-    lessonWords,
+    lessonWords: wordsForLesson(p),
     grammar: grammarFor(p.grammarSlug),
     // `lessonId` thật không biết được ngoài database; dùng ordinal — hạt giống
     // chỉ cần TẤT ĐỊNH và khác nhau giữa các buổi, không cần trùng giá trị
@@ -78,6 +84,24 @@ function contextFor(p: LessonPlan, userId: string): BuildContext {
     seed: hashString(`${userId}:${p.ordinal}`),
     grammarLessonId: p.ordinal,
   };
+}
+
+const planByOrdinal = new Map(plan.map((p) => [p.ordinal, p]));
+
+function planFor(ordinal: number): LessonPlan {
+  const p = planByOrdinal.get(ordinal);
+  if (!p) throw new Error(`lesson-plan.json không có buổi ${ordinal}`);
+  return p;
+}
+
+/** Gộp từ vựng của nhiều buổi — dùng dựng đề ôn tập (2 buổi) và kiểm tra (4 buổi). */
+function wordsForLessons(lessons: readonly number[]): VocabLite[] {
+  return lessons.flatMap((ordinal) => wordsForLesson(planFor(ordinal)));
+}
+
+/** Gộp câu ngữ pháp của nhiều buổi — mỗi buổi một `grammarSlug` riêng, không trùng. */
+function grammarForLessons(lessons: readonly number[]): GrammarLite[] {
+  return lessons.flatMap((ordinal) => grammarFor(planFor(ordinal).grammarSlug));
 }
 
 interface Built {
@@ -231,6 +255,35 @@ describe("toàn bộ chương trình dựng từ data/clean/", () => {
           expect(alsoCorrect, `buổi ${b.lesson} vị trí ${b.position} (${uid}) "${b.target.word}"`).toEqual([]);
         }
       }
+    }
+  });
+});
+
+describe("corpus — đề ôn tập và kiểm tra trên dữ liệu thật", () => {
+  it("mọi bài đánh giá của cả 5 chu kỳ đều đúng bất biến", () => {
+    for (let s = 0; s < TOTAL_SLOTS; s++) {
+      const slot = slotAt(s);
+      if (slot.kind === "lesson") continue;
+
+      const words = wordsForLessons(slot.lessons);
+      const grammar = grammarForLessons(slot.lessons);
+      const items = buildAssessmentItems(slot.kind, words, grammar, s * 7919);
+
+      for (const it of items) {
+        expect(
+          it.payload.options,
+          `slot ${s} (${slot.kind} buổi ${JSON.stringify(slot.lessons)}) — ${it.itemType} #${it.refId}`,
+        ).toHaveLength(4);
+        expect(
+          new Set(it.payload.options).size,
+          `slot ${s} (${slot.kind} buổi ${JSON.stringify(slot.lessons)}) — ${it.itemType} #${it.refId}: ${JSON.stringify(it.payload.options)}`,
+        ).toBe(4);
+      }
+      const ids = items.filter((i) => i.itemType === "vocab").map((i) => i.refId);
+      expect(
+        new Set(ids).size,
+        `slot ${s} (${slot.kind} buổi ${JSON.stringify(slot.lessons)}) có từ vựng bị hỏi lặp lại`,
+      ).toBe(ids.length);
     }
   });
 });
