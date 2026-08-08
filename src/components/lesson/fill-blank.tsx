@@ -21,7 +21,9 @@ export function FillBlank({
         onSubmit(value);
       }}
     >
-      <p className="text-lg italic">{item.sentence}</p>
+      <p data-testid="fill-sentence" className="text-lg italic">
+        {item.sentence}
+      </p>
       <input
         data-testid="fill-input"
         value={value}

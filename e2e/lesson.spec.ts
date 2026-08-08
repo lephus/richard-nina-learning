@@ -21,6 +21,10 @@ test.afterEach(async () => {
   const u = data?.users.find((x) => x.email === TEST_EMAIL);
   if (u) {
     await admin.from("word_mastery").delete().eq("user_id", u.id);
+    // grammar_mastery nay ĐƯỢC GHI thật (applyMastery có nhánh ngữ pháp), nên
+    // phải dọn cùng chỗ với hai bảng kia — vẫn chỉ theo user_id của tài khoản
+    // test, không đụng ai khác.
+    await admin.from("grammar_mastery").delete().eq("user_id", u.id);
     await admin.from("user_lesson_progress").delete().eq("user_id", u.id);
   }
 });
@@ -93,15 +97,12 @@ test("câu điền từ ở vị trí 30 hiển thị đúng câu, không bị c
   await expect(page.getByTestId("lesson-progress")).toHaveText("31 / 135");
   await expect(page.getByTestId("fill-input")).toBeVisible();
 
-  // Không có data-testid riêng cho câu hiển thị (fill-blank.tsx chỉ đặt
-  // data-testid trên ô nhập). Lấy nó qua quan hệ DOM với fill-input thay vì
-  // dựa vào class CSS, để không phải sửa src/. Đây chính là lớp phòng thủ
-  // cho lỗi từng lọt qua mọi lớp kiểm thử khác trong lát này: câu điền từ
-  // hiện dạng "___I___t___ ___i___s___…" — dấu gạch bị chèn giữa từng ký tự.
-  const sentence = await page
-    .getByTestId("fill-input")
-    .locator("xpath=preceding-sibling::p[1]")
-    .innerText();
+  // Đây là lớp phòng thủ cho lỗi từng lọt qua MỌI lớp kiểm thử khác trong lát
+  // này: câu điền từ hiện dạng "___I___t___ ___i___s___…" — dấu gạch bị chèn
+  // giữa từng ký tự. Chọn qua data-testid chứ không qua quan hệ DOM
+  // (preceding-sibling::p[1]): thêm một thẻ <p> vào form là selector kia im
+  // lặng trỏ nhầm phần tử, và lớp phòng thủ biến mất mà không ai biết.
+  const sentence = await page.getByTestId("fill-sentence").innerText();
 
   const blanks = sentence.match(/___/g) ?? [];
   expect(blanks).toHaveLength(1);

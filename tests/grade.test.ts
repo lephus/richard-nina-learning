@@ -9,6 +9,13 @@ const meaning: BuiltItem = {
   options: ["sự quan tâm", "cái bàn", "chạy bộ", "màu xanh"],
 };
 
+const synonym: BuiltItem = {
+  kind: "synonym",
+  wordId: 1,
+  word: "confident",
+  options: ["self-assured", "argumentative", "coming", "hollow"],
+};
+
 const fill: BuiltItem = { kind: "fill", wordId: 1, sentence: "It is a ___ of mine." };
 
 const grammar: BuiltItem = {
@@ -27,6 +34,27 @@ describe("gradeItem", () => {
   it("câu nghĩa: sai thì trả về đáp án đúng để hiển thị", () => {
     const r = gradeItem(meaning, "cái bàn", { correctOption: "sự quan tâm" });
     expect(r).toEqual({ correct: false, correctAnswer: "sự quan tâm" });
+  });
+
+  it("câu đồng nghĩa: so nguyên văn phương án, KHÔNG chuẩn hoá như câu điền", () => {
+    // Nhánh này là nhánh mang lỗi "chấm sai câu đúng" của lát 1b (phương án
+    // nhiễu có thể chính là một từ đồng nghĩa thật). Nó vẫn chưa hề có test.
+    expect(gradeItem(synonym, "self-assured", { correctOption: "self-assured" })).toEqual({
+      correct: true,
+      correctAnswer: "self-assured",
+    });
+    expect(gradeItem(synonym, "argumentative", { correctOption: "self-assured" })).toEqual({
+      correct: false,
+      correctAnswer: "self-assured",
+    });
+  });
+
+  it("câu đồng nghĩa: người học bấm nút nên chuỗi phải khớp y hệt, không cắt/hạ chữ", () => {
+    // Câu trắc nghiệm không tự gõ — mọi giá trị gửi lên đều là nội dung một
+    // nút có thật. Một chuỗi lệch hoa thường ở đây nghĩa là client đã sửa
+    // payload, và nó PHẢI bị coi là sai.
+    expect(gradeItem(synonym, "Self-Assured", { correctOption: "self-assured" }).correct).toBe(false);
+    expect(gradeItem(synonym, " self-assured ", { correctOption: "self-assured" }).correct).toBe(false);
   });
 
   it("câu điền: bỏ qua hoa thường và khoảng trắng thừa", () => {
