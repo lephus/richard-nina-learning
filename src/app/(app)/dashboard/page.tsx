@@ -12,25 +12,16 @@ import {
   nextStep,
   sameScope,
   latest,
+  toAssessmentRow,
+  toLessonDones,
   type Action,
+  type AssessmentDbRow,
   type AssessmentRow,
-  type LessonDone,
 } from "@/lib/assessment/next-step";
 import { startAssessmentAction, closeExpiredAction } from "./actions";
 
 interface LessonWithGrammar extends LessonRow {
   grammar_lessons: { title: string } | null;
-}
-
-/** Hàng thô từ bảng `assessments` — snake_case như Postgres trả về. */
-interface AssessmentDbRow {
-  id: number;
-  type: "review" | "test" | "remedial";
-  scope: number[];
-  status: "in_progress" | "submitted" | "expired";
-  passed: boolean | null;
-  expires_at: string;
-  parent_id: number | null;
 }
 
 /** Trạng thái hiển thị: bốn giá trị của `lesson_status` cộng thêm `failed` —
@@ -101,22 +92,13 @@ export default async function DashboardPage() {
   const statuses = lessonStatuses(lessons, progress);
   const lessonByOrdinal = new Map(lessons.map((l) => [l.ordinal, l]));
 
-  // nextStep nhận camelCase — tự tay ánh xạ từ hàng snake_case Postgres trả
-  // về, nó không làm hộ việc này.
-  const assessmentDbRows = (assessmentsRes.data ?? []) as AssessmentDbRow[];
-  const assessments: AssessmentRow[] = assessmentDbRows.map((r) => ({
-    id: r.id,
-    type: r.type,
-    scope: r.scope,
-    status: r.status,
-    passed: r.passed,
-    expiresAt: r.expires_at,
-    parentId: r.parent_id,
-  }));
-  const lessonDones: LessonDone[] = lessons.map((l) => ({
-    ordinal: l.ordinal,
-    completed: statuses.get(l.id) === "completed",
-  }));
+  // nextStep nhận camelCase — ánh xạ qua toAssessmentRow/toLessonDones dùng
+  // chung với current-step.ts (Server Action), không viết lại tay ở đây
+  // (Task 7 review, finding D).
+  const assessments: AssessmentRow[] = ((assessmentsRes.data ?? []) as AssessmentDbRow[]).map(
+    toAssessmentRow,
+  );
+  const lessonDones = toLessonDones(lessons, statuses);
 
   const { slotIndex, action } = nextStep(lessonDones, assessments, new Date());
 
@@ -226,9 +208,18 @@ export default async function DashboardPage() {
         {continueControl}
       </div>
 
-      {action.kind === "done" && (
+      {/* continueControl null xảy ra ở HAI trường hợp: đã xong toàn bộ
+          chương trình (action.kind === "done", bình thường), hoặc tấm chắn
+          trong renderContinue vừa chặn một buổi thực ra chưa mở (không nên
+          xảy ra ở dữ liệu hợp lệ — xem comment nhánh "lesson" bên dưới, Task
+          7 review finding E). Cả hai đều phải có một dòng giải thích: 35
+          dòng không nút, không lời nào là màn hình tệ nhất có thể đưa cho
+          người học. */}
+      {continueControl === null && (
         <p className="text-sm text-slate-500">
-          Bạn đã hoàn thành toàn bộ chương trình — 20 buổi học, các bài ôn tập và kiểm tra.
+          {action.kind === "done"
+            ? "Bạn đã hoàn thành toàn bộ chương trình — 20 buổi học, các bài ôn tập và kiểm tra."
+            : "Không tìm thấy hoạt động nào để tiếp tục ngay lúc này — thử tải lại trang."}
         </p>
       )}
 
@@ -295,6 +286,11 @@ function renderContinue(
       // "chưa hoàn thành" (đúng — nó chưa 'completed'), nó KHÔNG biết buổi
       // đó đã mở hay chưa; mở hay chưa là việc của `lessonStatuses`, và phải
       // hỏi lại ở đây trước khi vẽ nút, không phải tin thẳng `action`.
+      // Không lọt qua được ở dữ liệu hợp lệ (locked ở đây nghĩa là nextStep
+      // và lessonStatuses đang lệch nhau) — nhưng nếu NÓ có xảy ra, trả
+      // `null` ở đây không được im lặng: khối "continueControl === null" bên
+      // dưới component này luôn hiện một dòng giải thích, không để lại 35
+      // dòng không nút không lời (Task 7 review, finding E).
       const status = statuses.get(lesson.id);
       if (status !== "available" && status !== "in_progress") return null;
 

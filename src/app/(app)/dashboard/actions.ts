@@ -6,8 +6,9 @@ import { startAssessment, closeExpired, AssessmentInProgressError } from "@/lib/
 import { loadNextStep } from "@/lib/assessment/current-step";
 // `AssessmentType` là kiểu công khai của next-step.ts; run.ts chỉ IMPORT nó
 // (không re-export) nên phải lấy đúng từ nguồn — xem
-// src/app/(app)/assessment/[id]/page.tsx.
-import type { AssessmentType } from "@/lib/assessment/next-step";
+// src/app/(app)/assessment/[id]/page.tsx. `sameScope` dùng lại nguyên bản có
+// test ở next-step.ts, không viết lại (cùng lý do Task 7 review finding 3).
+import { sameScope, type AssessmentType } from "@/lib/assessment/next-step";
 
 /**
  * Vỏ mỏng cùng khuôn assessment/[id]/actions.ts: chỉ lo phần không kiểm thử
@@ -27,16 +28,25 @@ import type { AssessmentType } from "@/lib/assessment/next-step";
  * một bài ôn tập(1,2) THỨ HAI ra đời dù bài đầu đã đạt, đẩy dòng đó trên
  * dashboard từ "Đã xong" ngược lại "Đang làm". Vì vậy hàm này tính lại
  * `nextStep` từ dữ liệu MỚI NHẤT ngay tại lúc bấm, và luôn hành động theo
- * câu trả lời MỚI đó — ba tham số nhận vào không được đọc ở đâu khác ngoài
- * chữ ký hàm.
+ * câu trả lời MỚI đó.
+ *
+ * `hintType`/`hintScope` KHÔNG bị bỏ qua hoàn toàn (Task 7 review, finding
+ * C): sau khi tính lại, nếu `nextStep` mới vẫn là "start" nhưng ra một
+ * `type`/`scope` KHÁC với cái người học đang thấy trên màn hình lúc bấm —
+ * ví dụ form hiển thị "bắt đầu ôn tập(19,20)" 15 phút, nhưng vì một tab khác
+ * đã làm xong đúng bài đó, slot thật bây giờ là "bắt đầu kiểm tra(17-20)" 60
+ * phút HARD_LOCKED (run.ts:46, đồng hồ chạy ngay, câu bỏ trống tự động tính
+ * sai) — thì KHÔNG được âm thầm bắt đầu bài khác với bài đã hiển thị. Đưa
+ * người học về dashboard để họ tự thấy trạng thái mới rồi bấm lại có chủ ý,
+ * còn hơn ném họ vào một bài khác hẳn mà không hề báo trước.
  *
  * Bắt đầu một bài đánh giá PHẢI là Server Action chứ không phải một
  * `<Link>`: nó ghi database, và một lượt prefetch của crawler hay một cú
  * bấm đúp vào link sẽ tạo ra bài thật.
  */
 export async function startAssessmentAction(
-  _hintType: AssessmentType,
-  _hintScope: number[],
+  hintType: AssessmentType,
+  hintScope: number[],
   _hintParentId: number | null,
 ) {
   const supabase = await createClient();
@@ -62,6 +72,13 @@ export async function startAssessmentAction(
     // slot đã đổi ở nơi khác trong lúc form này còn mở. Quay lại dashboard
     // để người học thấy đúng nút "Học tiếp" hiện tại, thay vì tạo một bài
     // đáng lẽ không nên tồn tại.
+    redirect("/dashboard");
+  }
+
+  // action.kind === "start" ở đây. So với gợi ý đã bind lúc render (finding
+  // C ở trên) — lệch type hoặc scope nghĩa là bài THẬT SỰ sắp tạo không phải
+  // bài người học nhìn thấy trên nút họ vừa bấm.
+  if (action.type !== hintType || !sameScope(action.scope, hintScope)) {
     redirect("/dashboard");
   }
 

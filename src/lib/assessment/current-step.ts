@@ -1,17 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { lessonStatuses, type LessonRow, type ProgressRow } from "@/lib/curriculum/lesson-status";
-import { nextStep, type Action, type AssessmentRow, type LessonDone } from "./next-step";
-
-/** Hàng thô từ bảng `assessments` — snake_case như Postgres trả về. */
-interface AssessmentDbRow {
-  id: number;
-  type: "review" | "test" | "remedial";
-  scope: number[];
-  status: "in_progress" | "submitted" | "expired";
-  passed: boolean | null;
-  expires_at: string;
-  parent_id: number | null;
-}
+import {
+  nextStep,
+  toAssessmentRow,
+  toLessonDones,
+  type Action,
+  type AssessmentDbRow,
+} from "./next-step";
 
 /**
  * Đọc lessons/tiến độ/assessments của CHÍNH `userId` rồi tính lại `nextStep`
@@ -21,6 +16,11 @@ interface AssessmentDbRow {
  * Một request là một lần đọc riêng: hàm này KHÔNG nhận `now` từ bên ngoài
  * chuyền cho phép đọc, mỗi lần gọi tự lấy dữ liệu và mốc giờ tại chính lúc
  * đó, đúng tinh thần "đồng hồ ở server" của `run.ts`.
+ *
+ * `AssessmentDbRow`/`toAssessmentRow`/`toLessonDones` import từ next-step.ts
+ * chứ không viết lại — `dashboard/page.tsx` dùng đúng ba thứ này để tự tính
+ * `nextStep` của riêng nó, và một bản sao thứ hai ở đây từng là đúng lỗi mà
+ * Task 7 review finding D chỉ ra.
  */
 export async function loadNextStep(
   supabase: SupabaseClient,
@@ -46,23 +46,8 @@ export async function loadNextStep(
   const progress = (progressRes.data ?? []) as ProgressRow[];
   const statuses = lessonStatuses(lessons, progress);
 
-  const lessonDones: LessonDone[] = lessons.map((l) => ({
-    ordinal: l.ordinal,
-    completed: statuses.get(l.id) === "completed",
-  }));
-
-  // nextStep nhận camelCase — ánh xạ tay từ hàng snake_case Postgres, nó
-  // không làm hộ việc này (xem interface AssessmentRow trong next-step.ts).
-  const assessmentDbRows = (assessmentsRes.data ?? []) as AssessmentDbRow[];
-  const assessments: AssessmentRow[] = assessmentDbRows.map((r) => ({
-    id: r.id,
-    type: r.type,
-    scope: r.scope,
-    status: r.status,
-    passed: r.passed,
-    expiresAt: r.expires_at,
-    parentId: r.parent_id,
-  }));
+  const lessonDones = toLessonDones(lessons, statuses);
+  const assessments = ((assessmentsRes.data ?? []) as AssessmentDbRow[]).map(toAssessmentRow);
 
   return nextStep(lessonDones, assessments, now);
 }

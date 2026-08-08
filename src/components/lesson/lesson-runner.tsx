@@ -11,6 +11,7 @@ import { LessonDone } from "./lesson-done";
 
 export function LessonRunner({
   lessonId,
+  ordinal,
   initialPosition,
   initialItem,
   initialDone,
@@ -18,6 +19,8 @@ export function LessonRunner({
   isLast,
 }: {
   lessonId: number;
+  /** Số thứ tự buổi (1..20) — LessonDone dùng để suy slot kế tiếp mở khoá. */
+  ordinal: number;
   initialPosition: number;
   initialItem: BuiltItem | null;
   initialDone: boolean;
@@ -77,7 +80,7 @@ export function LessonRunner({
     if (staged) apply(staged);
   }
 
-  if (done) return <LessonDone score={score ?? 0} isLast={isLast} />;
+  if (done) return <LessonDone score={score ?? 0} ordinal={ordinal} isLast={isLast} />;
   if (!item) return null;
 
   return (

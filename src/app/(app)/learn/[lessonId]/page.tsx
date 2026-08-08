@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { lessonStatuses, type LessonRow, type ProgressRow } from "@/lib/curriculum/lesson-status";
+import { loadNextStep } from "@/lib/assessment/current-step";
 import { loadContext } from "@/lib/lesson/session";
 import { itemAt, scoreOf, TOTAL_ITEMS } from "@/lib/lesson/item-plan";
 import { buildItem } from "@/lib/lesson/build-item";
@@ -37,6 +38,22 @@ export default async function LearnPage({
   const statuses = lessonStatuses(lessons, (progressRes.data ?? []) as ProgressRow[]);
   if (statuses.get(id) === "locked") redirect("/dashboard");
 
+  // Tấm chắn THỨ HAI, độc lập với tấm chắn ở trên (Task 7 review, finding
+  // A): `lessonStatuses` chỉ nối chuỗi buổi→buổi, nó không biết gì về các
+  // slot ôn tập/kiểm tra xen giữa trong chuỗi 35 hoạt động — buổi 3 có thể
+  // "available" theo nó (buổi 2 đã completed) dù ôn tập(1,2) đứng trước còn
+  // dang dở. dashboard đã tự chặn việc BẤM vào buổi 3 lúc đó
+  // (data-status="locked", không render <Link>), nhưng đó chỉ là giao diện —
+  // gõ thẳng /learn/{id buổi 3} vào thanh địa chỉ vẫn phải bị chặn ở đây.
+  // Buổi đã học xong luôn được đọc lại (không có gì phải khoá thêm); buổi
+  // CHƯA xong chỉ được vào khi nó đúng là slot `nextStep` đang trỏ tới.
+  const isCompleted = statuses.get(id) === "completed";
+  if (!isCompleted) {
+    const { action } = await loadNextStep(supabase, user.id, new Date());
+    const isCurrentSlot = action.kind === "lesson" && action.lesson === lesson.ordinal;
+    if (!isCurrentSlot) redirect("/dashboard");
+  }
+
   const { data: prog, error: progError } = await supabase
     .from("user_lesson_progress")
     .select("position, final_correct")
@@ -56,6 +73,7 @@ export default async function LearnPage({
       </h1>
       <LessonRunner
         lessonId={id}
+        ordinal={lesson.ordinal}
         initialPosition={position}
         initialItem={done ? null : buildItem(itemAt(position), ctx)}
         initialDone={done}

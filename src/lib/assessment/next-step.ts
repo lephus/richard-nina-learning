@@ -19,6 +19,54 @@ export interface LessonDone {
   completed: boolean;
 }
 
+/**
+ * Hàng thô từ bảng `assessments` — snake_case như Postgres trả về. MỘT định
+ * nghĩa duy nhất, dùng chung ở `dashboard/page.tsx` (hiển thị) và
+ * `current-step.ts` (Server Action bắt đầu bài đánh giá) cùng hàm
+ * `toAssessmentRow` bên dưới (Task 7 review, finding D): bản sao thứ hai của
+ * ba thứ này từng khiến việc đổi tên một cột chỉ được sửa ở một trong hai
+ * nơi, và nơi còn lại là đúng chỗ quyết định bài nào được ghi xuống database.
+ */
+export interface AssessmentDbRow {
+  id: number;
+  type: AssessmentType;
+  scope: number[];
+  status: AssessmentStatus;
+  passed: boolean | null;
+  expires_at: string;
+  parent_id: number | null;
+}
+
+/** snake_case Postgres → camelCase mà `nextStep` đòi. */
+export function toAssessmentRow(r: AssessmentDbRow): AssessmentRow {
+  return {
+    id: r.id,
+    type: r.type,
+    scope: r.scope,
+    status: r.status,
+    passed: r.passed,
+    expiresAt: r.expires_at,
+    parentId: r.parent_id,
+  };
+}
+
+/**
+ * Buổi nào đã `completed` — hình dạng `LessonDone[]` mà `nextStep` cần, suy
+ * từ bản đồ trạng thái đã tính (`lessonStatuses`). Nhận `ReadonlyMap<number,
+ * string>` thay vì import thẳng `LessonStatus` từ lesson-status.ts để module
+ * này không phải biết tới bốn giá trị cụ thể của enum đó — chỉ cần so sánh
+ * với chuỗi `"completed"`.
+ */
+export function toLessonDones(
+  lessons: readonly { id: number; ordinal: number }[],
+  statuses: ReadonlyMap<number, string>,
+): LessonDone[] {
+  return lessons.map((l) => ({
+    ordinal: l.ordinal,
+    completed: statuses.get(l.id) === "completed",
+  }));
+}
+
 export type Action =
   | { kind: "lesson"; lesson: number }
   | { kind: "start"; type: AssessmentType; scope: number[]; parentId: number | null }
