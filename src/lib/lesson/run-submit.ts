@@ -12,6 +12,12 @@ import {
   type LessonStatus,
   type ProgressRow,
 } from "@/lib/curriculum/lesson-status";
+import {
+  nextStep,
+  toAssessmentRow,
+  toLessonDones,
+  type AssessmentDbRow,
+} from "@/lib/assessment/next-step";
 
 /**
  * Logic chấm bài của một buổi học, tách khỏi `actions.ts` để KIỂM THỬ ĐƯỢC
@@ -45,27 +51,57 @@ export async function runSubmit(
   clientPosition: number,
   answer: string,
 ): Promise<SubmitResult> {
-  // 0. Buổi phải THẬT SỰ mở khoá mới được chấm — dùng đúng luật dashboard
-  //    dùng (lessonStatuses), không tin riêng sự tồn tại của dòng tiến độ.
-  //    Đây là điểm thực thi duy nhất: một trang chỉ chặn được giao diện,
-  //    còn Server Action gọi được độc lập với mọi trang.
+  // 0. Buổi phải ĐANG LÀ slot mà nextStep trỏ tới (hoặc đã completed) mới
+  //    được chấm — luật ĐẦY ĐỦ của chuỗi 35 hoạt động, không chỉ luật
+  //    buổi→buổi của lessonStatuses. Đây là điểm thực thi THỨ BA trên CÙNG
+  //    một lỗ hổng, không phải "điểm duy nhất" như comment cũ từng khẳng
+  //    định (Task 7 review vòng 4, finding 1): dashboard chặn được cú BẤM,
+  //    learn/[lessonId]/page.tsx chặn được URL gõ tay, nhưng CHÍNH Server
+  //    Action này — nơi thật sự ghi user_lesson_progress — gọi được độc lập
+  //    với cả hai trang. Trước bản vá này nó chỉ kiểm lessonStatuses
+  //    (available/in_progress/completed), không biết gì về các slot ôn
+  //    tập/kiểm tra xen giữa: một buổi 3 "available" theo lessonStatuses
+  //    (buổi 2 đã completed) vẫn có thể bị chấm cho tới hoàn thành dù ôn
+  //    tập(1,2) đứng trước còn dang dở — y hệt lỗ hổng finding A/finding 1
+  //    của các vòng review trước, chỉ khác cửa vào.
   //
-  //    'completed' PHẢI được cho qua cùng với 'available'/'in_progress': vì
+  //    'completed' PHẢI được cho qua, không cần hỏi nextStep: vì
   //    status='completed' chỉ được ghi CÙNG LÚC với position=135
   //    (advancePosition), completed ⟺ position===135 — chặn 'completed' ở
   //    đây sẽ khiến nhánh position>=TOTAL_ITEMS bên dưới KHÔNG BAO GIỜ chạy
   //    tới, biến một cú double-click vô hại ở câu 135 thành throw vĩnh viễn
   //    (client kẹt ở 135/135, nút vẫn bật, mọi lần thử lại đều lỗi) cho tới
-  //    khi tải lại trang. Chỉ 'locked' (hoặc buổi không tồn tại) mới bị chặn.
+  //    khi tải lại trang.
   const { lessons, progressRows } = await loadLessonChain(supabase, userId);
   const forStatus: ProgressRow[] = progressRows.map((r) => ({
     lesson_id: r.lessonId,
     status: r.status,
   }));
-  const status = lessonStatuses(lessons, forStatus).get(lessonId);
-  const unlocked = status === "available" || status === "in_progress" || status === "completed";
-  if (!unlocked) {
-    throw new Error("buổi chưa mở khoá");
+  const statuses = lessonStatuses(lessons, forStatus);
+  const status = statuses.get(lessonId);
+
+  if (status !== "completed") {
+    const lesson = lessons.find((l) => l.id === lessonId);
+    if (!lesson) throw new Error("buổi không tồn tại");
+
+    // Chỉ đọc thêm `assessments` khi THẬT SỰ cần (buổi chưa completed) —
+    // lessons/progress đã có sẵn ở trên, không đọc lại (cùng tinh thần hoãn
+    // round-trip thừa mà Task 7 review vòng 4 finding 3 chỉ ra cho
+    // learn/[lessonId]/page.tsx, dù ở đây bắt buộc thêm MỘT lượt đọc mới vì
+    // đây là đường ghi, không có gì trong bộ nhớ để tái dùng).
+    const { data: assessRows, error: assessErr } = await supabase
+      .from("assessments")
+      .select("id, type, scope, status, passed, expires_at, parent_id")
+      .eq("user_id", userId);
+    if (assessErr) throw assessErr;
+
+    const { action } = nextStep(
+      toLessonDones(lessons, statuses),
+      ((assessRows ?? []) as AssessmentDbRow[]).map(toAssessmentRow),
+      new Date(),
+    );
+    const isCurrentSlot = action.kind === "lesson" && action.lesson === lesson.ordinal;
+    if (!isCurrentSlot) throw new Error("buổi chưa mở khoá");
   }
 
   // 1. Vị trí thật đọc từ database — KHÔNG tin client. RLS (0004_rls.sql:11-12)

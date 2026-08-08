@@ -16,7 +16,6 @@ export function LessonRunner({
   initialItem,
   initialDone,
   initialScore,
-  isLast,
 }: {
   lessonId: number;
   /** Số thứ tự buổi (1..20) — LessonDone dùng để suy slot kế tiếp mở khoá. */
@@ -25,8 +24,6 @@ export function LessonRunner({
   initialItem: BuiltItem | null;
   initialDone: boolean;
   initialScore?: number;
-  /** Buổi này là buổi cuối của lộ trình — không còn buổi nào để mở khoá. */
-  isLast: boolean;
 }) {
   const [position, setPosition] = useState(initialPosition);
   const [item, setItem] = useState(initialItem);
@@ -80,7 +77,7 @@ export function LessonRunner({
     if (staged) apply(staged);
   }
 
-  if (done) return <LessonDone score={score ?? 0} ordinal={ordinal} isLast={isLast} />;
+  if (done) return <LessonDone score={score ?? 0} ordinal={ordinal} />;
   if (!item) return null;
 
   return (

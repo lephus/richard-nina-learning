@@ -1,7 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { lessonStatuses, type LessonRow, type ProgressRow } from "@/lib/curriculum/lesson-status";
-import { loadNextStep } from "@/lib/assessment/current-step";
+import {
+  nextStep,
+  toAssessmentRow,
+  toLessonDones,
+  type AssessmentDbRow,
+} from "@/lib/assessment/next-step";
 import { loadContext } from "@/lib/lesson/session";
 import { itemAt, scoreOf, TOTAL_ITEMS } from "@/lib/lesson/item-plan";
 import { buildItem } from "@/lib/lesson/build-item";
@@ -22,12 +27,21 @@ export default async function LearnPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [lessonsRes, progressRes] = await Promise.all([
+  // Gộp CẢ BA lượt đọc vào một wave (Task 7 review vòng 4, finding 3):
+  // `assessments` chỉ cần cho tấm chắn thứ hai bên dưới, nhưng trang này là
+  // trang được tải nhiều nhất trong app — thêm một wave tuần tự riêng cho nó
+  // (như bản trước, gọi loadNextStep SAU Promise.all rồi tự đọc lại đúng hai
+  // bảng lessons/user_lesson_progress đã có sẵn trong bộ nhớ) là nhân đôi
+  // round-trip cho hai trong ba bảng, và biến một lỗi thoáng qua ở
+  // assessments thành lỗi của MỘT trang chưa từng cần bảng đó trước lát 1c.
+  const [lessonsRes, progressRes, assessmentsRes] = await Promise.all([
     supabase.from("lessons").select("id, ordinal").order("ordinal"),
     supabase.from("user_lesson_progress").select("lesson_id, status"),
+    supabase.from("assessments").select("id, type, scope, status, passed, expires_at, parent_id"),
   ]);
   if (lessonsRes.error) throw lessonsRes.error;
   if (progressRes.error) throw progressRes.error;
+  if (assessmentsRes.error) throw assessmentsRes.error;
 
   const lessons = (lessonsRes.data ?? []) as LessonRow[];
   const lesson = lessons.find((l) => l.id === id);
@@ -46,10 +60,13 @@ export default async function LearnPage({
   // (data-status="locked", không render <Link>), nhưng đó chỉ là giao diện —
   // gõ thẳng /learn/{id buổi 3} vào thanh địa chỉ vẫn phải bị chặn ở đây.
   // Buổi đã học xong luôn được đọc lại (không có gì phải khoá thêm); buổi
-  // CHƯA xong chỉ được vào khi nó đúng là slot `nextStep` đang trỏ tới.
+  // CHƯA xong chỉ được vào khi nó đúng là slot `nextStep` đang trỏ tới —
+  // tính THẲNG từ ba mảng đã đọc ở trên, không gọi lại loadNextStep (nó sẽ
+  // tự đọc lại đúng ba bảng này một lần nữa).
   const isCompleted = statuses.get(id) === "completed";
   if (!isCompleted) {
-    const { action } = await loadNextStep(supabase, user.id, new Date());
+    const assessments = ((assessmentsRes.data ?? []) as AssessmentDbRow[]).map(toAssessmentRow);
+    const { action } = nextStep(toLessonDones(lessons, statuses), assessments, new Date());
     const isCurrentSlot = action.kind === "lesson" && action.lesson === lesson.ordinal;
     if (!isCurrentSlot) redirect("/dashboard");
   }
@@ -78,7 +95,6 @@ export default async function LearnPage({
         initialItem={done ? null : buildItem(itemAt(position), ctx)}
         initialDone={done}
         initialScore={done ? scoreOf(prog?.final_correct ?? 0) : undefined}
-        isLast={lessons[lessons.length - 1]?.id === id}
       />
     </main>
   );
