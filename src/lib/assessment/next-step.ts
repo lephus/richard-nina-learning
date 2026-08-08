@@ -29,7 +29,7 @@ export type Action =
 const sameScope = (a: readonly number[], b: readonly number[]): boolean =>
   a.length === b.length && a.every((x, i) => x === b[i]);
 
-/** Lần thử gần nhất khớp điều kiện. Mảng vào theo thứ tự tăng dần của id. */
+/** Lần thử gần nhất khớp điều kiện (id lớn nhất) — không phụ thuộc thứ tự mảng vào. */
 function latest(
   rows: readonly AssessmentRow[],
   match: (r: AssessmentRow) => boolean,
@@ -93,16 +93,7 @@ export function nextStep(
       (r) => r.type === "remedial" && r.parentId === attempt.id,
     );
 
-    if (rem === null || rem.passed === false) {
-      // Chưa bổ túc, hoặc bổ túc cũng trượt → làm (lại) bổ túc. Nhánh PHẲNG:
-      // parentId vẫn trỏ lần thử gốc, không sinh bổ túc-của-bổ túc.
-      return {
-        slotIndex: i,
-        action: { kind: "start", type: "remedial", scope: slot.lessons, parentId: attempt.id },
-      };
-    }
-
-    if (rem.status === "in_progress") {
+    if (rem !== null && rem.status === "in_progress") {
       const expired = new Date(rem.expiresAt).getTime() <= now.getTime();
       return {
         slotIndex: i,
@@ -112,7 +103,18 @@ export function nextStep(
       };
     }
 
-    // Bổ túc đã qua → làm lại chính bài đã trượt, đề mới.
+    if (rem === null || rem.passed !== true) {
+      // Chưa bổ túc, hoặc bổ túc chưa đạt — kể cả bị đóng do quá hạn mà chưa
+      // từng nộp (status "expired", passed null: coi như chưa đạt, fail-closed
+      // giống hệt nhánh lần thử gốc ở trên) → làm (lại) bổ túc. Nhánh PHẲNG:
+      // parentId vẫn trỏ lần thử gốc, không sinh bổ túc-của-bổ túc.
+      return {
+        slotIndex: i,
+        action: { kind: "start", type: "remedial", scope: slot.lessons, parentId: attempt.id },
+      };
+    }
+
+    // Bổ túc đã nộp và đạt → làm lại chính bài đã trượt, đề mới.
     return {
       slotIndex: i,
       action: { kind: "start", type: slot.kind, scope: slot.lessons, parentId: null },

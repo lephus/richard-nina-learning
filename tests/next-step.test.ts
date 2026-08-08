@@ -89,6 +89,51 @@ describe("nextStep", () => {
     });
   });
 
+  it("cùng ba dòng trên nhưng thứ tự mảng đảo ngược vẫn ra kết quả như nhau (id lớn nhất, không phải phần tử cuối)", () => {
+    const failed = review({ id: 9, passed: false });
+    const rem: AssessmentRow = {
+      id: 10, type: "remedial", scope: [1, 2], status: "submitted",
+      passed: true, expiresAt: LATER, parentId: 9,
+    };
+    const retry = review({ id: 11, passed: true });
+    expect(nextStep(lessons(2), [retry, rem, failed], NOW).action).toEqual({
+      kind: "lesson", lesson: 3,
+    });
+  });
+
+  it("bổ túc đang dở và còn hạn thì tiếp tục bổ túc đó", () => {
+    const failed = review({ id: 9, passed: false });
+    const rem: AssessmentRow = {
+      id: 10, type: "remedial", scope: [1, 2], status: "in_progress",
+      passed: null, expiresAt: LATER, parentId: 9,
+    };
+    expect(nextStep(lessons(2), [failed, rem], NOW).action).toEqual({
+      kind: "resume", assessmentId: 10,
+    });
+  });
+
+  it("bổ túc đang dở nhưng quá hạn thì đóng nó lại", () => {
+    const failed = review({ id: 9, passed: false });
+    const rem: AssessmentRow = {
+      id: 10, type: "remedial", scope: [1, 2], status: "in_progress",
+      passed: null, expiresAt: EARLIER, parentId: 9,
+    };
+    expect(nextStep(lessons(2), [failed, rem], NOW).action).toEqual({
+      kind: "close-expired", assessmentId: 10,
+    });
+  });
+
+  it("bổ túc đã bị đóng do quá hạn mà chưa từng nộp (passed null) thì vẫn phải làm lại bổ túc, không được nhảy thẳng về bài gốc", () => {
+    const failed = review({ id: 9, passed: false });
+    const rem: AssessmentRow = {
+      id: 10, type: "remedial", scope: [1, 2], status: "expired",
+      passed: null, expiresAt: EARLIER, parentId: 9,
+    };
+    expect(nextStep(lessons(2), [failed, rem], NOW).action).toEqual({
+      kind: "start", type: "remedial", scope: [1, 2], parentId: 9,
+    });
+  });
+
   it("xong hết 20 buổi và mọi bài đánh giá thì trả về done", () => {
     const all: AssessmentRow[] = [];
     let id = 100;
@@ -98,7 +143,9 @@ describe("nextStep", () => {
     for (const scope of [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16], [17, 18, 19, 20]]) {
       all.push({ id: id++, type: "test", scope, status: "submitted", passed: true, expiresAt: LATER, parentId: null });
     }
-    expect(nextStep(lessons(20), all, NOW).action).toEqual({ kind: "done" });
+    expect(nextStep(lessons(20), all, NOW)).toEqual({
+      slotIndex: 34, action: { kind: "done" },
+    });
   });
 
   it("lần thử gần nhất mới là lần được xét, không phải lần đầu", () => {
