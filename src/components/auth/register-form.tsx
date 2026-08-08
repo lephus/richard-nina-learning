@@ -45,9 +45,15 @@ export function RegisterForm() {
         <span className="text-xs text-slate-500">Ít nhất 8 ký tự</span>
       </label>
 
-      {state?.error && (
+      {state?.status === "error" && (
         <p data-testid="auth-error" role="alert" className="text-sm text-red-600">
-          {state.error}
+          {state.message}
+        </p>
+      )}
+
+      {state?.status === "success" && (
+        <p data-testid="auth-success" role="status" className="text-sm text-emerald-700">
+          {state.message}
         </p>
       )}
 

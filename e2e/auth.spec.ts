@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { TEST_EMAIL, TEST_PASSWORD } from "./test-user";
+import { adminClient, deleteUserByEmail } from "./admin";
 
 async function login(page: import("@playwright/test").Page) {
   await page.goto("/login");
@@ -8,6 +9,22 @@ async function login(page: import("@playwright/test").Page) {
   await page.click('button[type="submit"]');
   await page.waitForURL("**/dashboard");
 }
+
+// Địa chỉ riêng cho kịch bản đăng ký — có dấu thời gian để không đụng
+// TEST_EMAIL (tài khoản cố định dùng chung cho các kịch bản khác trong file
+// này, dựng ở global-setup.ts) và không trùng giữa các lần chạy.
+const SIGNUP_EMAIL = `e2e-signup-${Date.now()}@test.local`;
+const SIGNUP_PASSWORD = "e2e-signup-pass-12345";
+const SIGNUP_DISPLAY_NAME = "Người đăng ký E2E";
+
+test.afterAll(async () => {
+  // Chỉ xoá đúng tài khoản do kịch bản đăng ký NÀY tạo ra, xác định qua
+  // chính email của nó (deleteUserByEmail tra user_id trước rồi mới xoá
+  // theo id đó). KHÔNG đụng TEST_EMAIL — global-teardown.ts lo phần đó —
+  // và không đụng tài khoản thật nào khác trong bảng auth.users chung của
+  // dự án (kể cả phulealali@gmail.com, chủ dự án).
+  await deleteUserByEmail(adminClient(), SIGNUP_EMAIL);
+});
 
 test("chưa đăng nhập vào /dashboard thì bị đẩy về /login", async ({ page }) => {
   await page.goto("/dashboard");
@@ -58,4 +75,46 @@ test("đăng xuất rồi quay lại /dashboard thì bị đẩy về /login", a
 
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/login$/);
+});
+
+test("đăng ký không tự động đăng nhập, và đăng ký trùng email trả đúng thông điệp như lần đăng ký mới", async ({
+  page,
+}) => {
+  await page.goto("/register");
+  await page.fill('input[name="displayName"]', SIGNUP_DISPLAY_NAME);
+  await page.fill('input[name="email"]', SIGNUP_EMAIL);
+  await page.fill('input[name="password"]', SIGNUP_PASSWORD);
+  await page.click('button[type="submit"]');
+
+  // Đăng ký thành công KHÔNG được tự đưa thẳng vào /dashboard — đó chính là
+  // nửa gây lộ kênh dò email của lỗi cũ.
+  const firstMessage = page.getByTestId("auth-success");
+  await expect(firstMessage).toBeVisible();
+  const firstMessageText = await firstMessage.innerText();
+  await expect(page).not.toHaveURL(/\/dashboard$/);
+
+  // Chứng minh tài khoản THẬT SỰ được tạo: đăng nhập bằng đúng thông tin vừa
+  // đăng ký phải vào được /dashboard.
+  await page.goto("/login");
+  await page.fill('input[name="email"]', SIGNUP_EMAIL);
+  await page.fill('input[name="password"]', SIGNUP_PASSWORD);
+  await page.click('button[type="submit"]');
+  await page.waitForURL("**/dashboard");
+
+  // Đăng ký lại đúng địa chỉ vừa dùng. Đây là assertion ghim lỗi thật: trước
+  // bản vá, nhánh "email đã tồn tại" (lỗi `user_already_exists`) trả
+  // GENERIC_SIGNUP_ERROR còn nhánh "đăng ký mới thành công" tự đăng nhập rồi
+  // redirect /dashboard — hai kết quả phân biệt được, để lộ email nào đã có
+  // tài khoản. Sau bản vá, cả hai lần đăng ký phải trả CÙNG một thông điệp,
+  // byte-for-byte, và không lần nào redirect /dashboard.
+  await page.goto("/register");
+  await page.fill('input[name="displayName"]', SIGNUP_DISPLAY_NAME);
+  await page.fill('input[name="email"]', SIGNUP_EMAIL);
+  await page.fill('input[name="password"]', SIGNUP_PASSWORD);
+  await page.click('button[type="submit"]');
+
+  const secondMessage = page.getByTestId("auth-success");
+  await expect(secondMessage).toBeVisible();
+  await expect(secondMessage).toHaveText(firstMessageText);
+  await expect(page).not.toHaveURL(/\/dashboard$/);
 });

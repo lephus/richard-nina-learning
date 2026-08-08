@@ -33,9 +33,9 @@ export function LoginForm() {
         />
       </label>
 
-      {state?.error && (
+      {state?.status === "error" && (
         <p data-testid="auth-error" role="alert" className="text-sm text-red-600">
-          {state.error}
+          {state.message}
         </p>
       )}
 
