@@ -26,11 +26,17 @@ export type Action =
   | { kind: "close-expired"; assessmentId: number }
   | { kind: "done" };
 
-const sameScope = (a: readonly number[], b: readonly number[]): boolean =>
+// Xuất công khai (Task 7 review): dashboard/page.tsx cần đúng phép so khớp
+// scope và đúng luật "lần thử mới nhất thắng" để dòng hiển thị và nút "Học
+// tiếp" đọc CÙNG một kết quả — một bản sao thứ hai ở page.tsx từng khiến hai
+// nơi tính ra hai trạng thái khác nhau cho cùng một slot. `nextStep` có bộ
+// test bảng đầy đủ; import thẳng từ đây thay vì viết lại để bản đó vẫn là
+// bản DUY NHẤT chịu kiểm thử.
+export const sameScope = (a: readonly number[], b: readonly number[]): boolean =>
   a.length === b.length && a.every((x, i) => x === b[i]);
 
 /** Lần thử gần nhất khớp điều kiện (id lớn nhất) — không phụ thuộc thứ tự mảng vào. */
-function latest(
+export function latest(
   rows: readonly AssessmentRow[],
   match: (r: AssessmentRow) => boolean,
 ): AssessmentRow | null {

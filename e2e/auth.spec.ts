@@ -52,8 +52,11 @@ test("đăng nhập đúng thì thấy 35 hoạt động, trong đó 20 dòng bu
   await expect(rows).toHaveCount(35);
 
   // Chỉ đếm riêng dòng buổi học qua data-kind, không đếm mọi lesson-row nữa —
-  // 20 buổi vẫn phải còn nguyên trong chuỗi 35 hoạt động.
-  const lessonRows = page.locator('[data-kind="lesson"]');
+  // 20 buổi vẫn phải còn nguyên trong chuỗi 35 hoạt động. Neo vào
+  // [data-testid="lesson-row"] chứ không khớp data-kind trần trên toàn tài
+  // liệu — nếu một phần tử khác của trang sau này cũng mang data-kind="lesson"
+  // vì lý do gì đó, locator này không được âm thầm khớp nhầm nó.
+  const lessonRows = page.locator('[data-testid="lesson-row"][data-kind="lesson"]');
   await expect(lessonRows).toHaveCount(20);
   await expect(lessonRows.nth(0)).toHaveAttribute("data-status", "available");
   await expect(lessonRows.nth(1)).toHaveAttribute("data-status", "locked");

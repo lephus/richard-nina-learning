@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
   lessonStatuses,
@@ -7,7 +8,14 @@ import {
   type ProgressRow,
 } from "@/lib/curriculum/lesson-status";
 import { slotAt, TOTAL_SLOTS, type Slot, type SlotKind } from "@/lib/assessment/slots";
-import { nextStep, type Action, type AssessmentRow, type LessonDone } from "@/lib/assessment/next-step";
+import {
+  nextStep,
+  sameScope,
+  latest,
+  type Action,
+  type AssessmentRow,
+  type LessonDone,
+} from "@/lib/assessment/next-step";
 import { startAssessmentAction, closeExpiredAction } from "./actions";
 
 interface LessonWithGrammar extends LessonRow {
@@ -47,18 +55,25 @@ interface Row {
   href: string | null;
 }
 
-const sameScope = (a: readonly number[], b: readonly number[]): boolean =>
-  a.length === b.length && a.every((x, i) => x === b[i]);
-
 export default async function DashboardPage() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  // AppLayout đã chặn ở tầng trên, nhưng vẫn tường minh ở đây — cùng cách
+  // assessment/[id]/page.tsx và learn/[lessonId]/page.tsx đang làm. Cũng cần
+  // user.id ngay dưới đây để lọc tường minh hai bảng riêng-tư-theo-người-dùng.
+  if (!user) redirect("/login");
 
   const [lessonsRes, progressRes, assessmentsRes] = await Promise.all([
     supabase
       .from("lessons")
       .select("id, ordinal, grammar_lessons(title)")
       .order("ordinal"),
-    supabase.from("user_lesson_progress").select("lesson_id, status"),
+    // `.eq("user_id", user.id)` tường minh dù RLS đã lọc đúng — không dựa
+    // vào một lớp phòng thủ duy nhất, cùng cách assessment/[id]/page.tsx và
+    // run.ts đang làm với mọi bảng riêng-tư-theo-người-dùng.
+    supabase.from("user_lesson_progress").select("lesson_id, status").eq("user_id", user.id),
     // Đọc CẢ ba loại (review/test/remedial): nextStep cần tới bài bổ túc để
     // theo đúng nhánh trượt → bổ túc → làm lại, dù dòng hiển thị của 35 slot
     // chỉ khớp review/test (remedial không chiếm slot riêng — xem slots.ts).
@@ -67,6 +82,7 @@ export default async function DashboardPage() {
     supabase
       .from("assessments")
       .select("id, type, scope, status, passed, expires_at, parent_id")
+      .eq("user_id", user.id)
       .order("id"),
   ]);
 
@@ -102,18 +118,7 @@ export default async function DashboardPage() {
     completed: statuses.get(l.id) === "completed",
   }));
 
-  const { action } = nextStep(lessonDones, assessments, new Date());
-
-  /** Lần thử gần nhất (id lớn nhất) của một slot ôn tập/kiểm tra. */
-  function latestAttempt(kind: "review" | "test", scope: number[]): AssessmentRow | null {
-    let found: AssessmentRow | null = null;
-    for (const r of assessments) {
-      if (r.type === kind && sameScope(r.scope, scope) && (found === null || r.id > found.id)) {
-        found = r;
-      }
-    }
-    return found;
-  }
+  const { slotIndex, action } = nextStep(lessonDones, assessments, new Date());
 
   /** Một slot đánh giá chỉ `available` khi MỌI buổi trong phạm vi đã `completed`. */
   function scopeCompleted(scope: number[]): boolean {
@@ -123,14 +128,65 @@ export default async function DashboardPage() {
     });
   }
 
+  /**
+   * Trạng thái THẬT của một slot, đọc thẳng từ dữ liệu của riêng nó — không
+   * biết gì về `slotIndex`. `latest`/`sameScope` import từ next-step.ts
+   * (Task 7 review, finding 3): đây phải là ĐÚNG phép so khớp mà nextStep
+   * dùng để chọn lần thử, không phải một bản chép tay dễ lệch.
+   */
+  function ownStatus(slot: Slot): RowStatus {
+    if (slot.kind === "lesson") {
+      const lesson = lessonByOrdinal.get(slot.lessons[0]!);
+      return lesson ? statuses.get(lesson.id) ?? "locked" : "locked";
+    }
+    const attempt = latest(assessments, (r) => r.type === slot.kind && sameScope(r.scope, slot.lessons));
+    if (attempt === null) return scopeCompleted(slot.lessons) ? "available" : "locked";
+    if (attempt.status === "in_progress") return "in_progress";
+    // Đã nộp hoặc bị đóng vì quá hạn: `passed !== true` tính là chưa đạt —
+    // fail-closed giống hệt cách nextStep đọc hai cột này, nên một dòng
+    // `passed === null` (chưa từng chấm) cũng hiện "Chưa đạt" chứ không im
+    // lặng biến mất khỏi màn hình.
+    return attempt.passed === true ? "completed" : "failed";
+  }
+
+  // MỘT con đường tính trạng thái dòng, không phải hai (Task 7 review,
+  // finding 1): `nextStep` đã đi qua 35 slot THEO ĐÚNG THỨ TỰ và dừng ở
+  // `slotIndex` — slot đầu tiên CHƯA xong. Vị trí của một dòng so với
+  // `slotIndex` quyết định nó khoá hay không, KHÔNG PHẢI trạng thái riêng
+  // của chính buổi/bài đó: một buổi 3 tự nó "available" theo
+  // `lessonStatuses` (buổi 2 đã completed) vẫn phải khoá nếu ôn tập(1,2)
+  // đứng trước nó trong chuỗi 35 slot còn chưa xong — nếu không, người học
+  // đọc trên xuống dưới sẽ bấm thẳng vào buổi 3 (dòng duy nhất có link) mà
+  // bỏ qua hẳn ôn tập, đi thẳng tới cuối chương trình không qua một bài đánh
+  // giá nào.
   const rows: Row[] = [];
   for (let i = 0; i < TOTAL_SLOTS; i++) {
     const slot: Slot = slotAt(i);
+    let status: RowStatus;
+
+    if (i > slotIndex) {
+      status = "locked";
+    } else if (i < slotIndex) {
+      const actual = ownStatus(slot);
+      if (actual !== "completed") {
+        // nextStep đã đi QUA slot này để tới slotIndex — nghĩa là theo chính
+        // nextStep, slot này phải xong rồi. Đọc lại bằng ownStatus ra một
+        // giá trị khác "completed" nghĩa là dữ liệu và nextStep đang KHÔNG
+        // khớp nhau (ví dụ một dòng assessments bị xoá tay sau khi nextStep
+        // đã tính). Thà vỡ ồn ào ở đây còn hơn âm thầm vẽ ra một dòng sai —
+        // xem error.tsx cho màn hình lỗi người học sẽ thấy.
+        throw new Error(
+          `slot ${i} (${slot.kind}) đứng trước slotIndex=${slotIndex} nhưng ownStatus="${actual}", không phải "completed"`,
+        );
+      }
+      status = "completed";
+    } else {
+      status = ownStatus(slot);
+    }
 
     if (slot.kind === "lesson") {
       const ordinal = slot.lessons[0]!;
       const lesson = lessonByOrdinal.get(ordinal);
-      const status: RowStatus = lesson ? statuses.get(lesson.id) ?? "locked" : "locked";
       rows.push({
         key: `lesson-${ordinal}`,
         kind: "lesson",
@@ -140,20 +196,6 @@ export default async function DashboardPage() {
         href: lesson && status !== "locked" ? `/learn/${lesson.id}` : null,
       });
       continue;
-    }
-
-    const attempt = latestAttempt(slot.kind, slot.lessons);
-    let status: RowStatus;
-    if (attempt === null) {
-      status = scopeCompleted(slot.lessons) ? "available" : "locked";
-    } else if (attempt.status === "in_progress") {
-      status = "in_progress";
-    } else {
-      // Đã nộp hoặc bị đóng vì quá hạn: `passed !== true` tính là chưa đạt —
-      // fail-closed giống hệt cách nextStep đọc hai cột này, nên một dòng
-      // `passed === null` (chưa từng chấm) cũng hiện "Chưa đạt" chứ không im
-      // lặng biến mất khỏi màn hình.
-      status = attempt.passed === true ? "completed" : "failed";
     }
 
     const label =
@@ -175,7 +217,7 @@ export default async function DashboardPage() {
     });
   }
 
-  const continueControl = renderContinue(action, lessonByOrdinal);
+  const continueControl = renderContinue(action, lessonByOrdinal, statuses);
 
   return (
     <main className="flex flex-col gap-6">
@@ -235,16 +277,27 @@ export default async function DashboardPage() {
 function renderContinue(
   action: Action,
   lessonByOrdinal: Map<number, LessonWithGrammar>,
+  statuses: Map<number, LessonStatus>,
 ): React.ReactNode {
   const className = "rounded bg-slate-900 px-4 py-2 text-white";
 
   switch (action.kind) {
     case "lesson": {
       const lesson = lessonByOrdinal.get(action.lesson);
-      // Không nên xảy ra: slotAt chỉ sinh ordinal 1..20, khớp đúng 20 buổi đã
-      // seed. Không có buổi thì không có gì để trỏ tới — im lặng ẩn nút còn
-      // an toàn hơn trỏ vào một buổi không tồn tại.
       if (!lesson) return null;
+
+      // Chỉ trỏ "Học tiếp" vào buổi THẬT SỰ học được (available/in_progress).
+      // "!== completed" là bẫy: một dòng user_lesson_progress mới được ghi
+      // tay mà chưa set status rõ ràng rơi vào default 'locked' của cột (xem
+      // supabase/migrations/0003_user_state.sql:14) — dòng đó cũng
+      // "!== completed" nên vẫn lọt qua nếu chỉ kiểm tra như vậy, dẫn thẳng
+      // người học vào một buổi đang khoá. `nextStep` chỉ biết buổi này
+      // "chưa hoàn thành" (đúng — nó chưa 'completed'), nó KHÔNG biết buổi
+      // đó đã mở hay chưa; mở hay chưa là việc của `lessonStatuses`, và phải
+      // hỏi lại ở đây trước khi vẽ nút, không phải tin thẳng `action`.
+      const status = statuses.get(lesson.id);
+      if (status !== "available" && status !== "in_progress") return null;
+
       return (
         <Link href={`/learn/${lesson.id}`} data-testid="continue-link" className={className}>
           Học tiếp
