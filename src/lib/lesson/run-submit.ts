@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { itemAt, TOTAL_ITEMS } from "./item-plan";
+import { itemAt, scoreOf, TOTAL_ITEMS } from "./item-plan";
 import { buildItem, type BuiltItem } from "./build-item";
 import { loadContext, secretFor } from "./session";
 import { gradeItem } from "./grade";
@@ -55,7 +55,7 @@ export async function runSubmit(
   //    tới, biến một cú double-click vô hại ở câu 135 thành throw vĩnh viễn
   //    (client kẹt ở 135/135, nút vẫn bật, mọi lần thử lại đều lỗi) cho tới
   //    khi tải lại trang. Chỉ 'locked' (hoặc buổi không tồn tại) mới bị chặn.
-  const { lessons, progressRows } = await loadLessonChain(supabase);
+  const { lessons, progressRows } = await loadLessonChain(supabase, userId);
   const forStatus: ProgressRow[] = progressRows.map((r) => ({
     lesson_id: r.lessonId,
     status: r.status,
@@ -85,7 +85,7 @@ export async function runSubmit(
       done,
       // Buổi đã đóng: kèm điểm, không thì client hiển thị "0%" thay vì điểm
       // thật khi một cú double-click ở câu cuối rơi vào nhánh này.
-      score: done ? Math.round(((prog?.finalCorrect ?? 0) / 15) * 100) : undefined,
+      score: done ? scoreOf(prog?.finalCorrect ?? 0) : undefined,
     };
   }
 
@@ -95,7 +95,7 @@ export async function runSubmit(
       position,
       item: null,
       done: true,
-      score: Math.round(((prog?.finalCorrect ?? 0) / 15) * 100),
+      score: scoreOf(prog?.finalCorrect ?? 0),
     };
   }
 
@@ -157,7 +157,7 @@ export async function runSubmit(
   if (!advanced) return staleResult(supabase, userId, lessonId, ctx);
 
   // 7. Cập nhật mastery — chỉ tới đây khi CAS ở bước 4b đã thắng.
-  await applyMastery(supabase, userId, item, result.correct);
+  await applyMastery(supabase, userId, item, result.correct, ctx.grammarLessonId);
 
   return {
     ok: true,
@@ -166,7 +166,7 @@ export async function runSubmit(
     position: nextPosition,
     item: done ? null : buildItem(itemAt(nextPosition), ctx),
     done,
-    score: done ? Math.round((finalCorrect / 15) * 100) : undefined,
+    score: done ? scoreOf(finalCorrect) : undefined,
   };
 }
 
@@ -185,13 +185,22 @@ interface OwnProgressRow {
  */
 async function loadLessonChain(
   supabase: SupabaseClient,
+  userId: string,
 ): Promise<{ lessons: LessonRow[]; progressRows: OwnProgressRow[] }> {
   const { data: lessonsData, error: lessonsErr } = await supabase
     .from("lessons").select("id, ordinal").order("ordinal");
   if (lessonsErr) throw lessonsErr;
 
+  // `.eq("user_id", userId)` là BẮT BUỘC, không thừa: RLS lọc đúng khi client
+  // là client của người dùng, nhưng cả module này được thiết kế để NHẬN client
+  // làm tham số (để test gọi được). Ngày nào đó ai đó truyền vào một client
+  // service role — RLS tắt — thì truy vấn không lọc này trả về tiến độ của MỌI
+  // người và người học sẽ bị chấm theo vị trí của người khác. Lọc tường minh
+  // thì cả hai loại client đều đúng. Cùng lý do ở staleResult và applyMastery.
   const { data: progData, error: progErr } = await supabase
-    .from("user_lesson_progress").select("lesson_id, status, position, final_correct");
+    .from("user_lesson_progress")
+    .select("lesson_id, status, position, final_correct")
+    .eq("user_id", userId);
   if (progErr) throw progErr;
 
   const lessons = (lessonsData ?? []) as LessonRow[];
@@ -239,7 +248,7 @@ async function advancePosition(
     status: done ? "completed" : "in_progress",
   };
   if (done) {
-    row.score = Math.round((finalCorrect / 15) * 100);
+    row.score = scoreOf(finalCorrect);
     row.completed_at = new Date().toISOString();
   }
 
@@ -284,7 +293,7 @@ async function staleResult(
     position,
     item: done ? null : buildItem(itemAt(position), ctx),
     done,
-    score: done ? Math.round((finalCorrect / 15) * 100) : undefined,
+    score: done ? scoreOf(finalCorrect) : undefined,
   };
 }
 
@@ -293,20 +302,59 @@ async function applyMastery(
   userId: string,
   item: BuiltItem,
   correct: boolean,
+  grammarLessonId: number,
 ): Promise<void> {
   if (item.kind === "flashcard") return;
 
   if (item.kind === "grammar") {
-    // grammar_mastery khoá theo grammar_lesson_id, lấy từ chính câu hỏi.
-    // Để trống ở lát này — xem chú thích cuối brief Task 5. Lát 1c mới cần
-    // tới bảng này cho việc dựng đề bổ túc, và ghi bừa theo question_id
-    // (không đúng khoá của bảng) sẽ hỏng dữ liệu chứ không phải bỏ trống.
+    // grammar_mastery khoá theo (user_id, grammar_lesson_id) — xem
+    // 0003_user_state.sql:30-36. `grammarLessonId` đi theo BuildContext vì
+    // loadContext đã phải đọc lessons.grammar_lesson_id để lấy đúng bộ câu
+    // hỏi rồi; question_id KHÔNG phải khoá của bảng này.
+    //
+    // Mỗi buổi có 5 câu ngữ pháp — 100 câu cho cả lộ trình. Không ghi thì
+    // lịch sử đó mất hẳn, và /stats cùng luồng bổ túc ở lát 1d không có cách
+    // nào dựng lại được.
+    const { data: current, error: currentErr } = await supabase
+      .from("grammar_mastery")
+      .select("correct_count, wrong_count")
+      .eq("user_id", userId)
+      .eq("grammar_lesson_id", grammarLessonId)
+      .maybeSingle();
+    if (currentErr) throw currentErr;
+
+    // Dùng lại masteryDelta để hai loại mastery cộng dồn theo CÙNG một luật.
+    // grammar_mastery không có cột `mastered` (bảng này chỉ đếm), nên phần
+    // `mastered` của kết quả bị bỏ đi — truyền `false` vào để nó không ảnh
+    // hưởng gì tới hai bộ đếm.
+    const next = masteryDelta(
+      current
+        ? {
+            correctCount: current.correct_count as number,
+            wrongCount: current.wrong_count as number,
+            mastered: false,
+          }
+        : null,
+      correct,
+    );
+
+    const { error } = await supabase.from("grammar_mastery").upsert(
+      {
+        user_id: userId,
+        grammar_lesson_id: grammarLessonId,
+        correct_count: next.correctCount,
+        wrong_count: next.wrongCount,
+      },
+      { onConflict: "user_id,grammar_lesson_id" },
+    );
+    if (error) throw error;
     return;
   }
 
   const { data: current, error: currentErr } = await supabase
     .from("word_mastery")
     .select("correct_count, wrong_count, mastered")
+    .eq("user_id", userId)
     .eq("word_id", item.wordId)
     .maybeSingle();
   // BẮT BUỘC throw khi lỗi — nếu bỏ qua như trước, một lỗi đọc thoáng qua sẽ

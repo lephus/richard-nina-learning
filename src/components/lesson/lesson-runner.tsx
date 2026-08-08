@@ -15,12 +15,15 @@ export function LessonRunner({
   initialItem,
   initialDone,
   initialScore,
+  isLast,
 }: {
   lessonId: number;
   initialPosition: number;
   initialItem: BuiltItem | null;
   initialDone: boolean;
   initialScore?: number;
+  /** Buổi này là buổi cuối của lộ trình — không còn buổi nào để mở khoá. */
+  isLast: boolean;
 }) {
   const [position, setPosition] = useState(initialPosition);
   const [item, setItem] = useState(initialItem);
@@ -74,7 +77,7 @@ export function LessonRunner({
     if (staged) apply(staged);
   }
 
-  if (done) return <LessonDone score={score ?? 0} />;
+  if (done) return <LessonDone score={score ?? 0} isLast={isLast} />;
   if (!item) return null;
 
   return (
@@ -102,6 +105,11 @@ export function LessonRunner({
         <div
           data-testid="answer-feedback"
           data-correct={String(feedback.correct)}
+          // Thông điệp quan trọng nhất app phát ra. Khối này xuất hiện sau
+          // khi trang đã tải, nên trình đọc màn hình không tự đọc — không có
+          // aria-live thì người dùng screen reader không bao giờ biết mình
+          // đúng hay sai. "polite": chờ đọc xong câu đang đọc rồi mới xen vào.
+          aria-live="polite"
           className={feedback.correct ? "text-green-700" : "text-red-700"}
         >
           {feedback.correct ? "Chính xác." : `Chưa đúng. Đáp án: ${feedback.correctAnswer}`}

@@ -63,6 +63,7 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
   // từ ca trước.
   afterEach(async () => {
     await admin.from("word_mastery").delete().eq("user_id", userId);
+    await admin.from("grammar_mastery").delete().eq("user_id", userId);
     await admin.from("user_lesson_progress").delete().eq("user_id", userId).eq("lesson_id", lesson1);
   });
 
@@ -201,6 +202,44 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
       .from("user_lesson_progress").select("lesson_id")
       .eq("user_id", userId).eq("lesson_id", lesson2);
     expect(l2).toEqual([]);
+  });
+
+  it("câu ngữ pháp GHI grammar_mastery theo (user_id, grammar_lesson_id), đúng và sai đều đếm", async () => {
+    // 5 câu ngữ pháp mỗi buổi × 20 buổi = 100 câu cho cả lộ trình. Trước đây
+    // applyMastery return sớm ở nhánh grammar nên toàn bộ 100 câu đó không để
+    // lại dấu vết nào, và lịch sử ấy KHÔNG dựng lại được về sau — /stats và
+    // luồng bổ túc của lát 1d cần chính nó.
+    const position = 130;
+    const spec = itemAt(position);
+    expect(spec.kind).toBe("grammar");
+
+    await seed(position, 0);
+    const correctAnswer = await secretFor(user, spec, ctx);
+    const first = await runSubmit(user, userId, lesson1, position, correctAnswer);
+    expect(first.correct).toBe(true);
+
+    const key = { user_id: userId, grammar_lesson_id: ctx.grammarLessonId };
+    const { data: afterCorrect, error: e1 } = await admin
+      .from("grammar_mastery")
+      .select("correct_count, wrong_count")
+      .eq("user_id", key.user_id).eq("grammar_lesson_id", key.grammar_lesson_id)
+      .single();
+    if (e1) throw e1;
+    expect(afterCorrect).toEqual({ correct_count: 1, wrong_count: 0 });
+
+    // Câu ngữ pháp kế tiếp, trả lời SAI: cộng dồn vào ĐÚNG dòng đó, không
+    // tạo dòng thứ hai — khoá là bài ngữ pháp, không phải câu hỏi.
+    const next = await runSubmit(user, userId, lesson1, position + 1, "khong-phai-dap-an-nao-ca");
+    expect(next.correct).toBe(false);
+
+    const { data: rows, error: e2 } = await admin
+      .from("grammar_mastery")
+      .select("grammar_lesson_id, correct_count, wrong_count")
+      .eq("user_id", userId);
+    if (e2) throw e2;
+    expect(rows).toEqual([
+      { grammar_lesson_id: ctx.grammarLessonId, correct_count: 1, wrong_count: 1 },
+    ]);
   });
 
   it("buổi đang khoá: runSubmit từ chối, không tạo dòng tiến độ nào", async () => {

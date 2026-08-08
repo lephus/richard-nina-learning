@@ -35,8 +35,19 @@ const PRACTICE_ITEMS = CLUSTERS * ITEMS_PER_CLUSTER; // 120
 const FINAL_MEANING_ITEMS = 10;
 const FINAL_GRAMMAR_ITEMS = 5;
 
-export const TOTAL_ITEMS =
-  PRACTICE_ITEMS + FINAL_MEANING_ITEMS + FINAL_GRAMMAR_ITEMS; // 135
+/** 15 item chốt buổi — thứ DUY NHẤT được tính điểm. 120 item trước là luyện tập. */
+export const FINAL_ITEMS = FINAL_MEANING_ITEMS + FINAL_GRAMMAR_ITEMS; // 15
+
+export const TOTAL_ITEMS = PRACTICE_ITEMS + FINAL_ITEMS; // 135
+
+/**
+ * Điểm của một buổi, thang 100. Một chỗ duy nhất: công thức này từng được
+ * chép tay ở sáu nơi (run-submit.ts và trang /learn), nên sửa mẫu số ở một
+ * nơi mà quên năm nơi kia là chuyện chỉ chờ xảy ra. Lát 1c dùng lại hàm này.
+ */
+export function scoreOf(finalCorrect: number): number {
+  return Math.round((finalCorrect / FINAL_ITEMS) * 100);
+}
 
 export function itemAt(position: number): ItemSpec {
   if (!Number.isInteger(position) || position < 0 || position >= TOTAL_ITEMS) {

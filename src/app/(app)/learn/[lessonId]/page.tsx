@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { lessonStatuses, type LessonRow, type ProgressRow } from "@/lib/curriculum/lesson-status";
 import { loadContext } from "@/lib/lesson/session";
-import { itemAt, TOTAL_ITEMS } from "@/lib/lesson/item-plan";
+import { itemAt, scoreOf, TOTAL_ITEMS } from "@/lib/lesson/item-plan";
 import { buildItem } from "@/lib/lesson/build-item";
 import { LessonRunner } from "@/components/lesson/lesson-runner";
 
@@ -40,6 +40,7 @@ export default async function LearnPage({
   const { data: prog, error: progError } = await supabase
     .from("user_lesson_progress")
     .select("position, final_correct")
+    .eq("user_id", user.id)
     .eq("lesson_id", id)
     .maybeSingle();
   if (progError) throw progError;
@@ -58,7 +59,8 @@ export default async function LearnPage({
         initialPosition={position}
         initialItem={done ? null : buildItem(itemAt(position), ctx)}
         initialDone={done}
-        initialScore={done ? Math.round(((prog?.final_correct ?? 0) / 15) * 100) : undefined}
+        initialScore={done ? scoreOf(prog?.final_correct ?? 0) : undefined}
+        isLast={lessons[lessons.length - 1]?.id === id}
       />
     </main>
   );
