@@ -38,6 +38,12 @@ test("mở buổi 1 thì thấy thẻ từ đầu tiên", async ({ page }) => {
 });
 
 test("trả lời một câu thì phản hồi hiện ngay", async ({ page }) => {
+  // 11 thao tác, mỗi thao tác là một round-trip thật. Trên localhost vừa đủ
+  // 30s mặc định, nhưng khi chạy với PLAYWRIGHT_BASE_URL trỏ tới Vercel thì
+  // mỗi vòng chậm hơn đáng kể và kịch bản này vượt ngân sách — dù chính tính
+  // năng đó vẫn chạy đúng (kịch bản vị trí 30 làm nhiều hơn hẳn và vẫn xanh).
+  test.setTimeout(90_000);
+
   await login(page);
   await page.getByTestId("continue-link").click();
 
