@@ -330,6 +330,33 @@ describe.skipIf(!hasEnv)("vong lam bai danh gia", () => {
     expect(PASS_MARK.remedial).toBe(80);
   }, 60_000);
 
+  it("trả lời lại một câu thì đổi được đáp án nhưng KHÔNG cộng mastery lần hai", async () => {
+    const now = new Date();
+    const id = await startAssessment(user, userId, "review", [9, 10], null, now);
+    const rows = await itemsOf(id);
+    const row = rows.find((r) => r.item_type === "vocab")!;
+
+    await answerItem(user, userId, id, row.position, "sai đã", now);
+    const second = await answerItem(
+      user, userId, id, row.position, await correctAnswerFor(row), now,
+    );
+    expect(second).toEqual({ ok: true, correct: true });
+
+    // Đáp án và kết quả chấm CÓ đổi theo lượt trả lời sau.
+    const after = (await itemsOf(id)).find((r) => r.position === row.position)!;
+    expect(after.is_correct).toBe(true);
+    expect(after.user_answer).not.toBe("sai đã");
+
+    // Nhưng mastery chỉ ghi MỘT lần, theo lượt trả lời đầu: tổng hai bộ đếm
+    // đúng bằng 1. Không có chốt `is("user_answer", null)` thì con số này là 2,
+    // và bấm đi bấm lại một câu là bơm được `correct_count` lên tuỳ ý.
+    const { data: mastery } = await admin
+      .from("word_mastery").select("correct_count, wrong_count")
+      .eq("user_id", userId).eq("word_id", row.ref_id).single();
+    expect(mastery!.correct_count + mastery!.wrong_count).toBe(1);
+    expect(mastery!.wrong_count).toBe(1);
+  });
+
   it("nộp lần thứ hai không đổi gì, trả lại đúng kết quả cũ", async () => {
     const now = new Date();
     const id = await startAssessment(user, userId, "review", [1, 2], null, now);
