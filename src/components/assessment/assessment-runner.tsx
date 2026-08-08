@@ -5,6 +5,14 @@ import { useRouter } from "next/navigation";
 import { answerAction, submitAction } from "@/app/(app)/assessment/[id]/actions";
 import { Countdown } from "./countdown";
 
+// Cửa sổ tối đa chờ round trip đang bay trước khi tự nộp KHÔNG ĐIỀU KIỆN khi
+// hết giờ — xem effect "đường dự phòng" trong AssessmentRunner để biết lý do
+// bắt buộc phải có cửa sổ này. Vài giây là đủ rộng để một round trip BÌNH
+// THƯỜNG (một lượt answerAction, thường dưới 1 giây) luôn về trước khi cửa sổ
+// đóng, nhưng đủ hẹp để một request bị TREO không giữ người học lại sau hạn
+// giờ vô thời hạn.
+const AUTO_SUBMIT_FALLBACK_MS = 5000;
+
 /** Một câu như đã đóng băng trong `assessment_items` — xem `run.ts`. */
 export interface AssessmentRunnerItem {
   position: number;
@@ -46,7 +54,7 @@ export function AssessmentRunner({
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
-  // Đồng hồ chạm 0 chỉ BẬT CỜ, không nộp thẳng — xem effect bên dưới. Nếu
+  // Đồng hồ chạm 0 chỉ BẬT CỜ, không nộp thẳng — xem hai effect bên dưới. Nếu
   // `onExpire` gọi `submitAction` ngay lúc còn một `answerAction` đang bay
   // (round trip chưa xong), `finalize` chấm và điền câu đó thành sai TRƯỚC,
   // rồi lượt `answerItem` trả lời muộn ghi `is_correct = true` ĐÈ LÊN SAU khi
@@ -54,6 +62,7 @@ export function AssessmentRunner({
   // túc (dựng từ `is_correct = false` của bài cha) thiếu hoặc thừa một câu.
   const [expired, setExpired] = useState(false);
   const autoSubmittedRef = useRef(false);
+  const autoSubmitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const submitNow = useCallback(() => {
     startTransition(async () => {
@@ -69,33 +78,82 @@ export function AssessmentRunner({
     });
   }, [assessmentId, router]);
 
-  // Chờ tới khi KHÔNG còn round trip nào dở dang rồi mới tự nộp — chạy lại
-  // mỗi khi `pending` đổi, nên nếu lúc hết giờ đúng lúc một answerAction đang
-  // bay, effect này tự thử lại ngay khi round trip đó xong thay vì bỏ lỡ vĩnh
-  // viễn (Countdown chỉ gọi `onExpire` ĐÚNG MỘT LẦN — xem countdown.tsx).
-  // `autoSubmittedRef` là lớp chặn THỨ HAI, độc lập với ref bên trong
-  // Countdown, đặt ngay tại nơi thật sự gọi submitAction.
-  useEffect(() => {
-    if (expired && !pending && !autoSubmittedRef.current) {
-      autoSubmittedRef.current = true;
-      submitNow();
+  // Cổng DUY NHẤT dẫn tới `submitNow` cho đường tự nộp — cả đường nhanh lẫn
+  // đường dự phòng bên dưới đều gọi qua đây, nên `autoSubmittedRef` đảm bảo
+  // dù cái nào thắng, `submitAction` cũng chỉ thật sự chạy đúng một lần.
+  const triggerAutoSubmit = useCallback(() => {
+    if (autoSubmittedRef.current) return;
+    autoSubmittedRef.current = true;
+    if (autoSubmitTimerRef.current !== null) {
+      clearTimeout(autoSubmitTimerRef.current);
+      autoSubmitTimerRef.current = null;
     }
-  }, [expired, pending, submitNow]);
+    submitNow();
+  }, [submitNow]);
+
+  // Đường NHANH: hết giờ mà không còn round trip nào dở dang → nộp ngay,
+  // không đợi cửa sổ dự phòng ở dưới. Chạy lại mỗi khi `pending` đổi, nên nếu
+  // lúc hết giờ đúng lúc một answerAction đang bay, effect này tự thử lại
+  // ngay khi round trip đó XONG (dù đúng ra hết hạn hay lỗi) — đây là trường
+  // hợp thường gặp và effect nắm bắt được ngay, không cần chờ hết cửa sổ.
+  useEffect(() => {
+    if (expired && !pending) triggerAutoSubmit();
+  }, [expired, pending, triggerAutoSubmit]);
+
+  // Đường DỰ PHÒNG, bắt buộc phải có: một request KHÔNG BAO GIỜ resolve hay
+  // reject (mất mạng giữa chừng, treo ở tầng hạ tầng) thì `pending` không bao
+  // giờ về `false`, và đường nhanh ở trên không bao giờ chạy — người học kẹt
+  // trên màn hình làm bài, sau hạn giờ, vô thời hạn: mọi nút (chọn đáp án,
+  // trước/sau, bảng số câu, cả nút "Nộp bài") đều `disabled={pending}`, không
+  // có lối thoát nào khác trong lúc dashboard (Task 7) chưa nối tới
+  // `closeExpired`. Hẹn giờ CỐ ĐỊNH ngay khi `expired` bật: hết
+  // `AUTO_SUBMIT_FALLBACK_MS` là tự nộp bất kể `pending` đang là gì —
+  // `triggerAutoSubmit` không đọc `pending` nữa nên nhánh này thật sự VÔ
+  // ĐIỀU KIỆN.
+  useEffect(() => {
+    if (!expired) return;
+    const t = setTimeout(triggerAutoSubmit, AUTO_SUBMIT_FALLBACK_MS);
+    autoSubmitTimerRef.current = t;
+    return () => {
+      clearTimeout(t);
+      if (autoSubmitTimerRef.current === t) autoSubmitTimerRef.current = null;
+    };
+  }, [expired, triggerAutoSubmit]);
 
   const current = items[index];
   const answeredCount = Object.keys(answers).length;
 
-  /** Điều hướng (nút trước/sau, bảng số câu) — chặn khi còn round trip dở
-   * dang, không chỉ dựa vào `disabled` trên nút: `disabled` chỉ có hiệu lực
-   * SAU khi React commit lại DOM, nên vẫn có một khung hình ngắn bấm lọt
-   * được nếu chỉ trông cậy vào thuộc tính đó. */
+  // Chặn hai lần trả lời chồng nhau lên CÙNG một câu (finding 3, review Task
+  // 6) — dùng REF chứ không phải `pending`: `pending` (useTransition) và
+  // `disabled={pending}` trên các nút đều đọc CÙNG một giá trị của CÙNG một
+  // lần render, nên nếu hai sự kiện bấm lọt vào trước khi React kịp render
+  // lại (chưa có lần render nào chen giữa), CẢ HAI đều còn thấy `pending =
+  // false` — kiểm `if (pending) return` không chặn được gì mà `disabled`
+  // chưa chặn sẵn (đã bị vạch ra ở review Task 6: hai thứ đó thừa lẫn nhau,
+  // không thứ nào bảo vệ được thứ kia). Gán `.current` là một phép gán JS
+  // THUẦN, có hiệu lực NGAY LẬP TỨC, không đợi qua bất kỳ chu kỳ render nào —
+  // nên dù lần bấm thứ hai xảy ra trong CÙNG một tick với lần thứ nhất, nó
+  // vẫn thấy đúng giá trị vừa được gán.
+  const submittingRef = useRef(false);
+
+  /** Điều hướng (nút trước/sau, bảng số câu). Chỉ đọc `pending` — CÙNG giá
+   * trị với `disabled={pending}` trên các nút gọi hàm này, nên đây không phải
+   * một lớp bảo vệ độc lập, chỉ là gương của thuộc tính `disabled` (không
+   * hại gì khi giữ, nhưng đừng tưởng nó chặn được gì mà `disabled` chưa chặn
+   * sẵn). Bảo vệ THẬT cho hệ quả của việc điều hướng lúc còn dở dang nằm ở
+   * chỗ khác: `submittingRef` phía trên chặn `pick` bị gọi chồng lên chính
+   * nó, còn việc `setIndex` trong `pick` là TUYỆT ĐỐI theo `answeringIndex`
+   * đã chụp (bên dưới) khiến việc `goTo` có lọt qua trong lúc pick đang bay
+   * hay không cũng không còn quan trọng — câu đang trả lời không bao giờ bị
+   * nhảy cóc qua. */
   function goTo(i: number) {
     if (pending) return;
     setIndex(Math.max(0, Math.min(total - 1, i)));
   }
 
   function pick(answer: string) {
-    if (!current || pending) return;
+    if (!current || submittingRef.current) return;
+    submittingRef.current = true;
     setError(null);
 
     // Chụp lại NGAY câu đang trả lời — không đọc `index`/`current` bên trong
@@ -113,14 +171,14 @@ export function AssessmentRunner({
         }
         setAnswers((a) => ({ ...a, [answeringPosition]: answer }));
         // Chỉ tự động sang câu KẾ TIẾP nếu người học VẪN đứng ở đúng câu vừa
-        // trả lời. Nếu trong lúc chờ họ đã tự bấm sang câu khác (nút bị chặn
-        // bởi `pending` phía trên, nhưng vẫn có thể lọt một cú bấm ở khung
-        // hình trước khi `disabled` có hiệu lực), `index` hiện tại không còn
-        // là `answeringIndex` nữa — đẩy tiếp từ vị trí MỚI đó sẽ nhảy cóc qua
-        // đúng câu họ đang xem, để nó mãi mãi trống.
+        // trả lời. Nếu trong lúc chờ họ đã tự điều hướng sang câu khác, `index`
+        // hiện tại không còn là `answeringIndex` nữa — đẩy tiếp từ vị trí MỚI
+        // đó sẽ nhảy cóc qua đúng câu họ đang xem, để nó mãi mãi trống.
         setIndex((i) => (i === answeringIndex ? Math.min(total - 1, i + 1) : i));
       } catch {
         setError("Không gửi được câu trả lời. Thử lại.");
+      } finally {
+        submittingRef.current = false;
       }
     });
   }
