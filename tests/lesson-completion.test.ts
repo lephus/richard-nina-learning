@@ -58,13 +58,23 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
     ctx = await loadContext(user, lesson1, userId);
   });
 
-  // Mỗi ca tự gieo trạng thái xuất phát ở buổi 1 — xoá sạch giữa các ca để
-  // upsert gieo trạng thái không kế thừa cột còn sót (score, completed_at)
-  // từ ca trước.
+  // Mỗi ca tự gieo trạng thái xuất phát ở buổi 1 (và một ca gieo cả buổi 2 —
+  // xem "hồi quy cho gate Task 7" bên dưới) — xoá sạch giữa các ca để upsert
+  // gieo trạng thái không kế thừa cột còn sót (score, completed_at) từ ca
+  // trước.
+  //
+  // `.in("lesson_id", [lesson1, lesson2])` — KHÔNG chỉ `lesson1` (review Task
+  // 8 round 2, finding 7): dọn ở CUỐI THÂN TEST (như bản trước) bỏ sót đúng
+  // trường hợp quan trọng nhất — khi gate hồi quy VÀ `rejects.toThrow()`
+  // thất bại, test dừng lại NGAY tại assertion đó, dòng dọn dẹp thủ công phía
+  // sau không bao giờ chạy tới, và dòng buổi 2 'completed' (cùng dòng tiến độ
+  // buổi 3 vừa bị ghi sai) rò sang test kế tiếp — biến một hồi quy thật thành
+  // một lỗi trông như flaky ở một test khác hoàn toàn. Đặt trong `afterEach`
+  // thì dù thân test throw ở đâu, Vitest vẫn luôn chạy hook này.
   afterEach(async () => {
     await admin.from("word_mastery").delete().eq("user_id", userId);
     await admin.from("grammar_mastery").delete().eq("user_id", userId);
-    await admin.from("user_lesson_progress").delete().eq("user_id", userId).eq("lesson_id", lesson1);
+    await admin.from("user_lesson_progress").delete().eq("user_id", userId).in("lesson_id", [lesson1, lesson2]);
   });
 
   // CHỈ xoá theo user_id của chính tài khoản này — xem Global Constraints.
@@ -292,11 +302,10 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
       .select("lesson_id").eq("user_id", userId).eq("lesson_id", lesson3);
     expect(row).toEqual([]);
 
-    // Dọn riêng ngay tại đây: afterEach của tệp này (đầu describe) CHỈ xoá
-    // dòng của buổi 1 — buổi 2 phải tự dọn ở đây để không rò trạng thái
-    // 'completed' sang bất kỳ test nào được thêm sau này trong cùng tệp.
-    await admin.from("user_lesson_progress").delete()
-      .eq("user_id", userId).in("lesson_id", [lesson1, lesson2]);
+    // Không tự dọn ở đây — `afterEach` của describe (đã sửa để xoá CẢ buổi 1
+    // lẫn buổi 2) lo việc đó, và lo được cả khi `rejects.toThrow()` ở trên
+    // thất bại (thân test dừng giữa chừng, không chạy tới được dòng dọn dẹp
+    // thủ công nào đặt ở đây).
   });
 
   it("hai yêu cầu đua nhau từ CÙNG vị trí: chỉ một được ghi, vị trí không bị đẩy lùi hay vượt quá 1 bước", async () => {

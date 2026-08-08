@@ -110,10 +110,17 @@ test.afterEach(async () => {
   if (error) throw error;
   const u = data?.users.find((x) => x.email === TEST_EMAIL);
   if (u) {
-    await admin.from("assessments").delete().eq("user_id", u.id);
-    await admin.from("user_lesson_progress").delete().eq("user_id", u.id);
-    await admin.from("word_mastery").delete().eq("user_id", u.id);
-    await admin.from("grammar_mastery").delete().eq("user_id", u.id);
+    // Mỗi lượt xoá đọc `error` riêng và ném ngay — nuốt lỗi ở đây thì dòng
+    // còn sót lại rò sang kịch bản kế tiếp mà `afterEach` vẫn báo "xong",
+    // đúng constraint "không bao giờ nuốt lỗi Supabase" của cả lát này.
+    const delAssessments = await admin.from("assessments").delete().eq("user_id", u.id);
+    if (delAssessments.error) throw delAssessments.error;
+    const delProgress = await admin.from("user_lesson_progress").delete().eq("user_id", u.id);
+    if (delProgress.error) throw delProgress.error;
+    const delWord = await admin.from("word_mastery").delete().eq("user_id", u.id);
+    if (delWord.error) throw delWord.error;
+    const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", u.id);
+    if (delGrammar.error) throw delGrammar.error;
   }
 });
 
@@ -201,24 +208,45 @@ test("đáp án không lộ ra qua thân phản hồi mạng khi bấm chọn m�
   // được phần TUẦN TỰ HOÁ thật gửi qua dây — đây là lớp duy nhất bắt được một
   // hồi quy kiểu "return answerItem(...)" (đã từng xảy ra ở review Task 6).
   //
-  // Dùng `page.waitForResponse` (chạy trên nền tảng `page.on('response', …)`
-  // của chính Playwright) thay vì tự dựng `new Promise` + gắn listener tay:
-  // bản tự dựng ban đầu có lúc treo tới hết `test.setTimeout` khi chạy chung
-  // cả bộ (không phải khi chạy riêng file này) — trang vẫn cập nhật đúng
-  // (round trip THẬT SỰ thành công, xác nhận qua `assessment-progress` sau
-  // đó), nghĩa là lỗi nằm ở cách tự dựng Promise của kịch bản, không phải ở
-  // sản phẩm: có khả năng `response.text()` không settle (resolve lẫn
-  // reject) cho MỌI response trong mọi điều kiện tải, và nhánh `.catch(() =>
-  // {})` khi đó nuốt luôn thất bại mà không bao giờ gọi `resolve()`, treo
-  // vĩnh viễn. `waitForResponse` là API đã được Playwright kiểm thử kỹ cho
-  // đúng việc này, và nếu đọc thân phản hồi lỗi thật sự, nó ném lỗi RÕ RÀNG
-  // thay vì treo âm thầm.
-  const responsePromise = page.waitForResponse(
-    (response) => response.request().method() === "POST" && response.url() === pageUrl,
-  );
+  // ĐÃ QUA HAI CÁCH ĐỌC THÂN PHẢN HỒI TRƯỚC, CẢ HAI ĐỀU KHÔNG ỔN ĐỊNH dưới
+  // tải khi chạy CHUNG cả bộ (không phải khi chạy riêng file này — trang vẫn
+  // cập nhật đúng, round trip THẬT SỰ thành công, nên lỗi cả hai lần đều nằm
+  // ở CÁCH bài test đọc thân phản hồi, không phải ở sản phẩm):
+  //   1. Tự dựng `new Promise` + gắn tay `page.on('response', …)`: có lúc
+  //      treo tới hết `test.setTimeout`.
+  //   2. `page.waitForResponse(...)` rồi `await response.text()` riêng: có
+  //      lúc ném "Response body is not available for a response that was
+  //      navigated away from" — đọc thân phản hồi SAU KHI sự kiện 'response'
+  //      đã bắn ra ngoài đôi lúc thua một cuộc đua với vòng đời trang ở CDP,
+  //      dưới tải nặng của việc chạy tuần tự nhiều chục kịch bản.
+  //
+  // Cách thứ BA, dùng `page.route` + `route.fetch()` + `route.fulfill()`:
+  // thay vì CHỜ một response đã xảy ra rồi mới đọc, kịch bản tự THỰC HIỆN
+  // request đó (qua `route.fetch()`, chạy trong tiến trình Playwright, không
+  // phụ thuộc vòng đời trang) rồi mới chuyển tiếp y nguyên xuống trang (qua
+  // `route.fulfill({ response })`, để `answerAction` phía client vẫn nhận
+  // đúng dữ liệu, hành vi ứng dụng không đổi). Không còn cuộc đua nào với
+  // trình duyệt để thắng hay thua.
+  let capturedBody: string | null = null;
+  await page.route(pageUrl, async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+    const response = await route.fetch();
+    capturedBody = await response.text();
+    await route.fulfill({ response });
+  });
+
   await page.getByTestId("choice-option").first().click();
-  const response = await responsePromise;
-  const body = await response.text();
+  await expect.poll(() => capturedBody !== null, { timeout: 10_000 }).toBe(true);
+  const body = capturedBody!;
+
+  // Thân KHÔNG được rỗng — nếu không, `not.toContain("correct")` phía dưới
+  // đúng một cách vô nghĩa (chuỗi rỗng không chứa gì cả). Đây là khẳng định
+  // xác nhận bài test THẬT SỰ đọc được nội dung phản hồi, không phải phép so
+  // đang so với "".
+  expect(body.length).toBeGreaterThan(0);
 
   // Bắt cả "correct" lẫn "is_correct" bằng một lần kiểm chuỗi con —
   // answerAction chỉ được phép trả `{ ok }`, không trường nào trong thân phản
@@ -261,16 +289,25 @@ test("điều hướng giữa lúc còn một lượt ghi dở dang không bỏ 
   // hay đơn giản là bấm rất nhanh trước khi React kịp áp `disabled`).
   await nextButton.dispatchEvent("click", { bubbles: true, cancelable: true });
 
-  // Vẫn đứng yên ở câu 3 trong lúc round trip còn dở dang — `goTo` đọc
-  // `pending` và trả về ngay, không nhảy. Cửa sổ ngắn (300ms) vì đây phải là
-  // gần như tức thời trong một lần chạy đúng — nếu guard bị gỡ, `goTo` nhảy
-  // NGAY LẬP TỨC và khẳng định này rớt trước khi kịp chạm 300ms.
+  // ĐÂY LÀ KHẲNG ĐỊNH PHÂN BIỆT ĐƯỢC của kịch bản này (dòng dưới, "4 / 25",
+  // KHÔNG phải — xem giải thích ngay sau). `goTo` đọc `pending` và trả về
+  // ngay nếu guard đó còn nguyên. Cửa sổ ngắn (300ms, tức đọc gần như tức
+  // thời) vì nếu guard bị gỡ, `setIndex` trong `goTo` chạy NGAY LẬP TỨC lúc
+  // dispatchEvent — progress sẽ đã là "4 / 25" chỉ vài mili giây sau, không
+  // phải "3 / 25", và khẳng định này rớt trước khi kịp chạm 300ms.
   await expect(progress).toHaveText("3 / 25", { timeout: 300 });
 
-  // Round trip xong (~2s) thì tự động sang ĐÚNG câu 4 — KHÔNG BAO GIỜ 5/25.
-  // 5/25 là đúng cái sẽ xảy ra nếu `goTo` không bị chặn: nó nhảy lên 4/25
-  // ngay lập tức lúc dispatchEvent, rồi callback hoàn tất của `pick` (đường
-  // tự-động-sang-câu-kế) cộng thêm một bước nữa từ chỗ đã nhảy tới.
+  // Sau khi round trip xong (~2s), progress LUÔN kết thúc ở "4 / 25" — CẢ HAI
+  // trường hợp (guard `goTo` còn hay đã bị gỡ) đều hội tụ về đúng giá trị
+  // này, nên dòng dưới đây KHÔNG phải khẳng định phân biệt lỗi (chỉ là khẳng
+  // định "bài vẫn tiến triển đúng, không kẹt"): `pick`'s auto-advance so
+  // TUYỆT ĐỐI với `answeringIndex` đã chụp lúc bấm (2), không cộng dồn tương
+  // đối — nếu `goTo` đã nhảy index lên 3 từ trước (guard bị gỡ), lúc round
+  // trip xong `i(3) !== answeringIndex(2)` nên auto-advance là no-op, GIỮ
+  // NGUYÊN 3 (tức "4 / 25"); nếu `goTo` bị chặn (guard còn), auto-advance tự
+  // cộng từ 2 lên 3 (cũng "4 / 25"). "5 / 25" không xảy ra được ở CẢ HAI
+  // trường hợp — bất biến `answeringIndex` tuyệt đối này đã được kiểm riêng ở
+  // Task 6 review, không phải điều kịch bản này lập ra để bắt.
   await expect(progress).toHaveText("4 / 25", { timeout: 8000 });
 });
 
@@ -317,9 +354,13 @@ test("request treo không giữ người học quá hạn — có cửa sổ d�
   await login(page);
   const assessmentId = await startFromDashboard(page);
 
-  // Kéo hạn về rất gần hiện tại (15 giây) thay vì đợi 60 phút thật — ghi
+  // Kéo hạn về rất gần hiện tại (30 giây) thay vì đợi 60 phút thật — ghi
   // thẳng `expires_at`, cùng cơ chế "seed trực tiếp" đã dùng cho tiến độ buổi.
-  const desiredRemainingMs = 15_000;
+  // 30s (không phải 15s) để phần "setup" phía dưới (một round trip DB cho
+  // `update expires_at`, cộng một `page.reload()` TRỌN VẸN của bản build
+  // production — không phải dev) có đủ dư địa trước khi bấm, không ăn hết
+  // ngân sách còn lại.
+  const desiredRemainingMs = 30_000;
   const expiryDeadline = Date.now() + desiredRemainingMs;
   const { error: updateErr } = await admin
     .from("assessments")
@@ -361,7 +402,7 @@ test("request treo không giữ người học quá hạn — có cửa sổ d�
   const countdown = page.getByTestId("countdown");
   await expect(countdown).toBeVisible();
   const remainingAtStart = parseMmSs(await countdown.innerText());
-  expect(remainingAtStart).toBeGreaterThan(3); // đủ thời gian để bấm TRƯỚC khi hết hạn
+  expect(remainingAtStart).toBeGreaterThan(10); // đủ thời gian để bấm TRƯỚC khi hết hạn
 
   // Bấm MỘT đáp án để tạo ra request đang bay — nó treo mãi (route ở trên
   // không bao giờ trả lời), nên `pending` không bao giờ tự về false, và
@@ -370,8 +411,15 @@ test("request treo không giữ người học quá hạn — có cửa sổ d�
   // đứng hình vĩnh viễn.
   await page.getByTestId("choice-option").first().click();
 
-  // Chờ route xử lý thô của đường dự phòng nhận được request.
-  await expect.poll(() => fallbackPostTimestamps.length, { timeout: 30_000 }).toBeGreaterThanOrEqual(1);
+  // Chờ route xử lý thô của đường dự phòng nhận được request. Hạn của CHÍNH
+  // `expect.poll` này (KHÔNG phải khẳng định về độ trễ — đó là dòng dưới)
+  // phải rộng hơn `desiredRemainingMs` (30s): nếu phần setup phía trên (đăng
+  // nhập, tạo bài kiểm tra 60 câu thật, ghi `expires_at`, tải lại) nhanh bất
+  // thường, gần như toàn bộ 30 giây đó vẫn còn nguyên lúc bấm — cộng thêm 5s
+  // hẹn giờ dự phòng và hao phí, tổng có thể chạm gần 35-36s. 45s chừa đủ
+  // biên trong MỌI trường hợp (kể cả trường hợp "nhanh" đó), không chỉ
+  // trường hợp thường gặp.
+  await expect.poll(() => fallbackPostTimestamps.length, { timeout: 45_000 }).toBeGreaterThanOrEqual(1);
   const submitAt = fallbackPostTimestamps[0]!;
 
   // Cửa sổ có biên: tối đa một nấc đồng hồ (đến 1s) cộng hẹn giờ dự phòng
@@ -379,7 +427,7 @@ test("request treo không giữ người học quá hạn — có cửa sổ d�
   // sau hạn. Đây là khẳng định sẽ KHÔNG BAO GIỜ đạt được nếu hẹn giờ dự phòng
   // bị gỡ khỏi mã, hoặc nếu ai đó "dọn gọn" đường dự phòng về gọi lại
   // `submitAction` (Server Action) như cũ: khi đó `fallbackPostTimestamps`
-  // mãi mãi rỗng, và chính `expect.poll` phía trên sẽ hết hạn (30s) trước khi
+  // mãi mãi rỗng, và chính `expect.poll` phía trên sẽ hết hạn (45s) trước khi
   // tới được dòng này.
   expect(submitAt - expiryDeadline).toBeLessThan(10_000);
 
@@ -388,6 +436,91 @@ test("request treo không giữ người học quá hạn — có cửa sổ d�
   // vĩnh viễn) và thấy được kết quả — route xử lý thô nộp xong rồi tự
   // `window.location.reload()`.
   await expect(page.getByTestId("assessment-verdict")).toBeVisible({ timeout: 15_000 });
+});
+
+test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, không đứng hình vĩnh viễn", async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  // Kịch bản trên chỉ treo `answerAction`, để `/api/assessment/[id]/submit`
+  // hoàn tất bình thường — chứng minh route thô hoạt động, nhưng KHÔNG chứng
+  // minh được `AbortSignal.timeout` trong `submitViaRawFetch` (review round
+  // 2, finding 1). Nếu CHÍNH route thô cũng treo (mất mạng thật, không phải
+  // kẹt hàng đợi Next — ví dụ Wi-Fi captive portal), `fetch()` không có hạn
+  // sẽ đứng chờ vĩnh viễn và `window.location.reload()` không bao giờ tới
+  // lượt — đúng lỗi gốc, chỉ dời xuống một tầng. Kịch bản này treo CẢ HAI
+  // route (cả `pageUrl` lẫn route thô) để buộc phải đi qua đúng nhánh
+  // `AbortSignal`/`catch` mới thoát được.
+  //
+  // Vì cả hai route đều treo VĨNH VIỄN, `submitAssessment` không bao giờ
+  // thực sự chạy — bài KHÔNG được nộp, nên không thể khẳng định
+  // `assessment-verdict` xuất hiện (đó là một điều SAI trong hoàn cảnh này).
+  // Điều ĐÚNG và vẫn đo được: trình duyệt phải tự TẢI LẠI trang (một GET mới
+  // tới đúng URL) trong một cửa sổ có biên — bằng chứng client không đứng
+  // hình chờ mãi mãi, dù server có phản hồi hay không.
+  const admin = adminClient();
+  const userId = await getUserId(admin);
+  await unlockTestSlot(admin, userId);
+
+  await login(page);
+  const assessmentId = await startFromDashboard(page);
+
+  const desiredRemainingMs = 30_000;
+  const expiryDeadline = Date.now() + desiredRemainingMs;
+  const { error: updateErr } = await admin
+    .from("assessments")
+    .update({ expires_at: new Date(expiryDeadline).toISOString() })
+    .eq("id", assessmentId)
+    .eq("user_id", userId);
+  if (updateErr) throw updateErr;
+  await page.reload();
+
+  const pageUrl = page.url();
+  const fallbackSubmitUrl = new URL(`/api/assessment/${assessmentId}/submit`, pageUrl).toString();
+
+  const freshLoadTimestamps: number[] = [];
+  page.on("request", (req) => {
+    if (req.method() === "GET" && req.url() === pageUrl) freshLoadTimestamps.push(Date.now());
+  });
+
+  await page.route(pageUrl, async (route) => {
+    if (route.request().method() === "POST") {
+      await new Promise(() => {
+        /* answerAction treo vĩnh viễn — không bao giờ resolve/reject */
+      });
+      return;
+    }
+    await route.continue(); // GET (tải trang thường lẫn tải lại) phải qua bình thường
+  });
+  // Route thô của đường dự phòng CŨNG treo vĩnh viễn — không gọi
+  // route.continue()/route.fulfill() ở đây.
+  await page.route(fallbackSubmitUrl, async () => {
+    await new Promise(() => {
+      /* mô phỏng route thô cũng mất mạng giữa chừng */
+    });
+  });
+
+  const countdown = page.getByTestId("countdown");
+  await expect(countdown).toBeVisible();
+  const remainingAtStart = parseMmSs(await countdown.innerText());
+  expect(remainingAtStart).toBeGreaterThan(10);
+
+  await page.getByTestId("choice-option").first().click();
+
+  // Hạn của CHÍNH `expect.poll` (không phải khẳng định độ trễ ở dòng dưới)
+  // phải rộng hơn TỔNG mọi thứ có thể cộng dồn ở trường hợp XẤU NHẤT: tối đa
+  // `desiredRemainingMs` (30s, nếu setup nhanh bất thường và gần như cả 30s
+  // còn nguyên lúc bấm) + 5s hẹn giờ dự phòng + 8s (RAW_FETCH_TIMEOUT_MS
+  // trong assessment-runner.tsx — không import được từ file "use client" vào
+  // Node, lặp lại con số ở đây có chủ đích, xem comment tại nơi định nghĩa) +
+  // biên hao phí ≈ 46-47s. 60s chừa đủ biên. KHÔNG đạt được nếu ai đó gỡ
+  // `AbortSignal.timeout` khỏi `submitViaRawFetch`: khi đó `fetch()` treo vô
+  // thời hạn giống hệt `answerAction`, không bao giờ vào `catch`, không bao
+  // giờ reload, và `expect.poll` dưới đây hết hạn (60s) trước khi thấy GET
+  // nào.
+  await expect.poll(() => freshLoadTimestamps.length, { timeout: 60_000 }).toBeGreaterThanOrEqual(1);
+  const reloadAt = freshLoadTimestamps[0]!;
+  expect(reloadAt - expiryDeadline).toBeLessThan(20_000);
 });
 
 test("bảng số câu dùng được trên điện thoại — không tràn ngang, đủ 4 phương án, ba trạng thái phân biệt bằng computed style", async ({
@@ -464,7 +597,17 @@ test("đồng hồ chuyển đỏ khi còn dưới 5 phút", async ({ page }) =>
   // trị hex tay (Tailwind v4 có thể không serialize màu ra dạng rgb() cổ điển
   // nữa): cả hai đọc từ CÙNG một stylesheet đã tải trên trang, nên phép so
   // sánh đúng bất kể định dạng màu computed style trả về là gì.
-  const [countdownColor, referenceRed] = await Promise.all([
+  //
+  // Probe THỨ HAI (`text-slate-500`, đúng lớp `assessment-progress` đang dùng
+  // ngay cạnh) là KIỂM SOÁT ÂM, bắt buộc phải có: nếu `text-red-600` có ngày
+  // nào biến mất khỏi CSS đã biên dịch (ví dụ Tailwind purge nhầm vì class
+  // được ghép chuỗi động ở countdown.tsx, không phải literal tĩnh), cả
+  // countdown lẫn probe đỏ sẽ CÙNG rơi về màu kế thừa mặc định của trình
+  // duyệt — và phép so `toBe(referenceRed)` một mình vẫn "khớp" một cách giả
+  // tạo (đúng lỗi trước, không phân biệt được). Probe xám chắc chắn PHẢI khác
+  // countdown — nếu cả hai probe cùng màu nhau (cả hai đều rơi về mặc định),
+  // khẳng định âm này bắt được ngay điều khẳng định dương phía trên bỏ lọt.
+  const [countdownColor, referenceRed, referenceSlate] = await Promise.all([
     countdown.evaluate((el) => getComputedStyle(el).color),
     page.evaluate(() => {
       const probe = document.createElement("span");
@@ -474,9 +617,18 @@ test("đồng hồ chuyển đỏ khi còn dưới 5 phút", async ({ page }) =>
       probe.remove();
       return color;
     }),
+    page.evaluate(() => {
+      const probe = document.createElement("span");
+      probe.className = "text-slate-500";
+      document.body.appendChild(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      return color;
+    }),
   ]);
 
   expect(countdownColor).toBe(referenceRed);
+  expect(countdownColor).not.toBe(referenceSlate);
 });
 
 test("bài ôn tập không hiển thị đồng hồ đếm ngược", async ({ page }) => {
@@ -490,4 +642,22 @@ test("bài ôn tập không hiển thị đồng hồ đếm ngược", async ({
 
   await expect(page.getByTestId("assessment-prompt")).toBeVisible();
   await expect(page.getByTestId("countdown")).toHaveCount(0);
+});
+
+/* ───── Route /api/assessment/[id]/submit — kiểm cấp route, không qua UI ───── */
+// Dùng fixture `request` (APIRequestContext RIÊNG của Playwright, không mang
+// theo bất kỳ cookie phiên nào của `page`) thay vì `page` — đúng ý "chưa đăng
+// nhập" mà không cần đăng xuất tài khoản dùng chung, và gọi route thẳng bằng
+// HTTP, không cần trình duyệt cho hai nhánh lỗi sớm này.
+
+test("route /api/assessment/[id]/submit — id không hợp lệ trả 400", async ({ request }) => {
+  const res = await request.post("/api/assessment/abc/submit");
+  expect(res.status()).toBe(400);
+});
+
+test("route /api/assessment/[id]/submit — chưa đăng nhập trả 401", async ({ request }) => {
+  // Id hợp lệ (để chắc chắn KHÔNG rớt ở nhánh 400 trước đó) nhưng không có
+  // cookie phiên nào — `request` fixture không chia sẻ trạng thái với `page`.
+  const res = await request.post("/api/assessment/1/submit");
+  expect(res.status()).toBe(401);
 });

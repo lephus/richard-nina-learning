@@ -13,6 +13,18 @@ import { Countdown } from "./countdown";
 // giờ vô thời hạn.
 const AUTO_SUBMIT_FALLBACK_MS = 5000;
 
+// Hạn cho CHÍNH `fetch()` của đường dự phòng (`submitViaRawFetch`) — không có
+// hạn này thì việc bỏ qua hàng đợi hành động của Next (xem JSDoc
+// `submitViaRawFetch`) chỉ dời lỗ hổng xuống một tầng, không đóng nó: nếu
+// route thô CŨNG bị treo (mất mạng thật giữa chừng, không phải kẹt hàng đợi —
+// ví dụ Wi-Fi captive portal mở được socket nhưng không bao giờ trả lời),
+// `await fetch(...)` không có `signal` sẽ đứng chờ VÔ THỜI HẠN, `catch` không
+// bao giờ chạy (treo không phải là reject), và `window.location.reload()`
+// không bao giờ tới lượt — đúng lỗi gốc, chỉ chuyển từ Server Action sang
+// route thô. `AbortSignal.timeout` biến "treo" thành "reject sau N mili
+// giây", nên nhánh `catch` (và do đó `reload()`) LUÔN chạy.
+const RAW_FETCH_TIMEOUT_MS = 8000;
+
 /** Một câu như đã đóng băng trong `assessment_items` — xem `run.ts`. */
 export interface AssessmentRunnerItem {
   position: number;
@@ -97,13 +109,27 @@ export function AssessmentRunner({
   // bằng console.log — `submitAction` được GỌI), nhưng không có request thứ
   // hai nào từng rời trình duyệt, vì hàng đợi hành động của Next đã chặn nó ở
   // tầng dưới mã ứng dụng, chỗ không đọc thấy được nếu chỉ đọc mã nguồn.
+  //
+  // `signal: AbortSignal.timeout(RAW_FETCH_TIMEOUT_MS)` BẮT BUỘC — xem hằng số
+  // ở đầu file. Không có nó, request tới CHÍNH route thô này cũng có thể TREO
+  // (mất mạng thật, không phải kẹt hàng đợi Next) và tái tạo đúng lỗi gốc một
+  // tầng thấp hơn: `catch` chỉ chạy khi promise REJECT, còn "treo" thì promise
+  // không bao giờ settle theo hướng nào cả.
   const submitViaRawFetch = useCallback(async () => {
     try {
-      await fetch(`/api/assessment/${assessmentId}/submit`, { method: "POST" });
+      const res = await fetch(`/api/assessment/${assessmentId}/submit`, {
+        method: "POST",
+        signal: AbortSignal.timeout(RAW_FETCH_TIMEOUT_MS),
+      });
+      if (!res.ok) {
+        // Không phải 2xx (401 phiên hết hạn, 404 bài không thuộc về mình, …)
+        // — vẫn tải lại trang bên dưới, không đọc thân phản hồi ở đây: mục
+        // đích DUY NHẤT của đường này là đưa người học ra khỏi màn hình khoá
+        // cứng, và `page.tsx` sau khi tải lại sẽ tự đọc đúng trạng thái thật.
+      }
     } catch {
-      // Mất mạng thật (không phải kẹt hàng đợi) — vẫn tải lại trang bên dưới:
-      // page.tsx đọc lại đúng trạng thái hiện có trong database, dù request
-      // nộp bài này có tới nơi hay không.
+      // AbortSignal hết hạn (request treo thật) HOẶC lỗi mạng thật khác — cả
+      // hai đều rơi vào đây, xử lý ĐỒNG NHẤT: vẫn tải lại trang bên dưới.
     }
     window.location.reload();
   }, [assessmentId]);

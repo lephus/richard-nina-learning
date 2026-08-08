@@ -44,11 +44,65 @@ import { submitAssessment } from "@/lib/assessment/run";
  * Chỉ nộp bài — KHÔNG có route tương đương cho trả lời từng câu: đường dự
  * phòng chỉ cần NỘP được để người học thoát khỏi màn hình khoá cứng, không
  * cần cứu lại đúng câu trả lời của request đã treo.
+ *
+ * ── An toàn CSRF (Important — review round 2) ──────────────────────────────
+ * Server Action mang theo phần kiểm tra origin tích hợp sẵn của Next; MỘT
+ * route handler thường như route này thì KHÔNG. `next.config.ts` để trống
+ * (không có tuỳ chỉnh `allowedOrigins`) và `src/middleware.ts:4` chỉ bảo vệ
+ * `/dashboard` và `/learn` — route này KHÔNG nằm trong danh sách đó.
+ *
+ * Thứ THỰC SỰ đang chặn một form tự động POST từ site khác gửi cookie phiên
+ * kèm theo là **`sameSite: "lax"`** — mặc định của chính thư viện
+ * `@supabase/ssr@0.12.4` khi ghi cookie phiên
+ * (`node_modules/@supabase/ssr/dist/module/utils/constants.js:3`).
+ * `src/lib/supabase/server.ts:13-43` (`createClient`, hàm route này gọi)
+ * KHÔNG BAO GIỜ override `cookieOptions`, nên cookie phiên vẫn mang đúng mặc
+ * định đó. `SameSite=Lax` khiến trình duyệt KHÔNG gửi cookie phiên kèm một
+ * POST cross-site — nên một form ẩn tự submit từ site khác tới đây sẽ tới nơi
+ * ẩn danh (không cookie), rơi vào nhánh 401 ngay dưới, không chạm được tới
+ * `submitAssessment`.
+ *
+ * Đây là một phòng thủ THẬT nhưng KHÔNG CHỦ Ý — không ai từng chọn nó, không
+ * nơi nào trong repo từng nhắc tới nó trước đoạn comment này. Nếu sau này có
+ * ai đổi `cookieOptions` (ví dụ để nhúng ứng dụng trong iframe, việc đó cần
+ * `sameSite: "none"`), phòng thủ này biến mất NGAY LẬP TỨC và không ai biết —
+ * một form tự động POST trên một trang bất kỳ mà người học ghé qua giữa lúc
+ * đang làm bài kiểm tra 60 phút sẽ NỘP HỘ bài đó với đáp án hiện có, kéo theo
+ * cả luồng bổ túc nếu điểm dưới ngưỡng. Vì vậy route này KHÔNG được phép dựa
+ * DUY NHẤT vào một mặc định không ai chọn — kiểm thêm `Sec-Fetch-Site` (trình
+ * duyệt hiện đại luôn gửi) làm lớp phòng thủ THỨ HAI, độc lập với cookie.
  */
+function isCrossSite(request: Request): boolean {
+  // `Sec-Fetch-Site` là Fetch Metadata Request Header — trình duyệt hiện đại
+  // (Chrome/Firefox/Edge) tự gắn, KHÔNG script nào giả mạo được từ phía
+  // client. "same-origin"/"none" (điều hướng trực tiếp, không có initiator)
+  // là an toàn; "cross-site"/"same-site" (site khác, hoặc cùng site nhưng
+  // khác origin) là đáng ngờ cho một route CHỈ được gọi bằng `fetch()` từ
+  // đúng trang đang làm bài.
+  const site = request.headers.get("sec-fetch-site");
+  if (site !== null) return site !== "same-origin" && site !== "none";
+
+  // Trình duyệt cũ không gửi header trên — lùi về so `Origin` (cũng do trình
+  // duyệt gắn, không phải client script) với chính host của request. Không
+  // có CẢ HAI header (một số truy vấn non-browser, ví dụ `curl`) thì không đủ
+  // thông tin để chặn ở lớp này — `sameSite: "lax"` vẫn là lớp chính.
+  const origin = request.headers.get("origin");
+  if (origin === null) return false;
+  try {
+    return new URL(origin).host !== new URL(request.url).host;
+  } catch {
+    return true; // Origin dị dạng — an toàn hơn khi coi là đáng ngờ.
+  }
+}
+
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (isCrossSite(request)) {
+    return NextResponse.json({ ok: false }, { status: 403 });
+  }
+
   const { id } = await params;
   const assessmentId = Number(id);
   if (!Number.isInteger(assessmentId) || assessmentId <= 0) {
@@ -60,6 +114,19 @@ export async function POST(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ ok: false }, { status: 401 });
+
+  // Tra tồn tại TRƯỚC khi chấm — `finalize` (run.ts) ném một Error thường khi
+  // không tìm thấy bài của đúng người dùng này (id sai, hoặc của người khác),
+  // và để lọt lên đây sẽ thành 500 cho một request dò id hoàn toàn bình
+  // thường (không phải lỗi máy chủ) — 404 mới đúng nghĩa.
+  const { data: existing, error: lookupErr } = await supabase
+    .from("assessments")
+    .select("id")
+    .eq("id", assessmentId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (lookupErr) throw lookupErr;
+  if (existing === null) return NextResponse.json({ ok: false }, { status: 404 });
 
   await submitAssessment(supabase, user.id, assessmentId, new Date());
   return NextResponse.json({ ok: true });

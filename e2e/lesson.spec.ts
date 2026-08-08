@@ -20,12 +20,18 @@ test.afterEach(async () => {
   if (error) throw error;
   const u = data?.users.find((x) => x.email === TEST_EMAIL);
   if (u) {
-    await admin.from("word_mastery").delete().eq("user_id", u.id);
+    // Mỗi lượt xoá đọc `error` riêng và ném ngay — cùng lý do dòng 17-19: nuốt
+    // lỗi ở MỘT TRONG BA lượt xoá này để lại đúng loại rò rỉ mà comment đó đã
+    // cảnh báo, chỉ là ở một bảng khác (review Task 8 round 2, finding 8).
+    const delWord = await admin.from("word_mastery").delete().eq("user_id", u.id);
+    if (delWord.error) throw delWord.error;
     // grammar_mastery nay ĐƯỢC GHI thật (applyMastery có nhánh ngữ pháp), nên
     // phải dọn cùng chỗ với hai bảng kia — vẫn chỉ theo user_id của tài khoản
     // test, không đụng ai khác.
-    await admin.from("grammar_mastery").delete().eq("user_id", u.id);
-    await admin.from("user_lesson_progress").delete().eq("user_id", u.id);
+    const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", u.id);
+    if (delGrammar.error) throw delGrammar.error;
+    const delProgress = await admin.from("user_lesson_progress").delete().eq("user_id", u.id);
+    if (delProgress.error) throw delProgress.error;
   }
 });
 
