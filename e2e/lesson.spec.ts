@@ -13,7 +13,11 @@ async function login(page: Page) {
 test.afterEach(async () => {
   // Dọn tiến độ của CHÍNH tài khoản test, không đụng ai khác.
   const admin = adminClient();
-  const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+  // Nuốt lỗi ở đây thì `u` luôn undefined, không xoá gì, và afterEach báo
+  // thành công giả trong khi tiến độ buổi trước vẫn còn — rò sang kịch bản
+  // kế tiếp. Cùng lý do với deleteTestUser trong ./admin.
+  if (error) throw error;
   const u = data?.users.find((x) => x.email === TEST_EMAIL);
   if (u) {
     await admin.from("word_mastery").delete().eq("user_id", u.id);
@@ -56,4 +60,49 @@ test("tải lại giữa buổi thì quay đúng vị trí đang dở", async ({
 
   await page.reload();
   await expect(page.getByTestId("lesson-progress")).toHaveText("4 / 135");
+});
+
+test("câu điền từ ở vị trí 30 hiển thị đúng câu, không bị cắt lẻ ký tự", async ({ page }) => {
+  // ~50 thao tác, mỗi thao tác chấm là một round-trip thật tới Supabase —
+  // timeout mặc định 30s không đủ. Chỉnh riêng kịch bản này, không đụng
+  // playwright.config.ts.
+  test.setTimeout(90_000);
+
+  await login(page);
+  await page.getByTestId("continue-link").click();
+
+  // 10 thẻ gặp từ (vị trí 0-9): bấm "Tiếp" một lần là qua ngay, không có
+  // bước phản hồi vì thẻ gặp từ không được chấm.
+  for (let i = 0; i < 10; i++) {
+    await page.getByTestId("next-button").click();
+    await expect(page.getByTestId("lesson-progress")).toHaveText(`${i + 2} / 135`);
+  }
+
+  // 20 câu luyện tập nghĩa/đồng nghĩa xen kẽ (vị trí 10-29): mỗi câu phải
+  // chọn phương án rồi bấm "Tiếp" ở khối phản hồi mới thực sự sang câu kế —
+  // khác thẻ gặp từ vì câu này có chấm điểm.
+  for (let i = 0; i < 20; i++) {
+    await page.getByTestId("choice-option").first().click();
+    await expect(page.getByTestId("answer-feedback")).toBeVisible();
+    await page.getByTestId("next-button").click();
+    await expect(page.getByTestId("lesson-progress")).toHaveText(`${i + 12} / 135`);
+  }
+
+  // Vị trí 30 là câu điền từ đầu tiên của cụm 1 (itemAt: 10 thẻ + 20 luyện
+  // tập rồi mới tới 10 câu điền).
+  await expect(page.getByTestId("lesson-progress")).toHaveText("31 / 135");
+  await expect(page.getByTestId("fill-input")).toBeVisible();
+
+  // Không có data-testid riêng cho câu hiển thị (fill-blank.tsx chỉ đặt
+  // data-testid trên ô nhập). Lấy nó qua quan hệ DOM với fill-input thay vì
+  // dựa vào class CSS, để không phải sửa src/. Đây chính là lớp phòng thủ
+  // cho lỗi từng lọt qua mọi lớp kiểm thử khác trong lát này: câu điền từ
+  // hiện dạng "___I___t___ ___i___s___…" — dấu gạch bị chèn giữa từng ký tự.
+  const sentence = await page
+    .getByTestId("fill-input")
+    .locator("xpath=preceding-sibling::p[1]")
+    .innerText();
+
+  const blanks = sentence.match(/___/g) ?? [];
+  expect(blanks).toHaveLength(1);
 });
