@@ -1,8 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { hashString } from "@content/shuffle-options";
 import { itemAt, type ItemSpec } from "./item-plan";
-import type { BuildContext, GrammarLite, VocabLite } from "./build-item";
-import { buildItem } from "./build-item";
+import type { BuildContext, GrammarLite } from "./build-item";
+import { buildItem, toVocabLite } from "./build-item";
 
 /**
  * Đọc mọi thứ cần để dựng item của một buổi.
@@ -83,22 +83,6 @@ async function grammarLessonIdOf(supabase: SupabaseClient, lessonId: number): Pr
     .from("lessons").select("grammar_lesson_id").eq("id", lessonId).single();
   if (error) throw error;
   return data!.grammar_lesson_id as number;
-}
-
-function toVocabLite(row: unknown): VocabLite {
-  const r = row as Record<string, unknown>;
-  return {
-    id: r.id as number,
-    word: r.word as string,
-    pos: r.pos as string,
-    ipa: r.ipa as string,
-    meaningVi: r.meaning_vi as string,
-    definitionEn: r.definition_en as string,
-    synonyms: r.synonyms as string[],
-    exampleEn: r.example_en as string,
-    exampleVi: r.example_vi as string,
-    blankAnswer: "", // điền riêng ở secretFor — không mang xuống client
-  };
 }
 
 /** Dựng item để GỬI XUỐNG trình duyệt. Không chứa đáp án. */

@@ -32,6 +32,32 @@ export interface GrammarLite {
   options: string[];
 }
 
+/**
+ * Một dòng `vocab_words` (snake_case, đúng những cột `authenticated` đọc được)
+ * → `VocabLite`. `blankAnswer` luôn là chuỗi rỗng: cột đó đã bị thu hồi khỏi
+ * `authenticated` (0004_rls.sql:41-44) nên nó KHÔNG có trong dòng đọc lên, và
+ * đường hợp lệ duy nhất để lấy nó là RPC `answer_for_word` — xem `secretFor`.
+ *
+ * Ở cạnh `VocabLite` chứ không nằm trong một module đọc dữ liệu cụ thể, vì cả
+ * buổi học (lib/lesson/session.ts) lẫn bài đánh giá (lib/assessment/run.ts)
+ * đều đọc chính bảng đó và phải quy về cùng một hình dạng.
+ */
+export function toVocabLite(row: unknown): VocabLite {
+  const r = row as Record<string, unknown>;
+  return {
+    id: r.id as number,
+    word: r.word as string,
+    pos: r.pos as string,
+    ipa: r.ipa as string,
+    meaningVi: r.meaning_vi as string,
+    definitionEn: r.definition_en as string,
+    synonyms: r.synonyms as string[],
+    exampleEn: r.example_en as string,
+    exampleVi: r.example_vi as string,
+    blankAnswer: "",
+  };
+}
+
 export interface BuildContext {
   lessonWords: readonly VocabLite[];
   grammar: readonly GrammarLite[];
