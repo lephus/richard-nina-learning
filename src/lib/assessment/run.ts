@@ -39,9 +39,12 @@ export const PASS_MARK: Record<AssessmentType, number> = {
 
 /**
  * Chỉ bài kiểm tra bị khoá cứng thời gian — spec mục 4. Ôn tập và bổ túc vẫn
- * có `expires_at` (cột `not null`, và màn hình dùng nó để hiện thời gian gợi
- * ý) nhưng qua mốc đó vẫn trả lời được: ép đồng hồ lên ôn tập là thêm áp lực
- * mà spec không đòi.
+ * có `expires_at` (cột `not null`) — `nextStep` dùng nó để tự đóng một bài bỏ
+ * ngang (mục 6.2) — nhưng KHÔNG có đồng hồ đếm ngược nào hiện trên màn hình
+ * cho hai loại này (review cuối nhánh, finding 3, vòng 2: sửa lại đúng bản đã
+ * triển khai — `<Countdown>` chỉ render khi `hardLocked`, xem
+ * `assessment-runner.tsx`), và qua mốc `expires_at` vẫn trả lời được: ép
+ * đồng hồ (hay UI đếm ngược) lên ôn tập là thêm áp lực mà spec không đòi.
  */
 const HARD_LOCKED: ReadonlySet<AssessmentType> = new Set<AssessmentType>(["test"]);
 
@@ -186,6 +189,80 @@ export async function startAssessment(
   }
 
   return assessmentId;
+}
+
+/**
+ * Xoá một bài `in_progress` KHÔNG có câu nào — trạng thái kẹt cứng duy nhất
+ * của cả lát này không có lối thoát nào khác (review cuối nhánh, finding 1):
+ * `startAssessment` ở trên chèn dòng `assessments` rồi mới chèn
+ * `assessment_items`, tự dọn dòng đầu nếu chèn dòng sau lỗi — nhưng nếu tiến
+ * trình chết GIỮA hai lượt ghi đó (function timeout, instance bị thu hồi),
+ * cleanup không bao giờ chạy tới. Dòng rỗng sống sót đó chặn vĩnh viễn: màn
+ * hình làm bài trắng trơn (`!current` ở `assessment-runner.tsx`), `finalize`
+ * ném vì 0 câu không chấm được, và `startAssessment` từ chối tạo bài mới vì
+ * đã có một bài `in_progress`. Không có gì để chấm hay đóng ở đây — xoá thẳng
+ * dòng rồi để người học bắt đầu lại là lối thoát duy nhất.
+ *
+ * ĐÂY LÀ HÀNG RÀO THẬT, KHÔNG PHẢI `assessment/[id]/page.tsx` (review cuối
+ * nhánh, VÒNG 2, finding 1): bản trước chỉ scope xoá theo `id` + `user_id`,
+ * dựa vào việc trang chỉ HIỆN nút xoá khi `status === "in_progress" &&
+ * items.length === 0` — nhưng đó là một NHÁNH RENDER, không phải một hàng
+ * rào. `deleteEmptyAssessmentAction` (Server Action bọc hàm này) là một
+ * endpoint công khai: `assessmentId` tới từ chính request, không từ trang, và
+ * id của bài lỗi đã nằm sẵn trong HTML của màn hình lỗi ngay khi ai đó tải
+ * nó. Thiếu hàng rào ở ĐÂY thì gọi lại action với id của MỘT BÀI KHÁC — ví dụ
+ * một bài kiểm tra 60 phút đang làm dở, đang trượt ở phút 45 — sẽ xoá SẠCH nó
+ * (on delete cascade qua `assessment_id` xoá luôn 60 câu đã đóng băng cùng
+ * đáp án), giải phóng chỉ số `assessments_one_in_progress`, và người học có
+ * ngay một bài kiểm tra MỚI với đề khác ở `nextStep` — lặp lại vô hạn không
+ * tốn gì. Nhắm vào một bài ĐÃ NỘP VÀ TRƯỢT thì xoá cả bằng chứng trượt lẫn
+ * bài bổ túc con của nó (cascade qua `parent_id`) — bỏ qua hẳn vòng bổ túc,
+ * trong khi `word_mastery` vẫn giữ nguyên các lượt trả lời sai đã đếm. Đây
+ * ĐÚNG lỗi finding 5 (một hàm công bố một tiền điều kiện mà code không ép
+ * buộc), chỉ khác finding 5 ở chỗ hậu quả không phục hồi được — `finalize`
+ * idempotent, còn `delete` thì không.
+ *
+ * Hai lớp chặn, cả hai đều BẮT BUỘC — thiếu một lớp là còn hở:
+ *   1. Đếm `assessment_items` TRƯỚC — chỉ đúng bài rỗng THẬT mới được đi
+ *      tiếp. `.eq("assessment_id", ...)` qua RLS: nếu `assessmentId` là bài
+ *      của người khác, đếm ra 0 (RLS lọc, không phải "bài này rỗng thật") —
+ *      vô hại, vì lượt xoá bên dưới còn lọc `user_id` một lần nữa.
+ *   2. `.eq("status", "in_progress")` trong chính câu DELETE — không dựa vào
+ *      lượt đếm ở bước 1 làm hàng rào DUY NHẤT (đua giữa đếm và xoá, dù không
+ *      thực tế xảy ra ở luồng hiện tại, vẫn không có lý do để hở thêm một
+ *      đường).
+ * Và KHÔNG coi 0 dòng bị xoá là thành công thầm lặng: đếm dòng thật sự bị xoá
+ * qua `.select("id")`, không đủ đúng MỘT dòng thì NÉM — im lặng redirect trên
+ * một lượt xoá 0 dòng là chính kiểu lỗi vừa mô tả ở trên, chỉ đổi hình dạng.
+ */
+export async function deleteEmptyAssessment(
+  supabase: SupabaseClient,
+  userId: string,
+  assessmentId: number,
+): Promise<void> {
+  const { count, error: countErr } = await supabase
+    .from("assessment_items")
+    .select("id", { count: "exact", head: true })
+    .eq("assessment_id", assessmentId);
+  if (countErr) throw countErr;
+  if ((count ?? 0) > 0) {
+    throw new Error(`bài ${assessmentId} còn câu hỏi — không phải bài lỗi, không xoá`);
+  }
+
+  const { data: deleted, error } = await supabase
+    .from("assessments")
+    .delete()
+    .eq("id", assessmentId)
+    .eq("user_id", userId)
+    .eq("status", "in_progress")
+    .select("id");
+  if (error) throw error;
+
+  if ((deleted?.length ?? 0) !== 1) {
+    throw new Error(
+      `không xoá được bài ${assessmentId} — không khớp điều kiện bài lỗi rỗng (không tồn tại, không phải của người này, đã đóng, hoặc có câu hỏi)`,
+    );
+  }
 }
 
 /**

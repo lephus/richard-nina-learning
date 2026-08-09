@@ -17,8 +17,12 @@ export function Countdown({
   expiresAt: string;
   /**
    * Gọi ĐÚNG MỘT LẦN khi đồng hồ chạm 0 — chỉ truyền hàm này cho bài kiểm
-   * tra (`hardLocked === true`); bài ôn tập/bổ túc có đồng hồ chỉ mang tính
-   * gợi ý và không được tự nộp khi hết giờ.
+   * tra (`hardLocked === true`). Ôn tập/bổ túc có `expires_at` trong database
+   * nhưng component `<Countdown>` này KHÔNG được render chút nào cho hai loại
+   * đó (review cuối nhánh, finding 3, vòng 2: sửa lại đúng bản đã triển
+   * khai — xem `{hardLocked && <Countdown .../>}` trong
+   * `assessment-runner.tsx`) — không có đồng hồ nào "chỉ mang tính gợi ý" để
+   * mà không tự nộp cả, vì nó không tồn tại trên màn hình.
    */
   onExpire?: () => void;
 }) {

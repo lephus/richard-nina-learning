@@ -225,6 +225,15 @@ grant update (user_answer, is_correct) on assessment_items to authenticated;
 --      cua chinh nguoi hoc doc duoc tu document.cookie). Goi thang PostgREST
 --      bang JWT do, mot nguoi hoc PATCH duoc assessments?id=eq.N de tu dat
 --      passed=true, hoac dat mot dong user_lesson_progress thanh 'completed'.
+--      FOR ALL cung bao gom DELETE: goi thang
+--      DELETE /rest/v1/assessments?id=eq.N xoa duoc BAT KY bai nao cua chinh
+--      minh, ke ca mot bai kiem tra dang lam dang khoa cung con nguyen gio.
+--      Nhanh nay o tang ung dung (deleteEmptyAssessmentAction,
+--      src/app/(app)/assessment/[id]/actions.ts, qua ham
+--      deleteEmptyAssessment o run.ts) da tu gioi han duong xoa cua CHINH NO
+--      chi con dung bai `in_progress` VA 0 cau hoi — nhung do la mot hang rao
+--      cua ung dung, khong phai cua database; kenh PostgREST tho van mo y
+--      nguyen cho MOI dong cua bang assessments, khong rieng dong 0 cau.
 --   3. `applyMastery` (goi trong answerItem, src/lib/assessment/run.ts) cong
 --      word_mastery.correct_count ngay o LUOT GHI DAU TIEN cua moi cau, va
 --      assessment_items.ref_id van con SELECT trong grant o tren — nen doc
@@ -232,8 +241,14 @@ grant update (user_answer, is_correct) on assessment_items to authenticated;
 --      tra loi dau cho tu do dung hay sai. Mot kenh do khac, khong di qua
 --      is_correct chut nao, nen khong nam trong pham vi migration nay dong.
 --
--- Ca ba deu bi RLS gioi han trong DUNG DONG CUA CHINH NGUOI GOI — tu lua doi
--- ban than hoac tu do diem minh, khong lam lo thong tin cho NGUOI KHAC — nen
--- duoc CHAP NHAN CO Y THUC thay vi dong het: dong ca chieu ghi tren bon bang
--- do (chuyen moi lan ghi sang RPC security definer rieng, bo FOR ALL) la qua
--- muc so voi loai rui ro dang xu ly o day, va se la mot lat rieng neu can.
+-- Muc 1 va 3 la TU LUA DOI BAN THAN — khong lam lo thong tin cho NGUOI KHAC.
+-- Rieng phan DELETE o muc 2 KHAC LOAI: no khong lo thong tin cho ai, nhung no
+-- VO HIEU HOA THAT SU mot rang buoc thoi gian (khoa cung 60 phut cua bai
+-- kiem tra) va bo qua duoc mot buoc bat buoc (vong bo tuc) neu ai do goi
+-- DELETE tho thay vi di qua ung dung. Van CHAP NHAN CO Y THUC, khong revoke
+-- them o migration nay, vi ba ly do: (a) day khong phai mot nang luc MOI —
+-- FOR ALL tren assessments co tu 0003_user_state.sql, truoc ca lat 1c; (b)
+-- tang ung dung da tu chan duong nay cho chinh luong nghiep vu cua no (xem
+-- tren); (c) dong ca chieu ghi tren bon bang do (chuyen moi lan ghi sang RPC
+-- security definer rieng, bo FOR ALL) la qua muc so voi loai rui ro dang xu
+-- ly o day, va se la mot lat rieng neu can.

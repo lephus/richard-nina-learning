@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import {
-  startAssessment, answerItem, submitAssessment, closeExpired, PASS_MARK,
+  startAssessment, answerItem, submitAssessment, closeExpired, deleteEmptyAssessment, PASS_MARK,
 } from "@/lib/assessment/run";
 
 const URL = process.env.SUPABASE_URL;
@@ -414,5 +414,62 @@ describe.skipIf(!hasEnv)("vong lam bai danh gia", () => {
     const firstSet = new Set(firstRefs);
     const newOnes = secondRefs.filter((id) => !firstSet.has(id));
     expect(newOnes.length).toBeGreaterThanOrEqual(5);
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // `deleteEmptyAssessment` — hàng rào thật cho lối thoát của bài `in_progress`
+  // 0 câu (review cuối nhánh, VÒNG 2, finding 1). Không đi qua Server Action
+  // `deleteEmptyAssessmentAction` (cần cookie phiên request thật, không gọi
+  // được từ test) — gọi thẳng hàm lõi này với client `user` đã đăng nhập,
+  // đúng khuôn mọi test khác trong tệp này gọi thẳng `run.ts`.
+  // ─────────────────────────────────────────────────────────────────────────
+  it("deleteEmptyAssessment TỪ CHỐI xoá một bài CÒN câu hỏi, dòng vẫn còn nguyên", async () => {
+    const now = new Date();
+    // Bài THẬT qua startAssessment luôn có câu (đó chính là điều
+    // startAssessment tồn tại để đảm bảo) — dùng nó để chứng minh hàng rào
+    // chặn đúng cả một bài kiểm tra đang làm dở thật, không chỉ một fixture
+    // dựng tay trông giống nó.
+    const id = await startAssessment(user, userId, "test", [17, 18, 19, 20], null, now);
+
+    await expect(deleteEmptyAssessment(user, userId, id)).rejects.toThrow(String(id));
+
+    // Dòng SỐNG SÓT — không bị xoá dù đang trượt, đang khoá cứng 60 phút.
+    const { data } = await admin
+      .from("assessments").select("id, status").eq("id", id).maybeSingle();
+    expect(data).not.toBeNull();
+    expect(data!.status).toBe("in_progress");
+
+    const { count } = await admin
+      .from("assessment_items").select("*", { count: "exact", head: true })
+      .eq("assessment_id", id);
+    expect(count).toBe(60); // vẫn nguyên 60 câu, cascade KHÔNG chạy
+  });
+
+  it("deleteEmptyAssessment xoá được bài in_progress THẬT SỰ 0 câu (mô phỏng tiến trình chết giữa hai lượt ghi của startAssessment)", async () => {
+    const now = new Date();
+    // Chèn thẳng qua `admin`, KHÔNG qua startAssessment: hàm đó luôn chèn
+    // items cùng lúc với dòng assessments (đó chính là bất biến hàng rào ở
+    // trên đang bảo vệ), nên đường DUY NHẤT để có một dòng `in_progress`
+    // thật sự 0 câu trong test là dựng tay đúng hình dạng mà một tiến trình
+    // chết giữa hai lượt ghi để lại.
+    const { data: inserted, error } = await admin
+      .from("assessments")
+      .insert({
+        user_id: userId,
+        type: "review",
+        scope: [1, 2],
+        status: "in_progress",
+        started_at: now.toISOString(),
+        expires_at: new Date(now.getTime() + 15 * 60 * 1000).toISOString(),
+      })
+      .select("id")
+      .single();
+    if (error) throw error;
+    const id = inserted!.id as number;
+
+    await deleteEmptyAssessment(user, userId, id);
+
+    const { data } = await admin.from("assessments").select("id").eq("id", id).maybeSingle();
+    expect(data).toBeNull();
   });
 });

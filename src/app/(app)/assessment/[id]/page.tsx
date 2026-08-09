@@ -82,6 +82,12 @@ export default async function AssessmentPage({
   // khi có cách xoá dòng đó. Đưa thẳng một màn hình lỗi tiếng Việt kèm nút
   // xoá, thay vì để `AssessmentRunner` tự vỡ ở dòng `if (!current) return
   // null`.
+  //
+  // `if (items.length === 0)` dưới đây CHỈ quyết định HIỂN THỊ nút xoá —
+  // KHÔNG PHẢI hàng rào cho phép xoá (review cuối nhánh, VÒNG 2, finding 1:
+  // bản trước lẫn lộn hai việc này). Hàng rào thật nằm ở `deleteEmptyAssessment`
+  // (run.ts), vì Server Action đứng sau nút này là một endpoint công khai —
+  // `assessmentId` của nó tới từ request, không từ chính nhánh render này.
   if (items.length === 0) {
     return (
       <main className="flex flex-col gap-4">
