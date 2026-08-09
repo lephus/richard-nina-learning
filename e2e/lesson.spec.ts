@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { TEST_EMAIL, TEST_PASSWORD } from "./test-user";
 import { adminClient } from "./admin";
+import { budget } from "./budget";
 
 async function login(page: Page) {
   await page.goto("/login");
@@ -48,7 +49,7 @@ test("trả lời một câu thì phản hồi hiện ngay", async ({ page }) =>
   // 30s mặc định, nhưng khi chạy với PLAYWRIGHT_BASE_URL trỏ tới Vercel thì
   // mỗi vòng chậm hơn đáng kể và kịch bản này vượt ngân sách — dù chính tính
   // năng đó vẫn chạy đúng (kịch bản vị trí 30 làm nhiều hơn hẳn và vẫn xanh).
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
 
   await login(page);
   await page.getByTestId("continue-link").click();
@@ -82,7 +83,7 @@ test("câu điền từ ở vị trí 30 hiển thị đúng câu, không bị c
   // ~50 thao tác, mỗi thao tác chấm là một round-trip thật tới Supabase —
   // timeout mặc định 30s không đủ. Chỉnh riêng kịch bản này, không đụng
   // playwright.config.ts.
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
 
   await login(page);
   await page.getByTestId("continue-link").click();

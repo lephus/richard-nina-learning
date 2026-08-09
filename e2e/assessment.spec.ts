@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { TEST_EMAIL, TEST_PASSWORD } from "./test-user";
 import { adminClient } from "./admin";
+import { budget } from "./budget";
 
 async function login(page: Page): Promise<void> {
   await page.goto("/login");
@@ -127,7 +128,7 @@ test.afterEach(async () => {
 /* ─────────────────────── Ba kịch bản gốc của brief ─────────────────────── */
 
 test("bắt đầu bài ôn tập và thấy câu đầu tiên", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await completeLessons(admin, userId, [1, 2]);
@@ -140,7 +141,7 @@ test("bắt đầu bài ôn tập và thấy câu đầu tiên", async ({ page }
 });
 
 test("đồng hồ bài kiểm tra còn đúng sau khi tải lại", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await unlockTestSlot(admin, userId);
@@ -168,7 +169,7 @@ test("đồng hồ bài kiểm tra còn đúng sau khi tải lại", async ({ pa
 });
 
 test("nộp bài rồi thấy điểm và kết quả", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await completeLessons(admin, userId, [1, 2]);
@@ -194,7 +195,7 @@ test("nộp bài rồi thấy điểm và kết quả", async ({ page }) => {
 /* ───────────── Kịch bản thêm — chỉ trình duyệt thật mới phân xử được ───────────── */
 
 test("đáp án không lộ ra qua thân phản hồi mạng khi bấm chọn một phương án", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await completeLessons(admin, userId, [1, 2]);
@@ -264,7 +265,7 @@ test("đáp án không lộ ra qua thân phản hồi mạng khi bấm chọn m�
 });
 
 test("điều hướng giữa lúc còn một lượt ghi dở dang không bỏ sót câu", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await completeLessons(admin, userId, [1, 2]);
@@ -321,7 +322,7 @@ test("điều hướng giữa lúc còn một lượt ghi dở dang không bỏ 
 });
 
 test("hai cú bấm dồn trong cùng một tác vụ JS chỉ sinh đúng một lượt ghi", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await completeLessons(admin, userId, [1, 2]);
@@ -355,7 +356,7 @@ test("hai cú bấm dồn trong cùng một tác vụ JS chỉ sinh đúng một
 });
 
 test("request treo không giữ người học quá hạn — có cửa sổ dự phòng nộp bài", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await unlockTestSlot(admin, userId);
@@ -474,7 +475,7 @@ test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, và T
   // chậm hơn 2 lần, tổng đã chạm ~62s; chậm hơn 3 lần thì vượt hẳn 90s trong
   // khi `afterEach` còn phải chạy sau đó. 120s không tốn gì khi kịch bản xanh
   // và loại nốt rủi ro flake-vì-tốc-độ-máy duy nhất còn lại trong cả bộ.
-  test.setTimeout(120_000);
+  test.setTimeout(budget(120_000));
   // Kịch bản trên chỉ treo `answerAction`, để `/api/assessment/[id]/submit`
   // hoàn tất bình thường — chứng minh route thô hoạt động, nhưng KHÔNG chứng
   // minh được `AbortController`/`setTimeout` trong `submitViaRawFetch` (review
@@ -586,7 +587,7 @@ test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, và T
 test("route nộp bài trả lỗi 500 liên tục — tự thử tối đa rồi DỪNG hẳn, hiện lỗi, nút Nộp bài vẫn bấm được", async ({
   page,
 }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   // Kịch bản "give-up" bắt buộc (review round 4, finding 1 — Important): hai
   // kịch bản treo route ở trên chứng minh đường tự nộp KHÔNG kẹt cứng khi
   // mạng có vấn đề TẠM THỜI, nhưng KHÔNG chứng minh được nó có ĐIỂM DỪNG khi
@@ -676,7 +677,7 @@ test("route nộp bài trả lỗi 500 liên tục — tự thử tối đa rồ
 test("sessionStorage không lưu được — vẫn chỉ tự thử ĐÚNG MỘT LẦN rồi dừng, không quay lại vòng lặp vô trần", async ({
   page,
 }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   // Review round 5, finding 3: bộ đếm trong assessment-runner.tsx dựa hoàn
   // toàn vào `sessionStorage` để sống sót qua `window.location.reload()`
   // (state của React bị xoá sạch mỗi lần tải lại). Nếu `setItem` ném (Safari
@@ -759,7 +760,7 @@ test("sessionStorage không lưu được — vẫn chỉ tự thử ĐÚNG MỘ
 test("bảng số câu dùng được trên điện thoại — không tràn ngang, đủ 4 phương án, ba trạng thái phân biệt bằng computed style", async ({
   page,
 }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await unlockTestSlot(admin, userId); // bài kiểm tra 60 câu
@@ -806,7 +807,7 @@ test("bảng số câu dùng được trên điện thoại — không tràn nga
 });
 
 test("đồng hồ chuyển đỏ khi còn dưới 5 phút", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await unlockTestSlot(admin, userId);
@@ -876,7 +877,7 @@ test("đồng hồ chuyển đỏ khi còn dưới 5 phút", async ({ page }) =>
 });
 
 test("bài ôn tập không hiển thị đồng hồ đếm ngược", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(budget(90_000));
   const admin = adminClient();
   const userId = await getUserId(admin);
   await completeLessons(admin, userId, [1, 2]);
