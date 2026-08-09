@@ -63,16 +63,34 @@ function readAutoSubmitAttempts(assessmentId: number): number {
     // `sessionStorage` không khả dụng (chế độ riêng tư của một số trình
     // duyệt cũ, hoặc bị chặn bởi cấu hình trình duyệt) — coi như luôn là lượt
     // đầu. Không có bộ đếm bền qua reload thì không chặn được vòng lặp, NHƯNG
-    // không vì lý do KHÔNG LIÊN QUAN này mà chặn luôn việc nộp bài.
+    // không vì lý do KHÔNG LIÊN QUAN này mà chặn luôn việc nộp bài. Xem
+    // `writeAutoSubmitAttempts` — nơi THẬT SỰ xử lý trường hợp này (review
+    // round 5, finding 3), vì đây (đọc) không biết được liệu một lần GHI
+    // trước đó có thật sự lưu được hay không.
     return 0;
   }
 }
 
-function writeAutoSubmitAttempts(assessmentId: number, n: number): void {
+/**
+ * Trả về `true` chỉ khi giá trị THẬT SỰ lưu được — `setItem` không ném không
+ * có nghĩa là đã lưu (một số cấu hình trình duyệt bất thường "thành công" mà
+ * không lưu gì), nên đọc lại để xác nhận là cách kiểm tra chắc chắn duy nhất.
+ *
+ * QUAN TRỌNG (review round 5, finding 3): nếu hàm này trả `false`, bộ đếm sẽ
+ * đọc thành 0 ở MỌI lần mount sau — trần `AUTO_SUBMIT_MAX_ATTEMPTS` trở nên
+ * VÔ TÁC DỤNG một cách ÂM THẦM (mỗi lần mount lại tưởng mình đang ở lượt đầu
+ * tiên), tái tạo đúng vòng lặp không có điểm dừng mà cả round 4 tồn tại để
+ * ngăn. Nơi gọi (`submitViaRawFetch`) PHẢI tự bù bằng cách khác — không đợi
+ * bộ đếm làm việc đó, vì nó không thể.
+ */
+function writeAutoSubmitAttempts(assessmentId: number, n: number): boolean {
   try {
-    window.sessionStorage.setItem(autoSubmitAttemptsKey(assessmentId), String(n));
+    const key = autoSubmitAttemptsKey(assessmentId);
+    window.sessionStorage.setItem(key, String(n));
+    return window.sessionStorage.getItem(key) === String(n);
   } catch {
-    // Bỏ qua — cùng lý do ở trên.
+    // `setItem` (hoặc chính lượt đọc lại xác nhận) ném — không khả dụng.
+    return false;
   }
 }
 
@@ -205,6 +223,17 @@ export function AssessmentRunner({
   // lần (dừng NGAY, không đợi hết ngân sách `AUTO_SUBMIT_MAX_ATTEMPTS`); lỗi
   // mạng/treo/5xx có thể là tạm thời (để bộ đếm bên dưới quyết định còn thử
   // hay dừng).
+  //
+  // NGOẠI LỆ 401 (review round 5, finding 1): 401 CŨNG là 4xx, nhưng KHÔNG
+  // dừng lại như các 4xx khác — `getUser()` trả rỗng đúng nghĩa "phiên đã
+  // hết" (route.ts:116), một trạng thái CÓ THỂ xảy ra thật giữa một bài kiểm
+  // tra 60 phút (refresh token hết hạn hoặc bị thu hồi), và — khác 400/403/404
+  // — tải lại trang KHÔNG lặp lại đúng lỗi đó: `AppLayout`
+  // (`src/app/(app)/layout.tsx`) tự `redirect("/login")` ngay khi không có
+  // user, chấm dứt hẳn vòng lặp một cách tự nhiên (trang đăng nhập không tự
+  // gọi `submitViaRawFetch`). Coi 401 như "retry" (mặc định) — vẫn `reload()`
+  // — mã cũ (vòng lặp không trần) thật ra XỬ LÝ CA NÀY ĐÚNG HƠN; bộ đếm ở
+  // trên vẫn là lưới an toàn phòng khi `redirect` vì lý do gì đó không xảy ra.
   const submitViaRawFetch = useCallback(async () => {
     const attempts = readAutoSubmitAttempts(assessmentId);
     if (attempts >= AUTO_SUBMIT_MAX_ATTEMPTS) {
@@ -216,11 +245,12 @@ export function AssessmentRunner({
       setError(AUTO_SUBMIT_GIVE_UP_MESSAGE);
       return;
     }
-    writeAutoSubmitAttempts(assessmentId, attempts + 1);
+    const persisted = writeAutoSubmitAttempts(assessmentId, attempts + 1);
 
     // "retry" (mặc định) = coi là tạm thời, vẫn tải lại để thử tiếp (trong
     // ngân sách). "ok" = thành công, dọn bộ đếm rồi tải lại để thấy kết quả.
-    // "giveUpNow" = lỗi phía CLIENT (4xx), dừng NGAY không đợi hết ngân sách.
+    // "giveUpNow" = lỗi phía CLIENT không tự khỏi (4xx trừ 401), dừng NGAY
+    // không đợi hết ngân sách.
     let outcome: "retry" | "ok" | "giveUpNow" = "retry";
     try {
       // `new AbortController()` PHẢI nằm TRONG `try` (review round 4, finding
@@ -242,7 +272,7 @@ export function AssessmentRunner({
         });
         if (res.ok) {
           outcome = "ok";
-        } else if (res.status >= 400 && res.status < 500) {
+        } else if (res.status !== 401 && res.status >= 400 && res.status < 500) {
           outcome = "giveUpNow";
         }
       } finally {
@@ -255,10 +285,24 @@ export function AssessmentRunner({
     }
 
     if (outcome === "ok") {
+      // AN TOÀN chỉ vì `finalize` (run.ts) NÉM chứ không âm thầm trả về khi
+      // thất bại, và route KHÔNG bắt lỗi đó để tự trả 200 — 2xx từ route này
+      // tức là dòng `assessments` CHẮC CHẮN đã `submitted`. Bất biến này
+      // KHÔNG tự nó đúng mãi mãi — nếu route/`finalize` sau này đổi thành trả
+      // 200 dù chưa ghi xong, việc dọn bộ đếm ở đây khiến vòng lặp không trần
+      // quay lại (review round 5: "một dòng nói vậy là đủ").
       clearAutoSubmitAttempts(assessmentId);
     } else if (outcome === "giveUpNow") {
       setError(AUTO_SUBMIT_GIVE_UP_MESSAGE);
       return; // KHÔNG reload — lỗi phía client sẽ không tự khỏi dù tải lại
+    } else if (!persisted) {
+      // Bộ đếm KHÔNG lưu được (review round 5, finding 3) — tiếp tục tải lại
+      // sẽ khiến lần mount SAU đọc lại thành 0 (tưởng đây là lượt đầu), tái
+      // tạo đúng vòng lặp không trần. Không đợi hết ngân sách nữa — coi ĐÂY
+      // LÀ lượt tự động DUY NHẤT được phép: đã thử, không thành công, dừng
+      // NGAY tại đây, không `reload()`.
+      setError(AUTO_SUBMIT_GIVE_UP_MESSAGE);
+      return;
     }
     window.location.reload();
   }, [assessmentId]);

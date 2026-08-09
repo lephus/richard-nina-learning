@@ -673,6 +673,89 @@ test("route nộp bài trả lỗi 500 liên tục — tự thử tối đa rồ
   await expect(page.getByTestId("submit-button")).toBeEnabled();
 });
 
+test("sessionStorage không lưu được — vẫn chỉ tự thử ĐÚNG MỘT LẦN rồi dừng, không quay lại vòng lặp vô trần", async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  // Review round 5, finding 3: bộ đếm trong assessment-runner.tsx dựa hoàn
+  // toàn vào `sessionStorage` để sống sót qua `window.location.reload()`
+  // (state của React bị xoá sạch mỗi lần tải lại). Nếu `setItem` ném (Safari
+  // chế độ riêng tư bản cũ, hoặc bị chặn bởi chính sách trình duyệt), bộ đếm
+  // đọc thành 0 ở MỌI lần mount — trần "3 lần" trở nên VÔ TÁC DỤNG một cách
+  // ÂM THẦM, tái tạo đúng vòng lặp không điểm dừng mà cả round 4 tồn tại để
+  // ngăn. `page.addInitScript` chạy lại ở MỖI LẦN tải trang (kể cả các lần
+  // reload tự động bên trong chính kịch bản này) — đúng điều kiện cần, vì
+  // "sessionStorage hỏng" phải hỏng XUYÊN SUỐT, không chỉ ở lần tải đầu.
+  await page.addInitScript(() => {
+    window.sessionStorage.setItem = () => {
+      throw new Error("mô phỏng sessionStorage bị chặn (chế độ riêng tư/chính sách trình duyệt)");
+    };
+  });
+
+  const admin = adminClient();
+  const userId = await getUserId(admin);
+  await unlockTestSlot(admin, userId);
+
+  await login(page);
+  const assessmentId = await startFromDashboard(page);
+
+  const desiredRemainingMs = 15_000;
+  const expiryDeadline = Date.now() + desiredRemainingMs;
+  const { error: updateErr } = await admin
+    .from("assessments")
+    .update({ expires_at: new Date(expiryDeadline).toISOString() })
+    .eq("id", assessmentId)
+    .eq("user_id", userId);
+  if (updateErr) throw updateErr;
+  await page.reload();
+
+  const pageUrl = page.url();
+  const fallbackSubmitUrl = new URL(`/api/assessment/${assessmentId}/submit`, pageUrl).toString();
+
+  // Đăng ký SAU lượt reload phía trên (lượt đó chỉ để cập nhật `expires_at`,
+  // không tính) — từ đây, MỌI GET tới `pageUrl` là một lượt tự động tải lại.
+  const freshLoadTimestamps: number[] = [];
+  page.on("request", (req) => {
+    if (req.method() === "GET" && req.url() === pageUrl) freshLoadTimestamps.push(Date.now());
+  });
+
+  // Route trả 500 NGAY (không treo) — cùng kiểu thất bại "không tự khỏi" như
+  // kịch bản "give-up", để buộc phải đi qua đúng nhánh phụ thuộc bộ đếm
+  // (thành công thì vẫn `reload()` bất kể `sessionStorage` — không phải điều
+  // kịch bản này kiểm).
+  await page.route(fallbackSubmitUrl, async (route) => {
+    await route.fulfill({ status: 500, contentType: "application/json", body: "{}" });
+  });
+
+  const countdown = page.getByTestId("countdown");
+  await expect(countdown).toBeVisible();
+  const remainingAtStart = parseMmSs(await countdown.innerText());
+  expect(remainingAtStart).toBeGreaterThan(5);
+
+  // ĐIỂM DỪNG: `sessionStorage` "hỏng" nên lượt tự động ĐẦU TIÊN (không
+  // thành công) phải dừng ngay tại chỗ, không đợi tải lại để "lượt sau" —
+  // "lượt sau" sẽ không bao giờ biết mình là lượt thứ mấy. Chờ một khoảng
+  // RỘNG HƠN HẲN một chu kỳ thử bình thường (route trả lời ngay, không treo)
+  // rồi xác nhận KHÔNG có lượt tải lại TỰ ĐỘNG nào cả.
+  await page.waitForTimeout(12_000);
+  expect(freshLoadTimestamps.length).toBe(0);
+
+  // Hai khẳng định dưới đây — không phải khẳng định `freshLoadTimestamps`
+  // phía trên — mới là khẳng định PHÂN BIỆT ĐƯỢC chắc chắn nhất (đã tự xác
+  // nhận bằng cách chạy NGƯỢC LẠI trên bản trước finding 3: `writeAutoSubmitAttempts`
+  // cũ chỉ `try { setItem } catch {}`, không đọc lại để phát hiện "thành
+  // công giả", nên vòng lặp reload thật sự KHÔNG có điểm dừng — trang cứ
+  // điều hướng liên tục, `p[role="alert"]` không bao giờ kịp ổn định để xuất
+  // hiện, và khẳng định dưới đây timeout thẳng — trong khi khẳng định
+  // `freshLoadTimestamps.length === 0` phía trên đôi khi vẫn "khớp" một cách
+  // TÌNH CỜ trên bản lỗi, vì nó chỉ lấy mẫu tại ĐÚNG một thời điểm giữa một
+  // vòng lặp đang chạy, không phải một trạng thái đã ổn định).
+  await expect(page.locator('p[role="alert"]')).toHaveText(
+    'Không thể tự động nộp bài sau nhiều lần thử. Bấm "Nộp bài" để thử lại, hoặc kiểm tra kết nối mạng.',
+  );
+  await expect(page.getByTestId("submit-button")).toBeEnabled();
+});
+
 test("bảng số câu dùng được trên điện thoại — không tràn ngang, đủ 4 phương án, ba trạng thái phân biệt bằng computed style", async ({
   page,
 }) => {

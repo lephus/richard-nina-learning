@@ -90,20 +90,38 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
   });
 
   // CHỈ xoá theo user_id của chính tài khoản này — xem Global Constraints.
-  // Mỗi lượt (kể cả `deleteUser`) đọc `error` riêng và ném ngay — một lượt
-  // dọn dẹp thất bại ÂM THẦM đúng vào lúc chạm database production là loại
-  // lỗi đáng biết nhất, không phải loại nên nuốt (review Task 8 round 4,
-  // finding 4).
+  // Mỗi lượt đọc `error` riêng, gom lại, và ném SAU CÙNG — một lượt dọn dẹp
+  // thất bại ÂM THẦM đúng vào lúc chạm database production là loại lỗi đáng
+  // biết nhất, không phải loại nên nuốt (review Task 8 round 4, finding 4).
+  //
+  // `deleteUser` PHẢI nằm trong `finally`, không phải nối tiếp sau ba lượt
+  // xoá trạng thái (review round 5, finding 2): bản round 4 `throw` ngay tại
+  // lượt xoá ĐẦU TIÊN gặp lỗi, nên `deleteUser` không bao giờ chạy tới —
+  // một lỗi TẠM THỜI (mất kết nối thoáng qua) ở MỘT bảng trạng thái làm rò rỉ
+  // vĩnh viễn một tài khoản `auth.users` THẬT trong đúng database chủ dự án
+  // đang dùng, không có đường dọn lại nào ở lượt chạy sau (khác với
+  // `afterEach`: rò trạng thái ở đó còn được `afterEach`/`afterAll` kế tiếp
+  // dọn tiếp theo cùng `userId`). Vẫn `throw` để lỗi hiện ra rõ ràng — chỉ
+  // không đánh đổi bằng việc bỏ sót `deleteUser`.
   afterAll(async () => {
-    if (userId) {
+    if (!userId) return;
+    const errors: unknown[] = [];
+    try {
       const delWord = await admin.from("word_mastery").delete().eq("user_id", userId);
-      if (delWord.error) throw delWord.error;
+      if (delWord.error) errors.push(delWord.error);
       const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", userId);
-      if (delGrammar.error) throw delGrammar.error;
+      if (delGrammar.error) errors.push(delGrammar.error);
       const delProgress = await admin.from("user_lesson_progress").delete().eq("user_id", userId);
-      if (delProgress.error) throw delProgress.error;
+      if (delProgress.error) errors.push(delProgress.error);
+    } finally {
       const { error: delUserErr } = await admin.auth.admin.deleteUser(userId);
-      if (delUserErr) throw delUserErr;
+      if (delUserErr) errors.push(delUserErr);
+    }
+    if (errors.length === 1) throw errors[0];
+    if (errors.length > 1) {
+      throw new Error(
+        `afterAll: ${errors.length} lỗi khi dọn dẹp — ${errors.map((e) => String(e)).join(" | ")}`,
+      );
     }
   });
 
