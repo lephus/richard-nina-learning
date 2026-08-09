@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { answerItem, submitAssessment } from "@/lib/assessment/run";
 
@@ -34,4 +35,34 @@ export async function submitAction(assessmentId: number) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("chưa đăng nhập");
   return submitAssessment(supabase, user.id, assessmentId, new Date());
+}
+
+/**
+ * Dọn một bài `in_progress` KHÔNG có câu nào — trạng thái kẹt cứng duy nhất
+ * của cả lát này không có lối thoát nào khác (review cuối nhánh, finding 1):
+ * `startAssessment` (run.ts) chèn dòng `assessments` rồi mới chèn
+ * `assessment_items`, dọn dòng đầu nếu chèn dòng sau lỗi — nhưng nếu tiến
+ * trình chết GIỮA hai lượt ghi đó (function timeout, instance bị thu hồi),
+ * cleanup không bao giờ chạy tới. Dòng rỗng sống sót đó chặn vĩnh viễn: màn
+ * hình làm bài trắng trơn (`!current` ở `assessment-runner.tsx`),
+ * `finalize` ném vì 0 câu không chấm được, và `startAssessment` từ chối tạo
+ * bài mới vì đã có một bài `in_progress`. Không có gì để chấm hay đóng ở
+ * đây — xoá thẳng dòng rồi để người học bắt đầu lại là lối thoát duy nhất.
+ *
+ * Scope theo CẢ id lẫn user_id, tường minh — cùng cách mọi lượt ghi khác
+ * trong lát này đang làm (run.ts, dashboard/actions.ts).
+ */
+export async function deleteEmptyAssessmentAction(assessmentId: number) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("chưa đăng nhập");
+
+  const { error } = await supabase
+    .from("assessments")
+    .delete()
+    .eq("id", assessmentId)
+    .eq("user_id", user.id);
+  if (error) throw error;
+
+  redirect("/dashboard");
 }

@@ -50,13 +50,13 @@ Một môi trường duy nhất — test ghi thẳng vào Supabase production, n
 
 | | Phạm vi | Số câu | Đồng hồ | Ngưỡng |
 |---|---|---|---|---|
-| Ôn tập | 2 buổi (60 từ, 2 bài ngữ pháp) | 25 = 20 từ vựng + 5 ngữ pháp | Hiển thị ~15 phút, **không khoá** | ≥ 80% |
-| Kiểm tra | 4 buổi (120 từ, 4 bài ngữ pháp) | 60 = 48 từ vựng + 12 ngữ pháp | **60 phút, khoá cứng** | ≥ 70% |
-| Bổ túc | Chỉ các câu đã sai ở lần trượt | Bằng số câu sai | Không | ≥ 80% |
+| Ôn tập | 2 buổi (60 từ, 2 bài ngữ pháp) | 25 = 20 từ vựng + 5 ngữ pháp | `expires_at` ~15 phút trong database, **không hiện đồng hồ trên màn hình**, không khoá | ≥ 80% |
+| Kiểm tra | 4 buổi (120 từ, 4 bài ngữ pháp) | 60 = 48 từ vựng + 12 ngữ pháp | **60 phút, hiện đồng hồ đếm ngược, khoá cứng** | ≥ 70% |
+| Bổ túc | Chỉ các câu đã sai ở lần trượt | Bằng số câu sai | `expires_at` ~15 phút trong database, không hiện đồng hồ, không khoá | ≥ 80% |
 
 Tỷ lệ 80/20 giữa từ vựng và ngữ pháp phản ánh trọng số chương trình: mỗi buổi có 30 từ nhưng chỉ 1 bài ngữ pháp.
 
-Spec tổng thể mục 6.2 chỉ gọi bài kiểm tra là "khoá cứng", nên ôn tập hiển thị thời gian gợi ý nhưng không bị chặn. Ép đồng hồ lên ôn tập là thêm áp lực mà spec không đòi.
+Spec tổng thể mục 6.2 chỉ gọi bài kiểm tra là "khoá cứng". Ôn tập và bổ túc vẫn có cột `expires_at` trong database — `nextStep` dùng nó để tự đóng một bài bỏ ngang (mục 6.2 bên dưới) — nhưng KHÔNG có đồng hồ đếm ngược nào hiện trên màn hình và không tự nộp khi hết hạn; chỉ bài kiểm tra mới có UI đồng hồ đó (`<Countdown>` chỉ render khi `hardLocked`, xem `assessment-runner.tsx`). Sửa lại đúng bản đã triển khai (review cuối nhánh, finding 7 — bản trước của mục này nói ôn tập "hiển thị thời gian gợi ý", nhưng không có đồng hồ nào được vẽ ra cả): ép đồng hồ lên ôn tập là thêm áp lực mà spec không đòi, và ép luôn cả UI đếm ngược thì còn vượt quá cả cái spec đã không đòi đó.
 
 Câu hỏi từ vựng dùng lại đúng dạng **chọn nghĩa** của 1b. Câu ngữ pháp lấy từ `grammar_questions` của các bài trong phạm vi.
 
@@ -116,11 +116,13 @@ Không có nó, `nextStep` phải đoán mối liên hệ bằng `(type, scope, 
 
 ### 5.4 Trượt chính bài bổ túc
 
-Bổ túc cũng có ngưỡng (≥80%), nên nó cũng có thể trượt. Khi đó **làm lại chính bài bổ túc đó**, đề dựng từ các câu sai của lần bổ túc vừa rồi — `parent_id` vẫn trỏ tới lần thử gốc, không tạo tầng lồng nhau.
+Bổ túc cũng có ngưỡng (≥80%), nên nó cũng có thể trượt. Khi đó **làm lại chính bài bổ túc đó** — `nextStep` tạo một bài bổ túc MỚI với `parentId` vẫn trỏ tới **lần thử gốc** (`attempt.id`, xem `next-step.ts:167`), KHÔNG PHẢI trỏ tới lần bổ túc vừa trượt.
 
-Nói cách khác: bổ túc là một nhánh phẳng, không phải một cây. Nếu để nó sinh bổ túc-của-bổ túc thì mỗi lần trượt lại đẻ thêm một tầng, và không có gì đảm bảo dừng.
+**Sửa lại đúng bản đã triển khai (review cuối nhánh, finding 7):** đoạn dưới đây từng nói vòng bổ túc "thu hẹp dần" qua mỗi lần trượt. Bản đã triển khai KHÔNG làm vậy — vì `parentId` không đổi qua các lần bổ túc, đề của lần bổ túc TIẾP THEO luôn được dựng lại từ ĐÚNG tập câu sai của LẦN THỬ GỐC (RPC `wrong_items_for_assessment(parentId)`, xem `run.ts`), không phải từ câu sai của lần bổ túc vừa rồi. `buildRemedialItems` sao chép nguyên `payload` (câu hỏi + 4 phương án đã xáo) của những dòng đó — nên khi tập câu sai của lần gốc không đổi, MỌI lần làm lại bổ túc là MỘT ĐỀ Y HỆT byte-for-byte, không hẹp dần.
 
-Vòng này thu hẹp dần một cách tự nhiên vì tập câu sai chỉ nhỏ đi. Nhưng nó **không đảm bảo kết thúc** nếu người học liên tục sai đúng những từ đó — và điều đó là chấp nhận được: nghĩa là họ thật sự chưa thuộc, và đó chính là điều bài bổ túc tồn tại để phát hiện.
+Đây là một lựa chọn CÓ CHỦ Ý (đã ghi trong kế hoạch triển khai, không phải một khiếm khuyết bỏ sót): nếu `parentId` của lần bổ túc mới trỏ vào lần bổ túc VỪA trượt thay vì lần thử gốc, một người trượt CÙNG một bài bổ túc từ hai lần trở lên sẽ tạo ra một chuỗi `parent_id` nhiều tầng (bổ túc-của-bổ túc-của...), và `parentId` trở nên MƠ HỒ — không còn rõ nó nên trỏ vào tầng nào để dựng đề tiếp theo. Giữ `parentId` PHẲNG — luôn trỏ về lần thử gốc — loại bỏ hẳn sự mơ hồ đó: tại bất kỳ thời điểm nào, chỉ có ĐÚNG MỘT bài bổ túc "đang hoạt động" cho mỗi lần thử gốc, bất kể người học đã làm lại nó bao nhiêu lần.
+
+**Hệ quả:** bổ túc KHÔNG thu hẹp dần qua các vòng — làm lại một bài bổ túc đã trượt là làm lại ĐÚNG những câu đã sai của lần thử gốc, không ít hơn, không đổi đề. Nó **không đảm bảo kết thúc** nếu người học liên tục sai đúng những câu đó — và điều đó là chấp nhận được: nghĩa là họ thật sự chưa thuộc, và đó chính là điều bài bổ túc tồn tại để phát hiện.
 
 ### 5.4 Dashboard
 

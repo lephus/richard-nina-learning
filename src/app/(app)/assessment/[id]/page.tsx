@@ -3,8 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 // `AssessmentType` là kiểu công khai của next-step.ts; run.ts chỉ IMPORT nó
 // (không re-export) nên phải lấy đúng từ nguồn — xem src/lib/assessment/run.ts:4.
 import type { AssessmentType } from "@/lib/assessment/next-step";
+import { isHardLocked } from "@/lib/assessment/run";
 import { AssessmentRunner, type AssessmentRunnerItem } from "@/components/assessment/assessment-runner";
 import { AssessmentDone } from "@/components/assessment/assessment-done";
+import { deleteEmptyAssessmentAction } from "./actions";
 
 export default async function AssessmentPage({
   params,
@@ -68,13 +70,49 @@ export default async function AssessmentPage({
 
   const items = (itemRows ?? []) as unknown as AssessmentRunnerItem[];
 
+  // Bài `in_progress` KHÔNG có câu nào — trạng thái kẹt cứng duy nhất của cả
+  // lát này không có lối thoát nào khác (review cuối nhánh, finding 1):
+  // `startAssessment` (run.ts) chèn dòng `assessments` rồi mới chèn
+  // `assessment_items`, và dọn dòng đầu nếu chèn dòng sau lỗi — nhưng không
+  // gì chạy được nếu tiến trình chết GIỮA hai lượt ghi đó (function timeout,
+  // instance bị thu hồi). Không phải "?? return null" như bản trước: đó là
+  // một trang trắng không giải thích gì, còn `startAssessment` chỉ chặn được
+  // việc TẠO một bài rỗng MỚI (đọc "chưa có bài dở" ở bước 1), nó không giúp
+  // gì một dòng rỗng đã lỡ sống sót — người học đứng ở đây vĩnh viễn cho tới
+  // khi có cách xoá dòng đó. Đưa thẳng một màn hình lỗi tiếng Việt kèm nút
+  // xoá, thay vì để `AssessmentRunner` tự vỡ ở dòng `if (!current) return
+  // null`.
+  if (items.length === 0) {
+    return (
+      <main className="flex flex-col gap-4">
+        <h1 data-testid="empty-assessment-heading" className="text-xl font-semibold">
+          Bài này bị lỗi
+        </h1>
+        <p className="text-sm text-slate-600">
+          Bài đánh giá này đang dở nhưng không có câu hỏi nào — một lỗi hệ
+          thống lúc tạo đề. Không thể làm tiếp hay chấm bài này. Xoá bài lỗi
+          rồi bắt đầu lại từ dashboard.
+        </p>
+        <form action={deleteEmptyAssessmentAction.bind(null, assessmentId)}>
+          <button
+            type="submit"
+            data-testid="delete-empty-assessment-button"
+            className="self-start rounded bg-slate-900 px-4 py-2 text-white"
+          >
+            Xoá bài lỗi và quay lại
+          </button>
+        </form>
+      </main>
+    );
+  }
+
   return (
     <main>
       <AssessmentRunner
         assessmentId={assessmentId}
         items={items}
         expiresAt={assessment.expires_at as string}
-        hardLocked={type === "test"}
+        hardLocked={isHardLocked(type)}
       />
     </main>
   );

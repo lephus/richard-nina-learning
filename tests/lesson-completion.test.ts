@@ -315,7 +315,13 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
     // 7 (ba "cửa" trên cùng một hố). Cổng MỚI (bước 0 của runSubmit, đọc
     // thêm `assessments` rồi hỏi `nextStep`) phải từ chối: chuỗi 35 hoạt động
     // còn đứng ở ôn tập(1,2), chưa từng có lần thử nào.
-    await admin.from("user_lesson_progress").upsert(
+    // Lỗi seed KHÔNG được nuốt (review cuối nhánh, finding 4): nếu upsert này
+    // no-op vì bất kỳ lý do gì, buổi 1/2 không thật sự "completed",
+    // `nextStep` trả về lesson 1 thay vì lesson 3, `runSubmit` vẫn từ chối —
+    // nhưng vì lý do KHÁC (buổi 1 đang khoá theo cổng CŨ, không phải cổng
+    // MỚI mà ca này tồn tại để kiểm), và test vẫn xanh mà không còn phân
+    // biệt được hai cổng đó nữa — đúng cái bẫy mà comment phía trên đã tả.
+    const { error: seedErr } = await admin.from("user_lesson_progress").upsert(
       [
         {
           user_id: userId, lesson_id: lesson1, position: 135,
@@ -330,6 +336,7 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
       ],
       { onConflict: "user_id,lesson_id" },
     );
+    if (seedErr) throw seedErr;
 
     const { data: l3 } = await admin.from("lessons").select("id").eq("ordinal", 3).single();
     const lesson3 = l3!.id as number;

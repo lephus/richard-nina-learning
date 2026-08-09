@@ -207,12 +207,33 @@ grant select (id, assessment_id, position, item_type, ref_id, payload, user_answ
 grant insert on assessment_items to authenticated;
 grant update (user_answer, is_correct) on assessment_items to authenticated;
 
--- PHAM VI CO Y BO QUA, GHI LAI DE KHONG DOC NHAM LA THIEU SOT: is_correct VAN
--- GHI duoc boi `authenticated` (co trong grant update o tren). Mot nguoi hoc
--- VAN co the PATCH is_correct=true de tu lam gia mot bai da qua — nhung do la
--- tu lua doi chinh minh, khong lam lo thong tin cho ai. Con DOC is_correct
--- moi la kenh do ra dap an that (goi lien tuc voi cac dap an khac nhau, so
--- is_correct tra ve) — do la kenh migration nay dong, ket hop voi dieu kien
--- dong bai o finalize_assessment_items/wrong_items_for_assessment o tren.
--- Dong ca chieu ghi nghia la chuyen finalize xuong SQL toan bo — qua muc so
--- voi loai rui ro dang xu ly o day.
+-- PHAM VI CHINH XAC CUA MIGRATION NAY, GHI LAI DE KHONG DOC NHAM THANH RONG
+-- HON THUC TE: migration nay CHI dong KENH DOC is_correct qua assessment_items
+-- (PostgREST + backfill, ket hop dieu kien dong bai o
+-- finalize_assessment_items/wrong_items_for_assessment o tren) — KHONG phai
+-- "kenh dung/sai" noi chung cua ca nhanh 1c. Nhanh nay BIET va CHAP NHAN CO Y
+-- THUC con lai ba duong sau, deu VAN CON MO sau migration nay:
+--
+--   1. is_correct VAN GHI duoc boi `authenticated` (co trong grant update o
+--      tren). Mot nguoi hoc VAN co the PATCH is_correct=true de tu lam gia
+--      mot bai da qua — nhung do la tu lua doi chinh minh, khong lam lo
+--      thong tin cho ai.
+--   2. Migration nay KHONG dung tren assessments, user_lesson_progress,
+--      word_mastery, hay grammar_mastery — moi policy RLS tren bon bang do
+--      van la FOR ALL (doc lan ghi deu qua policy chu khong qua grant cot
+--      rieng), va `@supabase/ssr` ghi cookie phien voi httpOnly: false (JWT
+--      cua chinh nguoi hoc doc duoc tu document.cookie). Goi thang PostgREST
+--      bang JWT do, mot nguoi hoc PATCH duoc assessments?id=eq.N de tu dat
+--      passed=true, hoac dat mot dong user_lesson_progress thanh 'completed'.
+--   3. `applyMastery` (goi trong answerItem, src/lib/assessment/run.ts) cong
+--      word_mastery.correct_count ngay o LUOT GHI DAU TIEN cua moi cau, va
+--      assessment_items.ref_id van con SELECT trong grant o tren — nen doc
+--      word_mastery?word_id=eq.<ref_id> NGAY GIUA bai lam la biet duoc luot
+--      tra loi dau cho tu do dung hay sai. Mot kenh do khac, khong di qua
+--      is_correct chut nao, nen khong nam trong pham vi migration nay dong.
+--
+-- Ca ba deu bi RLS gioi han trong DUNG DONG CUA CHINH NGUOI GOI — tu lua doi
+-- ban than hoac tu do diem minh, khong lam lo thong tin cho NGUOI KHAC — nen
+-- duoc CHAP NHAN CO Y THUC thay vi dong het: dong ca chieu ghi tren bon bang
+-- do (chuyen moi lan ghi sang RPC security definer rieng, bo FOR ALL) la qua
+-- muc so voi loai rui ro dang xu ly o day, va se la mot lat rieng neu can.

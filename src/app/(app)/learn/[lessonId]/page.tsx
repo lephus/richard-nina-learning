@@ -36,8 +36,15 @@ export default async function LearnPage({
   // assessments thành lỗi của MỘT trang chưa từng cần bảng đó trước lát 1c.
   const [lessonsRes, progressRes, assessmentsRes] = await Promise.all([
     supabase.from("lessons").select("id, ordinal").order("ordinal"),
-    supabase.from("user_lesson_progress").select("lesson_id, status"),
-    supabase.from("assessments").select("id, type, scope, status, passed, expires_at, parent_id"),
+    // `.eq("user_id", user.id)` tường minh dù RLS đã lọc đúng — không dựa vào
+    // một lớp phòng thủ duy nhất, cùng cách dashboard/page.tsx và
+    // current-step.ts đang làm với mọi bảng riêng-tư-theo-người-dùng (review
+    // cuối nhánh, finding 3).
+    supabase.from("user_lesson_progress").select("lesson_id, status").eq("user_id", user.id),
+    supabase
+      .from("assessments")
+      .select("id, type, scope, status, passed, expires_at, parent_id")
+      .eq("user_id", user.id),
   ]);
   if (lessonsRes.error) throw lessonsRes.error;
   if (progressRes.error) throw progressRes.error;

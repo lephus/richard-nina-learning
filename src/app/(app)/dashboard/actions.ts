@@ -105,7 +105,15 @@ export async function startAssessmentAction(
   redirect(`/assessment/${assessmentId}`);
 }
 
-/** Đóng một bài đã quá hạn rồi đưa thẳng người học tới màn hình kết quả của nó. */
+/**
+ * Đóng một bài ĐÃ QUÁ HẠN rồi đưa thẳng người học tới màn hình kết quả của
+ * nó. `assessmentId` tới từ một form phía CLIENT kiểm soát
+ * (`startAssessmentAction.bind`-tương tự ở `dashboard/page.tsx`), nên
+ * "đã quá hạn" không được phép chỉ là một giả định của bên gọi — `closeExpired`
+ * (`run.ts`) tự kiểm tra lại `expires_at` và NÉM nếu bài chưa hết hạn (review
+ * cuối nhánh, finding 5), nên tên hàm này giờ là một đảm bảo thật, không chỉ
+ * một cái tên.
+ */
 export async function closeExpiredAction(assessmentId: number) {
   const supabase = await createClient();
   const {

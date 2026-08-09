@@ -45,6 +45,20 @@ export const PASS_MARK: Record<AssessmentType, number> = {
  */
 const HARD_LOCKED: ReadonlySet<AssessmentType> = new Set<AssessmentType>(["test"]);
 
+/**
+ * Nguồn THẬT DUY NHẤT cho "loại bài nào bị khoá cứng thời gian" (review cuối
+ * nhánh, finding 2): trước bản vá này, `assessment/[id]/page.tsx` tự tính lại
+ * `type === "test"` thay vì hỏi `HARD_LOCKED` ở đây — hai định nghĩa của
+ * CÙNG một tập, sống ở hai tệp khác nhau. Thêm một loại bài khoá cứng mới ở
+ * server (sửa dòng `HARD_LOCKED` phía trên) mà quên đổi UI thì đồng hồ tắt
+ * câm lặng trên màn hình dù server đã khoá thật — không lỗi, không cảnh báo,
+ * chỉ là hành vi sai lặng lẽ. Export HÀM, không export thẳng `HARD_LOCKED`,
+ * để nơi gọi không sửa được tập này từ bên ngoài.
+ */
+export function isHardLocked(type: AssessmentType): boolean {
+  return HARD_LOCKED.has(type);
+}
+
 /** Nội dung một câu như đã đóng băng trong `assessment_items.payload`. */
 interface ItemPayload {
   prompt: string;
@@ -148,7 +162,26 @@ export async function startAssessment(
     // bài `in_progress` không có câu nào sẽ chặn vĩnh viễn mọi lần bắt đầu sau
     // đó (bước 1), trong khi `finalize` không chấm nổi 0 câu. Người học kẹt
     // cứng vì một lỗi lẽ ra chỉ là một lần thử hỏng.
-    await supabase.from("assessments").delete().eq("id", assessmentId).eq("user_id", userId);
+    //
+    // Lỗi của CHÍNH lượt dọn dẹp này PHẢI được đọc, không được nuốt (review
+    // cuối nhánh, finding 1): nuốt nó là dựng lại đúng cái kẹt cứng đoạn này
+    // tồn tại để ngăn — nếu delete thất bại (mất kết nối đúng lúc, RLS đổi
+    // bất ngờ, v.v.), dòng rỗng vẫn còn nguyên trong database và bên gọi chỉ
+    // thấy lỗi sinh đề gốc `e`, không hề biết dọn dẹp cũng đã hỏng. Trang
+    // `assessment/[id]/page.tsx` vẫn có lối thoát thủ công cho trường hợp một
+    // dòng rỗng sống sót (màn hình "bài này bị lỗi"), nhưng người vận hành
+    // xứng đáng biết ngay tại đây thay vì phải tự suy luận từ một dòng kẹt
+    // không rõ nguyên do.
+    const { error: cleanupErr } = await supabase
+      .from("assessments")
+      .delete()
+      .eq("id", assessmentId)
+      .eq("user_id", userId);
+    if (cleanupErr) {
+      throw new Error(
+        `sinh đề cho bài ${assessmentId} thất bại (${(e as Error).message}), và dọn dòng rỗng đó CŨNG thất bại (${cleanupErr.message}) — bài rỗng có thể vẫn còn trong database`,
+      );
+    }
     throw e;
   }
 
@@ -197,7 +230,7 @@ export async function answerItem(
 
   const type = assessment.type as AssessmentType;
   const expiresAt = Date.parse(assessment.expires_at as string);
-  if (HARD_LOCKED.has(type) && now.getTime() >= expiresAt) return { ok: false };
+  if (isHardLocked(type) && now.getTime() >= expiresAt) return { ok: false };
 
   const row = itemRes.data;
   if (row === null) return { ok: false };
@@ -256,8 +289,25 @@ export async function submitAssessment(
 
 /**
  * `nextStep` phát hiện một bài `in_progress` đã quá `expires_at` và đóng nó
- * lại. Khác `submitAssessment` DUY NHẤT ở chỗ ai gọi; luật chấm giống hệt nên
- * hai hàm gọi cùng một `finalize` — không có bản chấm thứ hai để trôi lệch.
+ * lại. Khác `submitAssessment` Ở CHỖ TIỀN ĐIỀU KIỆN: hàm này chỉ hợp lệ trên
+ * một bài THẬT SỰ đã hết hạn — `submitAssessment` không có ràng buộc đó, vì
+ * nộp sớm (trước hạn) luôn hợp lệ. Luật CHẤM thì giống hệt nhau nên cả hai
+ * cùng gọi một `finalize` — không có bản chấm thứ hai để trôi lệch.
+ *
+ * Tiền điều kiện "đã hết hạn" được KIỂM TRA THẬT ở đây, không chỉ nằm trong
+ * tên hàm (review cuối nhánh, finding 5): trước bản vá này, hàm chỉ gọi
+ * thẳng `finalize` mà không đọc `expires_at`, nên `closeExpiredAction`
+ * (`dashboard/actions.ts`) — một Server Action nhận `assessmentId` làm THAM
+ * SỐ từ một form phía CLIENT kiểm soát — có thể bị gọi thủ công (DevTools,
+ * request thủ công) trên MỘT bài đang làm bất kỳ của chính người gọi, đóng
+ * nó sớm dù chưa hết giờ. Không phải lỗ hổng lộ dữ liệu người khác (RLS +
+ * `.eq("user_id", ...)` trong `finalize` vẫn giới hạn trong đúng dòng của
+ * người gọi), nhưng là một đường "nộp sớm giả danh hết hạn" không nên tồn
+ * tại — tên hàm và comment ở nơi gọi đều khẳng định một tiền điều kiện mà
+ * code không hề ép buộc. Kiểm tra NGAY TẠI ĐÂY, nơi MỌI đường gọi
+ * `closeExpired` (kể cả nhánh "close-expired" của `startAssessmentAction`,
+ * vốn đã tự đảm bảo điều này qua `nextStep`) đều đi qua, thay vì rải điều
+ * kiện ở từng nơi gọi và tin rằng nơi gọi luôn nhớ kiểm tra trước.
  */
 export async function closeExpired(
   supabase: SupabaseClient,
@@ -265,6 +315,26 @@ export async function closeExpired(
   assessmentId: number,
   now: Date,
 ): Promise<FinalResult> {
+  const { data: assessment, error } = await supabase
+    .from("assessments")
+    .select("status, expires_at")
+    .eq("id", assessmentId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) throw error;
+  if (assessment === null) {
+    throw new Error(`không tìm thấy bài ${assessmentId} của người học này`);
+  }
+  // Bài đã đóng rồi (nộp thật hoặc một lượt closeExpired trước đó) thì để lọt
+  // xuống `finalize` như bình thường — nó tự đọc lại kết quả đã lưu, idempotent,
+  // không phải nhánh cần chặn. Chỉ chặn đúng trường hợp CÒN `in_progress` mà
+  // CHƯA hết hạn.
+  if (
+    assessment.status === "in_progress" &&
+    Date.parse(assessment.expires_at as string) > now.getTime()
+  ) {
+    throw new Error(`bài ${assessmentId} chưa hết hạn — không thể đóng sớm bằng đường này`);
+  }
   return finalize(supabase, userId, assessmentId, now);
 }
 

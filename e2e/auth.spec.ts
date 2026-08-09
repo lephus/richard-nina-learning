@@ -22,7 +22,8 @@ test.afterAll(async () => {
   // chính email của nó (deleteUserByEmail tra user_id trước rồi mới xoá
   // theo id đó). KHÔNG đụng TEST_EMAIL — global-teardown.ts lo phần đó —
   // và không đụng tài khoản thật nào khác trong bảng auth.users chung của
-  // dự án (kể cả phulealali@gmail.com, chủ dự án).
+  // dự án, kể cả tài khoản thật của chủ dự án (không ghi địa chỉ thật ở đây;
+  // mọi ví dụ email trong bộ test này đều theo quy ước `@test.local`).
   await deleteUserByEmail(adminClient(), SIGNUP_EMAIL);
 });
 
