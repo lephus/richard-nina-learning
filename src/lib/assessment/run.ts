@@ -288,7 +288,37 @@ async function finalize(
   }
 
   // Bấm nộp hai lần: không làm gì, trả lại kết quả đã có — spec mục 7.
-  if (assessment.status === "submitted") return storedResult(assessment);
+  //
+  // ĐIỀU KIỆN THÊM `assessment.score !== null` (không chỉ `status ===
+  // "submitted"`) là bản vá cho một trạng thái TREO mà bản tách RPC/UPDATE ở
+  // dưới tạo ra: `finalize_assessment_items` đóng bài (status → 'submitted')
+  // và UPDATE ghi score/passed/submitted_at giờ là HAI lượt round-trip riêng,
+  // không còn một UPDATE nguyên tử như trước. Nếu request đứt giữa hai lượt
+  // đó (function timeout, mất kết nối, deploy rơi đúng lúc) — RPC đã commit
+  // (bài đóng, đã backfill), nhưng UPDATE điểm chưa chạy — dòng đó mắc kẹt ở
+  // `status = 'submitted'`, `score/passed/submitted_at = NULL` VĨNH VIỄN nếu
+  // early-return chỉ xét `status`: mọi lần gọi lại sau đó đều thấy "đã nộp"
+  // rồi trả `storedResult({score: null, ...})` → `{score: 0, passed: false}`
+  // mà KHÔNG BAO GIỜ sửa lại dòng — nextStep đọc `passed !== true` thành
+  // trượt, đẩy người học vào một bài bổ túc họ không đáng phải làm.
+  //
+  // Thêm `score !== null` biến điều kiện "coi là đã xong" thành "đã xong VÀ
+  // đã thật sự có kết quả lưu lại" — một dòng bị treo (status='submitted',
+  // score=null) KHÔNG thoả điều kiện này, nên rơi tiếp xuống dưới và CHẠY
+  // LẠI cả khối RPC + UPDATE. RPC an toàn khi gọi lại: CAS `status =
+  // 'in_progress'` khớp 0 dòng (đã đóng từ lần trước, không làm gì thêm),
+  // backfill cũng khớp 0 dòng (đã backfill xong), đếm lại cho ra ĐÚNG cùng
+  // {total, correct} — idempotent. UPDATE điểm bên dưới dùng CAS `score is
+  // null`, khớp đúng dòng treo này và ghi điểm thật vào — bài TỰ SỬA ở lần
+  // gọi `finalize` kế tiếp (nộp lại, hoặc `nextStep` đóng bài quá hạn), thay
+  // vì cần một thao tác dọn dẹp thủ công riêng.
+  //
+  // Một lần nộp THẬT SỰ xong luôn để lại `score` khác NULL (khối UPDATE dưới
+  // đây luôn ghi một số, kể cả 0), nên nộp hai lần thật (không phải một lần
+  // bị đứt) vẫn tắt sớm đúng như trước — không có gì bị nới lỏng.
+  if (assessment.status === "submitted" && assessment.score !== null) {
+    return storedResult(assessment);
+  }
 
   // ĐIỀN `is_correct = false` CHO MỌI CÂU CHƯA LÀM, ĐẾM, VÀ ĐÓNG BÀI (chuyển
   // status khỏi 'in_progress') — CẢ BA trong MỘT lệnh gọi RPC `security
@@ -347,6 +377,14 @@ async function finalize(
     // Không im lặng chấm 0: một bài 0 câu không bao giờ đạt được, nên chấm nó
     // là dựng lại đúng cái vòng lặp vô tận ở trên. `startAssessment` đã chặn
     // không cho bài rỗng ra đời; tới đây được thì có gì đó hỏng thật.
+    //
+    // Ném ở ĐÂY xảy ra SAU KHI RPC đã đóng bài (status → 'submitted') —
+    // cùng hình dạng treo đã mô tả ở điều kiện early-return phía trên,
+    // nhưng không cách nào "sửa" được (không có gì để tính điểm). Vì
+    // `score` không bao giờ được ghi ở nhánh này, điều kiện `score !==
+    // null` phía trên KHÔNG coi dòng này là "đã xong" — mọi lần gọi lại
+    // đều rơi xuống đây và ném lại đúng lỗi này, không bao giờ tự nhận
+    // vào một kết quả sai. Kêu to mãi mãi còn hơn một lần im lặng sai.
     throw new Error(`bài ${assessmentId} không có câu nào — không chấm được`);
   }
   const correct = agg.correct;

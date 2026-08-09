@@ -25,7 +25,11 @@ const hasEnv = Boolean(URL && ANON && SERVICE);
  *   (C) finalize_assessment_items tu DONG BAI ngay lan goi dau, nen khong the
  *       dung lap lai nhu mot oracle cham diem; goi tu nguoi khac phai bi tu
  *       choi VA khong de lai tac dung phu — tests 5-7.
- * Tests 3-7 se do "Could not find the function" cho toi khi 0008 duoc dan len
+ *   (D) mot dong "treo" (status='submitted' nhung score con NULL — request
+ *       dut giua luot RPC dong bai va luot UPDATE ghi diem) phai tu SUA o
+ *       lan goi finalize ke tiep, khong mac ket vinh vien voi diem NULL —
+ *       test 8, xem them ghi chu o run.ts quanh dieu kien early-return.
+ * Tests 3-8 se do "Could not find the function" cho toi khi 0008 duoc dan len
  * dashboard that — xem task-9-report.md.
  */
 describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_items_grants)", () => {
@@ -81,7 +85,15 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
       .from("assessment_items")
       .select("is_correct")
       .eq("assessment_id", openId);
-    expect(error, "is_correct phải bị thu hồi khỏi authenticated").not.toBeNull();
+    // Cùng dạng khẳng định mạnh như các test "từ chối" khác trong file này
+    // (không chỉ `not.toBeNull()`, vốn cũng thoả với một lỗi 500 hay lỗi
+    // đường truyền bất kỳ — đúng điểm yếu mà lần review trước đã nêu và đã
+    // vá ở các test kia, còn sót lại đúng một chỗ này). Một lượt từ chối
+    // quyền cột nổi lên phía PostgREST với `error.code` là chính SQLSTATE
+    // Postgres trả — `42501` (insufficient_privilege) — đã đo trực tiếp
+    // bằng PostgreSQL cục bộ: `ERROR: 42501: permission denied for table
+    // assessment_items`.
+    expect(error?.code, "is_correct phải bị thu hồi khỏi authenticated").toBe("42501");
   });
 
   it("các cột được phép vẫn đọc được bình thường qua client thường", async () => {
@@ -171,5 +183,50 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
     // Hàm SQL tự đóng bài — KHÔNG cần một lượt UPDATE riêng nào khác để
     // status rời khỏi 'in_progress'.
     expect(assessment!.status).toBe("submitted");
+  });
+
+  // ── (D) dòng "treo" tự sửa ở lần gọi kế tiếp ────────────────────────────
+
+  it("bài bị TREO (status=submitted, score=NULL — request đứt giữa RPC đóng bài và UPDATE ghi điểm) được sửa lại ở lần nộp kế tiếp", async () => {
+    const tornId = await startAssessment(alice, aliceId, "review", [5, 6], null, new Date());
+
+    // Mô phỏng chính xác lỗi mà lần review trước đo được trên `run.ts` cũ:
+    // RPC `finalize_assessment_items` đã commit (đóng bài) nhưng lượt UPDATE
+    // ghi score/passed/submitted_at thì KHÔNG chạy (function timeout, mất
+    // kết nối, deploy rơi đúng lúc request đó). Dựng thẳng trạng thái đó
+    // bằng `admin` — không cần đi qua RPC thật để tạo ra dòng treo, chỉ cần
+    // đúng HÌNH DẠNG của nó: `status='submitted'`, các cột điểm còn NULL.
+    const { error: tornErr } = await admin
+      .from("assessments").update({ status: "submitted" }).eq("id", tornId);
+    if (tornErr) throw tornErr;
+
+    const { data: torn, error: readTornErr } = await admin
+      .from("assessments")
+      .select("status, score, passed, submitted_at")
+      .eq("id", tornId).single();
+    if (readTornErr) throw readTornErr;
+    expect(torn).toEqual({ status: "submitted", score: null, passed: null, submitted_at: null });
+
+    // Với early-return CŨ (chỉ xét `status === "submitted"`), gọi lại ở đây
+    // sẽ trả `{score: 0, passed: false}` MÀ KHÔNG SỬA GÌ CẢ — dòng vẫn treo
+    // mãi mãi, và `nextStep` đọc `passed !== true` thành trượt, đẩy người
+    // học vào một bài bổ túc họ không đáng phải làm. Assertion dưới đây THẤT
+    // BẠI trên code trước bản vá của finding 1 — đó chính là mục đích của
+    // test này.
+    const result = await submitAssessment(alice, aliceId, tornId, new Date());
+
+    const { data: repaired, error: readRepairedErr } = await admin
+      .from("assessments")
+      .select("status, score, passed, submitted_at")
+      .eq("id", tornId).single();
+    if (readRepairedErr) throw readRepairedErr;
+    expect(repaired!.status).toBe("submitted");
+    expect(repaired!.score).not.toBeNull();
+    expect(repaired!.passed).not.toBeNull();
+    expect(repaired!.submitted_at).not.toBeNull();
+    // Kết quả `submitAssessment` trả về PHẢI khớp đúng dòng đã sửa trong
+    // database — không phải một giá trị fail-closed bịa ra.
+    expect(result.score).toBe(repaired!.score);
+    expect(result.passed).toBe(repaired!.passed);
   });
 });
