@@ -54,10 +54,15 @@ const hasEnv = Boolean(URL && ANON && SERVICE);
  * `it` trong CUNG mot `describe` TUAN TU theo dung thu tu khai bao (khong
  * song song) nen chuoi phu thuoc nay an toan, nhung no la mot RANG BUOC THAT
  * cua thu tu — doi cho hai test bat ky trong so nay se lam mot trong hai test
- * do sai. Chuoi cu the: test 5 dong `openId` → test 6 doc `openId` da dong →
- * test 7 tao roi dong `freshId` (can Alice dang KHONG co bai in_progress nao)
- * → test 8 tao `pendingId` roi CO Y de no lai 'in_progress' (guard 22004 tu
- * choi dong) → test 9 TAI SU DUNG dung `pendingId` do (KHONG goi
+ * do sai. So thu tu duoi day dem theo THU TU KHAI BAO `it(...)` trong tep
+ * (1..10), khong theo nhan nhom (A)/(B)/(C)/(D) o tren — hai cach dem nay
+ * TUNG lech nhau mot don vi, va nguoi doc dung so cua nhan nhom de tim "test
+ * 8" se sua nham dung cai test giu bat bien thu tu nay.
+ *
+ * Chuoi cu the: test 6 dong `openId` → test 7 doc `openId` da dong → test 8
+ * tao roi dong `freshId` (can Alice dang KHONG co bai in_progress nao) →
+ * test 9 tao `pendingId` roi CO Y de no lai 'in_progress' (guard 22004 tu
+ * choi dong) → test 10 TAI SU DUNG dung `pendingId` do (KHONG goi
  * startAssessment lan nua — Alice dang co san mot bai in_progress, goi lai se
  * an ngay AssessmentInProgressError).
  */
@@ -74,8 +79,9 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
   /** Bài ôn tập của Alice, còn `in_progress` suốt các test 1-4. */
   let openId = 0;
   /**
-   * Bài Alice tạo ở test 8, bị guard 22004 từ chối đóng nên còn lại
-   * `in_progress` — test 9 TÁI SỬ DỤNG chính dòng này (không gọi
+   * Bài Alice tạo ở test 9 (đếm theo thứ tự khai báo `it`), bị guard 22004
+   * từ chối đóng nên còn lại `in_progress` — test 10 TÁI SỬ DỤNG chính dòng
+   * này (không gọi
    * `startAssessment` lần nữa) để dựng hình dạng dòng "treo". Xem chú thích
    * thứ tự test ở đầu file.
    */
@@ -254,7 +260,7 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
   //     những gì tầng SQL trả về, tầng dưới cùng của quyết định thiết kế.
 
   it("p_pass_mark hoặc p_now là NULL: RPC ném lỗi, bài KHÔNG bị đóng", async () => {
-    // Gán vào biến ở phạm vi describe — test 9 tái sử dụng CHÍNH dòng này
+    // Gán vào biến ở phạm vi describe — test 10 tái sử dụng CHÍNH dòng này
     // (xem chú thích thứ tự test ở đầu file). Không đóng được ở đây (guard
     // 22004 từ chối cả hai lượt gọi bên dưới) nên dòng còn nguyên
     // 'in_progress' sau test này — CỐ Ý, không phải một lỗi dọn dẹp thiếu.
