@@ -169,9 +169,12 @@ export function pickDistractors(
   // Lớp bảo vệ thứ hai: corpus test (tests/corpus.test.ts) đã canh hết mọi
   // buổi trong data/clean/ hiện có, nhưng canh đó chỉ chạy trên dữ liệu ĐÃ
   // qua CI — không chặn được dữ liệu thêm sau này (buổi mới, kho từ mở rộng)
-  // mà chưa từng chạy qua corpus test. `.slice(0, count)` ở nơi gọi hàm này
-  // im lặng trả về ít hơn `count` phương án khi kho cạn, ra một câu hỏi có
-  // ít hơn 4 lựa chọn thay vì báo lỗi ngay tại chỗ sai.
+  // mà chưa từng chạy qua corpus test. Khi bậc 1+2(+3) không đủ ứng viên,
+  // vòng lặp trong `consider` không cắt bớt gì cả — nó chỉ đơn giản HẾT phần
+  // tử để duyệt rồi thoát, `out` lặng lẽ NGẮN HƠN `count` mà không có tín
+  // hiệu nào báo cho người gọi. Không có guard này, `meaningItem`/nhánh
+  // synonym nhận về ít hơn `count` phương án mà không biết, dựng ra một câu
+  // hỏi có ít hơn 4 lựa chọn thay vì báo lỗi ngay tại chỗ sai.
   if (out.length < count) {
     throw new Error(
       `pickDistractors: từ "${target.word}" (id ${target.id}) chỉ tìm được ` +

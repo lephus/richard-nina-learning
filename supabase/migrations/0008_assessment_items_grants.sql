@@ -25,23 +25,52 @@
 --
 -- Giai phap: doi PHAN DOC sang hai ham `security definer`, dung tien le da co
 -- cua chinh file nay (answer_for_word, answer_for_question o
--- 0006_lesson_position.sql), roi moi revoke select(is_correct). PHAN GHI
--- (answerItem cham diem tung cau) GIU NGUYEN qua client thuong — xem ghi chu
--- o cuoi file ve pham vi co y bo qua.
+-- 0006_lesson_position.sql), roi moi thu hoi quyen doc tren client thuong.
+-- PHAN GHI (answerItem cham diem tung cau) GIU NGUYEN qua client thuong — xem
+-- ghi chu o cuoi file ve pham vi co y bo qua.
 --
 -- Tep RIENG, KHONG noi vao 0007: 0007 da duoc dan mot phan len dashboard va
 -- se duoc dan lai NGUYEN CA TEP luc chot lat — noi them vao do de lam mot
 -- migration ap dung MOT LAN roi thanh hai nguon that khac nhau ve cung mot
 -- schema.
+--
+-- DA CHAY THAT tren PostgreSQL 16.11 cuc bo (Postgres.app), voi role/grant/RLS
+-- mo phong dung Supabase (xem task-9-report.md phan "Xac minh that"): tep nay
+-- chay sach tu dau den cuoi, dan lai lan hai idempotent, ba kieu tan cong doc
+-- deu bi tu choi, va moi duong doc/ghi con lai trong src/ van chay dung duoi
+-- quyen moi.
 
 -- 1. Dong bang cham diem + tra tong/dung cho MOT bai. Gom ca backfill
---    (dien is_correct = false cho cau bo trong) VA dem trong CUNG mot ham vi
---    ca hai deu can SELECT is_correct — tach lam hai ham thi ham thu hai vao
---    ngay sau khi backfill van phai la security definer, khong loi gi hon.
+--    (dien is_correct = false cho cau bo trong), dem, VA DONG BAI (chuyen
+--    status khoi 'in_progress') trong CUNG mot ham:
+--      - backfill+dem can SELECT is_correct, nen phai o trong ham security
+--        definer nhu da giai thich o tren.
+--      - DONG BAI ngay tai day (khong doi TypeScript goi them mot buoc rieng)
+--        la phan sua cho mot lo hong thu hai: neu ham nay CHI backfill+dem ma
+--        khong dong bai, no tro thanh mot oracle cham diem — goi lai sau MOI
+--        cau tra loi (answerItem van nhan cau tra loi vi bai con
+--        'in_progress') se lo dan correct/total, dò duoc ca bai kiem tra 60
+--        cau ma khong can biet dap an that. Doi status ngay trong CUNG cau
+--        UPDATE nay khien lan goi DAU TIEN (hop le hay khong) la lan CUOI
+--        answerItem con nhan cau tra loi (dieu kien `status = 'in_progress'`
+--        o run.ts) — goi ham nay giua bai chi tuong duong bam "Nop bai" som,
+--        khong lo them gi ca.
+--
+--    CAS ngay trong WHERE (`status = 'in_progress'`): goi lai ham nay bao
+--    nhieu lan cung chi doi duoc DUNG MOT lan; tu lan thu hai UPDATE nay khop
+--    0 dong, khong lam gi them (backfill/dem van chay, nhung idempotent — moi
+--    dong da co is_correct tu lan dau).
 --
 --    Kiem tra chu so huu BEN TRONG ham la hang rao THAT DUY NHAT: security
 --    definer chay bang quyen chu bang (bo qua RLS), nen thieu dieu kien nay
 --    la mot nguoi hoc bat ky finalize duoc bai cua nguoi khac.
+--
+--    Diem so (score, so sanh voi PASS_MARK theo type) VAN o TypeScript — ham
+--    nay chi tra tong/dung da dem san, khong tinh phan tram hay ket luan
+--    dat/truot. TypeScript (run.ts) doc total/correct, tu tinh score, roi ghi
+--    score/passed/submitted_at bang MOT UPDATE rieng co dieu kien
+--    `score is null` — CAS thay cho `status <> 'submitted'` cu, vi luc nay
+--    status da bi ham nay doi truoc do roi (xem comment trong run.ts).
 create or replace function public.finalize_assessment_items(p_assessment_id bigint)
 returns table(total int, correct int)
 language plpgsql
@@ -56,6 +85,11 @@ begin
     raise exception 'khong co quyen tren bai danh gia %', p_assessment_id
       using errcode = '42501';
   end if;
+
+  update assessments
+     set status = 'submitted'
+   where id = p_assessment_id
+     and status = 'in_progress';
 
   update assessment_items
      set is_correct = false
@@ -76,8 +110,33 @@ $$;
 --    nay tuc no da sai, nhung do la thong tin dung "bai bo tuc gom nhung cau
 --    nao" ma ban than assessment bo tuc da cong khai cho nguoi hoc, khong
 --    phai kenh do dap an ma migration nay dong.
+--
+--    "position" phai QUOTE trong RETURNS TABLE: no la mot COL_NAME_KEYWORD
+--    trong grammar cua Postgres, va danh sach cot cua RETURNS TABLE di qua
+--    production `param_name -> type_function_name`, loai tru chinh lop tu
+--    khoa do. Khong quote thi CREATE FUNCTION bao "syntax error at or near
+--    position" va ham khong bao gio duoc tao — REVOKE/GRANT execute ben duoi
+--    theo do cung loi "function ... does not exist", nghia la ca hai RPC
+--    trong tep coi nhu khong ton tai va MOI bai bo tuc that bai vinh vien voi
+--    "Could not find the function" (da do that truoc khi sua — xem
+--    task-9-report.md). Cac tham chieu `ai.position`/`order by ai.position`
+--    trong than ham KHONG can quote — do la truy cap qua alias bang, khac voi
+--    khai bao ten cot dau ra.
+--
+--    DIEU KIEN `a.status <> 'in_progress'` la hang rao thu hai, doc lap voi
+--    chu so huu: ham nay chi hop le tren mot LAN THU CHA DA CHAM (dung de
+--    dung bai bo tuc sau khi da truot), khong bao gio hop le giua chung mot
+--    bai dang lam — thieu dieu kien nay, goi lai sau moi cau tra loi TRONG
+--    LUC dang lam se lo ngay item nao vua sai ma khong can biet dap an, dung
+--    kieu oracle nhu finalize_assessment_items da mo ta o tren. Dung
+--    `<> 'in_progress'` thay vi `= 'submitted'`: kiem tra lai run.ts xac nhan
+--    HIEN TAI finalize() chi bao gio ghi 'submitted' (khong co duong nao ghi
+--    'expired' — enum con gia tri do nhung chua co cot code nao dat no), nen
+--    hai dieu kien tuong duong o thoi diem nay; chon `<> 'in_progress'` vi no
+--    van dung ca khi mot duong ghi 'expired' xuat hien sau nay, khong phai
+--    doan truoc moi truong hop cho hien tai.
 create or replace function public.wrong_items_for_assessment(p_assessment_id bigint)
-returns table(position int, item_type text, ref_id bigint, payload jsonb)
+returns table("position" int, item_type text, ref_id bigint, payload jsonb)
 language plpgsql
 security definer
 set search_path = public, pg_temp
@@ -85,7 +144,9 @@ as $$
 begin
   if not exists (
     select 1 from assessments a
-    where a.id = p_assessment_id and a.user_id = auth.uid()
+    where a.id = p_assessment_id
+      and a.user_id = auth.uid()
+      and a.status <> 'in_progress'
   ) then
     raise exception 'khong co quyen tren bai danh gia %', p_assessment_id
       using errcode = '42501';
@@ -105,21 +166,53 @@ revoke all on function public.wrong_items_for_assessment(bigint) from public, an
 grant execute on function public.finalize_assessment_items(bigint) to authenticated;
 grant execute on function public.wrong_items_for_assessment(bigint) to authenticated;
 
--- 3. Chan kenh doc: chi thu hoi SELECT tren MOT cot is_correct, khong dung
---    "revoke all; grant select (danh sach cot)" nhu 0004_rls.sql da lam cho
---    vocab_words/grammar_questions — assessment_items con can INSERT/UPDATE
---    tren moi cot khac (startAssessment chen ca dong, answerItem ghi
---    user_answer/is_correct) va lam lai toan bo danh sach quyen o day de
---    long ghep dung mot cot se de sot mot quyen nao do ma khong ai nhan ra.
+-- 3. Chan kenh doc. Ban dau tep nay chi `revoke select (is_correct)`, dua
+--    tren gia dinh SAI la `authenticated` da co san mot grant cot (giong
+--    vocab_words/grammar_questions o 0004). Thuc te KHONG PHAI vay:
+--    assessment_items chua tung duoc grant theo cot — `authenticated` dang
+--    giu quyen SELECT o CAP BANG (tu `grant all on all tables in schema
+--    public` luc Supabase khoi tao du an). Postgres CHI kiem attacl (quyen
+--    theo cot) cho NHUNG BIT quyen CHUA duoc thoa o cap bang; SELECT da thoa
+--    o cap bang thi attacl tren tung cot khong bao gio duoc doc toi.
+--    `revoke select (is_correct) on ... from authenticated` trong truong hop
+--    do la MOT CAU LENH THANH CONG NHUNG KHONG LAM GI CA — khong loi, khong
+--    canh bao, relacl khong doi — va is_correct van doc duoc nguyen ven qua
+--    client thuong. Da do that: paste ban dau se de ke ho item 5 dinh dong
+--    mo nguyen, khong mot dau hieu nao bao cho nguoi van hanh biet.
 --
---    is_correct VAN GHI DUOC (khong revoke update/insert) — xem ghi chu duoi.
-revoke select (is_correct) on assessment_items from authenticated;
-revoke select (is_correct) on assessment_items from anon;
+--    Cach dung DUY NHAT (va la cach 0004_rls.sql da dung cho vocab_words/
+--    grammar_questions): REVOKE ALL o cap bang truoc, roi GRANT lai tung
+--    quyen mot cach tuong minh — SELECT chi tren danh sach cot duoc phep,
+--    INSERT nguyen bang (startAssessment chen ca dong), UPDATE chi tren hai
+--    cot con duoc phep sua (user_answer, is_correct). Danh sach SELECT duoi
+--    day gom moi cot ma mot noi nao do trong src/ dang doc HOAC dung lam dieu
+--    kien WHERE/eq — thieu mot cot trong danh sach nay se lam chinh truy van
+--    hop le do bao "permission denied", vi mot WHERE tren mot cot cung can
+--    quyen SELECT tren cot do:
+--      id            — answerItem doc de lay item, CAS update .eq("id", ...)
+--      assessment_id — moi truy van deu loc .eq("assessment_id", ...)
+--      position      — answerItem .eq("position", ...); trang lam bai doc de hien
+--      item_type     — answerItem doc de biet nhanh cham (vocab/grammar)
+--      ref_id        — answerItem doc de tra cuu dap an that
+--      payload       — answerItem + trang lam bai doc de hien cau hoi
+--      user_answer   — CAS `.is("user_answer", null)`; trang lam bai doc de hien lai
+--    `anon` KHONG duoc grant lai gi ca (khac vocab_words/grammar_questions —
+--    hai bang do la noi dung cong khai sau dang nhap, con assessment_items la
+--    du lieu rieng cua nguoi hoc, khong co ly do nghiep vu nao de anon cham
+--    toi, nen thu hoi trang la dung, khong can doi xung mot grant rong).
+revoke all on assessment_items from authenticated, anon;
+
+grant select (id, assessment_id, position, item_type, ref_id, payload, user_answer)
+  on assessment_items to authenticated;
+grant insert on assessment_items to authenticated;
+grant update (user_answer, is_correct) on assessment_items to authenticated;
 
 -- PHAM VI CO Y BO QUA, GHI LAI DE KHONG DOC NHAM LA THIEU SOT: is_correct VAN
--- GHI duoc boi `authenticated` (khong revoke update/insert). Mot nguoi hoc VAN
--- co the PATCH is_correct=true de tu lam gia mot bai da qua — nhung do la tu
--- lua doi chinh minh, khong lam lo thong tin cho ai. Con DOC is_correct moi la
--- kenh do ra dap an that (goi lien tuc voi cac dap an khac nhau, so is_correct
--- tra ve). Dong ca chieu ghi nghia la chuyen finalize xuong SQL toan bo — qua
--- muc so voi loai rui ro dang xu ly o day.
+-- GHI duoc boi `authenticated` (co trong grant update o tren). Mot nguoi hoc
+-- VAN co the PATCH is_correct=true de tu lam gia mot bai da qua — nhung do la
+-- tu lua doi chinh minh, khong lam lo thong tin cho ai. Con DOC is_correct
+-- moi la kenh do ra dap an that (goi lien tuc voi cac dap an khac nhau, so
+-- is_correct tra ve) — do la kenh migration nay dong, ket hop voi dieu kien
+-- dong bai o finalize_assessment_items/wrong_items_for_assessment o tren.
+-- Dong ca chieu ghi nghia la chuyen finalize xuong SQL toan bo — qua muc so
+-- voi loai rui ro dang xu ly o day.

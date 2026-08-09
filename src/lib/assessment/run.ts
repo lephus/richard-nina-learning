@@ -290,14 +290,23 @@ async function finalize(
   // Bấm nộp hai lần: không làm gì, trả lại kết quả đã có — spec mục 7.
   if (assessment.status === "submitted") return storedResult(assessment);
 
-  // ĐIỀN `is_correct = false` CHO MỌI CÂU CHƯA LÀM, TRƯỚC KHI ĐẾM, RỒI ĐẾM —
-  // qua RPC `security definer` `finalize_assessment_items`
-  // (0008_assessment_items_grants.sql), không còn đọc/ghi thẳng bằng client
-  // thường: `assessment_items.is_correct` đã bị thu hồi SELECT khỏi
-  // `authenticated` ở đúng migration đó (đóng kênh dò đáp án qua PostgREST —
-  // xem comment đầu file migration), nên cả UPDATE có WHERE is_correct IS
-  // NULL lẫn SELECT is_correct cần quyền đọc cột đó mà `authenticated` không
-  // còn có nữa; chỉ hàm chạy bằng quyền chủ bảng mới làm được.
+  // ĐIỀN `is_correct = false` CHO MỌI CÂU CHƯA LÀM, ĐẾM, VÀ ĐÓNG BÀI (chuyển
+  // status khỏi 'in_progress') — CẢ BA trong MỘT lệnh gọi RPC `security
+  // definer` `finalize_assessment_items` (0008_assessment_items_grants.sql):
+  //
+  //   1. Không còn đọc/ghi is_correct thẳng bằng client thường được nữa: cột
+  //      đó đã bị thu hồi SELECT khỏi `authenticated` (đóng kênh dò đáp án
+  //      qua PostgREST — xem comment đầu file migration), và một WHERE
+  //      is_correct IS NULL hay SELECT is_correct đều cần quyền đọc cột đó.
+  //   2. ĐÓNG BÀI ngay trong hàm SQL (không phải ở lượt UPDATE riêng bên
+  //      dưới như trước) là bản vá cho một lỗ hổng thứ hai: nếu hàm chỉ
+  //      backfill+đếm mà không đóng bài, nó trở thành một oracle chấm điểm —
+  //      gọi lại sau MỖI câu trả lời (answerItem vẫn nhận câu trả lời vì bài
+  //      còn 'in_progress') sẽ lộ dần correct/total, dò được cả bài kiểm tra
+  //      60 câu mà không cần biết đáp án thật. Hàm CAS ngay trong WHERE
+  //      (`status = 'in_progress'`) khi đóng, nên lần gọi ĐẦU TIÊN (hợp lệ
+  //      hay không) đã là lần CUỐI answerItem còn nhận câu trả lời tiếp theo
+  //      — gọi hàm này giữa bài chỉ tương đương bấm "Nộp bài" sớm.
   //
   // Luật "câu chưa làm tính sai" (spec mục 6.2) phải đúng TRONG DỮ LIỆU, không
   // chỉ đúng trong phép chia ở dưới. `answerItem` chỉ ghi `is_correct` cho câu
@@ -321,6 +330,12 @@ async function finalize(
   // một nguồn sự thật, không có gì để trôi lệch (spec mục 6.3). Hàm SQL trả
   // TỔNG/ĐÚNG đã đếm sẵn, không trả từng dòng `is_correct` — giữ đúng tinh
   // thần "đáp án từng câu không rời khỏi server" ngay cả ở kênh tổng hợp này.
+  //
+  // Cách tính SCORE (phần trăm) và so với PASS_MARK[type] VẪN ở TypeScript —
+  // hàm SQL không biết ngưỡng đạt theo từng loại bài, chỉ lo lưu trữ + tổng
+  // hợp + đóng trạng thái. Đây là "một nguồn chấm điểm duy nhất" mà cả
+  // `submitAssessment` lẫn `closeExpired` cùng đi qua hàm `finalize` này —
+  // không có bản chấm thứ hai nào khác xuất hiện.
   const { data, error: aggErr } = await supabase
     .rpc("finalize_assessment_items", { p_assessment_id: assessmentId })
     .single();
@@ -339,17 +354,22 @@ async function finalize(
   const type = assessment.type as AssessmentType;
   const passed = score >= PASS_MARK[type];
 
-  // Chốt "chưa nộp" nằm ngay trong câu UPDATE, không chỉ ở lần đọc phía trên:
-  // hai lượt nộp chồng nhau (bấm đúp, hoặc người dùng bấm nộp đúng lúc
-  // `nextStep` đang đóng bài) thì lượt thứ hai khớp 0 dòng và không ghi đè
-  // `submitted_at` đã có. `.neq(...,"submitted")` chứ không `.eq(...,
-  // "in_progress")` để một dòng lỡ mang trạng thái 'expired' vẫn đóng được.
+  // Ghi score/passed/submitted_at bằng một UPDATE RIÊNG, không còn gộp
+  // `status: "submitted"` vào đây nữa — RPC ở trên đã tự đóng bài rồi. Chốt
+  // "chưa ghi điểm" chuyển từ `.neq("status","submitted")` (cũ) sang
+  // `.is("score", null)`: tại điểm này status LUÔN LÀ 'submitted' (RPC vừa
+  // đóng, dù chính request này hay một request song song thắng cuộc CAS bên
+  // trong hàm SQL), nên không còn dùng status để phân biệt "ai thắng cuộc
+  // ghi điểm" được nữa — `score is null` giữ đúng vai trò đó: chỉ lượt ghi
+  // ĐẦU TIÊN khớp, lượt thứ hai (bấm đúp, hai tab, hoặc một cuộc gọi RPC lặp
+  // lại) khớp 0 dòng và đọc lại kết quả đã lưu, đúng tính chất "chỉ một
+  // người thắng" mà CAS cũ đã đảm nhiệm.
   const { data: closed, error: closeErr } = await supabase
     .from("assessments")
-    .update({ status: "submitted", score, passed, submitted_at: now.toISOString() })
+    .update({ score, passed, submitted_at: now.toISOString() })
     .eq("id", assessmentId)
     .eq("user_id", userId)
-    .neq("status", "submitted")
+    .is("score", null)
     .select("score, passed");
   if (closeErr) throw closeErr;
 
@@ -461,7 +481,9 @@ async function freshSpecs(
  * `.eq("is_correct", false)` thẳng trên client thường: cột đó đã bị thu hồi
  * SELECT khỏi `authenticated`, và một WHERE trên cột cần quyền đọc chính cột
  * đó. Kết quả trả về KHÔNG có `is_correct` — chỉ đủ để dựng lại đề, không lộ
- * thêm gì so với trước.
+ * thêm gì so với trước. Hàm chỉ trả lời khi bài cha KHÔNG còn `in_progress`
+ * (guard trong 0008) — gọi giữa chừng một bài đang làm bị từ chối, đóng nốt
+ * kênh oracle mà `finalize_assessment_items` đã đóng ở phía kia.
  */
 async function remedialSpecs(
   supabase: SupabaseClient,
@@ -471,9 +493,16 @@ async function remedialSpecs(
     throw new Error("bài bổ túc phải có parentId trỏ tới lần thử đã trượt");
   }
 
-  const { data, error } = await supabase.rpc("wrong_items_for_assessment", {
-    p_assessment_id: parentId,
-  });
+  // `.order("position")`: hàm SQL đã `order by` nội bộ, nhưng đó không phải
+  // hợp đồng — PostgREST bọc lời gọi RPC trong một `SELECT … FROM func(…)`,
+  // và thứ tự của SELECT bọc ngoài đó không có gì đảm bảo giữ nguyên thứ tự
+  // hàng mà truy vấn bên trong hàm trả về. `buildRemedialItems` đánh lại chỉ
+  // số THEO THỨ TỰ MẢNG, nên một lần đảo thứ tự âm thầm sẽ đổi câu hỏi đã
+  // đóng băng nào rơi vào vị trí nào — tường minh hoá ở đây, giống hệt cách
+  // freshSpecs đã làm với `.order("lesson_id").order("position")`.
+  const { data, error } = await supabase
+    .rpc("wrong_items_for_assessment", { p_assessment_id: parentId })
+    .order("position");
   if (error) throw error;
 
   // Không có generic Database trên client nên `.rpc()` không suy luận được

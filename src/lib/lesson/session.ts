@@ -135,6 +135,17 @@ export async function secretFor(
     return w!.synonyms[0]!;
   }
   if (item.kind === "fill") {
+    // CÓ CHỦ ĐÍCH không đọc `ctx.lessonWords[i].blankAnswer` — từ 1c,
+    // `loadContext` đã điền giá trị THẬT vào đó cho cả buổi (RPC
+    // `blank_answers_for_lesson`, 0007), nên về lý thuyết có thể lấy thẳng
+    // từ `ctx` mà không cần round-trip này. Giữ đường độc lập qua
+    // `answer_for_word` vì đây là hàm CHẤM ĐIỂM: nếu `ctx.blankAnswer` từng
+    // bị điền sai (bug ở `loadContext`, khoá jsonb sai, RPC trả thiếu…), dùng
+    // lại chính giá trị đó để chấm sẽ khiến lỗi tự-nhất-quán — chấm "đúng"
+    // một đáp án sai theo đúng cách nó bị điền sai, không test nào bắt được.
+    // Tách hai đường (một đường điền hiển thị, một đường chấm điểm) đổi lấy
+    // một round-trip mạng mỗi câu điền từ, chấp nhận được so với việc mất
+    // khả năng tự phát hiện lỗi ở đúng chỗ quan trọng nhất.
     const { data, error } = await supabase.rpc("answer_for_word", {
       p_word_id: item.wordId,
     });
