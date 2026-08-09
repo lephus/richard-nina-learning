@@ -39,3 +39,37 @@ export function slotAt(index: number): Slot {
   const baseLesson = cycle * LESSONS_PER_CYCLE + 1;
   return PATTERN[within]!(baseLesson);
 }
+
+/** Loại bài đánh giá — rộng hơn `SlotKind` một chút: `remedial` (bổ túc)
+ * không chiếm slot riêng trong chuỗi 35 hoạt động (xem comment ở
+ * dashboard/page.tsx), nhưng vẫn cần một nhãn hiển thị giống hệt khuôn
+ * review/test. */
+export type AssessmentKind = "review" | "test" | "remedial";
+
+const KIND_LABEL: Record<AssessmentKind, string> = {
+  review: "Ôn tập",
+  test: "Kiểm tra",
+  remedial: "Bổ túc",
+};
+
+/**
+ * Nhãn hiển thị MỘT NGUỒN cho một bài ôn tập/kiểm tra/bổ túc — ví dụ
+ * "Ôn tập buổi 1–2" hay "Kiểm tra buổi 1–4". Trước lát này, ba nơi
+ * (stats/compute.ts, dashboard/page.tsx, lesson-done.tsx) tự dựng chuỗi này
+ * bằng tay, và cả ba đọc chỉ số khác nhau: `[0]`/`[1]`, `[0]`/`[3]`,
+ * `[0]`/`[length-1]`. Chúng chưa từng mâu thuẫn chỉ vì `slots.ts` luôn cho
+ * ôn tập đúng 2 buổi và kiểm tra đúng 4 — một sự trùng hợp của DỮ LIỆU, không
+ * phải một bảo đảm của KIỂU. Dùng `lessons[0]` và `lessons[length-1]` (không
+ * phải chỉ số cố định) để hàm này đúng với mọi độ dài mảng, kể cả một phần
+ * tử (bổ túc thường chỉ có một buổi trong `scope`).
+ *
+ * Dấu gạch ngang giữa hai số là EN DASH — U+2013 (–), KHÔNG phải dấu gạch nối
+ * thường (-, U+002D). Playwright so khớp nguyên văn chuỗi này; đổi sang dấu
+ * gạch nối sẽ làm kịch bản e2e trượt một cách âm thầm (không lỗi biên dịch,
+ * không lỗi kiểu — chỉ so chuỗi sai).
+ */
+export function assessmentLabel(kind: AssessmentKind, lessons: readonly number[]): string {
+  const range =
+    lessons.length > 1 ? `${lessons[0]}–${lessons[lessons.length - 1]}` : `${lessons[0]}`;
+  return `${KIND_LABEL[kind]} buổi ${range}`;
+}

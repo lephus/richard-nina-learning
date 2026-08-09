@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { slotAt, TOTAL_SLOTS } from "@/lib/assessment/slots";
+import { assessmentLabel, slotAt, TOTAL_SLOTS } from "@/lib/assessment/slots";
 
 describe("slotAt", () => {
   it("chương trình có đúng 35 hoạt động", () => {
@@ -45,5 +45,40 @@ describe("slotAt", () => {
   it("ném lỗi khi ngoài biên", () => {
     expect(() => slotAt(-1)).toThrow(RangeError);
     expect(() => slotAt(35)).toThrow(RangeError);
+  });
+});
+
+describe("assessmentLabel", () => {
+  // MỘT nguồn cho nhãn "Ôn tập buổi 1–2" / "Kiểm tra buổi 1–4" — trước lát
+  // này, stats/compute.ts, dashboard/page.tsx và lesson-done.tsx tự dựng ba
+  // lần, đọc chỉ số khác nhau ([0]/[1], [0]/[3], [0]/[length-1]). Test này
+  // khoá cả ba loại (review/test/remedial) và trường hợp mảng một phần tử —
+  // đúng khuôn `lessons[0]`/`lessons[length-1]` phải cho ra kết quả đúng dù
+  // độ dài mảng không phải 2 hay 4 như dữ liệu hôm nay tình cờ luôn có.
+  it("ôn tập hai buổi: Ôn tập buổi 1–2", () => {
+    expect(assessmentLabel("review", [1, 2])).toBe("Ôn tập buổi 1–2");
+  });
+
+  it("kiểm tra bốn buổi: Kiểm tra buổi 1–4", () => {
+    expect(assessmentLabel("test", [1, 2, 3, 4])).toBe("Kiểm tra buổi 1–4");
+  });
+
+  it("bổ túc: Bổ túc buổi 5–6", () => {
+    expect(assessmentLabel("remedial", [5, 6])).toBe("Bổ túc buổi 5–6");
+  });
+
+  it("mảng một phần tử: không có dấu gạch ngang, dù loại nào", () => {
+    expect(assessmentLabel("review", [3])).toBe("Ôn tập buổi 3");
+    expect(assessmentLabel("test", [7])).toBe("Kiểm tra buổi 7");
+    expect(assessmentLabel("remedial", [12])).toBe("Bổ túc buổi 12");
+  });
+
+  it("dấu gạch ngang là EN DASH U+2013, không phải dấu gạch nối thường", () => {
+    const label = assessmentLabel("test", [1, 2, 3, 4]);
+    // codePointAt ngay sau số đầu tiên phải đúng byte U+2013 — so sánh chuỗi
+    // "–" suông trong file .ts vẫn ăn may đúng nếu ai đó gõ nhầm dấu gạch nối
+    // thường (chỉ khác 1 byte, mắt thường không phân biệt được), nên khoá
+    // thẳng bằng codePointAt số học mới chắc chắn phát hiện được sai lệch.
+    expect(label.codePointAt(label.indexOf("1") + 1)).toBe(0x2013);
   });
 });

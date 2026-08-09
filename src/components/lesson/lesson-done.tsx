@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { slotAt, TOTAL_SLOTS, type Slot } from "@/lib/assessment/slots";
+import { assessmentLabel, slotAt, TOTAL_SLOTS, type Slot } from "@/lib/assessment/slots";
 
 /**
  * Slot index của buổi `ordinal` trong chuỗi 35 hoạt động — quét tuyến tính
@@ -17,8 +17,9 @@ function lessonSlotIndex(ordinal: number): number {
 
 function unlockedLabel(slot: Slot): string {
   if (slot.kind === "lesson") return `Buổi ${slot.lessons[0]} đã mở khoá.`;
-  if (slot.kind === "review") return `Ôn tập buổi ${slot.lessons[0]}–${slot.lessons[1]} đã mở khoá.`;
-  return `Kiểm tra buổi ${slot.lessons[0]}–${slot.lessons[3]} đã mở khoá.`;
+  // Một nguồn duy nhất cho nhãn (xem comment tại slots.ts:assessmentLabel) —
+  // không tự dựng chuỗi bằng chỉ số cố định ([0]/[1], [0]/[3]) ở đây nữa.
+  return `${assessmentLabel(slot.kind, slot.lessons)} đã mở khoá.`;
 }
 
 /**

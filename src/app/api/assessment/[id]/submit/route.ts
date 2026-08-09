@@ -48,8 +48,9 @@ import { submitAssessment } from "@/lib/assessment/run";
  * ── An toàn CSRF (Important — review round 2) ──────────────────────────────
  * Server Action mang theo phần kiểm tra origin tích hợp sẵn của Next; MỘT
  * route handler thường như route này thì KHÔNG. `next.config.ts` để trống
- * (không có tuỳ chỉnh `allowedOrigins`) và `src/middleware.ts:4` chỉ bảo vệ
- * `/dashboard` và `/learn` — route này KHÔNG nằm trong danh sách đó.
+ * (không có tuỳ chỉnh `allowedOrigins`) và `src/middleware.ts` CỐ TÌNH loại
+ * mọi `/api/*` khỏi phép kiểm `isProtectedRoute` (một POST JSON bị redirect
+ * sang /login sẽ vỡ hợp đồng response) — route này không đi qua middleware.
  *
  * Thứ THỰC SỰ đang chặn một form tự động POST từ site khác gửi cookie phiên
  * kèm theo là **`sameSite: "lax"`** — mặc định của chính thư viện

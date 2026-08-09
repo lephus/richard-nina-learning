@@ -1,7 +1,38 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED = ["/dashboard", "/learn"];
+// Trước đây middleware giữ một danh sách TAY các route "được bảo vệ"
+// (`PROTECTED = ["/dashboard", "/learn"]`) — sai không chỉ vì THIẾU (bỏ sót
+// `/stats` và `/assessment`, hai trong bốn route của nhóm `(app)`), mà còn sai
+// cả về HÌNH DẠNG: nó liệt kê đúng thứ sẽ còn PHÌNH RA theo mỗi tính năng mới
+// — gần như mọi trang thêm sau này rơi vào `(app)`, vì đó là toàn bộ sản
+// phẩm. Ai thêm một `page.tsx` mới dưới `(app)/` mà quên cập nhật danh sách ở
+// đây sẽ lặp lại đúng lỗ hổng vừa ghi nhận, chỉ ở một route khác.
+// `(app)/layout.tsx` tự mô tả mình là lớp chặn THỨ HAI, đỡ cho middleware cấu
+// hình sai — nhưng với `/stats` và `/assessment` (bị bỏ sót) thì không có lớp
+// THỨ NHẤT nào để đỡ, layout phải gánh một mình.
+//
+// Danh sách dưới đây đổi hướng: liệt kê CÔNG KHAI (route nào KHÔNG cần đăng
+// nhập), không phải BẢO VỆ. Nhóm `(auth)` (đăng nhập/đăng ký) và `/` (chỉ
+// redirect sang /dashboard, không đọc dữ liệu gì) là một tập hợp NHỎ và ỔN
+// ĐỊNH — sản phẩm này hiếm khi thêm một luồng công khai mới, trong khi
+// `(app)` gần như chắc chắn sẽ phình theo mỗi lát tính năng kế tiếp. Mặc định
+// coi MỌI route khác là được bảo vệ (fail-closed): một trang mới thêm vào
+// `(app)/` tự động được bảo vệ mà không cần sửa file này — middleware không
+// còn cách nào lệch khỏi hệ thống tệp, vì nó không còn giữ một bản sao (dù là
+// bản sao đúng hay sai) của hệ thống tệp đó nữa.
+//
+// `/api/*` cố tình đứng NGOÀI phép kiểm này: một request POST JSON bị
+// redirect sang /login sẽ vỡ hợp đồng response mà phía gọi (`fetch`) đang
+// chờ. Route đó tự kiểm `getUser()` (trả 401 JSON) và `Sec-Fetch-Site`, một
+// lớp phòng thủ độc lập với middleware — xem
+// src/app/api/assessment/[id]/submit/route.ts.
+const PUBLIC_PATHS = ["/", "/login", "/register"];
+
+function isProtectedRoute(pathname: string): boolean {
+  if (pathname.startsWith("/api/")) return false;
+  return !PUBLIC_PATHS.includes(pathname);
+}
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -49,9 +80,7 @@ export async function middleware(request: NextRequest) {
     user = null;
   }
 
-  const isProtected = PROTECTED.some((p) => request.nextUrl.pathname.startsWith(p));
-
-  if (!user && isProtected) {
+  if (!user && isProtectedRoute(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     response = NextResponse.redirect(url);

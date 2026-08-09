@@ -8,6 +8,8 @@
  * nhánh thời gian mà không phải chờ, và để mọi so sánh dùng chung một nguồn.
  */
 
+import { assessmentLabel } from "@/lib/assessment/slots";
+
 export const WEEKLY_TARGET = 2;
 export const TOP_WRONG_LIMIT = 10;
 
@@ -127,12 +129,6 @@ export function rhythm(eventTimes: readonly string[], now: Date): Rhythm {
   return { streakWeeks, thisWeekSessions, target: WEEKLY_TARGET };
 }
 
-const TYPE_LABEL: Record<AssessmentLite["type"], string> = {
-  review: "Ôn tập",
-  test: "Kiểm tra",
-  remedial: "Bổ túc",
-};
-
 /**
  * Chuỗi điểm số theo thời gian, đã sắp xếp — mảng vào có thể ở bất kỳ thứ tự
  * nào (Postgres không đảm bảo thứ tự trả về nếu không ORDER BY), nên hàm tự
@@ -143,9 +139,7 @@ export function scoreSeries(rows: readonly AssessmentLite[]): ScorePoint[] {
     .sort((a, b) => Date.parse(a.submittedAt) - Date.parse(b.submittedAt) || a.id - b.id)
     .map((r) => ({
       id: r.id,
-      label: `${TYPE_LABEL[r.type]} buổi ${r.scope[0]}${
-        r.scope.length > 1 ? `–${r.scope[r.scope.length - 1]}` : ""
-      }`,
+      label: assessmentLabel(r.type, r.scope),
       score: r.score,
       passed: r.passed,
     }));

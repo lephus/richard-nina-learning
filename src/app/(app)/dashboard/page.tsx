@@ -7,7 +7,7 @@ import {
   type LessonStatus,
   type ProgressRow,
 } from "@/lib/curriculum/lesson-status";
-import { slotAt, TOTAL_SLOTS, type Slot, type SlotKind } from "@/lib/assessment/slots";
+import { assessmentLabel, slotAt, TOTAL_SLOTS, type Slot, type SlotKind } from "@/lib/assessment/slots";
 import {
   nextStep,
   sameScope,
@@ -180,10 +180,11 @@ export default async function DashboardPage() {
       continue;
     }
 
-    const label =
-      slot.kind === "review"
-        ? `Ôn tập buổi ${slot.lessons[0]}–${slot.lessons[1]}`
-        : `Kiểm tra buổi ${slot.lessons[0]}–${slot.lessons[3]}`;
+    // Một nguồn duy nhất cho nhãn — không tự dựng chuỗi bằng chỉ số cố định
+    // ([0]/[1] cho ôn tập, [0]/[3] cho kiểm tra) ở đây nữa: đó là bản sao
+    // dễ lệch khỏi stats/compute.ts và lesson-done.tsx (xem comment tại
+    // slots.ts:assessmentLabel).
+    const label = assessmentLabel(slot.kind, slot.lessons);
 
     rows.push({
       key: `${slot.kind}-${slot.lessons.join("-")}`,
