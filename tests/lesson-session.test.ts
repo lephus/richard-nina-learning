@@ -55,15 +55,30 @@ describe.skipIf(!hasEnv)("session.ts qua client authenticated that", () => {
     }
   });
 
-  it("loadContext đọc đủ 30 từ của buổi, không rò blankAnswer", async () => {
+  it("loadContext đọc đủ 30 từ của buổi, blankAnswer là giá trị THẬT lấy qua RPC theo buổi", async () => {
     const ctx = await loadContext(user, lessonId, userId);
     expect(ctx.lessonWords).toHaveLength(30);
     expect(ctx.grammar.length).toBeGreaterThan(0);
     // Kho 605 từ KHÔNG còn được tải: bậc 3 của pickDistractors lười, và buổi
     // 30 từ thì bậc 1+2 luôn đủ ứng viên.
     expect(ctx.bank).toBeUndefined();
+
+    // blankAnswer không còn để trống: `loadContext` gọi RPC
+    // `blank_answers_for_lesson` (0007) rồi ghi đè giá trị thật lên
+    // `ctx.lessonWords` — đọc thẳng cột bằng `admin` (bỏ qua quyền cột) để
+    // đối chiếu, độc lập với chính đường mà loadContext dùng.
+    const { data: rows, error } = await admin
+      .from("vocab_words")
+      .select("id, blank_answer")
+      .in("id", ctx.lessonWords.map((w) => w.id));
+    if (error) throw error;
+    const expected = new Map(
+      (rows ?? []).map((r) => [r.id as number, r.blank_answer as string]),
+    );
+
     for (const w of ctx.lessonWords) {
-      expect(w.blankAnswer).toBe("");
+      expect(w.blankAnswer).toBe(expected.get(w.id));
+      expect(w.blankAnswer.length).toBeGreaterThan(0);
       expect(w.meaningVi.length).toBeGreaterThan(0);
       // example_vi được cấp cho `authenticated` (0004_rls.sql:41-44) và nay
       // hiện dưới câu ví dụ trên thẻ gặp từ.

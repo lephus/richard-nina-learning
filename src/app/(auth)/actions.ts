@@ -67,13 +67,19 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
 
   if (error) {
     if (isAuthRetryableFetchError(error)) return { status: "error", message: RETRYABLE_ERROR };
-    // Email này đã có tài khoản (quan sát trực tiếp trên project thật:
+    // Email này đã có tài khoản. Quan sát trực tiếp trên project thật:
     // error.code === "user_already_exists", error.status === 422, khi
-    // "Confirm email" tắt — không suy từ JSDoc của thư viện). Trả CÙNG
-    // thông điệp trung lập với nhánh thành công bên dưới, byte-for-byte, để
-    // hai kết quả hết phân biệt được cả ở nội dung trang lẫn ở việc có
-    // Set-Cookie hay không (client không bao giờ ghi cookie, xem trên).
-    if (error.code === "user_already_exists") {
+    // "Confirm email" tắt. Nhưng Supabase còn trả error.code ===
+    // "email_exists" ở một số cấu hình khác của "Confirm email" — cùng một
+    // tình huống (email đã đăng ký), chỉ khác mã lỗi theo cấu hình project.
+    // Bỏ sót mã thứ hai thì nó rơi xuống GENERIC_SIGNUP_ERROR ở nhánh dưới,
+    // mở lại đúng kênh dò email mà toàn bộ hàm này dựng ra để đóng: người
+    // dò chỉ cần thử một email, so thông điệp, là biết email đó đã có tài
+    // khoản hay chưa. Cả hai mã cùng dẫn tới MỘT thông điệp trung lập,
+    // byte-for-byte với nhánh thành công bên dưới, để hai kết quả hết phân
+    // biệt được cả ở nội dung trang lẫn ở việc có Set-Cookie hay không
+    // (client không bao giờ ghi cookie, xem trên).
+    if (error.code === "user_already_exists" || error.code === "email_exists") {
       return { status: "success", message: SIGNUP_DONE_MESSAGE };
     }
     return { status: "error", message: GENERIC_SIGNUP_ERROR };

@@ -40,8 +40,12 @@ const plan = read<LessonPlan[]>("data/clean/lesson-plan.json");
  * cùng chiều với ordinal. Mọi thứ trong buildItem chỉ dùng id để SO SÁNH
  * BẰNG, không dùng giá trị tuyệt đối — nên đại diện này là đủ.
  *
- * `blankAnswer: ""` khớp đúng đường đi công khai: `toVocabLite` trong
- * session.ts luôn để trống cột này vì nó không được phép rời khỏi server.
+ * `blankAnswer: w.blankAnswer` khớp đúng đường đi thật của thẻ gặp từ:
+ * `loadContext` (session.ts) gọi RPC `blank_answers_for_lesson` rồi điền giá
+ * trị THẬT vào `ctx.lessonWords` trước khi gọi `buildItem` — không còn để
+ * trống như trước 1c. `data/clean/vocab.json` mang sẵn đúng giá trị đó (chính
+ * là nguồn Phase 0 seed lên cột `vocab_words.blank_answer`), nên dùng thẳng ở
+ * đây mô phỏng đúng ngữ cảnh sản xuất mà không cần gọi RPC thật.
  */
 const toLite = (w: VocabWord): VocabLite => ({
   id: w.ordinal,
@@ -53,7 +57,7 @@ const toLite = (w: VocabWord): VocabLite => ({
   synonyms: w.synonyms,
   exampleEn: w.exampleEn,
   exampleVi: w.exampleVi,
-  blankAnswer: "",
+  blankAnswer: w.blankAnswer,
 });
 
 const byOrdinal = new Map(vocab.map((w) => [w.ordinal, w]));
@@ -213,6 +217,26 @@ describe("toàn bộ chương trình dựng từ data/clean/", () => {
       const s = b.item.word.exampleEn;
       if (s.includes("___") || s.trim().length === 0) {
         bad.push(`buổi ${b.lesson} vị trí ${b.position} "${b.item.word.word}": ${JSON.stringify(s)}`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it("thẻ gặp từ: khớp đúng exampleEn gốc với blank_answer đã thay vào, không phải word", () => {
+    // Trước 1c, buildItem điền `word` vào chỗ trống — sai ngữ pháp nhẹ ở
+    // 169/605 từ có blank_answer là dạng biến cách của word (ví dụ word
+    // "opening", blank_answer "openings"). Ghép lại bằng blankAnswer luôn
+    // dựng đúng NGUYÊN VĂN câu gốc, vì blankAnswer chính là chuỗi đã bị khoét
+    // ra để tạo "___".
+    const bad: string[] = [];
+    for (const b of built) {
+      if (b.item.kind !== "flashcard" || b.target === null) continue;
+      const expected = b.target.exampleEn.replace("___", b.target.blankAnswer);
+      if (b.item.word.exampleEn !== expected) {
+        bad.push(
+          `buổi ${b.lesson} vị trí ${b.position} "${b.target.word}": ` +
+            `được "${b.item.word.exampleEn}", muốn "${expected}"`,
+        );
       }
     }
     expect(bad).toEqual([]);

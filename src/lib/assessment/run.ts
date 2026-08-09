@@ -290,12 +290,20 @@ async function finalize(
   // Bấm nộp hai lần: không làm gì, trả lại kết quả đã có — spec mục 7.
   if (assessment.status === "submitted") return storedResult(assessment);
 
-  // ĐIỀN `is_correct = false` CHO MỌI CÂU CHƯA LÀM, TRƯỚC KHI ĐẾM.
+  // ĐIỀN `is_correct = false` CHO MỌI CÂU CHƯA LÀM, TRƯỚC KHI ĐẾM, RỒI ĐẾM —
+  // qua RPC `security definer` `finalize_assessment_items`
+  // (0008_assessment_items_grants.sql), không còn đọc/ghi thẳng bằng client
+  // thường: `assessment_items.is_correct` đã bị thu hồi SELECT khỏi
+  // `authenticated` ở đúng migration đó (đóng kênh dò đáp án qua PostgREST —
+  // xem comment đầu file migration), nên cả UPDATE có WHERE is_correct IS
+  // NULL lẫn SELECT is_correct cần quyền đọc cột đó mà `authenticated` không
+  // còn có nữa; chỉ hàm chạy bằng quyền chủ bảng mới làm được.
   //
   // Luật "câu chưa làm tính sai" (spec mục 6.2) phải đúng TRONG DỮ LIỆU, không
   // chỉ đúng trong phép chia ở dưới. `answerItem` chỉ ghi `is_correct` cho câu
-  // được trả lời, nên câu bỏ trống nằm lại ở NULL — và bài bổ túc được dựng từ
-  // `is_correct = false` của lần thử cha (mục 5.3). Nếu để NULL:
+  // được trả lời, nên câu bỏ trống nằm lại ở NULL trước khi hàm này chạy — và
+  // bài bổ túc được dựng từ `is_correct = false` của lần thử cha (mục 5.3).
+  // Nếu để NULL:
   //
   //   trả lời đúng 19/25, bỏ trống 6  →  76% < 80%, trượt
   //   → bổ túc lấy các câu `is_correct = false`  →  KHÔNG có dòng nào
@@ -306,31 +314,27 @@ async function finalize(
   // còn lại chính là câu bỏ trống. Điền ở đây làm tan cả lớp lỗi đó, thay vì
   // vá riêng chỗ dựng bài bổ túc.
   //
-  // `user_answer` CỐ Ý giữ nguyên NULL: nó là thứ duy nhất còn phân biệt "bỏ
-  // trống" với "trả lời sai" khi xem lại bài.
-  const { error: backfillErr } = await supabase
-    .from("assessment_items")
-    .update({ is_correct: false })
-    .eq("assessment_id", assessmentId)
-    .is("is_correct", null);
-  if (backfillErr) throw backfillErr;
-
+  // `user_answer` CỐ Ý giữ nguyên NULL (hàm SQL không đụng tới cột này): nó là
+  // thứ duy nhất còn phân biệt "bỏ trống" với "trả lời sai" khi xem lại bài.
+  //
   // Điểm ĐẾM TỪ `is_correct` của chính các câu, không từ một bộ đếm riêng —
-  // một nguồn sự thật, không có gì để trôi lệch (spec mục 6.3).
-  const { data: items, error: itemsErr } = await supabase
-    .from("assessment_items")
-    .select("is_correct")
-    .eq("assessment_id", assessmentId);
-  if (itemsErr) throw itemsErr;
+  // một nguồn sự thật, không có gì để trôi lệch (spec mục 6.3). Hàm SQL trả
+  // TỔNG/ĐÚNG đã đếm sẵn, không trả từng dòng `is_correct` — giữ đúng tinh
+  // thần "đáp án từng câu không rời khỏi server" ngay cả ở kênh tổng hợp này.
+  const { data, error: aggErr } = await supabase
+    .rpc("finalize_assessment_items", { p_assessment_id: assessmentId })
+    .single();
+  if (aggErr) throw aggErr;
+  const agg = data as { total: number; correct: number };
 
-  const total = items?.length ?? 0;
+  const total = agg.total;
   if (total === 0) {
     // Không im lặng chấm 0: một bài 0 câu không bao giờ đạt được, nên chấm nó
     // là dựng lại đúng cái vòng lặp vô tận ở trên. `startAssessment` đã chặn
     // không cho bài rỗng ra đời; tới đây được thì có gì đó hỏng thật.
     throw new Error(`bài ${assessmentId} không có câu nào — không chấm được`);
   }
-  const correct = items!.filter((r) => r.is_correct === true).length;
+  const correct = agg.correct;
   const score = Math.round((correct / total) * 100);
   const type = assessment.type as AssessmentType;
   const passed = score >= PASS_MARK[type];
@@ -450,7 +454,15 @@ async function freshSpecs(
   );
 }
 
-/** Đề bài bổ túc: đúng những câu đã sai của lần thử cha, không gì khác (mục 5.3). */
+/**
+ * Đề bài bổ túc: đúng những câu đã sai của lần thử cha, không gì khác (mục
+ * 5.3). Lọc `is_correct = false` qua RPC `security definer`
+ * `wrong_items_for_assessment` (0008_assessment_items_grants.sql) thay vì
+ * `.eq("is_correct", false)` thẳng trên client thường: cột đó đã bị thu hồi
+ * SELECT khỏi `authenticated`, và một WHERE trên cột cần quyền đọc chính cột
+ * đó. Kết quả trả về KHÔNG có `is_correct` — chỉ đủ để dựng lại đề, không lộ
+ * thêm gì so với trước.
+ */
 async function remedialSpecs(
   supabase: SupabaseClient,
   parentId: number | null,
@@ -459,18 +471,24 @@ async function remedialSpecs(
     throw new Error("bài bổ túc phải có parentId trỏ tới lần thử đã trượt");
   }
 
-  const { data, error } = await supabase
-    .from("assessment_items")
-    .select("position, item_type, ref_id, payload")
-    .eq("assessment_id", parentId)
-    .eq("is_correct", false)
-    .order("position");
+  const { data, error } = await supabase.rpc("wrong_items_for_assessment", {
+    p_assessment_id: parentId,
+  });
   if (error) throw error;
 
-  const wrong: AssessmentItemSpec[] = (data ?? []).map((r) => ({
-    position: r.position as number,
+  // Không có generic Database trên client nên `.rpc()` không suy luận được
+  // hình dạng hàng trả về — ép qua `unknown` rồi tới kiểu hàng mong đợi, cùng
+  // cách freshSpecs xử lý kết quả `.select()` nhúng quan hệ ở trên.
+  const rows = (data ?? []) as unknown as {
+    position: number;
+    item_type: string;
+    ref_id: number;
+    payload: unknown;
+  }[];
+  const wrong: AssessmentItemSpec[] = rows.map((r) => ({
+    position: r.position,
     itemType: r.item_type as "vocab" | "grammar",
-    refId: r.ref_id as number,
+    refId: r.ref_id,
     payload: r.payload as ItemPayload,
   }));
 

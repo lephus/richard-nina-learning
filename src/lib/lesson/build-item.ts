@@ -34,9 +34,11 @@ export interface GrammarLite {
 
 /**
  * Một dòng `vocab_words` (snake_case, đúng những cột `authenticated` đọc được)
- * → `VocabLite`. `blankAnswer` luôn là chuỗi rỗng: cột đó đã bị thu hồi khỏi
- * `authenticated` (0004_rls.sql:41-44) nên nó KHÔNG có trong dòng đọc lên, và
- * đường hợp lệ duy nhất để lấy nó là RPC `answer_for_word` — xem `secretFor`.
+ * → `VocabLite`. `blankAnswer` luôn là chuỗi rỗng Ở ĐÂY: cột đó đã bị thu hồi
+ * khỏi `authenticated` (0004_rls.sql:41-44) nên nó KHÔNG có trong dòng đọc
+ * lên. Hai đường hợp lệ để lấy giá trị thật: RPC `answer_for_word` cho MỘT từ
+ * (xem `secretFor`), hoặc RPC `blank_answers_for_lesson` cho CẢ một buổi (xem
+ * `loadContext` — nó gọi hàm này rồi GHI ĐÈ `blankAnswer` lên kết quả).
  *
  * Ở cạnh `VocabLite` chứ không nằm trong một module đọc dữ liệu cụ thể, vì cả
  * buổi học (lib/lesson/session.ts) lẫn bài đánh giá (lib/assessment/run.ts)
@@ -164,6 +166,19 @@ export function pickDistractors(
     consider(opts.bank().filter((x) => eligible(x) && !inLesson.has(x.id)));
   }
 
+  // Lớp bảo vệ thứ hai: corpus test (tests/corpus.test.ts) đã canh hết mọi
+  // buổi trong data/clean/ hiện có, nhưng canh đó chỉ chạy trên dữ liệu ĐÃ
+  // qua CI — không chặn được dữ liệu thêm sau này (buổi mới, kho từ mở rộng)
+  // mà chưa từng chạy qua corpus test. `.slice(0, count)` ở nơi gọi hàm này
+  // im lặng trả về ít hơn `count` phương án khi kho cạn, ra một câu hỏi có
+  // ít hơn 4 lựa chọn thay vì báo lỗi ngay tại chỗ sai.
+  if (out.length < count) {
+    throw new Error(
+      `pickDistractors: từ "${target.word}" (id ${target.id}) chỉ tìm được ` +
+        `${out.length}/${count} phương án nhiễu`,
+    );
+  }
+
   return out;
 }
 
@@ -217,9 +232,10 @@ export function buildItem(spec: ItemSpec, ctx: BuildContext): BuiltItem {
   const seed = hashString(`${ctx.seed}:${spec.kind}:${spec.index}`);
 
   if (spec.kind === "flashcard") {
-    // Loại `blankAnswer` khỏi payload — cột này không được cấp cho
-    // `authenticated`, không được phép rời khỏi server.
-    const { blankAnswer: _blankAnswer, ...safeWord } = at(ctx.lessonWords, spec.index);
+    // Tách `blankAnswer` ra TRƯỚC khi loại nó khỏi payload: cột này không
+    // được cấp cho `authenticated` (0004_rls.sql:41-44), không được phép rời
+    // khỏi server, nhưng vẫn cần dùng ở ngay dưới đây để điền lại chỗ trống.
+    const { blankAnswer, ...safeWord } = at(ctx.lessonWords, spec.index);
     return {
       kind: "flashcard",
       word: {
@@ -229,13 +245,16 @@ export function buildItem(spec: ItemSpec, ctx: BuildContext): BuiltItem {
         // từ, nên ở đây phải điền ngược lại. Không rò rỉ gì: chính từ đó đang
         // hiện to ngay phía trên trên cùng một thẻ.
         //
-        // ĐÁNH ĐỔI ĐÃ BIẾT: `blank_answer` đôi khi là một dạng biến đổi của
-        // từ (word "opening", blank_answer "openings") — 169/605 từ như vậy —
-        // nên câu ghép lại thỉnh thoảng sai dạng ("several job opening" thay
-        // vì "openings"). Chấp nhận ở lát này: đường duy nhất lấy đúng
-        // `blank_answer` là RPC `answer_for_word`, tức thêm một round-trip
-        // cho MỖI thẻ trong 600 thẻ của lộ trình.
-        exampleEn: safeWord.exampleEn.replace("___", safeWord.word),
+        // Điền bằng `blankAnswer`, KHÔNG phải `safeWord.word`: `blank_answer`
+        // đôi khi là một dạng biến đổi của từ (word "opening", blank_answer
+        // "openings") — 169/605 từ như vậy — nên ghép lại bằng `word` từng
+        // cho câu sai ngữ pháp nhẹ ("several job opening" thay vì
+        // "openings"). `blankAnswer` chính là chuỗi ĐÃ BỊ khoét ra để tạo nên
+        // "___", nên điền nó vào luôn dựng lại ĐÚNG NGUYÊN câu gốc, không có
+        // đánh đổi nào còn lại. `loadContext` (session.ts) gọi RPC
+        // `blank_answers_for_lesson` một lần cho CẢ buổi (0007), nên không
+        // tốn thêm round-trip nào cho từng thẻ.
+        exampleEn: safeWord.exampleEn.replace("___", blankAnswer),
       },
     };
   }

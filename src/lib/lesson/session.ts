@@ -7,11 +7,16 @@ import { buildItem, toVocabLite } from "./build-item";
 /**
  * Đọc mọi thứ cần để dựng item của một buổi.
  *
- * `blankAnswer` và đáp án câu ngữ pháp CHỈ đọc được qua hai hàm RPC
- * `security definer` (0006_lesson_position.sql), không đọc thẳng được bằng
- * client thường của `authenticated`. Hàm này chạy trên server nên dùng
- * client thường, nhưng KHÔNG bao giờ trả nguyên `BuildContext` xuống trình
- * duyệt — `blankAnswer` ở đây luôn là chuỗi rỗng, xem `toVocabLite`.
+ * Đáp án câu ngữ pháp CHỈ đọc được qua RPC `security definer`
+ * (0006_lesson_position.sql), không đọc thẳng được bằng client thường của
+ * `authenticated`. `blankAnswer` của cả buổi đọc qua một RPC `security
+ * definer` khác — `blank_answers_for_lesson` (0007_assessment_parent.sql) —
+ * MỘT lượt gọi cho cả 30 từ thay vì 30 lượt gọi `answer_for_word` riêng lẻ.
+ * Hàm này chạy trên server nên dùng client thường, nhưng KHÔNG bao giờ trả
+ * nguyên `BuildContext` xuống trình duyệt — `blankAnswer` có giá trị thật
+ * trong `ctx.lessonWords`, và chỉ nhánh flashcard của `buildItem` được đọc nó
+ * (rồi loại nó khỏi payload trả về, kiểu `blankAnswer?: never` chặn ở tầng
+ * biên dịch — xem BuiltItem trong build-item.ts).
  */
 export async function loadContext(
   supabase: SupabaseClient,
@@ -20,11 +25,11 @@ export async function loadContext(
 ): Promise<BuildContext> {
   // `grammarLessonIdOf` phải xong trước vì truy vấn câu ngữ pháp lọc theo nó.
   // Trước đây nó được `await` NGAY TRONG đối số của `.eq()`, khiến ba truy vấn
-  // chạy nối đuôi nhau; nay chỉ còn một lượt chờ rồi hai truy vấn còn lại đi
+  // chạy nối đuôi nhau; nay chỉ còn một lượt chờ rồi các truy vấn còn lại đi
   // song song.
   const grammarLessonId = await grammarLessonIdOf(supabase, lessonId);
 
-  const [lwRes, gqRes] = await Promise.all([
+  const [lwRes, gqRes, blankRes] = await Promise.all([
     supabase
       .from("lesson_words")
       .select(
@@ -37,9 +42,14 @@ export async function loadContext(
       .select("id, stem, options, lesson_id")
       .eq("lesson_id", grammarLessonId)
       .order("id"),
+    // Trả `{ "<word_id>": "<blank_answer>" }` cho ĐÚNG 30 từ của buổi này —
+    // không mở lại cả cột. Không phụ thuộc grammarLessonId nên chạy song song
+    // được với hai truy vấn trên, không cần chờ `grammarLessonIdOf`.
+    supabase.rpc("blank_answers_for_lesson", { p_lesson_id: lessonId }),
   ]);
   if (lwRes.error) throw lwRes.error;
   if (gqRes.error) throw gqRes.error;
+  if (blankRes.error) throw blankRes.error;
 
   // Không có generic Database trên client nên postgrest-js suy luận MỌI quan
   // hệ nhúng có sub-field là mảng, bất kể FK thật sự là 1-1 hay 1-n (xem
@@ -49,7 +59,15 @@ export async function loadContext(
   // sự trả về một đối tượng vì lesson_words.word_id là khoá ngoại tới
   // vocab_words(id) (supabase/migrations/0002_curriculum.sql:9-14).
   const lessonWordRows = (lwRes.data ?? []) as unknown as LessonWordRow[];
-  const lessonWords = lessonWordRows.map((r) => toVocabLite(r.vocab_words));
+  const blankAnswers = (blankRes.data ?? {}) as Record<string, string>;
+  const lessonWords = lessonWordRows.map((r) => {
+    const lite = toVocabLite(r.vocab_words);
+    // Khoá jsonb là text (`jsonb_object_agg(v.id::text, ...)` ở migration) —
+    // ép id sang chuỗi để tra đúng. Từ nào không có mặt (không nên xảy ra vì
+    // RPC lọc đúng theo lessonId) thì giữ nguyên "" như toVocabLite đã đặt,
+    // thay vì `undefined` lọt xuống buildItem.
+    return { ...lite, blankAnswer: blankAnswers[String(lite.id)] ?? lite.blankAnswer };
+  });
 
   const grammar: GrammarLite[] = (gqRes.data ?? []).map((q) => ({
     id: q.id as number,

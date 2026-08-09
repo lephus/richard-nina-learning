@@ -39,3 +39,25 @@ create index if not exists assessments_parent_id_idx on assessments (parent_id);
 -- lai, dung go bo dieu kien `where` cua chi so.
 create unique index if not exists assessments_one_in_progress
   on assessments (user_id) where status = 'in_progress';
+
+-- The gap tu hien lai cau vi du bang cach thay '___' bang chinh tu do. Nhung
+-- blank_answer doi khi la dang bien cach cua word (168/600 tu trong chuong
+-- trinh), nen ghep bang `word` cho ra cau sai ngu phap nhe.
+--
+-- Ham nay tra ve 30 blank_answer cua mot buoi trong MOT luot goi. Khong mo lai
+-- ca cot: chi tra dung nhung tu thuoc buoi duoc hoi.
+
+create or replace function public.blank_answers_for_lesson(p_lesson_id bigint)
+returns jsonb
+language sql
+security definer
+set search_path = public, pg_temp
+as $$
+  select coalesce(jsonb_object_agg(v.id::text, v.blank_answer), '{}'::jsonb)
+  from lesson_words lw
+  join vocab_words v on v.id = lw.word_id
+  where lw.lesson_id = p_lesson_id
+$$;
+
+revoke all on function public.blank_answers_for_lesson(bigint) from public, anon;
+grant execute on function public.blank_answers_for_lesson(bigint) to authenticated;

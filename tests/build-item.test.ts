@@ -161,13 +161,17 @@ describe("buildItem", () => {
     expect(item.sentence.match(/___/g)).toHaveLength(1);
   });
 
-  it("câu điền giữ nguyên exampleEn ngay cả khi blankAnswer rỗng — đường đi công khai thật của session.ts", () => {
-    // session.ts luôn gửi blankAnswer: "" cho item công khai (không mang
-    // xuống trình duyệt). Đây mới là ca thật gây lỗi: blankOut cũ dùng
-    // RegExp("", "gi") khớp ở MỌI vị trí khi answer rỗng, chèn "___" xen
-    // giữa từng ký tự. Bài test ở trên (blankAnswer không rỗng và không
-    // xuất hiện trong exampleEn) KHÔNG phát hiện được lỗi này — với answer
-    // không rỗng và không khớp, blankOut cũ chỉ là no-op, không splice.
+  it("câu điền giữ nguyên exampleEn ngay cả khi blankAnswer rỗng — đường đi công khai qua toVocabLite", () => {
+    // `toVocabLite` (build-item.ts, dùng ở cả session.ts lẫn freshSpecs của
+    // assessment/run.ts) mặc định blankAnswer: "" — session.ts nay GHI ĐÈ
+    // giá trị thật lên đó cho ctx.lessonWords của một buổi (qua RPC
+    // blank_answers_for_lesson), nhưng freshSpecs của bài đánh giá thì không,
+    // nên nhánh blankAnswer rỗng vẫn là một ca thật, không phải giả định lỗi
+    // thời. Đây mới là ca thật gây lỗi: blankOut cũ dùng RegExp("", "gi")
+    // khớp ở MỌI vị trí khi answer rỗng, chèn "___" xen giữa từng ký tự. Bài
+    // test ở trên (blankAnswer không rỗng và không xuất hiện trong exampleEn)
+    // KHÔNG phát hiện được lỗi này — với answer không rỗng và không khớp,
+    // blankOut cũ chỉ là no-op, không splice.
     const word: VocabLite = {
       id: 999,
       word: "resume",
@@ -178,7 +182,7 @@ describe("buildItem", () => {
       synonyms: ["summary"],
       exampleEn: "Fax your ___ and cover letter to the above number.",
       exampleVi: "Hãy gửi sơ yếu lý lịch của bạn và thư xin việc đến số điện thoại trên.",
-      blankAnswer: "", // đúng như session.ts gửi cho item công khai
+      blankAnswer: "", // đúng như toVocabLite gửi mặc định
     };
     const localCtx: BuildContext = {
       lessonWords: [word], grammar: [], seed: 1, grammarLessonId: 1,
@@ -229,13 +233,17 @@ describe("buildItem", () => {
     expect(meaningPos).not.toBe(synonymPos);
   });
 
-  it("thẻ gặp từ điền lại từ vào chỗ trống — câu ví dụ hiện ra ĐẦY ĐỦ", () => {
+  it("thẻ gặp từ điền lại BLANKANSWER (không phải word) vào chỗ trống — câu ví dụ hiện ra ĐẦY ĐỦ", () => {
     // Phase 0 khoét "___" vào cả 605 câu ví dụ để phục vụ câu điền từ. Thẻ
-    // gặp từ là nơi DẠY, không phải nơi hỏi, nên nó phải điền ngược lại.
+    // gặp từ là nơi DẠY, không phải nơi hỏi, nên nó phải điền ngược lại —
+    // bằng CHÍNH chuỗi đã bị khoét ra (`blankAnswer`), không phải `word`: hai
+    // giá trị này khác nhau ở 169/605 từ thật (word "opening", blankAnswer
+    // "openings"), và điền nhầm `word` cho ra câu sai ngữ pháp nhẹ.
     const item = buildItem({ kind: "flashcard", index: 3 }, ctx);
     if (item.kind !== "flashcard") throw new Error("sai nhánh");
     expect(item.word.exampleEn).not.toContain("___");
-    expect(item.word.exampleEn).toBe(`A ${lessonWords[3]!.word} sentence for item 4.`);
+    expect(item.word.exampleEn).toBe(`A ${lessonWords[3]!.blankAnswer} sentence for item 4.`);
+    expect(item.word.exampleEn).not.toBe(`A ${lessonWords[3]!.word} sentence for item 4.`);
     expect(item.word.exampleVi).toBe(lessonWords[3]!.exampleVi);
   });
 
