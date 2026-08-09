@@ -25,12 +25,19 @@ const hasEnv = Boolean(URL && ANON && SERVICE);
  *   (C) finalize_assessment_items tu DONG BAI ngay lan goi dau, nen khong the
  *       dung lap lai nhu mot oracle cham diem; goi tu nguoi khac phai bi tu
  *       choi VA khong de lai tac dung phu — tests 5-7.
- *   (D) mot dong "treo" (status='submitted' nhung score con NULL — request
- *       dut giua luot RPC dong bai va luot UPDATE ghi diem) phai tu SUA o
- *       lan goi finalize ke tiep, khong mac ket vinh vien voi diem NULL —
- *       test 8, xem them ghi chu o run.ts quanh dieu kien early-return.
- * Tests 3-8 se do "Could not find the function" cho toi khi 0008 duoc dan len
- * dashboard that — xem task-9-report.md.
+ * Tests 3-7 se do "Could not find the function" cho toi khi 0008 va 0009
+ * duoc dan len dashboard that — xem task-9-report.md va task-1-report.md.
+ *
+ * XOA test (D) cu ("dong treo tu sua o lan goi ke tiep", tung la test 8):
+ * test do dung tay mot dong 'submitted' voi score/passed/submitted_at con
+ * NULL de mo phong dung hinh dang loi tach RPC/UPDATE cua BAN CU. Ke tu
+ * 0009_finalize_atomic.sql (dong bai + ghi diem trong DUNG MOT UPDATE), hinh
+ * dang do khong con duong nao sinh ra nua — VA neu no van ton tai (du lieu
+ * cu tu truoc migration), CAS moi ("UPDATE ... WHERE status = 'in_progress'")
+ * se KHONG khop mot dong da 'submitted' tu truoc, nen khong con tu sua duoc
+ * nua (doc lai duoc gia tri NULL cu, khong nem loi, nhung cung khong chua).
+ * Giu nguyen test do la giu mot khang dinh chi dung voi co che HAI luot ghi
+ * da bi go bo — xem them run.ts va 0009_finalize_atomic.sql.
  */
 describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_items_grants)", () => {
   const admin = createClient(URL ?? "http://localhost", SERVICE ?? "noop", {
@@ -125,7 +132,16 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
   // ── (C) finalize_assessment_items tự đóng bài ───────────────────────────
 
   it("người học KHÁC bị từ chối khi gọi finalize_assessment_items, KHÔNG để lại tác dụng phụ", async () => {
-    const res = await bob.rpc("finalize_assessment_items", { p_assessment_id: openId });
+    // p_pass_mark/p_now (0009_finalize_atomic.sql) là tham số BẮT BUỘC,
+    // không có mặc định — thiếu một trong hai thì PostgREST không tìm được
+    // hàm khớp chữ ký (lỗi định tuyến, không phải 42501) và test này sẽ đo
+    // nhầm loại lỗi. Kiểm chủ sở hữu vẫn là dòng ĐẦU TIÊN trong thân hàm nên
+    // Bob bị chặn trước khi bất kỳ tham số nào khác được dùng tới.
+    const res = await bob.rpc("finalize_assessment_items", {
+      p_assessment_id: openId,
+      p_pass_mark: 80,
+      p_now: new Date().toISOString(),
+    });
     expect(res.error?.code, "phải bị từ chối đúng vì không phải chủ bài").toBe("42501");
     expect(res.data).toBeNull();
 
@@ -171,11 +187,21 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
     // có một bài `in_progress`).
     const freshId = await startAssessment(alice, aliceId, "review", [3, 4], null, new Date());
 
-    const res = await alice.rpc("finalize_assessment_items", { p_assessment_id: freshId }).single();
+    const res = await alice
+      .rpc("finalize_assessment_items", {
+        p_assessment_id: freshId,
+        p_pass_mark: 80,
+        p_now: new Date().toISOString(),
+      })
+      .single();
     expect(res.error).toBeNull();
-    const row = res.data as { total: number; correct: number };
+    const row = res.data as { total: number; correct: number; score: number; passed: boolean };
     expect(row.total).toBeGreaterThan(0);
     expect(row.correct).toBe(0); // chưa trả lời câu nào
+    // 0009_finalize_atomic.sql: hàm giờ tự tính cả score/passed, không chỉ
+    // tổng/đúng — 0 câu đúng luôn là 0 điểm, luôn trượt bất kể ngưỡng.
+    expect(row.score).toBe(0);
+    expect(row.passed).toBe(false);
 
     const { data: assessment, error } = await admin
       .from("assessments").select("status").eq("id", freshId).single();
@@ -183,50 +209,5 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
     // Hàm SQL tự đóng bài — KHÔNG cần một lượt UPDATE riêng nào khác để
     // status rời khỏi 'in_progress'.
     expect(assessment!.status).toBe("submitted");
-  });
-
-  // ── (D) dòng "treo" tự sửa ở lần gọi kế tiếp ────────────────────────────
-
-  it("bài bị TREO (status=submitted, score=NULL — request đứt giữa RPC đóng bài và UPDATE ghi điểm) được sửa lại ở lần nộp kế tiếp", async () => {
-    const tornId = await startAssessment(alice, aliceId, "review", [5, 6], null, new Date());
-
-    // Mô phỏng chính xác lỗi mà lần review trước đo được trên `run.ts` cũ:
-    // RPC `finalize_assessment_items` đã commit (đóng bài) nhưng lượt UPDATE
-    // ghi score/passed/submitted_at thì KHÔNG chạy (function timeout, mất
-    // kết nối, deploy rơi đúng lúc request đó). Dựng thẳng trạng thái đó
-    // bằng `admin` — không cần đi qua RPC thật để tạo ra dòng treo, chỉ cần
-    // đúng HÌNH DẠNG của nó: `status='submitted'`, các cột điểm còn NULL.
-    const { error: tornErr } = await admin
-      .from("assessments").update({ status: "submitted" }).eq("id", tornId);
-    if (tornErr) throw tornErr;
-
-    const { data: torn, error: readTornErr } = await admin
-      .from("assessments")
-      .select("status, score, passed, submitted_at")
-      .eq("id", tornId).single();
-    if (readTornErr) throw readTornErr;
-    expect(torn).toEqual({ status: "submitted", score: null, passed: null, submitted_at: null });
-
-    // Với early-return CŨ (chỉ xét `status === "submitted"`), gọi lại ở đây
-    // sẽ trả `{score: 0, passed: false}` MÀ KHÔNG SỬA GÌ CẢ — dòng vẫn treo
-    // mãi mãi, và `nextStep` đọc `passed !== true` thành trượt, đẩy người
-    // học vào một bài bổ túc họ không đáng phải làm. Assertion dưới đây THẤT
-    // BẠI trên code trước bản vá của finding 1 — đó chính là mục đích của
-    // test này.
-    const result = await submitAssessment(alice, aliceId, tornId, new Date());
-
-    const { data: repaired, error: readRepairedErr } = await admin
-      .from("assessments")
-      .select("status, score, passed, submitted_at")
-      .eq("id", tornId).single();
-    if (readRepairedErr) throw readRepairedErr;
-    expect(repaired!.status).toBe("submitted");
-    expect(repaired!.score).not.toBeNull();
-    expect(repaired!.passed).not.toBeNull();
-    expect(repaired!.submitted_at).not.toBeNull();
-    // Kết quả `submitAssessment` trả về PHẢI khớp đúng dòng đã sửa trong
-    // database — không phải một giá trị fail-closed bịa ra.
-    expect(result.score).toBe(repaired!.score);
-    expect(result.passed).toBe(repaired!.passed);
   });
 });

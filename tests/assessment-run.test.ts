@@ -376,6 +376,70 @@ describe.skipIf(!hasEnv)("vong lam bai danh gia", () => {
     expect(after).toEqual(before);
   });
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // 0009_finalize_atomic.sql: đóng bài và ghi điểm trong ĐÚNG MỘT câu UPDATE
+  // bên trong `finalize_assessment_items`, không còn hai vòng round-trip tách
+  // rời (RPC đóng bài rồi một UPDATE riêng ghi điểm) như bản trước. Test này
+  // khẳng định KHÔNG CÓ trạng thái trung gian nào lộ ra: đọc lại bằng `admin`
+  // NGAY SAU KHI `submitAssessment` trả về phải thấy `status`, `score`,
+  // `passed`, `submitted_at` đều đã chốt CÙNG LÚC trong một lần đọc — không
+  // bao giờ bắt được dòng `status = 'submitted'` mà `score` còn NULL.
+  // ─────────────────────────────────────────────────────────────────────────
+  it("nộp bài xong: status, score, passed, submitted_at đều chốt trong CÙNG một lần đọc", async () => {
+    const now = new Date();
+    const id = await startAssessment(user, userId, "review", [1, 2], null, now);
+    await submitAssessment(user, userId, id, now);
+
+    const { data, error } = await admin
+      .from("assessments")
+      .select("status, score, passed, submitted_at")
+      .eq("id", id)
+      .single();
+    if (error) throw error;
+    expect(data!.status).toBe("submitted");
+    expect(data!.score).not.toBeNull();
+    expect(data!.passed).not.toBeNull();
+    expect(data!.submitted_at).not.toBeNull();
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Bài 0 câu — khẳng định phân biệt bản mới (0009) với bản cũ. Bản cũ: RPC
+  // đóng bài (status → 'submitted') TRƯỚC, TypeScript mới ném SAU khi thấy
+  // total = 0 — để lại một dòng 'submitted' vĩnh viễn không có gì để chấm.
+  // Bản mới: hàm SQL ném NGAY TRONG THÂN HÀM, TRƯỚC câu UPDATE đóng bài, nên
+  // dòng không hề bị đụng tới — vẫn `in_progress`, chờ một lần gọi sau còn
+  // cứu được (dù ở đây không có gì để cứu, chỉ là không mắc kẹt vĩnh viễn).
+  //
+  // Chèn thẳng qua `admin`, không qua `startAssessment` (hàm đó luôn chèn
+  // items cùng dòng assessments) — mô phỏng đúng hình dạng "bài rỗng" theo
+  // khuôn các test `deleteEmptyAssessment` ở dưới.
+  // ─────────────────────────────────────────────────────────────────────────
+  it("bài 0 câu: submitAssessment ném lỗi, VÀ dòng vẫn 'in_progress' sau đó", async () => {
+    const now = new Date();
+    const { data: inserted, error } = await admin
+      .from("assessments")
+      .insert({
+        user_id: userId,
+        type: "review",
+        scope: [1, 2],
+        status: "in_progress",
+        started_at: now.toISOString(),
+        expires_at: new Date(now.getTime() + 15 * 60 * 1000).toISOString(),
+      })
+      .select("id")
+      .single();
+    if (error) throw error;
+    const id = inserted!.id as number;
+
+    await expect(submitAssessment(user, userId, id, now)).rejects.toThrow(String(id));
+
+    const { data: after, error: afterErr } = await admin
+      .from("assessments").select("status, score").eq("id", id).single();
+    if (afterErr) throw afterErr;
+    expect(after!.status).toBe("in_progress");
+    expect(after!.score).toBeNull();
+  });
+
   it("đang dở một bài thì không bắt đầu được bài mới", async () => {
     const now = new Date();
     const open = await startAssessment(user, userId, "review", [3, 4], null, now);

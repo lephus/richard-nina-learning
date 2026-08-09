@@ -417,15 +417,54 @@ export async function closeExpired(
 
 /* ─────────────────────────── phần nội bộ ─────────────────────────── */
 
+/**
+ * Chấm và đóng MỘT bài — nguồn chấm duy nhất mà cả `submitAssessment` lẫn
+ * `closeExpired` cùng đi qua (không có bản chấm thứ hai ở đâu khác).
+ *
+ * TOÀN BỘ việc chấm + đóng bài xảy ra trong ĐÚNG MỘT lượt gọi RPC tới hàm
+ * `security definer` `finalize_assessment_items` (0009_finalize_atomic.sql):
+ * điền `is_correct = false` cho câu bỏ trống, đếm tổng/đúng, tính
+ * score/passed, VÀ đổi `status` → `'submitted'` — tất cả trong ĐÚNG MỘT câu
+ * UPDATE bên trong hàm SQL đó.
+ *
+ * Trước bản vá này, việc đóng bài và việc ghi điểm là HAI vòng round-trip
+ * tách rời: RPC đóng bài (`status` → `'submitted'`) rồi một UPDATE riêng ghi
+ * `score`/`passed`/`submitted_at`. Nếu request đứt GIỮA hai lượt đó — function
+ * timeout, mất kết nối, một lần deploy rơi đúng lúc — dòng đó mắc kẹt ở
+ * `status = 'submitted'`, `score = NULL` VĨNH VIỄN: `nextStep` đọc
+ * `passed !== true` thành trượt và đẩy người học vào một bài bổ túc họ không
+ * hề trượt. Gộp về ĐÚNG MỘT hàm SQL xoá hẳn cửa sổ đó — không còn hai lượt
+ * ghi tách đôi để rách ở giữa, nên không còn trạng thái treo nào để sinh ra.
+ *
+ * `type` vẫn phải đọc RIÊNG trước khi gọi RPC: `PASS_MARK` theo từng loại bài
+ * (review/test/remedial) chỉ định nghĩa ở TypeScript — một nơi duy nhất. Hàm
+ * SQL không biết ngưỡng của từng loại bài, nó chỉ so sánh `score` đã tính với
+ * ngưỡng được truyền vào qua `p_pass_mark`.
+ *
+ * Bài 0 câu: hàm SQL ném lỗi và KHÔNG đóng bài — dòng nằm lại `'in_progress'`
+ * cho một lần gọi sau còn cứu được. Khác bản cũ, vốn đóng bài TRƯỚC rồi mới
+ * ném ở tầng TypeScript, tạo ra một dòng `'submitted'` vĩnh viễn không bao
+ * giờ chấm lại được (không còn gì để tính điểm).
+ *
+ * Hai `finalize` chạy đồng thời trên cùng một bài: bên thua CAS (bên trong
+ * hàm SQL, tranh nhau đúng dòng `UPDATE ... WHERE status = 'in_progress'`)
+ * đọc lại giá trị bên thắng đã ghi và trả về, KHÔNG ném lỗi — cả hai lượt gọi
+ * `finalize` này đều nhận về cùng một `FinalResult`.
+ */
 async function finalize(
   supabase: SupabaseClient,
   userId: string,
   assessmentId: number,
   now: Date,
 ): Promise<FinalResult> {
+  // Chỉ cần đọc `type` — để tra `PASS_MARK[type]` truyền vào RPC. Không còn
+  // đọc `status/score/passed` ở đây: điều kiện "đã nộp thật sự thì không ghi
+  // gì nữa" giờ nằm hẳn TRONG hàm SQL (bước 2 của 0009_finalize_atomic.sql),
+  // vì đó là nơi duy nhất còn thấy được trạng thái KHÔNG bị đọc-rồi-ghi tách
+  // rời khỏi hành động ghi thật.
   const { data: assessment, error } = await supabase
     .from("assessments")
-    .select("type, status, score, passed")
+    .select("type")
     .eq("id", assessmentId)
     .eq("user_id", userId)
     .maybeSingle();
@@ -433,151 +472,19 @@ async function finalize(
   if (assessment === null) {
     throw new Error(`không tìm thấy bài ${assessmentId} của người học này`);
   }
-
-  // Bấm nộp hai lần: không làm gì, trả lại kết quả đã có — spec mục 7.
-  //
-  // ĐIỀU KIỆN THÊM `assessment.score !== null` (không chỉ `status ===
-  // "submitted"`) là bản vá cho một trạng thái TREO mà bản tách RPC/UPDATE ở
-  // dưới tạo ra: `finalize_assessment_items` đóng bài (status → 'submitted')
-  // và UPDATE ghi score/passed/submitted_at giờ là HAI lượt round-trip riêng,
-  // không còn một UPDATE nguyên tử như trước. Nếu request đứt giữa hai lượt
-  // đó (function timeout, mất kết nối, deploy rơi đúng lúc) — RPC đã commit
-  // (bài đóng, đã backfill), nhưng UPDATE điểm chưa chạy — dòng đó mắc kẹt ở
-  // `status = 'submitted'`, `score/passed/submitted_at = NULL` VĨNH VIỄN nếu
-  // early-return chỉ xét `status`: mọi lần gọi lại sau đó đều thấy "đã nộp"
-  // rồi trả `storedResult({score: null, ...})` → `{score: 0, passed: false}`
-  // mà KHÔNG BAO GIỜ sửa lại dòng — nextStep đọc `passed !== true` thành
-  // trượt, đẩy người học vào một bài bổ túc họ không đáng phải làm.
-  //
-  // Thêm `score !== null` biến điều kiện "coi là đã xong" thành "đã xong VÀ
-  // đã thật sự có kết quả lưu lại" — một dòng bị treo (status='submitted',
-  // score=null) KHÔNG thoả điều kiện này, nên rơi tiếp xuống dưới và CHẠY
-  // LẠI cả khối RPC + UPDATE. RPC an toàn khi gọi lại: CAS `status =
-  // 'in_progress'` khớp 0 dòng (đã đóng từ lần trước, không làm gì thêm),
-  // backfill cũng khớp 0 dòng (đã backfill xong), đếm lại cho ra ĐÚNG cùng
-  // {total, correct} — idempotent. UPDATE điểm bên dưới dùng CAS `score is
-  // null`, khớp đúng dòng treo này và ghi điểm thật vào — bài TỰ SỬA ở lần
-  // gọi `finalize` kế tiếp (nộp lại, hoặc `nextStep` đóng bài quá hạn), thay
-  // vì cần một thao tác dọn dẹp thủ công riêng.
-  //
-  // Một lần nộp THẬT SỰ xong luôn để lại `score` khác NULL (khối UPDATE dưới
-  // đây luôn ghi một số, kể cả 0), nên nộp hai lần thật (không phải một lần
-  // bị đứt) vẫn tắt sớm đúng như trước — không có gì bị nới lỏng.
-  if (assessment.status === "submitted" && assessment.score !== null) {
-    return storedResult(assessment);
-  }
-
-  // ĐIỀN `is_correct = false` CHO MỌI CÂU CHƯA LÀM, ĐẾM, VÀ ĐÓNG BÀI (chuyển
-  // status khỏi 'in_progress') — CẢ BA trong MỘT lệnh gọi RPC `security
-  // definer` `finalize_assessment_items` (0008_assessment_items_grants.sql):
-  //
-  //   1. Không còn đọc/ghi is_correct thẳng bằng client thường được nữa: cột
-  //      đó đã bị thu hồi SELECT khỏi `authenticated` (đóng kênh dò đáp án
-  //      qua PostgREST — xem comment đầu file migration), và một WHERE
-  //      is_correct IS NULL hay SELECT is_correct đều cần quyền đọc cột đó.
-  //   2. ĐÓNG BÀI ngay trong hàm SQL (không phải ở lượt UPDATE riêng bên
-  //      dưới như trước) là bản vá cho một lỗ hổng thứ hai: nếu hàm chỉ
-  //      backfill+đếm mà không đóng bài, nó trở thành một oracle chấm điểm —
-  //      gọi lại sau MỖI câu trả lời (answerItem vẫn nhận câu trả lời vì bài
-  //      còn 'in_progress') sẽ lộ dần correct/total, dò được cả bài kiểm tra
-  //      60 câu mà không cần biết đáp án thật. Hàm CAS ngay trong WHERE
-  //      (`status = 'in_progress'`) khi đóng, nên lần gọi ĐẦU TIÊN (hợp lệ
-  //      hay không) đã là lần CUỐI answerItem còn nhận câu trả lời tiếp theo
-  //      — gọi hàm này giữa bài chỉ tương đương bấm "Nộp bài" sớm.
-  //
-  // Luật "câu chưa làm tính sai" (spec mục 6.2) phải đúng TRONG DỮ LIỆU, không
-  // chỉ đúng trong phép chia ở dưới. `answerItem` chỉ ghi `is_correct` cho câu
-  // được trả lời, nên câu bỏ trống nằm lại ở NULL trước khi hàm này chạy — và
-  // bài bổ túc được dựng từ `is_correct = false` của lần thử cha (mục 5.3).
-  // Nếu để NULL:
-  //
-  //   trả lời đúng 19/25, bỏ trống 6  →  76% < 80%, trượt
-  //   → bổ túc lấy các câu `is_correct = false`  →  KHÔNG có dòng nào
-  //   → bài bổ túc 0 câu, chấm 0/0, không bao giờ đạt
-  //   → nextStep thấy bổ túc chưa đạt → bắt làm bổ túc lại → mãi mãi.
-  //
-  // Không phải trường hợp hiếm: hết giờ bài kiểm tra 60 phút thì phần lớn câu
-  // còn lại chính là câu bỏ trống. Điền ở đây làm tan cả lớp lỗi đó, thay vì
-  // vá riêng chỗ dựng bài bổ túc.
-  //
-  // `user_answer` CỐ Ý giữ nguyên NULL (hàm SQL không đụng tới cột này): nó là
-  // thứ duy nhất còn phân biệt "bỏ trống" với "trả lời sai" khi xem lại bài.
-  //
-  // Điểm ĐẾM TỪ `is_correct` của chính các câu, không từ một bộ đếm riêng —
-  // một nguồn sự thật, không có gì để trôi lệch (spec mục 6.3). Hàm SQL trả
-  // TỔNG/ĐÚNG đã đếm sẵn, không trả từng dòng `is_correct` — giữ đúng tinh
-  // thần "đáp án từng câu không rời khỏi server" ngay cả ở kênh tổng hợp này.
-  //
-  // Cách tính SCORE (phần trăm) và so với PASS_MARK[type] VẪN ở TypeScript —
-  // hàm SQL không biết ngưỡng đạt theo từng loại bài, chỉ lo lưu trữ + tổng
-  // hợp + đóng trạng thái. Đây là "một nguồn chấm điểm duy nhất" mà cả
-  // `submitAssessment` lẫn `closeExpired` cùng đi qua hàm `finalize` này —
-  // không có bản chấm thứ hai nào khác xuất hiện.
-  const { data, error: aggErr } = await supabase
-    .rpc("finalize_assessment_items", { p_assessment_id: assessmentId })
-    .single();
-  if (aggErr) throw aggErr;
-  const agg = data as { total: number; correct: number };
-
-  const total = agg.total;
-  if (total === 0) {
-    // Không im lặng chấm 0: một bài 0 câu không bao giờ đạt được, nên chấm nó
-    // là dựng lại đúng cái vòng lặp vô tận ở trên. `startAssessment` đã chặn
-    // không cho bài rỗng ra đời; tới đây được thì có gì đó hỏng thật.
-    //
-    // Ném ở ĐÂY xảy ra SAU KHI RPC đã đóng bài (status → 'submitted') —
-    // cùng hình dạng treo đã mô tả ở điều kiện early-return phía trên,
-    // nhưng không cách nào "sửa" được (không có gì để tính điểm). Vì
-    // `score` không bao giờ được ghi ở nhánh này, điều kiện `score !==
-    // null` phía trên KHÔNG coi dòng này là "đã xong" — mọi lần gọi lại
-    // đều rơi xuống đây và ném lại đúng lỗi này, không bao giờ tự nhận
-    // vào một kết quả sai. Kêu to mãi mãi còn hơn một lần im lặng sai.
-    throw new Error(`bài ${assessmentId} không có câu nào — không chấm được`);
-  }
-  const correct = agg.correct;
-  const score = Math.round((correct / total) * 100);
   const type = assessment.type as AssessmentType;
-  const passed = score >= PASS_MARK[type];
 
-  // Ghi score/passed/submitted_at bằng một UPDATE RIÊNG, không còn gộp
-  // `status: "submitted"` vào đây nữa — RPC ở trên đã tự đóng bài rồi. Chốt
-  // "chưa ghi điểm" chuyển từ `.neq("status","submitted")` (cũ) sang
-  // `.is("score", null)`: tại điểm này status LUÔN LÀ 'submitted' (RPC vừa
-  // đóng, dù chính request này hay một request song song thắng cuộc CAS bên
-  // trong hàm SQL), nên không còn dùng status để phân biệt "ai thắng cuộc
-  // ghi điểm" được nữa — `score is null` giữ đúng vai trò đó: chỉ lượt ghi
-  // ĐẦU TIÊN khớp, lượt thứ hai (bấm đúp, hai tab, hoặc một cuộc gọi RPC lặp
-  // lại) khớp 0 dòng và đọc lại kết quả đã lưu, đúng tính chất "chỉ một
-  // người thắng" mà CAS cũ đã đảm nhiệm.
-  const { data: closed, error: closeErr } = await supabase
-    .from("assessments")
-    .update({ score, passed, submitted_at: now.toISOString() })
-    .eq("id", assessmentId)
-    .eq("user_id", userId)
-    .is("score", null)
-    .select("score, passed");
-  if (closeErr) throw closeErr;
+  const { data, error: rpcErr } = await supabase
+    .rpc("finalize_assessment_items", {
+      p_assessment_id: assessmentId,
+      p_pass_mark: PASS_MARK[type],
+      p_now: now.toISOString(),
+    })
+    .single();
+  if (rpcErr) throw rpcErr;
 
-  if ((closed?.length ?? 0) === 0) {
-    const { data: fresh, error: freshErr } = await supabase
-      .from("assessments")
-      .select("score, passed")
-      .eq("id", assessmentId)
-      .eq("user_id", userId)
-      .single();
-    if (freshErr) throw freshErr;
-    return storedResult(fresh);
-  }
-
-  return { score, passed };
-}
-
-/** Kết quả đã ghi trong database. `?? ` chỉ để chiều kiểu — cột luôn có giá trị khi đã nộp. */
-function storedResult(row: { score: unknown; passed: unknown }): FinalResult {
-  return {
-    score: (row.score as number | null) ?? 0,
-    passed: (row.passed as boolean | null) ?? false,
-  };
+  const result = data as { total: number; correct: number; score: number; passed: boolean };
+  return { score: result.score, passed: result.passed };
 }
 
 async function openAssessmentId(
