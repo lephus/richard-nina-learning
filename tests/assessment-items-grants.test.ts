@@ -44,6 +44,22 @@ const hasEnv = Boolean(URL && ANON && SERVICE);
  * NULL cu, khong nem loi, nhung cung khong chua). Test (D) MOI ben duoi pin
  * DUNG hanh vi nay thay vi khang dinh sai cua test cu — xem them run.ts va
  * 0009_finalize_atomic.sql.
+ *
+ * THU TU CAC TEST TRONG FILE NAY LA MOT RANG BUOC THAT, KHONG PHAI TINH CO
+ * (vong review sau ban vay dau tien cua muc (D) da do duoc mot vi du sai vi
+ * bo qua dieu nay): moi `it` bay gio hoac DOC trang thai ma test TRUOC de
+ * lai, hoac TAO trang thai cho test SAU dung, tren cung MOT bai `in_progress`
+ * duy nhat cua Alice (`assessments_one_in_progress`, 0007_assessment_parent.sql
+ * — mot nguoi chi duoc mot bai dang do tai mot thoi diem). Vitest chay cac
+ * `it` trong CUNG mot `describe` TUAN TU theo dung thu tu khai bao (khong
+ * song song) nen chuoi phu thuoc nay an toan, nhung no la mot RANG BUOC THAT
+ * cua thu tu — doi cho hai test bat ky trong so nay se lam mot trong hai test
+ * do sai. Chuoi cu the: test 5 dong `openId` → test 6 doc `openId` da dong →
+ * test 7 tao roi dong `freshId` (can Alice dang KHONG co bai in_progress nao)
+ * → test 8 tao `pendingId` roi CO Y de no lai 'in_progress' (guard 22004 tu
+ * choi dong) → test 9 TAI SU DUNG dung `pendingId` do (KHONG goi
+ * startAssessment lan nua — Alice dang co san mot bai in_progress, goi lai se
+ * an ngay AssessmentInProgressError).
  */
 describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_items_grants)", () => {
   const admin = createClient(URL ?? "http://localhost", SERVICE ?? "noop", {
@@ -57,6 +73,13 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
   let bobId = "";
   /** Bài ôn tập của Alice, còn `in_progress` suốt các test 1-4. */
   let openId = 0;
+  /**
+   * Bài Alice tạo ở test 8, bị guard 22004 từ chối đóng nên còn lại
+   * `in_progress` — test 9 TÁI SỬ DỤNG chính dòng này (không gọi
+   * `startAssessment` lần nữa) để dựng hình dạng dòng "treo". Xem chú thích
+   * thứ tự test ở đầu file.
+   */
+  let pendingId = 0;
 
   beforeAll(async () => {
     const mk = async (email: string, displayName: string) => {
@@ -231,27 +254,58 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
   //     những gì tầng SQL trả về, tầng dưới cùng của quyết định thiết kế.
 
   it("p_pass_mark hoặc p_now là NULL: RPC ném lỗi, bài KHÔNG bị đóng", async () => {
-    const freshId = await startAssessment(alice, aliceId, "review", [5, 6], null, new Date());
+    // Gán vào biến ở phạm vi describe — test 9 tái sử dụng CHÍNH dòng này
+    // (xem chú thích thứ tự test ở đầu file). Không đóng được ở đây (guard
+    // 22004 từ chối cả hai lượt gọi bên dưới) nên dòng còn nguyên
+    // 'in_progress' sau test này — CỐ Ý, không phải một lỗi dọn dẹp thiếu.
+    pendingId = await startAssessment(alice, aliceId, "review", [5, 6], null, new Date());
 
-    const res = await alice.rpc("finalize_assessment_items", {
-      p_assessment_id: freshId,
+    // Đo ĐÚNG SQLSTATE `22004` mà 0009_finalize_atomic.sql raise — không chỉ
+    // "có lỗi" (điểm yếu mà chú thích ở test 1 của chính file này đã nêu và
+    // vá: một khẳng định `not.toBeNull()` cũng thoả với một lỗi 500 bất kỳ,
+    // hay với chính lỗi định tuyến "Could not find the function" nếu ai đó
+    // lỡ xoá guard này — test sẽ vẫn xanh trong khi bug đã quay lại).
+    //
+    // Đo CẢ HAI tham số — đúng như tên test nói "p_pass_mark HOẶC p_now" —
+    // không chỉ một nhánh của điều kiện `or` trong 0009. Gọi lần hai trên
+    // CHÍNH dòng vừa bị từ chối ở lần một: dòng đó vẫn 'in_progress' (lần
+    // một không đóng gì), nên vẫn là một lời gọi hợp lệ để đo nhánh còn lại.
+    const noPassMark = await alice.rpc("finalize_assessment_items", {
+      p_assessment_id: pendingId,
       p_pass_mark: null,
       p_now: new Date().toISOString(),
     });
-    expect(res.error, "thiếu ngưỡng đạt phải bị chặn, không được lặng lẽ chấm").not.toBeNull();
-    expect(res.data).toBeNull();
+    expect(noPassMark.error?.code, "p_pass_mark NULL phải bị chặn đúng 22004").toBe("22004");
+    expect(noPassMark.data).toBeNull();
+
+    const noNow = await alice.rpc("finalize_assessment_items", {
+      p_assessment_id: pendingId,
+      p_pass_mark: 80,
+      p_now: null,
+    });
+    expect(noNow.error?.code, "p_now NULL cũng phải bị chặn đúng 22004").toBe("22004");
+    expect(noNow.data).toBeNull();
 
     const { data: after, error } = await admin
-      .from("assessments").select("status, score").eq("id", freshId).single();
+      .from("assessments").select("status, score").eq("id", pendingId).single();
     if (error) throw error;
-    // Dòng KHÔNG hề bị đụng tới — không phải đóng-trước-ném-sau như bản trước
-    // fix, và cũng không phải một `passed = NULL` len lỏi vào một bài đã đóng.
+    // Dòng KHÔNG hề bị đụng tới bởi CẢ HAI lượt gọi trên — không phải
+    // đóng-trước-ném-sau như bản trước fix, và cũng không phải một
+    // `passed = NULL` len lỏi vào một bài đã đóng.
     expect(after!.status).toBe("in_progress");
     expect(after!.score).toBeNull();
   });
 
   it("dòng 'submitted' sẵn có score=NULL (tồn dư từ cơ chế cũ): RPC trả NULL, KHÔNG ném, KHÔNG tự sửa", async () => {
-    const tornId = await startAssessment(alice, aliceId, "review", [7, 8], null, new Date());
+    // TÁI SỬ DỤNG dòng `pendingId` mà test trước đã để lại 'in_progress' —
+    // KHÔNG gọi `startAssessment` lần nữa ở đây. Alice chỉ được có MỘT bài
+    // `in_progress` tại một thời điểm (0007_assessment_parent.sql,
+    // `assessments_one_in_progress`); một lượt `startAssessment` thứ hai sẽ
+    // ăn ngay `AssessmentInProgressError` từ chính dòng `pendingId` còn mở —
+    // đây CHÍNH LÀ lỗi mà vòng review trước đã đo được trên bản test cũ của
+    // file này (gọi `startAssessment` lần nữa thay vì tái dùng dòng có sẵn).
+    expect(pendingId, "test trước phải chạy trước và để lại pendingId").not.toBe(0);
+    const tornId = pendingId;
 
     // Dựng tay đúng HÌNH DẠNG dòng treo của cơ chế cũ (trước 0009): status đã
     // 'submitted' nhưng score/passed/submitted_at còn NULL — không cần đi
@@ -276,6 +330,9 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
 
     // Database KHÔNG bị sửa bởi lượt gọi này — vẫn đúng hình dạng treo ban
     // đầu, không có giá trị fail-closed nào bị ghi ngầm vào thay cho NULL.
+    // Dòng này còn lại đúng shape treo sau khi describe kết thúc — không sao,
+    // vì đây là test CUỐI trong file, không có test nào sau nó cần Alice
+    // rảnh tay; `afterAll` xoá sạch theo `user_id` bất kể trạng thái.
     const { data: after, error: afterErr } = await admin
       .from("assessments")
       .select("status, score, passed, submitted_at")
