@@ -65,12 +65,23 @@
 --    definer chay bang quyen chu bang (bo qua RLS), nen thieu dieu kien nay
 --    la mot nguoi hoc bat ky finalize duoc bai cua nguoi khac.
 --
---    Diem so (score, so sanh voi PASS_MARK theo type) VAN o TypeScript — ham
---    nay chi tra tong/dung da dem san, khong tinh phan tram hay ket luan
---    dat/truot. TypeScript (run.ts) doc total/correct, tu tinh score, roi ghi
---    score/passed/submitted_at bang MOT UPDATE rieng co dieu kien
---    `score is null` — CAS thay cho `status <> 'submitted'` cu, vi luc nay
---    status da bi ham nay doi truoc do roi (xem comment trong run.ts).
+--    Diem so (score, so sanh voi PASS_MARK theo type): TAI THOI DIEM FILE NAY
+--    duoc viet, buoc do nam o TypeScript — ham chi tra tong/dung da dem san,
+--    khong tinh phan tram hay ket luan dat/truot; run.ts doc total/correct,
+--    tu tinh score, roi ghi score/passed/submitted_at bang MOT UPDATE rieng
+--    co dieu kien `score is null` — CAS thay cho `status <> 'submitted'` cu,
+--    vi luc nay status da bi ham nay doi truoc do roi (xem comment trong
+--    run.ts, tai thoi diem do).
+--
+--    KHONG CON DUNG THE NUA: 0009_finalize_atomic.sql (dan sau file nay) thay
+--    THANG ham finalize_assessment_items bang mot chu ky moi (them
+--    p_pass_mark, p_now; RETURNS TABLE them ca score, passed), tinh diem
+--    NGAY TRONG SQL va dong bai bang MOT UPDATE DUY NHAT — khong con UPDATE
+--    rieng o TypeScript, khong con dieu kien `score is null` nao ca. Doan
+--    comment tren giu nguyen o THI QUA KHU vi cau lenh SQL cua file nay
+--    KHONG duoc sua (da chay that qua nhieu lan review cuc bo) — no ta lai
+--    THIET KE BAN DAU cua ham, khong con la mo ta dung cho ham dang chay
+--    trong database. Xem 0009_finalize_atomic.sql de biet hanh vi HIEN TAI.
 create or replace function public.finalize_assessment_items(p_assessment_id bigint)
 returns table(total int, correct int)
 language plpgsql

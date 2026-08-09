@@ -459,7 +459,7 @@ async function finalize(
 ): Promise<FinalResult> {
   // Chỉ cần đọc `type` — để tra `PASS_MARK[type]` truyền vào RPC. Không còn
   // đọc `status/score/passed` ở đây: điều kiện "đã nộp thật sự thì không ghi
-  // gì nữa" giờ nằm hẳn TRONG hàm SQL (bước 2 của 0009_finalize_atomic.sql),
+  // gì nữa" giờ nằm hẳn TRONG hàm SQL (bước 3 của 0009_finalize_atomic.sql),
   // vì đó là nơi duy nhất còn thấy được trạng thái KHÔNG bị đọc-rồi-ghi tách
   // rời khỏi hành động ghi thật.
   const { data: assessment, error } = await supabase
@@ -474,6 +474,12 @@ async function finalize(
   }
   const type = assessment.type as AssessmentType;
 
+  // `PASS_MARK[type]` LUÔN là một số thật (Record đủ cả ba khoá của
+  // AssessmentType — không có đường nào ra `undefined`) và `now.toISOString()`
+  // ném ngay nếu `now` là `Invalid Date`, nên p_pass_mark/p_now không bao giờ
+  // là null từ CHÍNH nơi gọi này. Hàng rào thật cho hai tham số đó nằm TRONG
+  // hàm SQL (bước 2 của 0009) — ở đây không lặp lại phép kiểm, chỉ không
+  // dựa dẫm vào "chắc là nó luôn đúng" khi ĐỌC kết quả trả về, xem dưới.
   const { data, error: rpcErr } = await supabase
     .rpc("finalize_assessment_items", {
       p_assessment_id: assessmentId,
@@ -483,7 +489,23 @@ async function finalize(
     .single();
   if (rpcErr) throw rpcErr;
 
-  const result = data as { total: number; correct: number; score: number; passed: boolean };
+  // `score`/`passed` khai kiểu `number | null` — không phải vì lời gọi Ở ĐÂY
+  // có thể tạo ra NULL (buộc bởi bước 2 trong 0009), mà vì hàm SQL có thể
+  // ĐỌC LẠI một dòng 'submitted' với `score/passed` còn NULL từ dữ liệu tồn
+  // dư đúng trước khi 0009 tồn tại (đường early-return bước 3, xem chú thích
+  // trong 0009_finalize_atomic.sql) — cơ chế mới KHÔNG tự sửa được dòng đó
+  // nữa (đánh đổi có chủ đích, xem 0009). Ép thẳng qua `{score: number;
+  // passed: boolean}` mà không kiểm sẽ cho một `null` lặng lẽ chảy tiếp vào
+  // `FinalResult`, rồi vào UI dưới dạng "NaN%" hay một trạng thái vô nghĩa
+  // không ai truy được gốc — cùng loại lỗi "NULL nằm im trong một khe được
+  // khai không-null" mà bước 2 của 0009 vừa được thêm để chặn, chỉ khác chỗ
+  // rơi (TypeScript thay vì SQL). Ném RÕ RÀNG ở đây thay vì để nó trôi tiếp.
+  const result = data as { total: number; correct: number; score: number | null; passed: boolean | null };
+  if (result.score === null || result.passed === null) {
+    throw new Error(
+      `bài ${assessmentId} đã 'submitted' nhưng score/passed vẫn NULL — dòng lỗi tồn dư từ cơ chế hai lượt ghi cũ, không tự sửa được (xem 0009_finalize_atomic.sql)`,
+    );
+  }
   return { score: result.score, passed: result.passed };
 }
 

@@ -25,19 +25,25 @@ const hasEnv = Boolean(URL && ANON && SERVICE);
  *   (C) finalize_assessment_items tu DONG BAI ngay lan goi dau, nen khong the
  *       dung lap lai nhu mot oracle cham diem; goi tu nguoi khac phai bi tu
  *       choi VA khong de lai tac dung phu — tests 5-7.
- * Tests 3-7 se do "Could not find the function" cho toi khi 0008 va 0009
+ *   (D) hai nhanh cua 0009_finalize_atomic.sql do vong review sau ban vay
+ *       dau tien do duoc — bao ve tham so (p_pass_mark/p_now la NULL phai bi
+ *       chan) VA hanh vi CHAP NHAN CO CHU DICH tren mot dong 'submitted' ton
+ *       du co score=NULL (khong tu sua, khong nem) — tests 8-9.
+ * Tests 3-9 se do "Could not find the function" cho toi khi 0008 va 0009
  * duoc dan len dashboard that — xem task-9-report.md va task-1-report.md.
  *
- * XOA test (D) cu ("dong treo tu sua o lan goi ke tiep", tung la test 8):
- * test do dung tay mot dong 'submitted' voi score/passed/submitted_at con
- * NULL de mo phong dung hinh dang loi tach RPC/UPDATE cua BAN CU. Ke tu
- * 0009_finalize_atomic.sql (dong bai + ghi diem trong DUNG MOT UPDATE), hinh
- * dang do khong con duong nao sinh ra nua — VA neu no van ton tai (du lieu
- * cu tu truoc migration), CAS moi ("UPDATE ... WHERE status = 'in_progress'")
- * se KHONG khop mot dong da 'submitted' tu truoc, nen khong con tu sua duoc
- * nua (doc lai duoc gia tri NULL cu, khong nem loi, nhung cung khong chua).
- * Giu nguyen test do la giu mot khang dinh chi dung voi co che HAI luot ghi
- * da bi go bo — xem them run.ts va 0009_finalize_atomic.sql.
+ * XOA test (D) CU ("dong treo tu sua o lan goi ke tiep", tung la test 8
+ * truoc khi muc (D) hien tai duoc them): test do dung tay mot dong
+ * 'submitted' voi score/passed/submitted_at con NULL de mo phong dung hinh
+ * dang loi tach RPC/UPDATE cua BAN CU, roi khang dinh SAI rang goi lai se TU
+ * SUA duoc no. Ke tu 0009_finalize_atomic.sql (dong bai + ghi diem trong
+ * DUNG MOT UPDATE), hinh dang do khong con duong nao SINH RA nua — VA neu no
+ * van ton tai (du lieu cu tu truoc migration), CAS moi
+ * ("UPDATE ... WHERE status = 'in_progress'") se KHONG khop mot dong da
+ * 'submitted' tu truoc, nen khong con tu sua duoc nua (doc lai duoc gia tri
+ * NULL cu, khong nem loi, nhung cung khong chua). Test (D) MOI ben duoi pin
+ * DUNG hanh vi nay thay vi khang dinh sai cua test cu — xem them run.ts va
+ * 0009_finalize_atomic.sql.
  */
 describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_items_grants)", () => {
   const admin = createClient(URL ?? "http://localhost", SERVICE ?? "noop", {
@@ -209,5 +215,72 @@ describe.skipIf(!hasEnv)("chan kenh doc is_correct qua RPC (0008_assessment_item
     // Hàm SQL tự đóng bài — KHÔNG cần một lượt UPDATE riêng nào khác để
     // status rời khỏi 'in_progress'.
     expect(assessment!.status).toBe("submitted");
+  });
+
+  // ── (D) bảo vệ tham số + dòng 'submitted' tồn dư với score=NULL ─────────
+  //
+  // Hai test này pin đúng hai nhánh mà vòng review sau bản vá đầu tiên của
+  // 0009_finalize_atomic.sql đã đo được:
+  //   - p_pass_mark/p_now là NULL PHẢI bị chặn NGAY, bài KHÔNG bị đóng.
+  //   - một dòng 'submitted' với score/passed CÒN NULL (hình dạng đúng của
+  //     dòng treo từ cơ chế HAI-lượt-ghi cũ, dựng tay ở đây vì migration mới
+  //     không còn đường nào TỰ SINH ra nó nữa) là hành vi ĐƯỢC CHẤP NHẬN,
+  //     không tự sửa: RPC trả đúng NULL đã lưu, KHÔNG ném lỗi. Gọi RPC TRỰC
+  //     TIẾP (không qua submitAssessment/finalize) vì bản TypeScript giờ ném
+  //     lỗi rõ ràng khi gặp NULL này (xem run.ts) — test này quan sát đúng
+  //     những gì tầng SQL trả về, tầng dưới cùng của quyết định thiết kế.
+
+  it("p_pass_mark hoặc p_now là NULL: RPC ném lỗi, bài KHÔNG bị đóng", async () => {
+    const freshId = await startAssessment(alice, aliceId, "review", [5, 6], null, new Date());
+
+    const res = await alice.rpc("finalize_assessment_items", {
+      p_assessment_id: freshId,
+      p_pass_mark: null,
+      p_now: new Date().toISOString(),
+    });
+    expect(res.error, "thiếu ngưỡng đạt phải bị chặn, không được lặng lẽ chấm").not.toBeNull();
+    expect(res.data).toBeNull();
+
+    const { data: after, error } = await admin
+      .from("assessments").select("status, score").eq("id", freshId).single();
+    if (error) throw error;
+    // Dòng KHÔNG hề bị đụng tới — không phải đóng-trước-ném-sau như bản trước
+    // fix, và cũng không phải một `passed = NULL` len lỏi vào một bài đã đóng.
+    expect(after!.status).toBe("in_progress");
+    expect(after!.score).toBeNull();
+  });
+
+  it("dòng 'submitted' sẵn có score=NULL (tồn dư từ cơ chế cũ): RPC trả NULL, KHÔNG ném, KHÔNG tự sửa", async () => {
+    const tornId = await startAssessment(alice, aliceId, "review", [7, 8], null, new Date());
+
+    // Dựng tay đúng HÌNH DẠNG dòng treo của cơ chế cũ (trước 0009): status đã
+    // 'submitted' nhưng score/passed/submitted_at còn NULL — không cần đi
+    // qua RPC thật để tạo ra nó, chỉ cần đúng shape.
+    const { error: tornErr } = await admin
+      .from("assessments").update({ status: "submitted" }).eq("id", tornId);
+    if (tornErr) throw tornErr;
+
+    const res = await alice
+      .rpc("finalize_assessment_items", {
+        p_assessment_id: tornId,
+        p_pass_mark: 80,
+        p_now: new Date().toISOString(),
+      })
+      .single();
+    expect(res.error).toBeNull();
+    const row = res.data as {
+      total: number; correct: number; score: number | null; passed: boolean | null;
+    };
+    expect(row.score).toBeNull();
+    expect(row.passed).toBeNull();
+
+    // Database KHÔNG bị sửa bởi lượt gọi này — vẫn đúng hình dạng treo ban
+    // đầu, không có giá trị fail-closed nào bị ghi ngầm vào thay cho NULL.
+    const { data: after, error: afterErr } = await admin
+      .from("assessments")
+      .select("status, score, passed, submitted_at")
+      .eq("id", tornId).single();
+    if (afterErr) throw afterErr;
+    expect(after).toEqual({ status: "submitted", score: null, passed: null, submitted_at: null });
   });
 });
