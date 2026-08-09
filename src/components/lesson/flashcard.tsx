@@ -43,9 +43,17 @@ export function Flashcard({
           </button>
         )}
       </div>
+      {/* Đồng nghĩa nằm NGAY DƯỚI từ chính, trước cả nghĩa tiếng Việt: người
+          học gặp từ mới thì nhớ nó theo CỤM từ cùng nghĩa, và các phương án
+          nhiễu trong bài luyện tập cũng lấy từ chính nhóm này (pickDistractors)
+          — đặt xa từ chính thì lúc làm bài phải nhớ lại một thứ đã đọc lướt
+          qua ở cuối thẻ.
+          605/605 từ trong kho đều có ít nhất một đồng nghĩa (nhiều nhất 3), nên
+          không có nhánh rỗng để xử lý — nếu kho đổi thì corpus test sẽ đỏ trước
+          khi người học thấy một dòng "Đồng nghĩa:" cụt. */}
+      <p className="mt-1 text-sm text-slate-500">Đồng nghĩa: {word.synonyms.join(", ")}</p>
       <p className="mt-3 text-lg">{word.meaningVi}</p>
       <p className="mt-1 text-slate-600">{word.definitionEn}</p>
-      <p className="mt-3 text-sm text-slate-500">Đồng nghĩa: {word.synonyms.join(", ")}</p>
       {/* Câu ví dụ ĐẦY ĐỦ: buildItem đã điền lại đúng `blankAnswer` (đọc qua
           RPC blank_answers_for_lesson) vào chỗ "___" mà Phase 0 khoét sẵn cho
           câu điền từ — không phải `word`, nên câu luôn đúng nguyên gốc, kể cả
