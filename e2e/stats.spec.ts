@@ -118,6 +118,20 @@ test("có dữ liệu thì hiện đúng số — đếm cột mastered, không 
   await expect(scoreBars.first()).toHaveAttribute("title", "88%");
 
   await expect(page.getByTestId("wrong-word")).toHaveCount(1);
+
+  // Nhịp học là thứ DUY NHẤT trên trang không được kiểm ở bất kỳ tầng nào khác:
+  // `tests/stats-compute.test.ts` kiểm `rhythm()` KHI ĐÃ CÓ mảng mốc thời gian,
+  // nhưng không có gì kiểm trang dựng mảng đó đúng — nó là hợp của
+  // `user_lesson_progress.completed_at` và `assessments.submitted_at`. Bỏ sót
+  // một nguồn, hay đếm đôi một nguồn, thì cả bộ test không hề đỏ.
+  // Một bài đã nộp lúc `now` → tuần này có đúng 1 buổi, và chuỗi là 1.
+  await expect(page.getByTestId("stats-week-progress")).toHaveText("1 / 2");
+  await expect(page.getByTestId("stats-streak")).toHaveText("1");
+
+  await expect(page.getByTestId("practice-link")).toHaveAttribute(
+    "href",
+    "https://study4.com/tests/toeic/",
+  );
 });
 
 test("link ở header tới được /stats", async ({ page }) => {

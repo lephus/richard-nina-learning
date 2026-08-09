@@ -92,7 +92,17 @@ export default async function StatsPage() {
   if (totalRes.error) throw totalRes.error;
 
   const masteryRows = (masteryRes.data ?? []) as MasteryDbRow[];
-  const total = totalRes.count ?? 0;
+
+  // `?? 0` ở đây là chỗ DUY NHẤT trên trang biến một lần hỏng thành một con số
+  // sai đầy tự tin thay vì ném lỗi: `count` là null mà `error` cũng null (proxy
+  // cắt mất `Content-Range`, supabase-js đổi cách phân tích) sẽ cho ra
+  // "0 / 0" với thanh tiến độ rỗng — người học đọc thành "mọi thứ tôi thuộc đã
+  // biến mất", và không có gì trên trang cải chính. Bốn truy vấn kia đều ném;
+  // cái này phải ném theo.
+  if (totalRes.count === null) {
+    throw new Error("không đếm được tổng số từ trong kho");
+  }
+  const total = totalRes.count;
 
   const mastery: MasteryLite[] = masteryRows.map((r) => ({
     wordId: r.word_id,
@@ -158,6 +168,26 @@ export default async function StatsPage() {
       <RhythmCard rhythm={rhythmStats} />
       <ScoreChart series={series} />
       <WrongWords words={wrongWords} />
+
+      {/* Khối thứ năm của mục 6.6, và là thứ DUY NHẤT trên trang này dẫn ra
+          ngoài ứng dụng. Thống kê nói người học đang ở đâu; luyện đề thật là
+          việc kế tiếp họ cần làm. `rel="noopener noreferrer"` vì mở tab mới:
+          không có nó, trang đích đọc được `window.opener` của ta. */}
+      <section className="rounded border border-slate-200 bg-white p-6">
+        <h2 className="text-lg font-semibold">Luyện đề thật</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Khi đã vững từ vựng và ngữ pháp, hãy làm đề TOEIC thật để quen áp lực thời gian.
+        </p>
+        <a
+          href="https://study4.com/tests/toeic/"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="practice-link"
+          className="mt-3 inline-block underline"
+        >
+          Làm đề TOEIC thật trên study4.com
+        </a>
+      </section>
     </main>
   );
 }
