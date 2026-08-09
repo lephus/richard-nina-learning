@@ -73,8 +73,10 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
   // thì dù thân test throw ở đâu, Vitest vẫn luôn chạy hook này.
   afterEach(async () => {
     // Mỗi lượt xoá đọc `error` riêng và ném ngay — không nuốt lỗi Supabase
-    // (review Task 8 round 3, finding 7: cùng constraint đã áp cho hai tệp
-    // e2e ở round 2, giờ áp nốt cho tệp này).
+    // (review Task 8 round 3, finding 7 áp cho `afterEach` này; round 4,
+    // finding 4 mở rộng nốt sang `afterAll` bên dưới — trước đó comment này
+    // nói "áp nốt cho tệp này" trong khi `afterAll` vẫn nuốt lỗi, đọc rộng
+    // hơn những gì bản vá thật sự làm).
     const delWord = await admin.from("word_mastery").delete().eq("user_id", userId);
     if (delWord.error) throw delWord.error;
     const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", userId);
@@ -88,12 +90,20 @@ describe.skipIf(!hasEnv)("runSubmit — lõi của submitAnswer, gọi thật", 
   });
 
   // CHỈ xoá theo user_id của chính tài khoản này — xem Global Constraints.
+  // Mỗi lượt (kể cả `deleteUser`) đọc `error` riêng và ném ngay — một lượt
+  // dọn dẹp thất bại ÂM THẦM đúng vào lúc chạm database production là loại
+  // lỗi đáng biết nhất, không phải loại nên nuốt (review Task 8 round 4,
+  // finding 4).
   afterAll(async () => {
     if (userId) {
-      await admin.from("word_mastery").delete().eq("user_id", userId);
-      await admin.from("grammar_mastery").delete().eq("user_id", userId);
-      await admin.from("user_lesson_progress").delete().eq("user_id", userId);
-      await admin.auth.admin.deleteUser(userId);
+      const delWord = await admin.from("word_mastery").delete().eq("user_id", userId);
+      if (delWord.error) throw delWord.error;
+      const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", userId);
+      if (delGrammar.error) throw delGrammar.error;
+      const delProgress = await admin.from("user_lesson_progress").delete().eq("user_id", userId);
+      if (delProgress.error) throw delProgress.error;
+      const { error: delUserErr } = await admin.auth.admin.deleteUser(userId);
+      if (delUserErr) throw delUserErr;
     }
   });
 

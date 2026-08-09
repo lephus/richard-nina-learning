@@ -468,7 +468,13 @@ test("request treo không giữ người học quá hạn — có cửa sổ d�
 test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, và TỰ THỬ LẠI sau khi tải lại", async ({
   page,
 }) => {
-  test.setTimeout(90_000);
+  // 120s (không phải 90s) — review round 4: đo thật 49.7s hai lần chạy liên
+  // tiếp, nhưng phần lớn thời gian đó là các hằng số THỜI GIAN THỰC (chờ hết
+  // hạn, `RAW_FETCH_TIMEOUT_MS`), không co lại trên máy nhanh hơn — trên máy
+  // chậm hơn 2 lần, tổng đã chạm ~62s; chậm hơn 3 lần thì vượt hẳn 90s trong
+  // khi `afterEach` còn phải chạy sau đó. 120s không tốn gì khi kịch bản xanh
+  // và loại nốt rủi ro flake-vì-tốc-độ-máy duy nhất còn lại trong cả bộ.
+  test.setTimeout(120_000);
   // Kịch bản trên chỉ treo `answerAction`, để `/api/assessment/[id]/submit`
   // hoàn tất bình thường — chứng minh route thô hoạt động, nhưng KHÔNG chứng
   // minh được `AbortController`/`setTimeout` trong `submitViaRawFetch` (review
@@ -575,6 +581,96 @@ test("route nộp bài dự phòng CŨNG treo — vẫn tải lại trang, và T
 
   const secondPostAt = fallbackPostTimestamps[1]!;
   expect(secondPostAt).toBeGreaterThan(reloadAt); // lượt hai phải THẬT SỰ đến SAU lần tải lại đầu tiên
+});
+
+test("route nộp bài trả lỗi 500 liên tục — tự thử tối đa rồi DỪNG hẳn, hiện lỗi, nút Nộp bài vẫn bấm được", async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  // Kịch bản "give-up" bắt buộc (review round 4, finding 1 — Important): hai
+  // kịch bản treo route ở trên chứng minh đường tự nộp KHÔNG kẹt cứng khi
+  // mạng có vấn đề TẠM THỜI, nhưng KHÔNG chứng minh được nó có ĐIỂM DỪNG khi
+  // nguyên nhân KHÔNG tự khỏi (route hỏng thật — bug ở `finalize`, quyền ghi
+  // bị thu hồi, …). Route ở đây trả 500 NGAY LẬP TỨC (không treo) mọi lần gọi
+  // — mô phỏng đúng ca đó. Trước bản sửa round 4, không có gì chặn: trang tải
+  // lại mỗi ~1 giây mãi mãi, không dòng lỗi nào hiện ra, không nút nào gợi ý
+  // lối thoát. Kịch bản này phải ĐỎ trên mã trước bản sửa — đó chính là lý do
+  // nó tồn tại.
+  const admin = adminClient();
+  const userId = await getUserId(admin);
+  await unlockTestSlot(admin, userId);
+
+  await login(page);
+  const assessmentId = await startFromDashboard(page);
+
+  // KHÔNG cần bấm câu nào cả: đường NHANH tự nộp NGAY khi hết hạn (không có
+  // answerAction nào đang bay nên `pending` luôn `false`), nên chỉ cần chờ
+  // hết hạn là đủ để kích hoạt toàn bộ chuỗi thử-rồi-dừng.
+  const desiredRemainingMs = 15_000;
+  const expiryDeadline = Date.now() + desiredRemainingMs;
+  const { error: updateErr } = await admin
+    .from("assessments")
+    .update({ expires_at: new Date(expiryDeadline).toISOString() })
+    .eq("id", assessmentId)
+    .eq("user_id", userId);
+  if (updateErr) throw updateErr;
+  await page.reload();
+
+  const pageUrl = page.url();
+  const fallbackSubmitUrl = new URL(`/api/assessment/${assessmentId}/submit`, pageUrl).toString();
+
+  const freshLoadTimestamps: number[] = [];
+  page.on("request", (req) => {
+    if (req.method() === "GET" && req.url() === pageUrl) freshLoadTimestamps.push(Date.now());
+  });
+
+  // Route thô LUÔN trả 500 — KHÔNG treo (khác các kịch bản trước): đây chính
+  // là ca "server trả lời và từ chối" mà review round 4 tách bạch khỏi ca
+  // "không có phản hồi nào cả" (treo/mất mạng).
+  await page.route(fallbackSubmitUrl, async (route) => {
+    await route.fulfill({ status: 500, contentType: "application/json", body: "{}" });
+  });
+
+  const countdown = page.getByTestId("countdown");
+  await expect(countdown).toBeVisible();
+  const remainingAtStart = parseMmSs(await countdown.innerText());
+  expect(remainingAtStart).toBeGreaterThan(5);
+
+  // Chờ đủ BA lượt tải lại — AUTO_SUBMIT_MAX_ATTEMPTS trong
+  // assessment-runner.tsx (lặp lại con số ở đây, cùng lý do
+  // RAW_FETCH_TIMEOUT_MS không import được từ file "use client" vào ngữ cảnh
+  // Node của Playwright một cách gọn gàng). Route ở đây trả lời NGAY (không
+  // treo), nên mỗi chu kỳ chỉ mất thời gian của một lượt tải lại trang thật —
+  // không cần cộng thêm `RAW_FETCH_TIMEOUT_MS` như hai kịch bản trên.
+  await expect.poll(() => freshLoadTimestamps.length, { timeout: 40_000 }).toBeGreaterThanOrEqual(3);
+
+  // ĐIỂM DỪNG THẬT SỰ — khẳng định quan trọng nhất của kịch bản này: chờ
+  // thêm một khoảng RỘNG HƠN HẲN một chu kỳ tải lại bình thường (một chu kỳ
+  // ở đây chỉ mất khoảng 1-2s, vì route trả lời ngay). Nếu vòng lặp KHÔNG có
+  // trần, lượt tải lại thứ TƯ sẽ xuất hiện trong cửa sổ chờ này — không thấy
+  // gì thêm là bằng chứng trang đã THẬT SỰ dừng, không phải "chưa tới lượt
+  // tiếp theo". Đây là khẳng định sẽ ĐỎ trên mã trước bản sửa round 4 (vòng
+  // lặp không có trần, `freshLoadTimestamps.length` tiếp tục tăng).
+  await page.waitForTimeout(8_000);
+  expect(freshLoadTimestamps.length).toBe(3);
+
+  // Lỗi tiếng Việt PHẢI hiện ra — trước bản sửa round 4, không có dòng lỗi
+  // nào cả (khối `if (!res.ok) {}` cũ là no-op, và không nhánh nào của vòng
+  // lặp cũ từng dẫn tới `setError`). Neo vào `p[role="alert"]`, không phải
+  // `getByRole("alert")` trần: Next.js tự gắn MỘT `role="alert"` khác của
+  // riêng nó vào trang (`div#__next-route-announcer__`, dùng cho trình đọc
+  // màn hình khi điều hướng) — `getByRole` trần khớp CẢ HAI, vỡ chế độ
+  // strict mode của Playwright. Phần tử của chính component là `<p>`, còn
+  // của Next là `<div>`.
+  await expect(page.locator('p[role="alert"]')).toHaveText(
+    'Không thể tự động nộp bài sau nhiều lần thử. Bấm "Nộp bài" để thử lại, hoặc kiểm tra kết nối mạng.',
+  );
+
+  // Nút "Nộp bài" bấm tay vẫn hoạt động — route thô không bao giờ đụng tới
+  // `pending` (không wrap `startTransition`), nên nút này không hề bị khoá
+  // trong suốt cả chuỗi thử-rồi-dừng ở trên; đây là bằng chứng người học vẫn
+  // còn MỘT lối thoát chủ động, không chỉ "trang không tải lại nữa".
+  await expect(page.getByTestId("submit-button")).toBeEnabled();
 });
 
 test("bảng số câu dùng được trên điện thoại — không tràn ngang, đủ 4 phương án, ba trạng thái phân biệt bằng computed style", async ({

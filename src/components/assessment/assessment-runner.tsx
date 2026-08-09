@@ -29,6 +29,62 @@ const AUTO_SUBMIT_FALLBACK_MS = 5000;
 // trợ rộng hơn nhiều), nên nhánh `catch` (và do đó `reload()`) LUÔN chạy.
 const RAW_FETCH_TIMEOUT_MS = 8000;
 
+// Số lần TỐI ĐA đường tự động (nhanh hoặc dự phòng) được tự tải lại trang để
+// thử nộp lại — review round 4, finding 1 (Important), ĐÚNG LÀ MỘT HỒI QUY DO
+// VÒNG SỬA TRƯỚC GÂY RA, không phải một rủi ro có sẵn từ trước: bản round 3
+// (bỏ Server Action khỏi mọi đường tự động) khiến `submitViaRawFetch` LUÔN
+// `window.location.reload()` bất kể request có thành công hay không, và một
+// trang MOUNT LẠI thì mọi cờ chặn (`autoSubmittedRef`) đều mới tinh — nếu
+// nguyên nhân thất bại không tự khỏi (route hỏng thật, không phải "mạng tạm
+// trục trặc"), trang tải lại mỗi ~1 giây MÃI MÃI, không một dòng lỗi nào hiện
+// ra, và không có cách nào dừng lại ngoài nút back của trình duyệt (không ai
+// gợi ý người học điều đó). Số lần thử phải có TRẦN, và trần đó phải SỐNG SÓT
+// qua reload — bộ nhớ trong React (`useRef`/`useState`) bị xoá sạch mỗi lần
+// tải lại, nên đếm bằng `sessionStorage` (mất theo tab, không mất theo lần
+// tải lại — đúng cái cần).
+const AUTO_SUBMIT_MAX_ATTEMPTS = 3;
+
+// Lỗi tiếng Việt hiện ra khi đã thử đủ số lần cho phép mà vẫn không nộp
+// được — điểm DỪNG bắt buộc phải có (xem `AUTO_SUBMIT_MAX_ATTEMPTS`).
+const AUTO_SUBMIT_GIVE_UP_MESSAGE =
+  'Không thể tự động nộp bài sau nhiều lần thử. Bấm "Nộp bài" để thử lại, hoặc kiểm tra kết nối mạng.';
+
+/** Khoá `sessionStorage` đếm số lần đã tự thử nộp — riêng theo từng bài, để hai bài khác nhau không lẫn bộ đếm. */
+function autoSubmitAttemptsKey(assessmentId: number): string {
+  return `assessment-${assessmentId}-auto-submit-attempts`;
+}
+
+function readAutoSubmitAttempts(assessmentId: number): number {
+  try {
+    const raw = window.sessionStorage.getItem(autoSubmitAttemptsKey(assessmentId));
+    const n = raw === null ? 0 : Number(raw);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  } catch {
+    // `sessionStorage` không khả dụng (chế độ riêng tư của một số trình
+    // duyệt cũ, hoặc bị chặn bởi cấu hình trình duyệt) — coi như luôn là lượt
+    // đầu. Không có bộ đếm bền qua reload thì không chặn được vòng lặp, NHƯNG
+    // không vì lý do KHÔNG LIÊN QUAN này mà chặn luôn việc nộp bài.
+    return 0;
+  }
+}
+
+function writeAutoSubmitAttempts(assessmentId: number, n: number): void {
+  try {
+    window.sessionStorage.setItem(autoSubmitAttemptsKey(assessmentId), String(n));
+  } catch {
+    // Bỏ qua — cùng lý do ở trên.
+  }
+}
+
+function clearAutoSubmitAttempts(assessmentId: number): void {
+  try {
+    window.sessionStorage.removeItem(autoSubmitAttemptsKey(assessmentId));
+  } catch {
+    // Bỏ qua — dọn dẹp không thành thì để lại một khoá thừa, vô hại (bài đã
+    // nộp xong, `assessmentId` này không mount lại `AssessmentRunner` nữa).
+  }
+}
+
 /** Một câu như đã đóng băng trong `assessment_items` — xem `run.ts`. */
 export interface AssessmentRunnerItem {
   position: number;
@@ -137,25 +193,72 @@ export function AssessmentRunner({
   // `catch` chỉ chạy khi promise REJECT, còn "treo" thì promise không bao giờ
   // settle theo hướng nào cả.
   //
-  // KHÔNG đọc `res.ok`/thân phản hồi ở đây — CÓ CHỦ Ý (review round 3, finding
-  // 3): dù request này trả 2xx, 4xx hay 5xx, hành động tiếp theo LUÔN GIỐNG
-  // NHAU (tải lại trang). Nguồn sự thật là dòng `assessments` trong database,
-  // được `page.tsx` đọc lại SAU reload; một khối `if (!res.ok) {}` rỗng ở đây
-  // trông như một lớp kiểm tra nhưng không hề hành động khác đi — tệ hơn
-  // không viết gì, vì nó đọc như đã xử lý.
+  // ĐỌC `res.status` (KHÔNG đọc thân phản hồi, KHÔNG vẽ điểm/đạt-trượt từ nó
+  // — đó vẫn LUÔN là việc của dòng `assessments` trong database, đọc lại bởi
+  // `page.tsx` sau khi tải lại) — review round 4: round 3 đọc `res.ok` rồi bỏ
+  // qua hoàn toàn (`if (!res.ok) {}` rỗng), và bản round 4 ban đầu XOÁ HẲN
+  // việc đọc đó, khiến "server trả lời và từ chối" (4xx — hết phiên, bị chặn
+  // CSRF, bài không thuộc về mình) và "không có phản hồi nào cả" (treo/mất
+  // mạng) bị xử lý Y HỆT NHAU — coi cả hai là "cứ tải lại thử tiếp", không
+  // giới hạn, chính là thứ làm vòng lặp không có điểm dừng. Ở đây status được
+  // đọc để quyết định THẬT: lỗi 4xx sẽ không tự khỏi dù thử lại bao nhiêu
+  // lần (dừng NGAY, không đợi hết ngân sách `AUTO_SUBMIT_MAX_ATTEMPTS`); lỗi
+  // mạng/treo/5xx có thể là tạm thời (để bộ đếm bên dưới quyết định còn thử
+  // hay dừng).
   const submitViaRawFetch = useCallback(async () => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), RAW_FETCH_TIMEOUT_MS);
+    const attempts = readAutoSubmitAttempts(assessmentId);
+    if (attempts >= AUTO_SUBMIT_MAX_ATTEMPTS) {
+      // ĐÃ THỬ ĐỦ SỐ LẦN CHO PHÉP — DỪNG LẠI, KHÔNG `reload()` NỮA. Hiện lỗi
+      // tiếng Việt; nút "Nộp bài" vẫn `disabled={pending}` NHƯ MỌI LÚC KHÁC —
+      // route thô này không bao giờ đụng tới `pending` (không wrap
+      // `startTransition`), nên nút đó vẫn bấm được suốt từ đầu tới giờ,
+      // không cần mở khoá gì thêm ở đây.
+      setError(AUTO_SUBMIT_GIVE_UP_MESSAGE);
+      return;
+    }
+    writeAutoSubmitAttempts(assessmentId, attempts + 1);
+
+    // "retry" (mặc định) = coi là tạm thời, vẫn tải lại để thử tiếp (trong
+    // ngân sách). "ok" = thành công, dọn bộ đếm rồi tải lại để thấy kết quả.
+    // "giveUpNow" = lỗi phía CLIENT (4xx), dừng NGAY không đợi hết ngân sách.
+    let outcome: "retry" | "ok" | "giveUpNow" = "retry";
     try {
-      await fetch(`/api/assessment/${assessmentId}/submit`, {
-        method: "POST",
-        signal: controller.signal,
-      });
+      // `new AbortController()` PHẢI nằm TRONG `try` (review round 4, finding
+      // 2) — bản trước để dòng này NGOÀI `try`: nếu chính việc dựng
+      // AbortController ném (trình duyệt cực cũ không có `AbortController`),
+      // `submitViaRawFetch` reject mà không ai `catch`
+      // (`void submitViaRawFetch()` ở nơi gọi nuốt nó thành unhandled
+      // rejection), và `window.location.reload()` KHÔNG BAO GIỜ chạy — đúng
+      // cái khoá cứng hàm này sinh ra để ngăn. Mã cũ hơn (`AbortSignal.timeout`
+      // gọi ngay trong `try`) vô tình AN TOÀN HƠN trên trục này dù bị thay vì
+      // lý do khác (finding 4, tương thích trình duyệt) — bọc toàn thân hàm
+      // trong `try` giữ lại đúng tính an toàn đó.
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), RAW_FETCH_TIMEOUT_MS);
+      try {
+        const res = await fetch(`/api/assessment/${assessmentId}/submit`, {
+          method: "POST",
+          signal: controller.signal,
+        });
+        if (res.ok) {
+          outcome = "ok";
+        } else if (res.status >= 400 && res.status < 500) {
+          outcome = "giveUpNow";
+        }
+      } finally {
+        clearTimeout(timer);
+      }
     } catch {
-      // AbortController hết hạn (request treo thật) HOẶC lỗi mạng thật khác —
-      // cả hai đều rơi vào đây, xử lý ĐỒNG NHẤT: vẫn tải lại trang bên dưới.
-    } finally {
-      clearTimeout(timer);
+      // AbortController hết hạn (request treo thật), không dựng được
+      // AbortController, hoặc lỗi mạng thật khác — cả ba đều rơi vào đây,
+      // coi như tạm thời (`outcome` giữ nguyên "retry").
+    }
+
+    if (outcome === "ok") {
+      clearAutoSubmitAttempts(assessmentId);
+    } else if (outcome === "giveUpNow") {
+      setError(AUTO_SUBMIT_GIVE_UP_MESSAGE);
+      return; // KHÔNG reload — lỗi phía client sẽ không tự khỏi dù tải lại
     }
     window.location.reload();
   }, [assessmentId]);
@@ -191,10 +294,15 @@ export function AssessmentRunner({
   // reject (mất mạng giữa chừng, treo ở tầng hạ tầng) thì `pending` không bao
   // giờ về `false`, và đường nhanh ở trên không bao giờ chạy — người học kẹt
   // trên màn hình làm bài, sau hạn giờ, vô thời hạn: mọi nút (chọn đáp án,
-  // trước/sau, bảng số câu, cả nút "Nộp bài") đều `disabled={pending}`, không
-  // có lối thoát nào khác trong lúc dashboard (Task 7) chưa nối tới
-  // `closeExpired`. Hẹn giờ CỐ ĐỊNH ngay khi `expired` bật: hết
-  // `AUTO_SUBMIT_FALLBACK_MS` là tự nộp bất kể `pending` đang là gì.
+  // trước/sau, bảng số câu, cả nút "Nộp bài") đều `disabled={pending}`.
+  // Dashboard ĐÃ nối `closeExpired` (`dashboard/page.tsx:326`,
+  // `dashboard/actions.ts:109-116` — review round 4, finding 3: comment cũ ở
+  // đây nói ngược, đã sửa), nhưng điều đó không cứu được người học đang ĐỨNG
+  // Ở TRANG NÀY: `AppLayout` (`src/app/(app)/layout.tsx`) không có liên kết
+  // nào quay lại `/dashboard` — chỉ có nút "Đăng xuất" — nên không có lối
+  // thoát nào KHÁC ngoài gõ tay URL hoặc bấm back của trình duyệt, cả hai
+  // đều không được gợi ý ở đâu trên trang. Hẹn giờ CỐ ĐỊNH ngay khi `expired`
+  // bật: hết `AUTO_SUBMIT_FALLBACK_MS` là tự nộp bất kể `pending` đang là gì.
   useEffect(() => {
     if (!expired) return;
     const t = setTimeout(triggerAutoSubmit, AUTO_SUBMIT_FALLBACK_MS);
