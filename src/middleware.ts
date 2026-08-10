@@ -1,0 +1,100 @@
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+
+// Trước đây middleware giữ một danh sách TAY các route "được bảo vệ"
+// (`PROTECTED = ["/dashboard", "/learn"]`) — sai không chỉ vì THIẾU (bỏ sót
+// `/stats` và `/assessment`, hai trong bốn route của nhóm `(app)`), mà còn sai
+// cả về HÌNH DẠNG: nó liệt kê đúng thứ sẽ còn PHÌNH RA theo mỗi tính năng mới
+// — gần như mọi trang thêm sau này rơi vào `(app)`, vì đó là toàn bộ sản
+// phẩm. Ai thêm một `page.tsx` mới dưới `(app)/` mà quên cập nhật danh sách ở
+// đây sẽ lặp lại đúng lỗ hổng vừa ghi nhận, chỉ ở một route khác.
+// `(app)/layout.tsx` tự mô tả mình là lớp chặn THỨ HAI, đỡ cho middleware cấu
+// hình sai — nhưng với `/stats` và `/assessment` (bị bỏ sót) thì không có lớp
+// THỨ NHẤT nào để đỡ, layout phải gánh một mình.
+//
+// Danh sách dưới đây đổi hướng: liệt kê CÔNG KHAI (route nào KHÔNG cần đăng
+// nhập), không phải BẢO VỆ. Nhóm `(auth)` (đăng nhập/đăng ký) và `/` (chỉ
+// redirect sang /dashboard, không đọc dữ liệu gì) là một tập hợp NHỎ và ỔN
+// ĐỊNH — sản phẩm này hiếm khi thêm một luồng công khai mới, trong khi
+// `(app)` gần như chắc chắn sẽ phình theo mỗi lát tính năng kế tiếp. Mặc định
+// coi MỌI route khác là được bảo vệ (fail-closed): một trang mới thêm vào
+// `(app)/` tự động được bảo vệ mà không cần sửa file này — middleware không
+// còn cách nào lệch khỏi hệ thống tệp, vì nó không còn giữ một bản sao (dù là
+// bản sao đúng hay sai) của hệ thống tệp đó nữa.
+//
+// `/api/*` cố tình đứng NGOÀI phép kiểm này: một request POST JSON bị
+// redirect sang /login sẽ vỡ hợp đồng response mà phía gọi (`fetch`) đang
+// chờ. Route đó tự kiểm `getUser()` (trả 401 JSON) và `Sec-Fetch-Site`, một
+// lớp phòng thủ độc lập với middleware — xem
+// src/app/api/assessment/[id]/submit/route.ts.
+const PUBLIC_PATHS = ["/", "/login", "/register"];
+
+function isProtectedRoute(pathname: string): boolean {
+  if (pathname.startsWith("/api/")) return false;
+  return !PUBLIC_PATHS.includes(pathname);
+}
+
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet, headers) {
+          for (const { name, value } of cookiesToSet) {
+            request.cookies.set(name, value);
+          }
+          response = NextResponse.next({ request });
+          for (const { name, value, options } of cookiesToSet) {
+            response.cookies.set(name, value, options);
+          }
+          // @supabase/ssr 0.12 truyền kèm các header chống cache. Bỏ qua chúng
+          // thì CDN có thể cache response mang Set-Cookie và phục vụ phiên của
+          // người này cho người khác.
+          for (const [key, value] of Object.entries(headers)) {
+            response.headers.set(key, value);
+          }
+        },
+      },
+    },
+  );
+
+  // Phải gọi SỚM, trước khi sinh response. Nếu token làm mới xong sau khi
+  // response đã chốt thì phiên mới không ghi được vào cookie.
+  let user = null;
+  try {
+    const {
+      data: { user: fetchedUser },
+    } = await supabase.auth.getUser();
+    user = fetchedUser;
+  } catch {
+    // getUser() gọi mạng tới Supabase Auth — có thể lỗi mạng/timeout tạm
+    // thời. Fail closed: coi như CHƯA đăng nhập, không bao giờ coi như đã
+    // đăng nhập khi có lỗi. Route bảo vệ sẽ bị chuyển hướng /login (an
+    // toàn), route công khai vẫn render bình thường.
+    user = null;
+  }
+
+  if (!user && isProtectedRoute(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    response = NextResponse.redirect(url);
+  }
+
+  // Vercel chạy sau CDN; response của route xác thực không được cache. Gán
+  // header ở MỘT chỗ duy nhất sau khi `response` đã chốt (dù là redirect
+  // hay fallthrough) để hai nhánh không thể lệch nhau.
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};

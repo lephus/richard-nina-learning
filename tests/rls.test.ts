@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const URL = process.env.SUPABASE_URL!;
@@ -6,26 +6,25 @@ const ANON = process.env.SUPABASE_ANON_KEY!;
 const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const admin = createClient(URL, SERVICE);
-let alice: ReturnType<typeof createClient>;
-let bob: ReturnType<typeof createClient>;
+let alice: SupabaseClient;
+let bob: SupabaseClient;
 let aliceId = "";
 let bobId = "";
 let testWordId = 0;
 
 beforeAll(async () => {
-  const mk = async (email: string) => {
+  const mk = async (email: string, displayName: string) => {
     const { data } = await admin.auth.admin.createUser({
       email, password: "test-pass-1234", email_confirm: true,
+      user_metadata: { display_name: displayName },
     });
     const c = createClient(URL, ANON);
     await c.auth.signInWithPassword({ email, password: "test-pass-1234" });
     return { client: c, id: data.user!.id };
   };
-  const a = await mk(`alice-${Date.now()}@test.local`);
-  const b = await mk(`bob-${Date.now()}@test.local`);
+  const a = await mk(`alice-${Date.now()}@test.local`, "Alice");
+  const b = await mk(`bob-${Date.now()}@test.local`, "Bob");
   alice = a.client; bob = b.client; aliceId = a.id; bobId = b.id;
-
-  await admin.from("profiles").insert({ id: aliceId, display_name: "Alice" });
 
   // Chen truoc mot dong vocab_words bang service role (bo qua RLS) de khoa
   // ngoai cua word_mastery.word_id khong con che khuat policy RLS o duoi.

@@ -3,8 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "phase0:render": "tsx scripts/phase0/01-render-ocr.ts",
     "phase0:vocab": "tsx scripts/phase0/02-parse-vocab.ts",
     "phase0:grammar": "tsx scripts/phase0/03-extract-grammar.ts",
@@ -13,14 +17,23 @@
     "phase0:seed": "tsx scripts/phase0/05-seed.ts"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.10.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "tailwindcss": "^4.3.3",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.47.10",
     "dotenv": "^16.4.7",
+    "next": "^16.3.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "zod": "^3.24.1"
   }
 }

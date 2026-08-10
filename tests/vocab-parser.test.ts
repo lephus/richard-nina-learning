@@ -10,7 +10,7 @@ describe("parseVocabPage", () => {
   });
 
   it("lấy đúng số thứ tự, từ và từ loại", () => {
-    const [first] = parseVocabPage(page10, 10);
+    const first = parseVocabPage(page10, 10)[0]!;
     expect(first).toMatchObject({ ordinal: 42, word: "code", pos: "n", sourcePage: 10 });
   });
 
@@ -26,7 +26,7 @@ describe("parseVocabPage", () => {
   });
 
   it("giữ lại toàn bộ dòng gốc để bước làm sạch tham chiếu", () => {
-    const [first] = parseVocabPage(page10, 10);
+    const first = parseVocabPage(page10, 10)[0]!;
     expect(first.bodyLines.length).toBeGreaterThan(3);
   });
 

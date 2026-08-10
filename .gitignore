@@ -3,3 +3,10 @@ node_modules/
 data/images/
 toeic-resource/
 .env.local
+.next/
+next-env.d.ts
+# `tsc --noEmit` van ghi tep nay vi tsconfig bat "incremental".
+tsconfig.tsbuildinfo
+playwright-report/
+test-results/
+.vercel

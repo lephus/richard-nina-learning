@@ -39,7 +39,7 @@ Quên mật khẩu · đổi tên hiển thị · chế độ tối · `/stats` 
 |---|---|---|---|
 | 1 | Phiên bản | Next 16.3 · React 19.2 · Tailwind 4.3 · `@supabase/ssr` 0.12 | Spec tổng thể viết "Next.js 15" khi đó là bản mới nhất; nay là 16.3. Tailwind 4 cấu hình bằng CSS, không còn `tailwind.config.js` |
 | 2 | Bố cục repo | Next dùng thư mục `src/` | `src/content/` đã tồn tại và dùng chung; alias `@content/*` trong `tsconfig.json:12` giữ nguyên. Gốc repo vẫn gọn cho `scripts/` `tests/` `supabase/` `data/` |
-| 3 | Đăng ký | Mở cho bất kỳ ai, không xác minh email | Theo spec tổng thể mục 9.1. Giảm thiểu bằng rate limit sẵn có của Supabase Auth và trigger tạo `profiles` ở database |
+| 3 | Đăng ký | Mở cho bất kỳ ai, không xác minh email | Theo spec tổng thể mục 9.1. Giảm thiểu bằng rate limit sẵn có của Supabase Auth và trigger tạo `profiles` ở database. **Cập nhật 2026-08-08 (sửa lại):** tắt "Confirm email" trên project khiến `signUp()` trả session ngay (tự động đăng nhập) khi email mới, nhưng trả lỗi `user_already_exists` (quan sát trực tiếp, `status: 422`) khi email đã có tài khoản — hai kết quả phân biệt được, để lộ email nào đã đăng ký **cả ở nội dung trang lẫn ở header `Set-Cookie` của response** (bù bằng `signOut()` sau khi thấy session vẫn để lại `Set-Cookie` do lệnh xoá cookie cũng phải phát `Set-Cookie`, nên vẫn dò được bằng curl dù trang HTML giống hệt nhau — đã sửa lại lần đầu không triệt để). Bản vá cuối: `signUp()` dùng một client Supabase mà `setAll` là no-op tuyệt đối (`createNonPersistingClient()` trong `src/lib/supabase/server.ts`), không bao giờ ghi cookie dù Supabase trả kèm session hay không — không còn cần `signOut()` bù lại, không còn `redirect()`. Mọi lần đăng ký hợp lệ (mới hay trùng) trả cùng một thông điệp trung lập, và response không bao giờ mang `Set-Cookie`. Xem `src/app/(auth)/actions.ts`, `src/lib/supabase/server.ts`. Giá phải trả: người dùng mới phải đăng nhập thêm một bước sau khi đăng ký — chấp nhận được để đóng kênh dò email |
 | 4 | Truy cập dữ liệu | Server Component + `@supabase/ssr`, đăng nhập bằng Server Action | RLS là hàng rào duy nhất, không có bản sao logic phân quyền để lệch pha. Sẵn đường cho lát 1c |
 | 5 | Kiểm thử E2E | Playwright | Luồng đăng nhập chạy xuyên middleware và cookie — unit test không chạm tới |
 
@@ -144,7 +144,7 @@ Trỏ tới `/learn/[lessonId]` của buổi `available` đầu tiên. Lát 1a c
 | Tình huống | Hành vi |
 |---|---|
 | Sai email hoặc mật khẩu | Một thông báo chung *"Email hoặc mật khẩu không đúng"*. Không phân biệt hai trường hợp — phân biệt là để lộ email nào đã đăng ký |
-| Đăng ký trùng email | Cũng thông báo chung, cùng lý do |
+| Đăng ký trùng email | **Cập nhật 2026-08-08:** không còn "thông báo chung" kiểu lỗi — trả CÙNG thông điệp trung lập ("Tài khoản đã sẵn sàng. Vui lòng đăng nhập.") như đăng ký mới thành công, byte-for-byte, không redirect. Lý do và chi tiết ở mục 3, quyết định #3 |
 | Supabase ngủ hoặc mất mạng | `error.tsx` cho nhóm `(app)`: thông báo tiếng Việt kèm nút thử lại. Không đổ stack trace ra màn hình |
 | Token hết hạn giữa chừng | Middleware làm mới; thất bại thì đẩy về `/login` |
 
