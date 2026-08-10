@@ -166,6 +166,8 @@ CHỐT BUỔI: 10 câu trộn cả 30 từ  +  1 bài ngữ pháp
 
 Ô gõ ở bước ① để khắc mặt chữ bằng động tác tay, **không** chấm và **không** ghi `word_mastery` — việc đánh giá vẫn do bước ② và ③ đảm nhận. Chi tiết: [thiết kế ô gõ lại từ](2026-08-10-vocab-typing-field-design.md).
 
+Phần ngữ pháp ở CHỐT BUỔI làm hết câu hỏi của bài, **trần 25 câu**. 19/20 buổi có 20–25 câu nên trần này không cắt gì; riêng buổi 2 có 100 câu, phần dôi ra thành kho câu chưa từng gặp cho ôn tập và kiểm tra. Buổi học **không có ngưỡng pass** — đi hết là `completed`, cổng chặn thật là bài ôn tập ở §6.2. Chi tiết: [thiết kế lát 1b](2026-08-10-phase1b-learn-flow-design.md).
+
 ### 6.4 Route
 
 ```
