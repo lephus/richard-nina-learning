@@ -156,12 +156,15 @@ Hai ngưỡng đặt trong một file config tập trung, không rải rác tron
 ```
 CỤM 1 (từ 1–10)
   ① GẶP TỪ   flashcard: từ + IPA + nghĩa + nút nghe phát âm
+             + ô gõ lại từ (gõ tự do, không chấm) + nút che/hiện từ
   ② LUYỆN    trắc nghiệm nghĩa · chọn từ đồng nghĩa (SYN) · ghép-nối từ ↔ nghĩa
   ③ CHỐT     điền từ vào câu ví dụ thực tế (Exp)
 CỤM 2 (từ 11–20) → lặp ①②③
 CỤM 3 (từ 21–30) → lặp ①②③
 CHỐT BUỔI: 10 câu trộn cả 30 từ  +  1 bài ngữ pháp
 ```
+
+Ô gõ ở bước ① để khắc mặt chữ bằng động tác tay, **không** chấm và **không** ghi `word_mastery` — việc đánh giá vẫn do bước ② và ③ đảm nhận. Chi tiết: [thiết kế ô gõ lại từ](2026-08-10-vocab-typing-field-design.md).
 
 ### 6.4 Route
 
