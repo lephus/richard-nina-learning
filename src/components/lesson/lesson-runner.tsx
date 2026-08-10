@@ -16,6 +16,7 @@ export function LessonRunner({
   initialItem,
   initialDone,
   initialScore,
+  initialHideWord,
 }: {
   lessonId: number;
   /** Số thứ tự buổi (1..20) — LessonDone dùng để suy slot kế tiếp mở khoá. */
@@ -24,6 +25,11 @@ export function LessonRunner({
   initialItem: BuiltItem | null;
   initialDone: boolean;
   initialScore?: number;
+  /** Đọc từ cookie ở Server Component. Phải đến từ server chứ không phải
+      localStorage: trình duyệt vẽ HTML của server TRƯỚC khi React hydrate, nên
+      quyết định che ở phía client là quyết định muộn hơn một khung hình — và
+      khung hình đó chính là lúc từ cần che loé lên. */
+  initialHideWord: boolean;
 }) {
   const [position, setPosition] = useState(initialPosition);
   const [item, setItem] = useState(initialItem);
@@ -34,6 +40,22 @@ export function LessonRunner({
   const [staged, setStaged] = useState<SubmitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  // Một công tắc cho cả buổi học, không phải cho từng thẻ: 30 thẻ mà phải bấm
+  // che 30 lần thì không ai dùng. Giữ ở đây vì LessonRunner không remount giữa
+  // các vị trí, còn Flashcard thì có (`key={position}`).
+  const [hideWord, setHideWord] = useState(initialHideWord);
+
+  function toggleHideWord() {
+    setHideWord((prev) => {
+      const next = !prev;
+      // Ghi cookie chứ không localStorage, để lần tải trang sau server đã biết
+      // mà render đúng ngay từ HTML đầu tiên. `SameSite=Lax` là đủ: đây chỉ là
+      // tuỳ chọn hiển thị, không mang gì nhạy cảm.
+      document.cookie = `vocab_hide_word=${next ? "1" : "0"}; path=/; max-age=31536000; SameSite=Lax`;
+      return next;
+    });
+  }
 
   /** Áp một kết quả ngay lập tức, không qua bước phản hồi. */
   function apply(r: SubmitResult) {
@@ -87,7 +109,14 @@ export function LessonRunner({
       </p>
 
       {item.kind === "flashcard" && (
-        <Flashcard key={position} word={item.word} onNext={() => send("")} pending={pending} />
+        <Flashcard
+          key={position}
+          word={item.word}
+          onNext={() => send("")}
+          pending={pending}
+          hideWord={hideWord}
+          onToggleHideWord={toggleHideWord}
+        />
       )}
       {(item.kind === "meaning" || item.kind === "synonym" || item.kind === "grammar") && (
         <ChoiceQuestion

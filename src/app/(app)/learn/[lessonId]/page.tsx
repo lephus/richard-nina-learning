@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { lessonStatuses, type LessonRow, type ProgressRow } from "@/lib/curriculum/lesson-status";
@@ -90,6 +91,11 @@ export default async function LearnPage({
   const done = position >= TOTAL_ITEMS;
   const ctx = await loadContext(supabase, id, user.id);
 
+  // Tuỳ chọn "che từ" ở thẻ gặp từ. Đọc tại server để HTML đầu tiên đã đúng —
+  // đọc ở client thì từ cần che loé lên một khung hình trước khi React hydrate,
+  // đúng cái mà tính năng này sinh ra để tránh. Mặc định là hiện.
+  const hideWord = (await cookies()).get("vocab_hide_word")?.value === "1";
+
   return (
     <main className="flex flex-col gap-6">
       <h1 data-testid="learn-heading" className="text-2xl font-semibold">
@@ -102,6 +108,7 @@ export default async function LearnPage({
         initialItem={done ? null : buildItem(itemAt(position), ctx)}
         initialDone={done}
         initialScore={done ? scoreOf(prog?.final_correct ?? 0) : undefined}
+        initialHideWord={hideWord}
       />
     </main>
   );

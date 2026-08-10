@@ -44,6 +44,56 @@ test("mở buổi 1 thì thấy thẻ từ đầu tiên", async ({ page }) => {
   await expect(page.getByTestId("lesson-progress")).toHaveText("1 / 135");
 });
 
+test("ô gõ lại từ nhận chữ, và rỗng trở lại khi sang từ mới", async ({ page }) => {
+  await login(page);
+  await page.getByTestId("continue-link").click();
+
+  const box = page.getByTestId("flashcard-typing");
+  await box.fill("concern");
+  await expect(box).toHaveValue("concern");
+
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("lesson-progress")).toHaveText("2 / 135");
+
+  // Cố ý không giữ: ô này để khắc mặt chữ bằng động tác tay, không phải để lưu.
+  await expect(page.getByTestId("flashcard-typing")).toHaveValue("");
+});
+
+test("che từ thì giấu cả từ lẫn câu ví dụ, giữ IPA và nghĩa", async ({ page }) => {
+  await login(page);
+  await page.getByTestId("continue-link").click();
+
+  await expect(page.getByTestId("flashcard-word")).toBeVisible();
+  await expect(page.getByTestId("flashcard-example")).toBeVisible();
+
+  await page.getByTestId("toggle-hide-word").click();
+
+  await expect(page.getByTestId("flashcard-word")).toHaveCount(0);
+  await expect(page.getByTestId("flashcard-word-hidden")).toBeVisible();
+  // Câu ví dụ chứa chính đáp án đã điền vào, nên phải biến mất cùng.
+  await expect(page.getByTestId("flashcard-example")).toHaveCount(0);
+  // Ô gõ vẫn còn — che từ mà mất luôn chỗ gõ thì không còn gì để làm.
+  await expect(page.getByTestId("flashcard-typing")).toBeVisible();
+});
+
+test("công tắc che từ giữ nguyên qua từ mới và qua lần tải lại", async ({ page }) => {
+  await login(page);
+  await page.getByTestId("continue-link").click();
+  await page.getByTestId("toggle-hide-word").click();
+  await expect(page.getByTestId("flashcard-word-hidden")).toBeVisible();
+
+  // Sang từ mới: Flashcard remount theo key={position} nên đây là lớp bảo vệ
+  // cho việc trạng thái che phải nằm ở LessonRunner chứ không trong thẻ.
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("lesson-progress")).toHaveText("2 / 135");
+  await expect(page.getByTestId("flashcard-word-hidden")).toBeVisible();
+
+  // Tải lại: cookie phải khiến HTML của server đã che sẵn.
+  await page.reload();
+  await expect(page.getByTestId("flashcard-word-hidden")).toBeVisible();
+  await expect(page.getByTestId("flashcard-word")).toHaveCount(0);
+});
+
 test("trả lời một câu thì phản hồi hiện ngay", async ({ page }) => {
   // 11 thao tác, mỗi thao tác là một round-trip thật. Trên localhost vừa đủ
   // 30s mặc định, nhưng khi chạy với PLAYWRIGHT_BASE_URL trỏ tới Vercel thì
