@@ -406,3 +406,52 @@ test("nhóm ngoài biên trả 404", async ({ page }) => {
   const res = await page.goto("/vocab/browse/11");
   expect(res!.status()).toBe(404);
 });
+
+/* ───────────────────────── Dashboard thật (Task 14) ───────────────────────── */
+
+test("dashboard dẫn sang trang từ vựng và gợi ý chỗ tiếp theo", async ({ page }) => {
+  await login(page);
+  await expect(page.getByTestId("continue-hint")).toHaveText("Tiếp tục: Nhóm 1 · Buổi 1");
+  await expect(page.getByTestId("track-vocab")).toContainText("0/10 nhóm");
+
+  await page.getByTestId("track-vocab").click();
+  await page.waitForURL("**/vocab");
+  await expect(page.getByTestId("group-row")).toHaveCount(10);
+});
+
+test("dashboard vẫn đúng khi lesson_cursor có dữ liệu thật — canh quan hệ nhúng lessons(ordinal)", async ({
+  page, drainSaves,
+}) => {
+  // Kịch bản trên dùng tài khoản chưa đụng gì — lesson_cursor RỖNG, nên
+  // không đi qua nổi nhánh quan hệ nhúng `lessons(ordinal)` trong
+  // dashboard/page.tsx (Task 14): không canh được gì thật. `nextActivity`
+  // chỉ phân biệt "dat"/"chưa dat" (progress.ts), không phân biệt "đang
+  // học"/"chưa học", nên dòng "Tiếp tục" không đổi NỘI DUNG dù có cursor hay
+  // không — không có assertion nào trên CHỮ của continue-hint phân biệt được
+  // "quan hệ nhúng đúng" với "quan hệ nhúng suy sai thành mảng" (cả hai
+  // đường đều rớt xuống "chưa dat" như nhau, xem phân tích trong
+  // task-14-report.md).
+  //
+  // Phép kiểm mạnh nhất viết được ở tầng e2e, thay cho khẳng định canh cửa
+  // đã mất khi Task 3 xoá dashboard cũ (assertion cũ canh grammar_lessons
+  // qua quan hệ nhúng trên bảng lessons — xem e2e/auth.spec.ts bản trước
+  // Task 3): buộc MỘT dòng lesson_cursor THẬT (không rỗng) chảy qua ép kiểu
+  // `unknown` đó bằng cách thật sự học dở buổi 1, rồi xác nhận dashboard vẫn
+  // dựng trang đúng — không throw ra trang lỗi, không đổi nội dung. Tiện thể
+  // canh luôn định dạng tiêu đề trang học "Nhóm 1 · Buổi 1" — điều kịch bản
+  // "Học tiếp" cũ (Task 3 đánh skip, Task 14 xoá hẳn — xem comment ở
+  // e2e/auth.spec.ts) từng canh nhưng dưới định dạng cũ, chưa ai viết lại.
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+  await expect(page.getByTestId("learn-heading")).toHaveText("Nhóm 1 · Buổi 1");
+
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 2 / 30");
+  await drainSaves();
+
+  await page.goto("/dashboard");
+  await expect(page.getByTestId("continue-hint")).toHaveText("Tiếp tục: Nhóm 1 · Buổi 1");
+  await expect(page.getByTestId("track-vocab")).toContainText("0/10 nhóm");
+});

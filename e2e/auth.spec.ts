@@ -47,28 +47,29 @@ test("đăng nhập đúng thì thấy hai thẻ chọn lộ trình: từ vựng
 }) => {
   await login(page);
 
-  // Lát 2a (Task 3) gỡ chuỗi 35 hoạt động và khoá tuần tự theo buổi — dashboard
-  // tạm chỉ còn hai thẻ chọn lộ trình, cả hai chưa dẫn đi đâu (href={null})
-  // cho tới khi Task 6 (/vocab) và Task 14 (dashboard thật) dựng lại phần sau
-  // chúng. Assertion cũ (đếm 35 dòng lesson-row, 20 dòng buổi học, trạng thái
-  // khoá/mở, tên bài ngữ pháp) không còn gì để đo — DOM đó không còn tồn tại.
+  // Task 14 dựng dashboard thật: track-vocab nay là một <Link> có số liệu
+  // (X/10 nhóm) và dòng "Tiếp tục" (data-testid="continue-hint"), còn
+  // track-grammar vẫn là placeholder "Sắp có" (lộ trình ngữ pháp thuộc lát
+  // 2c). Ở đây chỉ giữ phép kiểm HÌNH DẠNG — cả hai thẻ đều hiện — vì nội
+  // dung chi tiết của track-vocab (số liệu, dòng gợi ý, đường dẫn) đã có
+  // phép kiểm riêng, sâu hơn "toBeVisible", trong e2e/vocab.spec.ts.
   await expect(page.getByTestId("track-vocab")).toBeVisible();
   await expect(page.getByTestId("track-grammar")).toBeVisible();
 });
 
-// "Học tiếp" không tồn tại trên dashboard tạm của lát 2a (Task 3) — cả hai
-// thẻ chọn lộ trình đều href={null} (xem dashboard/page.tsx), và route
-// /learn/[lessonId] đã bị xoá hẳn cùng luồng cũ. Không có gì để bấm, không có
-// "Buổi 1" nào để tới. Đánh dấu skip thay vì xoá âm thầm — cùng nguyên tắc
-// brief áp dụng cho e2e/stats.spec.ts. Task 14 (dashboard thật, theo chú
-// thích trong dashboard/page.tsx) là nơi tự nhiên để viết lại kịch bản này
-// cho hành vi mới — không phải khôi phục y nguyên bản cũ, vì continue-link
-// tương lai sẽ trỏ vào lộ trình từ vựng/ngữ pháp, không phải /learn/[lessonId].
-test.skip('bấm "Học tiếp" thì tới trang buổi 1', async ({ page }) => {
-  await login(page);
-  await page.getByTestId("continue-link").click();
-  await expect(page.getByTestId("learn-heading")).toHaveText("Buổi 1");
-});
+// Task 14 (dashboard thật): quyết định XOÁ hẳn kịch bản "Học tiếp" từng bị
+// skip ở đây, không viết lại tại chỗ. Lý do: dashboard thật không còn nút
+// bấm một-phát-tới-buổi nào nữa — "Tiếp tục" giờ chỉ là DÒNG CHỮ gợi ý
+// (data-testid="continue-hint"), không phải link hay nút (xem comment tại
+// nextActivity trong progress.ts: "GỢI Ý, không phải luật"). Hành vi tương
+// đương thật sự — từ dashboard đi đúng đường thì tới đúng Buổi 1, với đúng
+// tiêu đề trang học — giờ nằm ở e2e/vocab.spec.ts: kịch bản "dashboard dẫn
+// sang trang từ vựng..." canh dòng gợi ý và cú bấm thẻ Từ vựng, còn kịch bản
+// canh quan hệ nhúng lessons(ordinal) đi tiếp từ đó vào đúng buổi 1 và canh
+// cả định dạng tiêu đề mới ("Nhóm 1 · Buổi 1", khác "Buổi 1" của bản cũ).
+// Viết lại một bản rút gọn ngay tại đây chỉ lặp lại đúng các bước đó — và
+// vocab.spec.ts vốn đã an toàn cho việc này (afterEach dọn lesson_cursor
+// theo user_id), còn auth.spec.ts thì không có hạ tầng dọn tương đương.
 
 test("đăng xuất rồi quay lại /dashboard thì bị đẩy về /login", async ({ page }) => {
   await login(page);
