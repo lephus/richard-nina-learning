@@ -54,3 +54,44 @@ test("vào thẳng nhóm 7 khi chưa học nhóm nào — không còn khoá", as
   await page.waitForURL("**/vocab/learn/**");
   await expect(page.getByTestId("deck-position")).toBeVisible();
 });
+
+test("đi tới rồi lui giữa các thẻ", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 1 / 30");
+  await expect(page.getByTestId("prev-button")).toBeDisabled();
+
+  const tu1 = await page.getByTestId("card-word").textContent();
+
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 2 / 30");
+  await expect(page.getByTestId("card-word")).not.toHaveText(tu1!);
+
+  await page.getByTestId("prev-button").click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 1 / 30");
+  await expect(page.getByTestId("card-word")).toHaveText(tu1!);
+});
+
+test("phím mũi tên cũng chuyển thẻ", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 2 / 30");
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 1 / 30");
+});
+
+test("câu ví dụ đã điền lại, không còn dấu gạch trống", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await expect(page.getByTestId("card-example")).not.toContainText("___");
+});
