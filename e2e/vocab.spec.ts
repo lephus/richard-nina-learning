@@ -18,21 +18,52 @@ import { adminClient } from "./admin";
  * giờ thật sự rảnh. Bộ đếm này CHỈ theo dõi POST (bỏ qua toàn bộ GET prefetch
  * ồn ào đó) nên chờ đúng thứ cần chờ.
  */
+// Vòng sửa 1 (soát Task 12): trần thời gian cho `drainSaves`. Một POST bắn đi
+// mà backend treo giữa chừng — nuốt kết nối, không trả lời, không đóng — sẽ
+// không bao giờ phát `requestfinished` LẪN `requestfailed`, nên `pending`
+// không bao giờ về 0. Timeout 30s của Playwright KHÔNG cứu được việc này: nó
+// chỉ đua giữa lời hứa của test với đồng hồ, không huỷ được chuỗi
+// `setTimeout` đang chạy bên trong hàm trả về của fixture — đã tái hiện thật
+// một lần treo ~17 phút (gấp hơn 30 lần con số cấu hình) trước khi Playwright
+// mới nhận ra và báo timeout. Có trần thì sau ĐÚNG NGẦN ẤY giây, hàm ném lỗi
+// rõ ràng thay vì treo — người gặp biết ngay tình trạng thay vì nhìn suite
+// đứng im.
+const DRAIN_SAVES_DEADLINE_MS = 5_000;
+
 const test = base.extend<{ drainSaves: () => Promise<void> }>({
   drainSaves: [
     async ({ page }, use) => {
       let pending = 0;
+      const onRequest = (req: { method(): string }) => {
+        if (req.method() === "POST") pending++;
+      };
       const onSettled = (req: { method(): string }) => {
         if (req.method() === "POST") pending = Math.max(0, pending - 1);
       };
-      page.on("request", (req) => {
-        if (req.method() === "POST") pending++;
-      });
+      page.on("request", onRequest);
       page.on("requestfinished", onSettled);
       page.on("requestfailed", onSettled);
+
       await use(async () => {
-        while (pending > 0) await new Promise((r) => setTimeout(r, 50));
+        const start = Date.now();
+        while (pending > 0) {
+          if (Date.now() - start > DRAIN_SAVES_DEADLINE_MS) {
+            // Ném lỗi có SỐ LƯỢNG cụ thể — người đọc log biết ngay còn bao
+            // nhiêu request chưa xong, không phải đoán.
+            throw new Error(
+              `drainSaves: còn ${pending} POST treo sau ${DRAIN_SAVES_DEADLINE_MS / 1000}s`,
+            );
+          }
+          await new Promise((r) => setTimeout(r, 50));
+        }
       });
+
+      // Dọn listener khi fixture bị tháo (Minor nêu ở soát Task 11): `page`
+      // sống tới hết `afterEach`, không dọn thì các listener này tiếp tục
+      // đếm request ngoài phạm vi kịch bản đã dùng chúng.
+      page.off("request", onRequest);
+      page.off("requestfinished", onSettled);
+      page.off("requestfailed", onSettled);
     },
     // Fixture Playwright chỉ khởi tạo khi có test/hook nào đó THAM CHIẾU tới
     // nó — phần lớn kịch bản trong tệp này không cần gọi `drainSaves()` trực
