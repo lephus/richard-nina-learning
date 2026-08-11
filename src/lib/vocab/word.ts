@@ -17,7 +17,7 @@ export interface VocabLite {
   /**
    * Câu ví dụ ĐÃ BỊ KHOÉT: cả 605 dòng vocab_words đều chứa đúng một "___".
    * Câu điền từ dùng nguyên văn chuỗi này; thẻ gặp từ điền lại từ vào chỗ
-   * trống trước khi hiện — xem nhánh flashcard trong buildItem.
+   * trống trước khi hiện — xem `renderCard` trong `lib/vocab/load-cards.ts`.
    */
   exampleEn: string;
   /** Bản dịch tiếng Việt của câu ví dụ. Đầy đủ, không bị khoét (605/605 dòng). */
@@ -33,9 +33,15 @@ export interface VocabLite {
  * Một dòng `vocab_words` (snake_case, đúng những cột `authenticated` đọc được)
  * → `VocabLite`. `blankAnswer` luôn là chuỗi rỗng Ở ĐÂY: cột đó đã bị thu hồi
  * khỏi `authenticated` (0004_rls.sql:41-44) nên nó KHÔNG có trong dòng đọc
- * lên. Hai đường hợp lệ để lấy giá trị thật: RPC `answer_for_word` cho MỘT từ
- * (xem `secretFor`), hoặc RPC `blank_answers_for_lesson` cho CẢ một buổi (xem
- * `loadContext` — nó gọi hàm này rồi GHI ĐÈ `blankAnswer` lên kết quả).
+ * lên. Đường hợp lệ để lấy giá trị thật cho CẢ một buổi: RPC
+ * `blank_answers_for_lesson` (0007), gọi từ `loadCards`
+ * (`lib/vocab/load-cards.ts`) — nó đọc RPC vào một map cục bộ rồi truyền qua
+ * tham số cho `renderCard`, KHÔNG ghi đè lên `VocabLite` gốc (khác thiết kế cũ
+ * ở lát 1b). RPC `answer_for_word` cho MỘT từ (0006) vẫn còn ở database —
+ * spec restructure liệt nó vào nhóm RPC chặn đáp án cần giữ nguyên (xem
+ * docs/superpowers/specs/2026-08-11-phase2-vocab-first-restructure-design.md:89)
+ * — nhưng lát 1c từng gọi nó đã bị Task 3 xoá sạch cùng luồng làm bài cũ, nên
+ * hiện KHÔNG có nơi gọi nào trong `src/`.
  *
  * Ở cạnh `VocabLite` chứ không nằm trong một module đọc dữ liệu cụ thể — cùng
  * lý do đã nêu ở chú thích đầu tệp trên `VocabLite`: nhiều nơi khác nhau đọc
