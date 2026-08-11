@@ -185,10 +185,15 @@ describe("groupDone và nextActivity", () => {
   });
 
   it("nextActivity chặn ô trượt, không nhảy qua", () => {
-    // Buổi 1 trượt → ô đó phải là nextActivity
-    const states = groupStates([att({ id: 1, type: "lesson", scope: [1], passed: false, score: 50 })], []);
+    // Buổi 1 trượt, Buổi 2 và Ôn tập đạt → ô trượt là nextActivity, không phải vì thiếu dữ liệu
+    const assessments = [
+      att({ id: 1, type: "lesson", scope: [1], passed: false, score: 50 }),
+      att({ id: 2, type: "lesson", scope: [2], passed: true, score: 85 }),
+      att({ id: 3, type: "review", scope: [1, 2], passed: true, score: 80 }),
+    ];
+    const states = groupStates(assessments, []);
     expect(nextActivity(states)).toEqual({ group: 1, index: 0, lessonOrdinal: 1 });
-    expect(groupDone(group1([att({ id: 1, type: "lesson", scope: [1], passed: false, score: 50 })]))).toBe(false);
+    expect(groupDone(group1(assessments))).toBe(false);
   });
 });
 
