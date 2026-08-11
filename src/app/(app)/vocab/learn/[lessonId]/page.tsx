@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { loadCards } from "@/lib/vocab/load-cards";
@@ -33,6 +34,7 @@ export default async function LearnPage({
   if (cursorRes.error) throw cursorRes.error;
 
   const ordinal = lesson.ordinal as number;
+  const hideWord = (await cookies()).get("vocab_hide_word")?.value === "1";
 
   return (
     <main className="flex flex-col gap-5">
@@ -44,6 +46,7 @@ export default async function LearnPage({
         initialIndex={cursorRes.data?.word_index ?? 0}
         examHref={`/vocab/learn/${id}/sap-co`}
         lessonId={id}
+        initialHideWord={hideWord}
       />
     </main>
   );

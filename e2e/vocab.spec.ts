@@ -304,3 +304,30 @@ test("trang từ vựng hiện buổi đang học dở", async ({ page, drainSav
   await expect(o1).toHaveAttribute("data-kind", "dang-hoc");
   await expect(o1).toContainText("từ 2/30");
 });
+
+test("che từ giấu cả từ lẫn câu ví dụ, và nhớ qua các thẻ", async ({ page, drainSaves }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await expect(page.getByTestId("card-word")).toBeVisible();
+  await page.getByTestId("toggle-hide-word").click();
+
+  await expect(page.getByTestId("card-word")).toHaveCount(0);
+  await expect(page.getByTestId("card-word-hidden")).toBeVisible();
+  await expect(page.getByTestId("card-example")).toHaveCount(0);
+
+  // Một công tắc cho cả buổi, không phải cho từng thẻ.
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("card-word-hidden")).toBeVisible();
+
+  // Bấm "Từ sau" cũng bắn một POST lưu con trỏ ở nền (Task 11). Đợi nó lắng
+  // xuống trước khi reload() — xem chú thích ở định nghĩa `drainSaves` phía
+  // trên vì sao một lần điều hướng thật ngay sau đó có thể huỷ request này.
+  await drainSaves();
+
+  // Và server đã biết ngay từ HTML đầu tiên của lần tải sau.
+  await page.reload();
+  await expect(page.getByTestId("card-word-hidden")).toBeVisible();
+});

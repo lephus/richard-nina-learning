@@ -21,6 +21,7 @@ export function Deck({
   initialIndex,
   examHref,
   lessonId,
+  initialHideWord,
 }: {
   cards: VocabCard[];
   initialIndex: number;
@@ -28,12 +29,33 @@ export function Deck({
   examHref: string | null;
   /** `null` ở chế độ xem lại: 60 từ của một nhóm không thuộc buổi nào để đánh dấu. */
   lessonId: number | null;
+  /** Đọc từ cookie ở Server Component. Phải đến từ server chứ không phải
+      localStorage: trình duyệt vẽ HTML của server TRƯỚC khi React hydrate, nên
+      quyết định che ở phía client là quyết định muộn hơn một khung hình — và
+      khung hình đó chính là lúc từ cần che loé lên. */
+  initialHideWord: boolean;
 }) {
   const [index, setIndex] = useState(
     // Con trỏ lưu ở server có thể trỏ ra ngoài mảng nếu nội dung buổi đổi.
     // Kẹp lại ở đây thay vì render một thẻ `undefined`.
     Math.min(Math.max(initialIndex, 0), Math.max(cards.length - 1, 0)),
   );
+
+  // Công tắc cho CẢ BUỔI, không phải cho từng thẻ: 30 thẻ mà bấm che 30 lần
+  // thì không ai dùng. Đặt ở Deck vì nó không remount giữa các thẻ, còn
+  // WordCard thì có (`key={card.id}`).
+  const [hideWord, setHideWord] = useState(initialHideWord);
+
+  function toggleHideWord() {
+    setHideWord((prev) => {
+      const next = !prev;
+      // Cookie chứ không localStorage, để lần tải trang sau server đã biết mà
+      // render đúng ngay từ HTML đầu tiên. `SameSite=Lax` là đủ: đây chỉ là
+      // tuỳ chọn hiển thị, không mang gì nhạy cảm.
+      document.cookie = `vocab_hide_word=${next ? "1" : "0"}; path=/; max-age=31536000; SameSite=Lax`;
+      return next;
+    });
+  }
 
   // Khởi tạo từ bản server gửi xuống, rồi từ đó CHỮ SỐNG Ở ĐÂY. `cards` không
   // bao giờ được đọc lại để lấy ghi chú sau lần khởi tạo này — nó là ảnh chụp
@@ -92,6 +114,8 @@ export function Deck({
           card={card}
           note={notes[card.id] ?? ""}
           onNoteChange={(next) => setNotes((n) => ({ ...n, [card.id]: next }))}
+          hideWord={hideWord}
+          onToggleHideWord={toggleHideWord}
         />
 
         <div className="flex gap-2">
