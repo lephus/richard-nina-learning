@@ -10,3 +10,7 @@ tsconfig.tsbuildinfo
 playwright-report/
 test-results/
 .vercel
+
+# Mockup + log cua phien brainstorm — la ban nhap, khong phai san pham.
+# (.superpowers/sdd/ da co .gitignore rieng cua no.)
+.superpowers/brainstorm/
