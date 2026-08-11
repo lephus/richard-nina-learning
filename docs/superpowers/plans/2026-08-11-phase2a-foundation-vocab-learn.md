@@ -26,7 +26,11 @@ Supabase (Postgres + Auth + RLS) · Vitest · Playwright.
 - Không `Math.random()` dưới `src/`.
 - `SUPABASE_SERVICE_ROLE_KEY` không xuất hiện dưới `src/`.
 - Luôn `getUser()`, không `getSession()`.
-- Không nuốt lỗi Supabase — kiểm `error` và `throw`.
+- Không nuốt lỗi Supabase — kiểm `error` và `throw`. **Ngoại lệ duy nhất được
+  phép trong lát này:** ghi `lesson_cursor` ở nền (Task 11). Mất một dấu trang
+  không đáng dựng lên một thông báo lỗi giữa lúc học, và lần đổi thẻ kế tiếp ghi
+  đè lại đúng. Ngoại lệ này phải kèm chú thích nói rõ *vì sao* ngay tại chỗ; mọi
+  nơi khác nuốt lỗi đều là lỗi.
 - Mọi truy vấn theo người dùng lọc `.eq("user_id", user.id)` tường minh, dù RLS đã lọc đúng.
 - Đáp án (`vocab_words.blank_answer`, `grammar_questions.answer`) không bao giờ tới trình duyệt.
 - Chữ hiển thị tiếng Việt; chú thích TypeScript tiếng Việt giải thích **vì sao**;
@@ -2192,7 +2196,7 @@ export default async function SapCoPage({
 Thêm vào `e2e/vocab.spec.ts`:
 
 ```ts
-test("đi tới rồi lui giữa các thẻ, không gọi mạng lại", async ({ page }) => {
+test("đi tới rồi lui giữa các thẻ", async ({ page }) => {
   await login(page);
   await page.goto("/vocab");
   await page.getByTestId("group-row").first().getByTestId("activity").first().click();

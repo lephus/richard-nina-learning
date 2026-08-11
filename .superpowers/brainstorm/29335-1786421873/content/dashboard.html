@@ -1,0 +1,143 @@
+<style>
+  .wf { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12px; line-height: 1.35; }
+  .wf-frame { border: 1px solid rgba(128,128,128,.45); border-radius: 8px; overflow: hidden; background: rgba(128,128,128,.05); }
+  .wf-bar { display:flex; justify-content:space-between; align-items:center; padding:7px 10px; border-bottom:1px solid rgba(128,128,128,.35); font-weight:600; font-size:11px; }
+  .wf-bar span.mut { font-weight:400; opacity:.6; }
+  .wf-pad { padding: 10px; }
+  .wf-stats { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:9px 10px; border-bottom:1px solid rgba(128,128,128,.35); }
+  .wf-stat { font-size:11px; }
+  .wf-stat b { display:block; font-size:15px; font-weight:700; }
+  .wf-stat i { font-style:normal; opacity:.6; font-size:10px; }
+  .wf-cards { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .wf-card { border:1px solid rgba(128,128,128,.4); border-radius:6px; padding:10px; text-align:center; background:rgba(128,128,128,.07); }
+  .wf-card .ico { font-size:20px; }
+  .wf-card .ttl { font-weight:700; margin-top:3px; letter-spacing:.02em; }
+  .wf-card .sub { opacity:.65; font-size:11px; margin-top:2px; }
+  .wf-card .btn { margin-top:8px; border:1px solid rgba(128,128,128,.5); border-radius:4px; padding:4px 0; font-size:11px; }
+  .wf-card.solid .btn { background:rgba(128,128,128,.25); }
+  .wf-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; font-size:11px; border-bottom:1px dashed rgba(128,128,128,.3); }
+  .wf-row:last-child { border-bottom:0; }
+  .wf-meter { height:7px; border-radius:4px; background:rgba(128,128,128,.25); overflow:hidden; margin-top:4px; }
+  .wf-meter i { display:block; height:100%; width:40%; background:rgba(128,128,128,.75); }
+  .wf-spark { display:flex; align-items:flex-end; gap:3px; height:26px; margin-top:4px; }
+  .wf-spark i { flex:1; background:rgba(128,128,128,.55); border-radius:2px 2px 0 0; }
+  .wf-lbl { font-size:10px; text-transform:uppercase; letter-spacing:.08em; opacity:.55; margin-top:9px; }
+  .wf-link { text-align:center; font-size:11px; opacity:.6; margin-top:12px; text-decoration:underline; }
+  .wf-tall { min-height: 250px; }
+</style>
+
+<h2>Dashboard sau khi đăng nhập — chứa gì?</h2>
+<p class="subtitle">Cả ba đều có 2 thẻ chọn Từ vựng / Ngữ pháp như bạn yêu cầu. Khác nhau ở chỗ "xem thông tin học tập" nằm đâu — vì app đã có sẵn trang <code>/stats</code> (biểu đồ điểm, từ hay sai, chuỗi tuần học).</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="wf wf-tall">
+        <div class="wf-frame">
+          <div class="wf-bar">Học TOEIC <span class="mut">Thống kê · Đăng xuất</span></div>
+          <div class="wf-stats">
+            <div class="wf-stat"><b>240<i>/605 từ</i></b></div>
+            <div class="wf-stat"><b>4<i>/10 nhóm xong</i></b></div>
+            <div class="wf-stat"><b>86<i>điểm trung bình</i></b></div>
+            <div class="wf-stat"><b>3<i>tuần học đều</i></b></div>
+          </div>
+          <div class="wf-pad">
+            <div class="wf-cards">
+              <div class="wf-card solid">
+                <div class="ico">📘</div>
+                <div class="ttl">TỪ VỰNG</div>
+                <div class="sub">10 nhóm · 240/605 từ</div>
+                <div class="btn">Vào học →</div>
+              </div>
+              <div class="wf-card">
+                <div class="ico">📗</div>
+                <div class="ttl">NGỮ PHÁP</div>
+                <div class="sub">20 bài · 6/20 xong</div>
+                <div class="btn">Vào học →</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · Hub + 4 số liệu tóm tắt</h3>
+      <p>Nhìn phát biết đang ở đâu, rồi chọn học gì. Biểu đồ và danh sách từ hay sai vẫn ở <code>/stats</code>. <b>Ít việc nhất</b> — chỉ thêm một dải số liệu, giữ nguyên trang thống kê đã xây.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="wf wf-tall">
+        <div class="wf-frame">
+          <div class="wf-bar">Học TOEIC <span class="mut">Đăng xuất</span></div>
+          <div class="wf-pad">
+            <div class="wf-cards">
+              <div class="wf-card solid">
+                <div class="ico">📘</div>
+                <div class="ttl">TỪ VỰNG</div>
+                <div class="sub">240/605 từ</div>
+              </div>
+              <div class="wf-card">
+                <div class="ico">📗</div>
+                <div class="ttl">NGỮ PHÁP</div>
+                <div class="sub">6/20 bài</div>
+              </div>
+            </div>
+
+            <div class="wf-lbl">Tiến độ từ vựng</div>
+            <div class="wf-meter"><i></i></div>
+
+            <div class="wf-lbl">Điểm qua các bài</div>
+            <div class="wf-spark">
+              <i style="height:55%"></i><i style="height:70%"></i><i style="height:45%"></i>
+              <i style="height:85%"></i><i style="height:60%"></i><i style="height:95%"></i>
+              <i style="height:80%"></i><i style="height:90%"></i>
+            </div>
+
+            <div class="wf-lbl">Từ hay sai</div>
+            <div class="wf-row"><span>concern</span><span>sai 4 lần</span></div>
+            <div class="wf-row"><span>retain</span><span>sai 3 lần</span></div>
+            <div class="wf-row"><span>vacancy</span><span>sai 3 lần</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · Hub nuốt luôn trang thống kê</h3>
+      <p>Một trang duy nhất, xoá <code>/stats</code>. Không phải bấm đi bấm lại — nhưng dashboard dài ra, và mỗi lần vào app phải cuộn qua số liệu mới tới nút học.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="wf wf-tall">
+        <div class="wf-frame" style="min-height:230px; display:flex; flex-direction:column;">
+          <div class="wf-bar">Học TOEIC <span class="mut">Thống kê · Đăng xuất</span></div>
+          <div class="wf-pad" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+            <div style="text-align:center; opacity:.6; font-size:11px; margin-bottom:12px;">Chào Phú, hôm nay học gì?</div>
+            <div class="wf-cards">
+              <div class="wf-card solid" style="padding:20px 10px;">
+                <div class="ico" style="font-size:26px;">📘</div>
+                <div class="ttl">TỪ VỰNG</div>
+                <div class="sub">240/605 từ</div>
+              </div>
+              <div class="wf-card" style="padding:20px 10px;">
+                <div class="ico" style="font-size:26px;">📗</div>
+                <div class="ttl">NGỮ PHÁP</div>
+                <div class="sub">6/20 bài</div>
+              </div>
+            </div>
+            <div class="wf-link">Xem thống kê chi tiết</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · Tối giản, chỉ 2 thẻ</h3>
+      <p>Vào là chọn ngay, không gì cản. Nhưng bạn nói muốn "quản lý và xem thông tin học tập" ngay ở dashboard — bản này đẩy hết sang trang khác.</p>
+    </div>
+  </div>
+
+</div>
