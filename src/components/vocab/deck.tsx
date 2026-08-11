@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import type { VocabCard } from "@/lib/vocab/load-cards";
+import { saveCursor } from "@/app/(app)/vocab/actions";
 import { WordCard } from "./word-card";
 import { WordIndex } from "./word-index";
 
@@ -19,11 +20,14 @@ export function Deck({
   cards,
   initialIndex,
   examHref,
+  lessonId,
 }: {
   cards: VocabCard[];
   initialIndex: number;
   /** `null` ở chế độ xem lại — không có bài thi nào để làm. */
   examHref: string | null;
+  /** `null` ở chế độ xem lại: 60 từ của một nhóm không thuộc buổi nào để đánh dấu. */
+  lessonId: number | null;
 }) {
   const [index, setIndex] = useState(
     // Con trỏ lưu ở server có thể trỏ ra ngoài mảng nếu nội dung buổi đổi.
@@ -59,6 +63,17 @@ export function Deck({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [go, index]);
+
+  // Ghi chỗ đang đọc Ở NỀN. Không `await` trên đường bấm — đổi thẻ phải xong
+  // trong một khung hình, còn việc ghi thì tới lúc nào cũng được.
+  //
+  // Nuốt lỗi ở đây là CÓ CHỦ ĐÍCH và là chỗ duy nhất trong lát này được phép:
+  // mất một dấu trang không đáng để dựng lên một thông báo lỗi giữa lúc học,
+  // và lần đổi thẻ kế tiếp sẽ ghi đè lại đúng.
+  useEffect(() => {
+    if (lessonId === null) return;
+    void saveCursor(lessonId, index).catch(() => {});
+  }, [lessonId, index]);
 
   const card = cards[index];
   if (!card) return null;

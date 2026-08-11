@@ -1,6 +1,49 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test as base, type Page } from "@playwright/test";
 import { TEST_EMAIL, TEST_PASSWORD } from "./test-user";
 import { adminClient } from "./admin";
+
+/**
+ * Task 11 làm mỗi lần vào trang học, hoặc đổi thẻ, bắn một POST lưu con trỏ Ở
+ * NỀN — không đợi trên đường bấm (đúng thiết kế). Server Action của Next POST
+ * thẳng tới URL của trang đang mở (đọc từ mã nguồn
+ * `next/dist/client/.../server-action-reducer.js`) và KHÔNG đặt cờ keepalive,
+ * nên một lần điều hướng thật (page.goto/reload) sẽ huỷ request còn đang bay.
+ * Bấm <Link> trong app thì không sao — đó là điều hướng phía client, không
+ * huỷ fetch — nhưng e2e mô phỏng "rời trang" bằng page.goto()/reload() nên
+ * cần đợi các POST này lắng xuống trước khi điều hướng.
+ *
+ * `page.waitForLoadState("networkidle")` KHÔNG dùng được ở đây: Next tự
+ * prefetch mọi <Link> đang trong khung nhìn theo chu kỳ (đo được: trang
+ * /vocab một mình đã có hơn 30 link buổi + nhóm), nên mạng gần như không bao
+ * giờ thật sự rảnh. Bộ đếm này CHỈ theo dõi POST (bỏ qua toàn bộ GET prefetch
+ * ồn ào đó) nên chờ đúng thứ cần chờ.
+ */
+const test = base.extend<{ drainSaves: () => Promise<void> }>({
+  drainSaves: [
+    async ({ page }, use) => {
+      let pending = 0;
+      const onSettled = (req: { method(): string }) => {
+        if (req.method() === "POST") pending = Math.max(0, pending - 1);
+      };
+      page.on("request", (req) => {
+        if (req.method() === "POST") pending++;
+      });
+      page.on("requestfinished", onSettled);
+      page.on("requestfailed", onSettled);
+      await use(async () => {
+        while (pending > 0) await new Promise((r) => setTimeout(r, 50));
+      });
+    },
+    // Fixture Playwright chỉ khởi tạo khi có test/hook nào đó THAM CHIẾU tới
+    // nó — phần lớn kịch bản trong tệp này không cần gọi `drainSaves()` trực
+    // tiếp nên không khai báo nó trong tham số. Nếu không bật `auto: true`,
+    // bộ đếm chỉ bắt đầu gắn listener từ lúc `afterEach` (nơi DUY NHẤT luôn
+    // tham chiếu tới nó) mới nhắc tên nó lần đầu — tức là SAU khi toàn bộ
+    // request của kịch bản đã bắn xong, đếm sót hết, và trở thành vô tác
+    // dụng. `auto: true` buộc gắn listener ngay từ đầu MỌI kịch bản.
+    { auto: true },
+  ],
+});
 
 async function login(page: Page) {
   await page.goto("/login");
@@ -10,7 +53,13 @@ async function login(page: Page) {
   await page.waitForURL("**/dashboard");
 }
 
-test.afterEach(async () => {
+test.afterEach(async ({ drainSaves }) => {
+  // Trang chỉ thật sự đóng SAU khối afterEach này, nên nếu dọn dữ liệu trước
+  // khi POST lưu con trỏ cuối cùng của kịch bản vừa xong tới nơi, nó sẽ ghi
+  // ĐÈ LẠI sau khi đã xoá — rò con trỏ sang kịch bản kế tiếp dùng chung buổi
+  // học. Đợi các POST đang bay lắng xuống trước khi xoá để loại trừ race này.
+  await drainSaves();
+
   // Dọn tiến độ của CHÍNH tài khoản test, không đụng ai khác.
   const admin = adminClient();
   const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -144,7 +193,7 @@ test("ghi chú nhiều dòng được lưu và còn sau khi tải lại", async 
   await expect(page.getByTestId("note-box")).toHaveValue(ghiChu);
 });
 
-test("gõ xong bấm Từ sau ngay, không đợi đã lưu — chữ vẫn tới database", async ({ page }) => {
+test("gõ xong bấm Từ sau ngay, không đợi đã lưu — chữ vẫn tới database", async ({ page, drainSaves }) => {
   await login(page);
   await page.goto("/vocab");
   await page.getByTestId("group-row").first().getByTestId("activity").first().click();
@@ -166,6 +215,14 @@ test("gõ xong bấm Từ sau ngay, không đợi đã lưu — chữ vẫn tớ
   await luuNen;
 
   await page.getByTestId("prev-button").click();
+
+  // Từ Task 11, mỗi lần đổi thẻ CŨNG bắn một request lưu con trỏ ở nền, cùng
+  // lúc với request flush() ghi chú ở trên — hai request chạy song song nên
+  // `luuNen` (chỉ đợi MỘT POST bất kỳ) có thể đã khớp với request nào tới
+  // trước, không chắc là request ghi chú. Đợi TOÀN BỘ POST đang bay lắng
+  // xuống trước khi tải lại để chắc chắn request ghi chú cũng đã tới nơi —
+  // không thì `page.reload()` ngay dưới đây có thể huỷ nốt nó nếu nó về sau.
+  await drainSaves();
 
   // Tải lại trang: state `notes` ở Deck bị xoá sạch, khởi tạo lại HOÀN TOÀN
   // từ dữ liệu server gửi xuống (loadCards đọc thẳng bảng word_notes). Ô còn
@@ -208,4 +265,42 @@ test("mục lục đánh dấu ✎ ngay khi gõ, và còn sau khi tải lại", 
   await expect(page.getByTestId("note-status")).toHaveText("đã lưu");
   await page.reload();
   await expect(page.getByTestId("index-item").first()).toContainText("✎");
+});
+
+test("rời buổi học rồi vào lại thì đúng chỗ đang đọc", async ({ page, drainSaves }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await page.getByTestId("index-item").nth(11).click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 12 / 30");
+
+  // Đợi các POST lưu con trỏ đang bay lắng xuống trước khi rời trang — cả
+  // request của lúc VÀO trang (initialIndex) lẫn của cú bấm vừa rồi. Xem chú
+  // thích ở định nghĩa `drainSaves` phía trên vì sao không dùng networkidle
+  // và vì sao `page.goto()` ngay dưới đây cần đợi trước.
+  await drainSaves();
+
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 12 / 30");
+});
+
+test("trang từ vựng hiện buổi đang học dở", async ({ page, drainSaves }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 2 / 30");
+
+  // Lý do đợi trước khi rời trang: xem chú thích ở định nghĩa `drainSaves`
+  // phía trên.
+  await drainSaves();
+
+  await page.goto("/vocab");
+  const o1 = page.getByTestId("group-row").first().getByTestId("activity").first();
+  await expect(o1).toHaveAttribute("data-kind", "dang-hoc");
+  await expect(o1).toContainText("từ 2/30");
 });

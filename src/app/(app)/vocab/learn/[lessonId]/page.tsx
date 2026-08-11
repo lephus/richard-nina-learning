@@ -43,6 +43,7 @@ export default async function LearnPage({
         cards={cards}
         initialIndex={cursorRes.data?.word_index ?? 0}
         examHref={`/vocab/learn/${id}/sap-co`}
+        lessonId={id}
       />
     </main>
   );
