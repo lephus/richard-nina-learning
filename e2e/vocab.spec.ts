@@ -89,22 +89,35 @@ test.afterEach(async ({ drainSaves }) => {
   // khi POST lưu con trỏ cuối cùng của kịch bản vừa xong tới nơi, nó sẽ ghi
   // ĐÈ LẠI sau khi đã xoá — rò con trỏ sang kịch bản kế tiếp dùng chung buổi
   // học. Đợi các POST đang bay lắng xuống trước khi xoá để loại trừ race này.
-  await drainSaves();
-
-  // Dọn tiến độ của CHÍNH tài khoản test, không đụng ai khác.
-  const admin = adminClient();
-  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-  if (error) throw error;
-  const u = data?.users.find((x) => x.email === TEST_EMAIL);
-  if (u) {
-    // Mỗi lượt xoá đọc `error` riêng và ném ngay: nuốt lỗi ở một trong ba
-    // lượt để lại tiến độ rò sang kịch bản kế tiếp.
-    const delCursor = await admin.from("lesson_cursor").delete().eq("user_id", u.id);
-    if (delCursor.error) throw delCursor.error;
-    const delNotes = await admin.from("word_notes").delete().eq("user_id", u.id);
-    if (delNotes.error) throw delNotes.error;
-    const delMastery = await admin.from("word_mastery").delete().eq("user_id", u.id);
-    if (delMastery.error) throw delMastery.error;
+  //
+  // Vòng sửa 1 (soát Task 14): `drainSaves()` từng đứng TRẦN, không
+  // try/finally — khi nó ném (một POST treo quá 5s trên Supabase Cloud gói
+  // Free, đã tái hiện thật ba lần khác nhau khi soát task này), hàm thoát
+  // ngay tại đây và CẢ BA lệnh xoá bên dưới không chạy, để lại tiến độ rò
+  // sang kịch bản kế tiếp. Hậu quả tệ hơn bản thân lỗi mạng: một lần treo
+  // làm ĐỎ một kịch bản khác hẳn, không liên quan gì — chẩn đoán luôn đổ tội
+  // sai chỗ (xem "Bốn lệnh kiểm chứng" trong task-14-report.md, mục tìm ra
+  // "Từ 13/30" là dữ liệu rò chứ không phải lỗi thật của kịch bản bị đỏ).
+  // `finally` đảm bảo ba lệnh xoá LUÔN chạy dù `drainSaves` ném hay không —
+  // lỗi của nó vẫn rethrow sau đó (không nuốt), chỉ không còn chặn phần dọn.
+  try {
+    await drainSaves();
+  } finally {
+    // Dọn tiến độ của CHÍNH tài khoản test, không đụng ai khác.
+    const admin = adminClient();
+    const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (error) throw error;
+    const u = data?.users.find((x) => x.email === TEST_EMAIL);
+    if (u) {
+      // Mỗi lượt xoá đọc `error` riêng và ném ngay: nuốt lỗi ở một trong ba
+      // lượt để lại tiến độ rò sang kịch bản kế tiếp.
+      const delCursor = await admin.from("lesson_cursor").delete().eq("user_id", u.id);
+      if (delCursor.error) throw delCursor.error;
+      const delNotes = await admin.from("word_notes").delete().eq("user_id", u.id);
+      if (delNotes.error) throw delNotes.error;
+      const delMastery = await admin.from("word_mastery").delete().eq("user_id", u.id);
+      if (delMastery.error) throw delMastery.error;
+    }
   }
 });
 
@@ -419,39 +432,24 @@ test("dashboard dẫn sang trang từ vựng và gợi ý chỗ tiếp theo", as
   await expect(page.getByTestId("group-row")).toHaveCount(10);
 });
 
-test("dashboard vẫn đúng khi lesson_cursor có dữ liệu thật — canh quan hệ nhúng lessons(ordinal)", async ({
-  page, drainSaves,
-}) => {
-  // Kịch bản trên dùng tài khoản chưa đụng gì — lesson_cursor RỖNG, nên
-  // không đi qua nổi nhánh quan hệ nhúng `lessons(ordinal)` trong
-  // dashboard/page.tsx (Task 14): không canh được gì thật. `nextActivity`
-  // chỉ phân biệt "dat"/"chưa dat" (progress.ts), không phân biệt "đang
-  // học"/"chưa học", nên dòng "Tiếp tục" không đổi NỘI DUNG dù có cursor hay
-  // không — không có assertion nào trên CHỮ của continue-hint phân biệt được
-  // "quan hệ nhúng đúng" với "quan hệ nhúng suy sai thành mảng" (cả hai
-  // đường đều rớt xuống "chưa dat" như nhau, xem phân tích trong
-  // task-14-report.md).
-  //
-  // Phép kiểm mạnh nhất viết được ở tầng e2e, thay cho khẳng định canh cửa
-  // đã mất khi Task 3 xoá dashboard cũ (assertion cũ canh grammar_lessons
-  // qua quan hệ nhúng trên bảng lessons — xem e2e/auth.spec.ts bản trước
-  // Task 3): buộc MỘT dòng lesson_cursor THẬT (không rỗng) chảy qua ép kiểu
-  // `unknown` đó bằng cách thật sự học dở buổi 1, rồi xác nhận dashboard vẫn
-  // dựng trang đúng — không throw ra trang lỗi, không đổi nội dung. Tiện thể
-  // canh luôn định dạng tiêu đề trang học "Nhóm 1 · Buổi 1" — điều kịch bản
-  // "Học tiếp" cũ (Task 3 đánh skip, Task 14 xoá hẳn — xem comment ở
-  // e2e/auth.spec.ts) từng canh nhưng dưới định dạng cũ, chưa ai viết lại.
+// Vòng sửa 1 (soát Task 14): kịch bản "canh quan hệ nhúng lessons(ordinal)"
+// từng đứng ở đây đã bị XOÁ, không sửa tại chỗ. Lý do: dashboard/page.tsx
+// không còn đọc `lesson_cursor` nữa — soát viên chỉ ra (và đã tự kiểm lại
+// bằng cách đọc hết groupStates/groupDone/nextActivity trong progress.ts,
+// không suy đoán) rằng hai hàm đó chỉ rẽ nhánh theo `kind === "dat"`, không
+// hề phân biệt "đang học" với "chưa làm" — nên `cursors=[]` cho ra ĐÚNG CÙNG
+// kết quả hiển thị như cursor thật. Quan hệ nhúng đó không còn tồn tại trong
+// mã nguồn, nên không còn gì để một kịch bản e2e "canh cửa" cho nó. Giữ một
+// test mang tên "canh quan hệ nhúng" mà không canh được gì tệ hơn không có
+// test nào — đúng nguyên tắc điều phối viên nêu.
+//
+// Phần còn giá trị thật của kịch bản cũ — định dạng tiêu đề trang học "Nhóm
+// N · Buổi M" chưa có phép kiểm nào khác chạm tới — giữ lại dưới đây, đặt
+// tên đúng với thứ nó thật sự kiểm, không mượn danh "canh cửa" nữa.
+test("trang học hiện đúng tiêu đề \"Nhóm N · Buổi M\"", async ({ page }) => {
   await login(page);
   await page.goto("/vocab");
   await page.getByTestId("group-row").first().getByTestId("activity").first().click();
   await page.waitForURL("**/vocab/learn/**");
   await expect(page.getByTestId("learn-heading")).toHaveText("Nhóm 1 · Buổi 1");
-
-  await page.getByTestId("next-button").click();
-  await expect(page.getByTestId("deck-position")).toHaveText("Từ 2 / 30");
-  await drainSaves();
-
-  await page.goto("/dashboard");
-  await expect(page.getByTestId("continue-hint")).toHaveText("Tiếp tục: Nhóm 1 · Buổi 1");
-  await expect(page.getByTestId("track-vocab")).toContainText("0/10 nhóm");
 });

@@ -2,49 +2,34 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TOTAL_GROUPS } from "@/lib/curriculum/groups";
-import {
-  groupStates, groupDone, nextActivity, toAssessmentRow, toCursorRow,
-  type CursorRow,
-} from "@/lib/curriculum/progress";
+import { groupStates, groupDone, nextActivity, toAssessmentRow } from "@/lib/curriculum/progress";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // HAI truy vấn nhỏ, không phải ba cộng một vòng duyệt 35 slot như trước.
-  // Không đọc `lessons` ở đây: dashboard chỉ cần ordinal, mà ordinal suy được
-  // từ chính `scope` của assessments và từ số học nhóm.
-  const [assessmentsRes, cursorsRes] = await Promise.all([
-    supabase
-      .from("assessments")
-      .select("id, type, scope, status, passed, score, parent_id")
-      .eq("user_id", user.id)
-      .order("id"),
-    supabase
-      .from("lesson_cursor")
-      .select("lesson_id, word_index, lessons(ordinal)")
-      .eq("user_id", user.id),
-  ]);
+  // MỘT truy vấn, không phải hai. Bản trước có đọc thêm `lesson_cursor` kèm
+  // quan hệ nhúng `lessons(ordinal)` để phân biệt "đang học" với "chưa làm" —
+  // nhưng groupDone/nextActivity bên dưới chỉ rẽ nhánh theo `kind === "dat"`,
+  // không đọc "đang học" khác "chưa làm" ở BẤT KỲ đâu (progress.ts: cả hai
+  // đều "chưa dat" như nhau với cả hai hàm này). Soát vòng 1 chỉ ra điều này,
+  // đã tự kiểm lại bằng cách đọc hết groupStates/groupDone/nextActivity: với
+  // `cursors=[]`, hai hàm cho ra CÙNG MỘT kết quả hiển thị (doneCount,
+  // next.group, next.lessonOrdinal) như khi truyền cursor thật — không có
+  // đường nào con trỏ ảnh hưởng tới thứ dashboard vẽ ra màn hình. Bỏ truy vấn
+  // này xoá theo luôn phép ép kiểu `as unknown as` không cần thiết nữa.
+  // Trang `/vocab` (khác file, không đụng ở đây) vẫn đọc `lesson_cursor` thật
+  // vì NÓ hiển thị "đang học" trên từng ô buổi — dashboard thì không.
+  const assessmentsRes = await supabase
+    .from("assessments")
+    .select("id, type, scope, status, passed, score, parent_id")
+    .eq("user_id", user.id)
+    .order("id");
   if (assessmentsRes.error) throw assessmentsRes.error;
-  if (cursorsRes.error) throw cursorsRes.error;
 
   const assessments = (assessmentsRes.data ?? []).map(toAssessmentRow);
-
-  // Không có generic Database trên client nên postgrest-js suy luận mọi quan hệ
-  // nhúng là mảng dù FK là 1-1. Ép qua `unknown` trước — cùng lý do đã ghi ở
-  // load-cards.ts.
-  const cursorRows = (cursorsRes.data ?? []) as unknown as {
-    lesson_id: number; word_index: number; lessons: { ordinal: number } | null;
-  }[];
-  const ordinalById = new Map(
-    cursorRows.flatMap((r) => (r.lessons ? [[r.lesson_id, r.lessons.ordinal] as const] : [])),
-  );
-  const cursors = cursorRows
-    .map((r) => toCursorRow(r, ordinalById))
-    .filter((c): c is CursorRow => c !== null);
-
-  const states = groupStates(assessments, cursors);
+  const states = groupStates(assessments, []);
   const doneCount = states.filter(groupDone).length;
   const next = nextActivity(states);
 
