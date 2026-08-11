@@ -41,7 +41,11 @@ describe.skipIf(!hasEnv)("schema lat 2a", () => {
 
   it("bảng user_lesson_progress không còn tồn tại", async () => {
     const { error } = await admin.from("user_lesson_progress").select("user_id").limit(1);
-    expect(error).not.toBeNull();
+    // 42P01 (Postgres: undefined_table, khi schema cache PostgREST con cu va
+    // request lot xuong toi Postgres that) hoac PGRST205 (PostgREST tu choi
+    // truoc vi cache da biet bang khong con) — ca hai deu la dau hieu "bang
+    // khong ton tai", khac han mot loi khac bat ky nao do lam test xanh gia.
+    expect(["42P01", "PGRST205"]).toContain(error?.code);
   });
 
   it("lesson_cursor ghi được và mặc định word_index = 0", async () => {
@@ -58,7 +62,10 @@ describe.skipIf(!hasEnv)("schema lat 2a", () => {
     const { error } = await admin
       .from("lesson_cursor").update({ word_index: 30 })
       .eq("user_id", userId).eq("lesson_id", lessonId);
-    expect(error).not.toBeNull();
+    // Phai la 23514 (check_violation) — dung ma loi cu the, khong chi "co loi
+    // bat ky". Neu chi assert not.toBeNull(), mot loi hoan toan khac (vi du
+    // bang lesson_cursor chua ton tai) cung lam test nay xanh gia.
+    expect(error?.code).toBe("23514");
   });
 
   it("word_notes giữ được nhiều dòng", async () => {
@@ -75,7 +82,9 @@ describe.skipIf(!hasEnv)("schema lat 2a", () => {
     const { error } = await admin
       .from("word_notes").update({ body: "x".repeat(2001) })
       .eq("user_id", userId).eq("word_id", wordId);
-    expect(error).not.toBeNull();
+    // 23514 = check_violation cua rang buoc char_length(body) <= 2000, cung
+    // ly do voi test bien word_index o tren.
+    expect(error?.code).toBe("23514");
   });
 
   it("assessment_type nhận 'lesson' và 'grammar', từ chối 'test'", async () => {
@@ -87,7 +96,9 @@ describe.skipIf(!hasEnv)("schema lat 2a", () => {
     if (ok.data) await admin.from("assessments").delete().eq("id", ok.data.id);
 
     const bad = await mk("test", {});
-    expect(bad.error).not.toBeNull();
+    // 22P02 = invalid_text_representation: loi ep kieu enum vi 'test' khong
+    // con la gia tri hop le, khong chi "co loi bat ky".
+    expect(bad.error?.code).toBe("22P02");
   });
 
   it("bài grammar buộc có grammar_lesson_id, bài từ vựng buộc không có", async () => {
@@ -95,11 +106,14 @@ describe.skipIf(!hasEnv)("schema lat 2a", () => {
 
     const thieu = await admin
       .from("assessments").insert({ user_id: userId, type: "grammar", scope: [] });
-    expect(thieu.error).not.toBeNull();
+    // 23514 = check_violation cua assessments_grammar_scope. Sua them ngoai
+    // danh sach cua nguoi soat: cung mot loi "chi assert co loi" nhu ba test
+    // tren, cung mot cach sua.
+    expect(thieu.error?.code).toBe("23514");
 
     const thua = await admin
       .from("assessments").insert({ user_id: userId, type: "lesson", scope: [1], grammar_lesson_id: gl!.id });
-    expect(thua.error).not.toBeNull();
+    expect(thua.error?.code).toBe("23514");
 
     const dung = await admin
       .from("assessments")
@@ -111,6 +125,12 @@ describe.skipIf(!hasEnv)("schema lat 2a", () => {
 
   it("cột expires_at không còn tồn tại", async () => {
     const { error } = await admin.from("assessments").select("expires_at").limit(1);
-    expect(error).not.toBeNull();
+    // 42703 (Postgres: undefined_column) hoac PGRST204 (PostgREST tu choi
+    // truoc vi cache biet cot khong con). KHONG dung 42P01/PGRST205 (danh cho
+    // BANG khong ton tai) — bang `assessments` van con, chi mot COT bien mat,
+    // nen ma loi phai la lop "undefined_column", khong phai "undefined_table".
+    // Da xac nhan that bang mot probe doc rieng truoc khi sua: select mot cot
+    // vo nghia tu chinh bang `assessments` tra ve dung 42703.
+    expect(["42703", "PGRST204"]).toContain(error?.code);
   });
 });

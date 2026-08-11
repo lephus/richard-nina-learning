@@ -6,6 +6,17 @@
 -- cot bang `using ...::text::...` — phep chuyen do NO ngay khi con mot dong
 -- mang gia tri 'test' hay 'expired'. Chi an toan khi bang da rong.
 
+-- Boc ca file trong MOT giao dich. Bon lenh `delete` o buoc 1 ngay duoi day
+-- khong the lui lai duoc: neu bat ky lenh nao sau do trong file nay loi, ca
+-- file phai cuon lai (rollback) het, khong duoc de mat du lieu roi dung nua
+-- chung. Khong dua vao gia dinh cong cu chay file nay se tu mo giao dich thay
+-- minh (vd SQL Editor cua Supabase lam vay) — do la thuoc tinh cua CONG CU,
+-- khong phai cua FILE. Da chung minh hau qua that luc kiem idempotent cuc bo:
+-- chay bang `psql -f` (khong truyen co `-1`) khien script dung giua chung, de
+-- lai database dang do — mat chi so/constraint da drop, con enum `*_v2` treo
+-- lai giua chung.
+begin;
+
 -- 1. Xoa sach tien do nguoi hoc. Giu auth.users va profiles.
 delete from assessment_items;
 delete from assessments;
@@ -119,3 +130,7 @@ create policy own_notes on word_notes
 --     ai them mot policy cho `anon` cung khong mo duoc du lieu rieng tu.
 revoke all on lesson_cursor from anon;
 revoke all on word_notes    from anon;
+
+-- Ket thuc giao dich mo o dau file — commit MOT LAN duy nhat, tat ca hoac
+-- khong gi ca.
+commit;
