@@ -362,3 +362,47 @@ test("che từ giấu cả từ lẫn câu ví dụ, và nhớ qua các thẻ", 
   await page.reload();
   await expect(page.getByTestId("card-word-hidden")).toBeVisible();
 });
+
+test("xem lại 60 từ của một nhóm chưa học", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+
+  const nhom5 = page.getByTestId("group-row").filter({ hasText: "NHÓM 5" });
+  await nhom5.getByTestId("browse-link").click();
+  await page.waitForURL("**/vocab/browse/5");
+
+  await expect(page.getByTestId("browse-heading")).toContainText("Nhóm 5 · từ 241–300");
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 1 / 60");
+  await expect(page.getByTestId("index-item")).toHaveCount(60);
+
+  // Không có bài thi ở chế độ xem lại.
+  await expect(page.getByTestId("exam-button")).toHaveCount(0);
+});
+
+test("xem lại không ghi con trỏ của buổi học", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab/browse/1");
+  await page.getByTestId("index-item").nth(9).click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 10 / 60");
+
+  await page.goto("/vocab");
+  await expect(
+    page.getByTestId("group-row").first().getByTestId("activity").first(),
+  ).toHaveAttribute("data-kind", "chua-lam");
+});
+
+test("sửa ghi chú được ngay trong chế độ xem lại", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab/browse/1");
+  await page.getByTestId("note-box").fill("ghi từ màn xem lại");
+  await expect(page.getByTestId("note-status")).toHaveText("đã lưu");
+
+  await page.reload();
+  await expect(page.getByTestId("note-box")).toHaveValue("ghi từ màn xem lại");
+});
+
+test("nhóm ngoài biên trả 404", async ({ page }) => {
+  await login(page);
+  const res = await page.goto("/vocab/browse/11");
+  expect(res!.status()).toBe(404);
+});
