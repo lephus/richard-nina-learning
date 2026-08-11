@@ -37,9 +37,9 @@ export interface VocabLite {
  * (xem `secretFor`), hoặc RPC `blank_answers_for_lesson` cho CẢ một buổi (xem
  * `loadContext` — nó gọi hàm này rồi GHI ĐÈ `blankAnswer` lên kết quả).
  *
- * Ở cạnh `VocabLite` chứ không nằm trong một module đọc dữ liệu cụ thể, vì cả
- * buổi học (lib/lesson/session.ts) lẫn bài đánh giá (lib/assessment/run.ts)
- * đều đọc chính bảng đó và phải quy về cùng một hình dạng.
+ * Ở cạnh `VocabLite` chứ không nằm trong một module đọc dữ liệu cụ thể — cùng
+ * lý do đã nêu ở chú thích đầu tệp trên `VocabLite`: nhiều nơi khác nhau đọc
+ * chính bảng đó và phải quy về cùng một hình dạng.
  */
 export function toVocabLite(row: unknown): VocabLite {
   const r = row as Record<string, unknown>;

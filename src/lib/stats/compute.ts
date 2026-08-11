@@ -3,9 +3,9 @@
  * database. Trang chỉ hiển thị những gì các hàm dưới đây trả ra, nên một lỗi
  * ở đây là một con số sai hiển thị cho người học mà không có gì đối chiếu.
  *
- * Cùng khuôn với `src/lib/assessment/next-step.ts`: `now` luôn là tham số,
- * không bao giờ đọc đồng hồ hệ thống bên trong logic, để test kiểm được mọi
- * nhánh thời gian mà không phải chờ, và để mọi so sánh dùng chung một nguồn.
+ * `now` luôn là tham số, không bao giờ đọc đồng hồ hệ thống bên trong logic,
+ * để test kiểm được mọi nhánh thời gian mà không phải chờ, và để mọi so sánh
+ * dùng chung một nguồn.
  */
 
 export const WEEKLY_TARGET = 2;
@@ -138,7 +138,10 @@ const KIND_LABEL: Record<AssessmentLite["type"], string> = {
  * Nhãn một bài đã nộp, ví dụ "Ôn tập buổi 1–2".
  *
  * Dấu gạch giữa hai số là EN DASH — U+2013 (–), KHÔNG phải dấu gạch nối
- * thường (-, U+002D). Playwright so khớp nguyên văn chuỗi này.
+ * thường (-, U+002D). `tests/stats-compute.test.ts` khoá ký tự này bằng
+ * `codePointAt` số học, không chỉ so chuỗi "–" suông — hai ký tự chỉ khác một
+ * byte, một phép so chuỗi trong chính test cũng có thể ăn may đúng nếu ai đó
+ * gõ nhầm dấu gạch nối thường ở CẢ HAI phía.
  *
  * `lessons[0]` và `lessons[length-1]` chứ không phải chỉ số cố định: bài bổ
  * túc thường chỉ có một phần tử trong `scope`, còn bài ngữ pháp có mảng rỗng.
