@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import type { VocabCard } from "@/lib/vocab/load-cards";
 import { WordCard } from "./word-card";
+import { WordIndex } from "./word-index";
 
 /**
  * Điều phối N thẻ từ. Toàn bộ dữ liệu đã nằm sẵn trong `cards` từ lần tải
@@ -56,39 +57,43 @@ export function Deck({
   if (!card) return null;
 
   return (
-    <div className="flex flex-col gap-4">
-      <p data-testid="deck-position" className="text-sm text-slate-500">
-        Từ {index + 1} / {cards.length}
-      </p>
+    <div className="flex gap-4">
+      <WordIndex cards={cards} current={index} onPick={go} />
 
-      <WordCard key={card.id} card={card} />
+      <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <p data-testid="deck-position" className="text-sm text-slate-500">
+          Từ {index + 1} / {cards.length}
+        </p>
 
-      <div className="flex gap-2">
-        <button
-          data-testid="prev-button"
-          onClick={() => go(index - 1)}
-          disabled={index === 0}
-          className="flex-1 rounded border border-slate-300 px-4 py-2 disabled:opacity-40"
-        >
-          ← Từ trước
-        </button>
-        <button
-          data-testid="next-button"
-          onClick={() => go(index + 1)}
-          disabled={index === cards.length - 1}
-          className="flex-1 rounded border border-slate-300 px-4 py-2 disabled:opacity-40"
-        >
-          Từ sau →
-        </button>
-        {examHref && (
-          <Link
-            href={examHref}
-            data-testid="exam-button"
-            className="flex-1 rounded bg-slate-900 px-4 py-2 text-center text-white"
+        <WordCard key={card.id} card={card} />
+
+        <div className="flex gap-2">
+          <button
+            data-testid="prev-button"
+            onClick={() => go(index - 1)}
+            disabled={index === 0}
+            className="flex-1 rounded border border-slate-300 px-4 py-2 disabled:opacity-40"
           >
-            LÀM BÀI
-          </Link>
-        )}
+            ← Từ trước
+          </button>
+          <button
+            data-testid="next-button"
+            onClick={() => go(index + 1)}
+            disabled={index === cards.length - 1}
+            className="flex-1 rounded border border-slate-300 px-4 py-2 disabled:opacity-40"
+          >
+            Từ sau →
+          </button>
+          {examHref && (
+            <Link
+              href={examHref}
+              data-testid="exam-button"
+              className="flex-1 rounded bg-slate-900 px-4 py-2 text-center text-white"
+            >
+              LÀM BÀI
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   );

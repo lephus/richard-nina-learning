@@ -95,3 +95,30 @@ test("câu ví dụ đã điền lại, không còn dấu gạch trống", async
 
   await expect(page.getByTestId("card-example")).not.toContainText("___");
 });
+
+test("mục lục liệt kê 30 từ và nhảy thẳng tới từ được bấm", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await expect(page.getByTestId("index-item")).toHaveCount(30);
+
+  const muc20 = page.getByTestId("index-item").nth(19);
+  const chu20 = (await muc20.textContent())!.replace(/^\s*20\s*/, "").trim();
+
+  await muc20.click();
+  await expect(page.getByTestId("deck-position")).toHaveText("Từ 20 / 30");
+  await expect(page.getByTestId("card-word")).toHaveText(chu20);
+});
+
+test("mục lục đánh dấu từ đang xem", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await expect(page.getByTestId("index-item").first()).toHaveAttribute("aria-current", "true");
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("index-item").nth(1)).toHaveAttribute("aria-current", "true");
+});

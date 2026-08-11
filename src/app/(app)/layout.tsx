@@ -14,7 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!user) redirect("/login");
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-3xl flex-col p-6">
+    <div className="mx-auto flex min-h-screen max-w-5xl flex-col p-6">
       <header className="mb-6 flex items-center justify-between">
         <span className="font-semibold">Học TOEIC</span>
         {/* Không có link này thì /stats không tồn tại với người học dù route
