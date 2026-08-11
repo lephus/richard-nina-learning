@@ -1,16 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { VocabCard } from "@/lib/vocab/load-cards";
 import { saveCursor } from "@/app/(app)/vocab/actions";
 import { WordCard } from "./word-card";
 import { WordIndex } from "./word-index";
 
+// Debounce cho lần ghi con trỏ đọc — cùng khuôn với `DEBOUNCE_MS` của
+// note-box.tsx, tách hằng số riêng vì khác module.
+const CURSOR_SAVE_DEBOUNCE_MS = 500;
+
 /**
  * Điều phối N thẻ từ. Toàn bộ dữ liệu đã nằm sẵn trong `cards` từ lần tải
  * trang duy nhất, nên MỌI thao tác ở đây — tới, lui, nhảy, phím mũi tên — là
- * đổi một số nguyên trong state. Không có lời gọi mạng nào trên đường bấm.
+ * đổi một số nguyên trong state. Không có lời gọi mạng nào CHẶN trên đường
+ * bấm: con trỏ đọc được ghi ở nền, debounce 500ms (xem effect gần cuối tệp),
+ * không `await` trước khi thẻ kế tiếp lên hình.
  *
  * Dùng chung cho pha học (30 thẻ, có nút "Làm bài") và xem lại (60 thẻ, không
  * có). Đây là ranh giới quan trọng nhất của lát: tách thành hai cây component
@@ -86,16 +92,61 @@ export function Deck({
     return () => window.removeEventListener("keydown", onKey);
   }, [go, index]);
 
-  // Ghi chỗ đang đọc Ở NỀN. Không `await` trên đường bấm — đổi thẻ phải xong
-  // trong một khung hình, còn việc ghi thì tới lúc nào cũng được.
-  //
-  // Nuốt lỗi ở đây là CÓ CHỦ ĐÍCH và là chỗ duy nhất trong lát này được phép:
-  // mất một dấu trang không đáng để dựng lên một thông báo lỗi giữa lúc học,
-  // và lần đổi thẻ kế tiếp sẽ ghi đè lại đúng.
+  // Chỉ số ĐÃ GỬI THÀNH CÔNG lần gần nhất xuống server — khởi tạo bằng
+  // `initialIndex` vì đó chính là giá trị `lesson_cursor` server đã đọc lúc
+  // tải trang, nên nếu người học chưa đổi thẻ nào thì không có gì để gửi lại.
+  const savedIndexRef = useRef(initialIndex);
+  // Ref giữ CHỈ SỐ MỚI NHẤT: effect tháo bên dưới (deps rỗng) đóng băng biến
+  // của lần render tạo ra nó, mà lúc tháo cần giá trị mới nhất — cùng lý do
+  // đã ghi ở note-box.tsx.
+  const indexRef = useRef(index);
+  useEffect(() => {
+    indexRef.current = index;
+  }, [index]);
+
+  async function flushCursor() {
+    if (lessonId === null) return;
+    if (indexRef.current === savedIndexRef.current) return;
+    const sending = indexRef.current;
+    try {
+      await saveCursor(lessonId, sending);
+      savedIndexRef.current = sending;
+    } catch {
+      // Nuốt lỗi ở đây là CÓ CHỦ ĐÍCH và là chỗ duy nhất trong lát này được
+      // phép: mất một dấu trang không đáng để dựng lên một thông báo lỗi giữa
+      // lúc học, và lần đổi thẻ kế tiếp (hoặc lần tháo component) sẽ ghi đè
+      // lại đúng.
+    }
+  }
+
+  // Ghi chỗ đang đọc Ở NỀN, debounce 500ms — cùng khuôn note-box.tsx dùng cho
+  // ô ghi chú, đổi "gõ" thành "đổi thẻ". TRƯỚC bản vá này, effect chạy MỖI
+  // LẦN `index` đổi, không hẹn giờ: giữ phím mũi tên lướt qua N thẻ liền bắn
+  // N Server Action tuần tự (mỗi cái hai vòng mạng Supabase: getUser() rồi
+  // upsert), có thể TỚI NƠI không theo thứ tự BẤM và ghi đè lẫn nhau — vào
+  // lại có thể về thẻ 12 thay vì thẻ 20. Debounce chỉ còn gửi state SAU CÙNG
+  // sau khi người học dừng 500ms, và mỗi lần đổi thẻ tiếp huỷ hẹn giờ cũ.
   useEffect(() => {
     if (lessonId === null) return;
-    void saveCursor(lessonId, index).catch(() => {});
+    const t = setTimeout(() => void flushCursor(), CURSOR_SAVE_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+    // `flushCursor` cố tình không nằm trong danh sách phụ thuộc: nó đọc mọi
+    // thứ qua ref (và `lessonId` không đổi trong một lần sống của Deck) nên
+    // không cần dựng lại hẹn giờ mỗi lần render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId, index]);
+
+  // Lưu nốt khi rời trang HẲN. Deck không remount giữa các thẻ (chỉ WordCard
+  // remount qua `key={card.id}`) — Deck chỉ tháo khi điều hướng đi nơi khác.
+  // Không có vế này thì lướt nhanh rồi bấm sang trang khác trước khi hẹn giờ
+  // 500ms tới sẽ mất đúng vị trí cuối cùng — cùng lỗ hổng note-box.tsx từng
+  // vá cho ô ghi chú.
+  useEffect(() => {
+    return () => {
+      void flushCursor();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const card = cards[index];
   if (!card) return null;

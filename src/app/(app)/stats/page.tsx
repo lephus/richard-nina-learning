@@ -108,8 +108,13 @@ export default async function StatsPage() {
   }));
 
   // Một dòng "submitted" vẫn có thể mang score/passed/submitted_at NULL nếu
-  // tiến trình chết giữa lúc RPC đóng bài và UPDATE ghi điểm ngay sau đó (xem
-  // src/lib/assessment/run.ts, đoạn quanh dòng 446). Một bài dở dang như vậy
+  // tiến trình chết giữa lúc RPC đóng bài và UPDATE ghi điểm ngay sau đó — hai
+  // bước tách rời ở luồng nộp bài của lát 1 (`lib/assessment/run.ts`, đã bị
+  // XOÁ khỏi src/ ở lát 2a cùng toàn bộ luồng 135 item/35 slot). Không mã nào
+  // trong `src/` ghi bảng `assessments` ở lát này nên tình huống này hiện
+  // không xảy ra, nhưng bộ lọc vẫn cần đứng đây làm hàng phòng thủ cho luồng
+  // nộp bài mà lát 2b sẽ viết lại — RPC + UPDATE tách rời là kiểu lỗi có thể
+  // tái diễn ở bất kỳ lần viết lại nào theo cùng mẫu. Một bài dở dang như vậy
   // không có gì để vẽ lên biểu đồ hay gộp vào nhịp học, nên lọc bỏ ở đây thay
   // vì để `submittedAt: null` lọt vào compute.ts và biến thành NaN im lặng.
   const completeAssessments = ((assessmentsRes.data ?? []) as AssessmentDbRow[]).filter(

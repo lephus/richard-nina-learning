@@ -52,11 +52,12 @@ test("tài khoản chưa học gì vào /stats không thấy trang vỡ", async 
   await page.goto("/stats");
 
   // Khẳng định DƯƠNG TÍNH trang thật sự đã render, không phải một error
-  // boundary: tiêu đề trang VÀ câu mời làm bài ôn tập đầu tiên (do
-  // ScoreChart hiện khi series rỗng) đều phải thấy được. Chỉ đếm "0 score-bar"
-  // không đủ — một trang lỗi cũng có 0 score-bar.
+  // boundary: tiêu đề trang VÀ câu mời học từ vựng (do ScoreChart hiện khi
+  // series rỗng — lát 2a chưa có bài thi nào nên không mời làm bài) đều phải
+  // thấy được. Chỉ đếm "0 score-bar" không đủ — một trang lỗi cũng có 0
+  // score-bar.
   await expect(page.getByRole("heading", { name: "Thống kê học tập" })).toBeVisible();
-  await expect(page.getByText("Làm bài ôn tập đầu tiên")).toBeVisible();
+  await expect(page.getByText("Học từ vựng trước đã")).toBeVisible();
 
   await expect(page.getByTestId("stats-mastered")).toHaveText("0 / 605");
   await expect(page.getByTestId("score-bar")).toHaveCount(0);

@@ -62,14 +62,20 @@ test("đăng nhập đúng thì thấy hai thẻ chọn lộ trình: từ vựng
 // bấm một-phát-tới-buổi nào nữa — "Tiếp tục" giờ chỉ là DÒNG CHỮ gợi ý
 // (data-testid="continue-hint"), không phải link hay nút (xem comment tại
 // nextActivity trong progress.ts: "GỢI Ý, không phải luật"). Hành vi tương
-// đương thật sự — từ dashboard đi đúng đường thì tới đúng Buổi 1, với đúng
-// tiêu đề trang học — giờ nằm ở e2e/vocab.spec.ts: kịch bản "dashboard dẫn
-// sang trang từ vựng..." canh dòng gợi ý và cú bấm thẻ Từ vựng, còn kịch bản
-// canh quan hệ nhúng lessons(ordinal) đi tiếp từ đó vào đúng buổi 1 và canh
-// cả định dạng tiêu đề mới ("Nhóm 1 · Buổi 1", khác "Buổi 1" của bản cũ).
-// Viết lại một bản rút gọn ngay tại đây chỉ lặp lại đúng các bước đó — và
-// vocab.spec.ts vốn đã an toàn cho việc này (afterEach dọn lesson_cursor
-// theo user_id), còn auth.spec.ts thì không có hạ tầng dọn tương đương.
+// đương thật sự — từ dashboard đi đúng đường thì tới đúng Buổi 1 — giờ nằm ở
+// e2e/vocab.spec.ts: kịch bản "dashboard dẫn sang trang từ vựng..." canh
+// dòng gợi ý và cú bấm thẻ Từ vựng. vocab.spec.ts vốn đã an toàn cho việc
+// này (afterEach dọn lesson_cursor theo user_id), còn auth.spec.ts thì không
+// có hạ tầng dọn tương đương — đây vẫn là lý do KHÔNG viết lại tại chỗ.
+//
+// (Vòng soát cuối 2a — sửa câu đã lỗi thời ở đây: từng nói tiếp một kịch bản
+// "canh quan hệ nhúng lessons(ordinal)" đi từ dòng gợi ý vào đúng buổi 1 và
+// canh cả định dạng tiêu đề mới. Kịch bản đó đã bị XOÁ khỏi vocab.spec.ts
+// (Vòng sửa 1, soát Task 14): quan hệ nhúng nó canh không còn trong mã nguồn
+// — dashboard/page.tsx bỏ hẳn truy vấn `lesson_cursor` — nên không còn gì để
+// một test "canh cửa". Phần định dạng tiêu đề "Nhóm N · Buổi M" còn giá trị
+// thật thì vocab.spec.ts giữ lại dưới một tên đúng với thứ nó kiểm, không
+// mượn danh "canh quan hệ nhúng" nữa; xem vocab.spec.ts dòng ~474-487.)
 
 test("đăng xuất rồi quay lại /dashboard thì bị đẩy về /login", async ({ page }) => {
   await login(page);

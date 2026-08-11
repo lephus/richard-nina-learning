@@ -317,8 +317,19 @@ test("rời buổi học rồi vào lại thì đúng chỗ đang đọc", async
   await page.getByTestId("group-row").first().getByTestId("activity").first().click();
   await page.waitForURL("**/vocab/learn/**");
 
+  // Vòng soát cuối 2a (việc 1): con trỏ đọc giờ ghi NỀN có debounce 500ms —
+  // request lưu chỉ thật sự bắn đi SAU 500ms đứng yên, không phải ngay lúc
+  // bấm. `drainSaves()` chỉ đợi request ĐÃ BẮT ĐẦU, không đợi một request
+  // còn nằm trong hẹn giờ — gọi nó ngay sau cú bấm (như bản trước debounce)
+  // sẽ trả về ngay vì chưa có gì đang bay, rồi `page.goto()` dưới đây huỷ mất
+  // hẹn giờ trước khi nó kịp bắn. Đợi ĐÚNG response của lần lưu này trước,
+  // cùng khuôn với kịch bản "gõ xong bấm Từ sau ngay" phía trên.
+  const luuConTro = page.waitForResponse((r) => r.request().method() === "POST", {
+    timeout: 5000,
+  });
   await page.getByTestId("index-item").nth(11).click();
   await expect(page.getByTestId("deck-position")).toHaveText("Từ 12 / 30");
+  await luuConTro;
 
   // Đợi các POST lưu con trỏ đang bay lắng xuống trước khi rời trang — cả
   // request của lúc VÀO trang (initialIndex) lẫn của cú bấm vừa rồi. Xem chú
@@ -336,8 +347,16 @@ test("trang từ vựng hiện buổi đang học dở", async ({ page, drainSav
   await page.goto("/vocab");
   await page.getByTestId("group-row").first().getByTestId("activity").first().click();
   await page.waitForURL("**/vocab/learn/**");
+
+  // Vòng soát cuối 2a (việc 1): cùng lý do đợi response ở kịch bản "rời buổi
+  // học rồi vào lại" — con trỏ ghi debounce 500ms, `drainSaves()` không đợi
+  // được một request còn nằm trong hẹn giờ, chưa bắn đi.
+  const luuConTro = page.waitForResponse((r) => r.request().method() === "POST", {
+    timeout: 5000,
+  });
   await page.getByTestId("next-button").click();
   await expect(page.getByTestId("deck-position")).toHaveText("Từ 2 / 30");
+  await luuConTro;
 
   // Lý do đợi trước khi rời trang: xem chú thích ở định nghĩa `drainSaves`
   // phía trên.
@@ -362,13 +381,21 @@ test("che từ giấu cả từ lẫn câu ví dụ, và nhớ qua các thẻ", 
   await expect(page.getByTestId("card-word-hidden")).toBeVisible();
   await expect(page.getByTestId("card-example")).toHaveCount(0);
 
-  // Một công tắc cho cả buổi, không phải cho từng thẻ.
+  // Một công tắc cho cả buổi, không phải cho từng thẻ. Bấm "Từ sau" cũng bắn
+  // một POST lưu con trỏ ở nền (Task 11), nhưng debounce 500ms (Vòng soát
+  // cuối 2a, việc 1) nên request chỉ thật sự bắn đi SAU đó — đợi đúng
+  // response này trước, không thì `drainSaves()` thấy 0 request đang bay và
+  // trả về ngay, để `reload()` huỷ mất request còn nằm trong hẹn giờ.
+  const luuConTro = page.waitForResponse((r) => r.request().method() === "POST", {
+    timeout: 5000,
+  });
   await page.getByTestId("next-button").click();
   await expect(page.getByTestId("card-word-hidden")).toBeVisible();
+  await luuConTro;
 
-  // Bấm "Từ sau" cũng bắn một POST lưu con trỏ ở nền (Task 11). Đợi nó lắng
-  // xuống trước khi reload() — xem chú thích ở định nghĩa `drainSaves` phía
-  // trên vì sao một lần điều hướng thật ngay sau đó có thể huỷ request này.
+  // Đợi nó lắng xuống trước khi reload() — xem chú thích ở định nghĩa
+  // `drainSaves` phía trên vì sao một lần điều hướng thật ngay sau đó có thể
+  // huỷ request này.
   await drainSaves();
 
   // Và server đã biết ngay từ HTML đầu tiên của lần tải sau.
@@ -422,9 +449,21 @@ test("nhóm ngoài biên trả 404", async ({ page }) => {
 
 /* ───────────────────────── Dashboard thật (Task 14) ───────────────────────── */
 
-test("dashboard dẫn sang trang từ vựng và gợi ý chỗ tiếp theo", async ({ page }) => {
+// Vòng soát cuối 2a: kịch bản này TỪNG khẳng định continue-hint hiện "Tiếp
+// tục: Nhóm 1 · Buổi 1" ngay trên một tài khoản mới tinh. Đó là đúng ở mặt
+// chuỗi hiển thị nhưng sai ở mặt Ý NGHĨA — dashboard/page.tsx lúc đó không
+// phân biệt được "chưa học gì" với "đã học xong 5 nhóm" (nextActivity() chỉ
+// rẽ theo kind === "dat", đòi assessments.passed = true mà không mã nào
+// trong src/ ghi bảng đó ở lát 2a), nên MỌI tài khoản đều nhận đúng một dòng
+// gợi ý y hệt. Bản vá ẩn hẳn dòng gợi ý khi chưa có ít nhất một bài đã nộp;
+// tài khoản test ở đây luôn rơi đúng trường hợp đó (afterEach dọn sạch, và
+// không kịch bản nào trong file này từng ghi bảng assessments), nên khẳng
+// định đúng bây giờ là "không hiện", không phải một chuỗi Nhóm/Buổi cụ thể.
+test("dashboard dẫn sang trang từ vựng; dòng Tiếp tục ẩn khi chưa nộp bài nào", async ({
+  page,
+}) => {
   await login(page);
-  await expect(page.getByTestId("continue-hint")).toHaveText("Tiếp tục: Nhóm 1 · Buổi 1");
+  await expect(page.getByTestId("continue-hint")).toHaveCount(0);
   await expect(page.getByTestId("track-vocab")).toContainText("0/10 nhóm");
 
   await page.getByTestId("track-vocab").click();

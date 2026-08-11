@@ -32,6 +32,16 @@ export default async function DashboardPage() {
   const states = groupStates(assessments, []);
   const doneCount = states.filter(groupDone).length;
   const next = nextActivity(states);
+  // Vòng soát cuối 2a: `nextActivity` chỉ nhảy qua ô có kind === "dat", mà
+  // "dat" đòi một dòng assessments đã nộp passed = true — không mã nào trong
+  // src/ ghi bảng đó ở lát này (bài thi là lát 2b). Hệ quả nếu không chặn ở
+  // đây: MỌI tài khoản, kể cả một đã học xong 5 nhóm bằng cách đọc hết thẻ
+  // (lesson_cursor, không phải assessments), đều bị dòng "Tiếp tục" chỉ về
+  // "Nhóm 1 · Buổi 1" — không phải trống, mà chỉ SAI ĐƯỜNG. `assessments` đã
+  // đọc sẵn ở trên nên không tốn truy vấn thêm để biết có bài nào đã nộp
+  // chưa. Khi lát 2b viết xong luồng nộp bài, bảng có dữ liệu thật và dòng
+  // này tự sống lại đúng nghĩa, không cần sửa gì ở đây nữa.
+  const hasSubmitted = assessments.some((a) => a.status === "submitted");
 
   return (
     <main className="flex flex-col gap-6">
@@ -50,8 +60,10 @@ export default async function DashboardPage() {
           </span>
           {/* Gợi ý, KHÔNG phải luật: 10 nhóm vẫn mở hết, bấm thẳng nhóm 7 lúc
               nào cũng được. Dòng này chỉ đỡ cho người học không phải nhớ mình
-              đang dở ở đâu. */}
-          {next && (
+              đang dở ở đâu.
+              `hasSubmitted &&`: thà không nói gì còn hơn chỉ sai — xem chú
+              thích tại khai báo `hasSubmitted` ở trên. */}
+          {hasSubmitted && next && (
             <span data-testid="continue-hint" className="mt-2 text-xs text-slate-500">
               Tiếp tục: Nhóm {next.group} ·{" "}
               {/* `lessonOrdinal` là số thứ tự TOÀN CỤC — cùng nhãn với trang

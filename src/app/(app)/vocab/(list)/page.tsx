@@ -91,6 +91,7 @@ export default async function VocabPage() {
                     // nhóm 3 sẽ mở ra một trang tên "Buổi 5".
                     label={i === 2 ? "Ôn tập" : `Buổi ${s.lessons[i as 0 | 1]}`}
                     state={activity}
+                    isReview={i === 2}
                     href={lessonId === undefined ? null : `/vocab/learn/${lessonId}`}
                   />
                 );
@@ -103,10 +104,16 @@ export default async function VocabPage() {
   );
 }
 
-function describe(state: ActivityState): string {
+function describe(state: ActivityState, isReview: boolean): string {
   switch (state.kind) {
     case "chua-lam":
-      return "chưa học";
+      // Ô Ôn tập không có bài thi nào để làm ở lát 2a — loại "review" chưa
+      // từng được ghi vào `assessments` (bài thi là lát 2b), nên trạng thái
+      // của nó CHỈ có thể là "chua-lam" suốt lát này. "chưa học" ngụ ý người
+      // học bỏ dở một việc có thể làm; nói vậy cho ô này là sai — đổi thành
+      // "sắp có", nhất quán với nút LÀM BÀI (dẫn `/sap-co`) và thẻ Ngữ pháp
+      // trên dashboard ("Sắp có").
+      return isReview ? "sắp có" : "chưa học";
     case "dang-hoc":
       // +1 vì `wordIndex` đếm từ 0 còn người học đếm từ 1.
       return `từ ${state.wordIndex + 1}/${WORDS_PER_LESSON}`;
@@ -120,11 +127,12 @@ function describe(state: ActivityState): string {
 }
 
 function ActivityBox({
-  label, state, href,
+  label, state, href, isReview,
 }: {
   label: string;
   state: ActivityState;
   href: string | null;
+  isReview: boolean;
 }) {
   const shell = "rounded border px-2 py-3 text-center text-xs";
   const tone =
@@ -136,7 +144,7 @@ function ActivityBox({
   const inner = (
     <>
       <span className="block font-medium">{label}</span>
-      <span className="block text-slate-600">{describe(state)}</span>
+      <span className="block text-slate-600">{describe(state, isReview)}</span>
     </>
   );
   return (
