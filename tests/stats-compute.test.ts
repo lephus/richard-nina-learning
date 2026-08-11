@@ -105,13 +105,24 @@ describe("scoreSeries", () => {
   });
 
   it("nhãn ghép loại bài + phạm vi buổi, phạm vi một buổi không có dấu gạch", () => {
-    const rows: AssessmentLite[] = [row({ type: "test", scope: [1, 2, 3, 4] })];
-    expect(scoreSeries(rows)[0]?.label).toBe("Kiểm tra buổi 1–4");
+    // scope 4 phần tử (không phải 2) — cố ý, để phân biệt được lessons[0]/
+    // lessons[length-1] với một cách viết sai lessons[0]/lessons[1]: mảng 2
+    // phần tử thì hai cách viết cho cùng một kết quả, không bắt được lỗi.
+    const rows: AssessmentLite[] = [row({ type: "review", scope: [1, 2, 3, 4] })];
+    expect(scoreSeries(rows)[0]?.label).toBe("Ôn tập buổi 1–4");
   });
 
   it("phạm vi một buổi duy nhất (bổ túc) không có dấu gạch nối", () => {
     const rows: AssessmentLite[] = [row({ type: "remedial", scope: [5] })];
     expect(scoreSeries(rows)[0]?.label).toBe("Bổ túc buổi 5");
+  });
+
+  it("bài ngữ pháp (scope rỗng) ra đúng nhãn 'Ngữ pháp', không có đuôi 'undefined'", () => {
+    // Bẫy cụ thể: nếu nhánh `type === "grammar"` bị bỏ khỏi label() và hàm
+    // rơi xuống thẳng `scope[0]` (scope rỗng nên scope[0] === undefined), kết
+    // quả sẽ là "Ngữ pháp undefined" thay vì "Ngữ pháp".
+    const rows: AssessmentLite[] = [row({ type: "grammar", scope: [] })];
+    expect(scoreSeries(rows)[0]?.label).toBe("Ngữ pháp");
   });
 
   it("danh sách rỗng — người vừa đăng ký, chưa làm bài đánh giá nào", () => {

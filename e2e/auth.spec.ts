@@ -42,38 +42,29 @@ test("đăng nhập sai thì báo lỗi và vẫn ở /login", async ({ page }) 
   await expect(page).toHaveURL(/\/login$/);
 });
 
-test("đăng nhập đúng thì thấy 35 hoạt động, trong đó 20 dòng buổi học với buổi 1 mở, buổi 2 khoá, và buổi 1 có tên bài ngữ pháp", async ({
+test("đăng nhập đúng thì thấy hai thẻ chọn lộ trình: từ vựng và ngữ pháp", async ({
   page,
 }) => {
   await login(page);
 
-  // Lát 1c biến 20 buổi thành 35 hoạt động (buổi + ôn tập + kiểm tra) — mọi
-  // dòng, bất kể loại, đều mang data-testid="lesson-row".
-  const rows = page.getByTestId("lesson-row");
-  await expect(rows).toHaveCount(35);
-
-  // Chỉ đếm riêng dòng buổi học qua data-kind, không đếm mọi lesson-row nữa —
-  // 20 buổi vẫn phải còn nguyên trong chuỗi 35 hoạt động. Neo vào
-  // [data-testid="lesson-row"] chứ không khớp data-kind trần trên toàn tài
-  // liệu — nếu một phần tử khác của trang sau này cũng mang data-kind="lesson"
-  // vì lý do gì đó, locator này không được âm thầm khớp nhầm nó.
-  const lessonRows = page.locator('[data-testid="lesson-row"][data-kind="lesson"]');
-  await expect(lessonRows).toHaveCount(20);
-  await expect(lessonRows.nth(0)).toHaveAttribute("data-status", "available");
-  await expect(lessonRows.nth(1)).toHaveAttribute("data-status", "locked");
-
-  // Canh cửa cho ép kiểu `as unknown as LessonWithGrammar[]` trong
-  // dashboard/page.tsx: nếu postgrest-js một ngày nào đó trả quan hệ nhúng
-  // dạng mảng thay vì object đơn, `grammar_lessons?.title` sẽ undefined và ô
-  // này render RỖNG. Assertion phải đọc đúng span chứa tên bài, không phải
-  // toàn bộ text của dòng — dòng còn chứa nhãn trạng thái ("Sẵn sàng") nên
-  // luôn "không rỗng" dù thiếu tên bài.
-  await expect(lessonRows.nth(0)).toContainText("Buổi 1");
-  const title = await lessonRows.nth(0).locator(".text-slate-600").innerText();
-  expect(title.trim().length).toBeGreaterThan(0);
+  // Lát 2a (Task 3) gỡ chuỗi 35 hoạt động và khoá tuần tự theo buổi — dashboard
+  // tạm chỉ còn hai thẻ chọn lộ trình, cả hai chưa dẫn đi đâu (href={null})
+  // cho tới khi Task 6 (/vocab) và Task 14 (dashboard thật) dựng lại phần sau
+  // chúng. Assertion cũ (đếm 35 dòng lesson-row, 20 dòng buổi học, trạng thái
+  // khoá/mở, tên bài ngữ pháp) không còn gì để đo — DOM đó không còn tồn tại.
+  await expect(page.getByTestId("track-vocab")).toBeVisible();
+  await expect(page.getByTestId("track-grammar")).toBeVisible();
 });
 
-test('bấm "Học tiếp" thì tới trang buổi 1', async ({ page }) => {
+// "Học tiếp" không tồn tại trên dashboard tạm của lát 2a (Task 3) — cả hai
+// thẻ chọn lộ trình đều href={null} (xem dashboard/page.tsx), và route
+// /learn/[lessonId] đã bị xoá hẳn cùng luồng cũ. Không có gì để bấm, không có
+// "Buổi 1" nào để tới. Đánh dấu skip thay vì xoá âm thầm — cùng nguyên tắc
+// brief áp dụng cho e2e/stats.spec.ts. Task 14 (dashboard thật, theo chú
+// thích trong dashboard/page.tsx) là nơi tự nhiên để viết lại kịch bản này
+// cho hành vi mới — không phải khôi phục y nguyên bản cũ, vì continue-link
+// tương lai sẽ trỏ vào lộ trình từ vựng/ngữ pháp, không phải /learn/[lessonId].
+test.skip('bấm "Học tiếp" thì tới trang buổi 1', async ({ page }) => {
   await login(page);
   await page.getByTestId("continue-link").click();
   await expect(page.getByTestId("learn-heading")).toHaveText("Buổi 1");

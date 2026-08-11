@@ -38,8 +38,6 @@ test.afterEach(async () => {
     if (delWord.error) throw delWord.error;
     const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", u.id);
     if (delGrammar.error) throw delGrammar.error;
-    const delProgress = await admin.from("user_lesson_progress").delete().eq("user_id", u.id);
-    if (delProgress.error) throw delProgress.error;
   }
 });
 
@@ -100,7 +98,8 @@ test("có dữ liệu thì hiện đúng số — đếm cột mastered, không 
     score: 88, // cố ý không phải 0 hay 100 — hai giá trị dễ trùng mặc định
     passed: true,
     started_at: now,
-    expires_at: now,
+    // KHÔNG có expires_at — cột đó đã bị xoá khỏi assessments ở migration
+    // 0010 (lát 2a); chèn cột này sẽ bị Postgres từ chối (undefined_column).
     submitted_at: now,
   });
   if (assessmentErr) throw assessmentErr;
@@ -121,10 +120,10 @@ test("có dữ liệu thì hiện đúng số — đếm cột mastered, không 
 
   // Nhịp học là thứ DUY NHẤT trên trang không được kiểm ở bất kỳ tầng nào khác:
   // `tests/stats-compute.test.ts` kiểm `rhythm()` KHI ĐÃ CÓ mảng mốc thời gian,
-  // nhưng không có gì kiểm trang dựng mảng đó đúng — nó là hợp của
-  // `user_lesson_progress.completed_at` và `assessments.submitted_at`. Bỏ sót
-  // một nguồn, hay đếm đôi một nguồn, thì cả bộ test không hề đỏ.
-  // Một bài đã nộp lúc `now` → tuần này có đúng 1 buổi, và chuỗi là 1.
+  // nhưng không có gì kiểm trang dựng mảng đó đúng từ `assessments.submitted_at`
+  // — nguồn DUY NHẤT kể từ khi user_lesson_progress bị xoá ở lát 2a (xem
+  // stats/page.tsx). Một bài đã nộp lúc `now` → tuần này có đúng 1 buổi, và
+  // chuỗi là 1.
   await expect(page.getByTestId("stats-week-progress")).toHaveText("1 / 2");
   await expect(page.getByTestId("stats-streak")).toHaveText("1");
 

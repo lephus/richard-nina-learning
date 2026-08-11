@@ -26,15 +26,15 @@ interface MasteryDbRow {
 
 interface AssessmentDbRow {
   id: number;
-  type: "review" | "test" | "remedial";
+  type: "lesson" | "review" | "remedial" | "grammar";
   scope: number[];
   score: number | null;
   passed: boolean | null;
   submitted_at: string | null;
 }
 
-interface ProgressDbRow {
-  completed_at: string | null;
+interface SubmittedAtDbRow {
+  submitted_at: string | null;
 }
 
 interface WordDbRow {
@@ -55,7 +55,7 @@ export default async function StatsPage() {
 
   // Bốn truy vấn không phụ thuộc nhau chạy song song trước. Truy vấn thứ năm
   // (vocab_words theo id) phụ thuộc kết quả word_mastery nên phải đợi ở dưới.
-  const [masteryRes, assessmentsRes, progressRes, totalRes] = await Promise.all([
+  const [masteryRes, assessmentsRes, submittedRes, totalRes] = await Promise.all([
     supabase
       .from("word_mastery")
       .select("word_id, correct_count, wrong_count, mastered")
@@ -66,11 +66,16 @@ export default async function StatsPage() {
       .select("id, type, scope, score, passed, submitted_at")
       .eq("user_id", user.id)
       .eq("status", "submitted"),
+    // user_lesson_progress đã bị xoá ở migration 0010 (lát 2a) — mốc "một
+    // buổi học" cho rhythm() không còn đo bằng buổi lesson được đánh dấu
+    // completed nữa, mà đo bằng chính bài đánh giá đã nộp. Đây là truy vấn
+    // RIÊNG cho mốc thời gian (chỉ lấy submitted_at) — xem chú thích tại
+    // eventTimes bên dưới về việc vì sao KHÔNG gộp thêm completeAssessments.
     supabase
-      .from("user_lesson_progress")
-      .select("completed_at")
+      .from("assessments")
+      .select("submitted_at")
       .eq("user_id", user.id)
-      .eq("status", "completed"),
+      .eq("status", "submitted"),
     // count-only, head: true — không kéo dòng nào về, chỉ đếm. Không viết
     // cứng 605 để con số này không trôi khi kho từ đổi.
     //
@@ -88,7 +93,7 @@ export default async function StatsPage() {
 
   if (masteryRes.error) throw masteryRes.error;
   if (assessmentsRes.error) throw assessmentsRes.error;
-  if (progressRes.error) throw progressRes.error;
+  if (submittedRes.error) throw submittedRes.error;
   if (totalRes.error) throw totalRes.error;
 
   const masteryRows = (masteryRes.data ?? []) as MasteryDbRow[];
@@ -130,12 +135,18 @@ export default async function StatsPage() {
     submittedAt: r.submitted_at,
   }));
 
-  // Sự kiện học = hợp của buổi học đã hoàn thành và bài đánh giá đã nộp — cả
-  // hai đều là "một buổi học" theo định nghĩa của rhythm(). Bỏ giá trị null.
-  const eventTimes = [
-    ...((progressRes.data ?? []) as ProgressDbRow[]).map((r) => r.completed_at),
-    ...completeAssessments.map((r) => r.submitted_at),
-  ].filter((t): t is string => t !== null);
+  // Sự kiện học = bài đánh giá đã nộp — trước lát 2a còn là hợp thêm với buổi
+  // lesson hoàn thành (user_lesson_progress.completed_at), nhưng bảng đó đã
+  // bị xoá nên giờ chỉ còn một nguồn. Đọc từ submittedRes (truy vấn riêng ở
+  // trên), KHÔNG gộp thêm completeAssessments: hai truy vấn cùng lọc
+  // (user_id, status = 'submitted') trên CÙNG bảng assessments nên trả về
+  // đúng CÙNG một tập dòng — gộp cả hai sẽ đếm đôi mỗi bài đã nộp trong
+  // rhythm() (thisWeekSessions/streakWeeks sẽ nhân đôi một cách âm thầm). Bỏ
+  // giá trị null: một dòng "submitted" tồn dư có thể còn submitted_at NULL
+  // (xem chú thích completeAssessments ngay dưới).
+  const eventTimes = ((submittedRes.data ?? []) as SubmittedAtDbRow[])
+    .map((r) => r.submitted_at)
+    .filter((t): t is string => t !== null);
 
   const wrongIds = mastery.filter((m) => m.wrongCount > 0).map((m) => m.wordId);
   // Chỉ đọc đúng những từ có thể lên top 10 sai nhiều nhất — không kéo cả
