@@ -18,20 +18,28 @@ describe.skipIf(!hasEnv)("RLS word_notes va lesson_cursor", () => {
   let lessonId = 0;
 
   beforeAll(async () => {
-    const mk = async (email: string, name: string) => {
+    // `setId` chạy NGAY sau khi `createUser` thành công, trước bước `signIn`
+    // có thể ném lỗi tiếp theo. Bản trước ghi `aliceId`/`bobId` ở phần tử trả
+    // về cuối hàm `mk` — nếu `signInWithPassword` lỗi thì `mk` throw trước khi
+    // trả, biến ngoài mãi mãi là chuỗi rỗng, và guard `if (!id) continue` ở
+    // `afterAll` bỏ qua dọn: một tài khoản auth.users THẬT bị bỏ quên vĩnh
+    // viễn trên production, bảng dùng chung với người học thật. Tách `setId`
+    // ra khỏi giá trị trả về để việc ghi nhận không phụ thuộc hàm có chạy hết
+    // hay không.
+    const mk = async (email: string, name: string, setId: (id: string) => void) => {
       const { data, error } = await admin.auth.admin.createUser({
         email, password: "notes-pass-1234", email_confirm: true,
         user_metadata: { display_name: name },
       });
       if (error) throw error;
+      setId(data.user!.id);
       const c = createClient(URL!, ANON!);
       const signIn = await c.auth.signInWithPassword({ email, password: "notes-pass-1234" });
       if (signIn.error) throw signIn.error;
-      return { client: c, id: data.user!.id };
+      return c;
     };
-    const a = await mk(`notes-alice-${Date.now()}@test.local`, "Alice");
-    const b = await mk(`notes-bob-${Date.now()}@test.local`, "Bob");
-    alice = a.client; bob = b.client; aliceId = a.id; bobId = b.id;
+    alice = await mk(`notes-alice-${Date.now()}@test.local`, "Alice", (id) => { aliceId = id; });
+    bob = await mk(`notes-bob-${Date.now()}@test.local`, "Bob", (id) => { bobId = id; });
 
     const { data: w } = await admin.from("vocab_words").select("id").eq("ordinal", 1).single();
     wordId = w!.id as number;

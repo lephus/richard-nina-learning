@@ -144,6 +144,38 @@ test("ghi chú nhiều dòng được lưu và còn sau khi tải lại", async 
   await expect(page.getByTestId("note-box")).toHaveValue(ghiChu);
 });
 
+test("gõ xong bấm Từ sau ngay, không đợi đã lưu — chữ vẫn tới database", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  const ghiChu = "gõ xong bấm ngay, chưa kịp chờ lưu";
+  await page.getByTestId("note-box").fill(ghiChu);
+
+  // KHÔNG đợi note-status = "đã lưu" (khác hai kịch bản ghi chú kia): mục
+  // đích ở đây là ép NoteBox của từ 1 bị THÁO — đổi từ là remount vì
+  // `key={card.id}` — trong lúc hẹn giờ debounce 600ms còn đang chờ, để buộc
+  // chạy đúng nhánh flush() lúc tháo component. Đây là nhánh brief gọi là
+  // quyết định để không mất chữ ở biên "gõ xong bấm ngay", và không kịch bản
+  // nào khác từng ép nó chạy thật. `deck.tsx` xác nhận bấm "Từ sau"/"Từ
+  // trước" không tự gọi mạng, nên request POST duy nhất có thể xảy ra quanh
+  // cú bấm này chính là flush() chạy nền.
+  const luuNen = page.waitForResponse((r) => r.request().method() === "POST", { timeout: 5000 });
+  await page.getByTestId("next-button").click();
+  await luuNen;
+
+  await page.getByTestId("prev-button").click();
+
+  // Tải lại trang: state `notes` ở Deck bị xoá sạch, khởi tạo lại HOÀN TOÀN
+  // từ dữ liệu server gửi xuống (loadCards đọc thẳng bảng word_notes). Ô còn
+  // đúng chữ ở đây thì chữ đó chắc chắn đã nằm trong database — quay lại từ
+  // cũ ở dòng trên chỉ đọc lại state phía trình duyệt, không chứng minh được
+  // gì về việc lưu; phép kiểm có sức nặng nằm ở đây, SAU khi tải lại.
+  await page.reload();
+  await expect(page.getByTestId("note-box")).toHaveValue(ghiChu);
+});
+
 test("ghi chú theo từng từ, không dùng chung", async ({ page }) => {
   await login(page);
   await page.goto("/vocab");
