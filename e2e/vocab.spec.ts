@@ -105,7 +105,14 @@ test("mục lục liệt kê 30 từ và nhảy thẳng tới từ được bấ
   await expect(page.getByTestId("index-item")).toHaveCount(30);
 
   const muc20 = page.getByTestId("index-item").nth(19);
-  const chu20 = (await muc20.textContent())!.replace(/^\s*20\s*/, "").trim();
+  // Đọc riêng phần tử con mang tên từ (`index-word`) thay vì cắt chuỗi khỏi
+  // textContent của cả nút: nút còn số thứ tự ở ĐẦU và — từ khi có ô ghi chú
+  // — dấu ✎ có thể xuất hiện ở CUỐI khi từ #20 đã có ghi chú. Cắt chuỗi bằng
+  // regex chỉ gọt được đầu, để sót đuôi, nên từng đỏ giả (lỗi chuỗi so sánh,
+  // không phải lỗi điều hướng) mỗi khi một kịch bản khác lỡ để lại ghi chú ở
+  // đúng từ #20. Đọc thẳng phần tử con thì không phụ thuộc gì vào phần còn
+  // lại của nút, bất kể sau này có thêm trang trí nào khác.
+  const chu20 = (await muc20.getByTestId("index-word").textContent())!.trim();
 
   await muc20.click();
   await expect(page.getByTestId("deck-position")).toHaveText("Từ 20 / 30");
@@ -121,4 +128,52 @@ test("mục lục đánh dấu từ đang xem", async ({ page }) => {
   await expect(page.getByTestId("index-item").first()).toHaveAttribute("aria-current", "true");
   await page.getByTestId("next-button").click();
   await expect(page.getByTestId("index-item").nth(1)).toHaveAttribute("aria-current", "true");
+});
+
+test("ghi chú nhiều dòng được lưu và còn sau khi tải lại", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  const ghiChu = "resume resume resume\n≠ resume (v) = tiếp tục";
+  await page.getByTestId("note-box").fill(ghiChu);
+  await expect(page.getByTestId("note-status")).toHaveText("đã lưu");
+
+  await page.reload();
+  await expect(page.getByTestId("note-box")).toHaveValue(ghiChu);
+});
+
+test("ghi chú theo từng từ, không dùng chung", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await page.getByTestId("note-box").fill("ghi chú của từ 1");
+  await expect(page.getByTestId("note-status")).toHaveText("đã lưu");
+
+  await page.getByTestId("next-button").click();
+  await expect(page.getByTestId("note-box")).toHaveValue("");
+
+  await page.getByTestId("prev-button").click();
+  await expect(page.getByTestId("note-box")).toHaveValue("ghi chú của từ 1");
+});
+
+test("mục lục đánh dấu ✎ ngay khi gõ, và còn sau khi tải lại", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab");
+  await page.getByTestId("group-row").first().getByTestId("activity").first().click();
+  await page.waitForURL("**/vocab/learn/**");
+
+  await expect(page.getByTestId("index-item").first()).not.toContainText("✎");
+  await page.getByTestId("note-box").fill("có ghi chú");
+
+  // Ngay lập tức, không đợi lưu xong: dấu ✎ đọc từ state sống ở Deck.
+  await expect(page.getByTestId("index-item").first()).toContainText("✎");
+  await expect(page.getByTestId("index-item").nth(1)).not.toContainText("✎");
+
+  await expect(page.getByTestId("note-status")).toHaveText("đã lưu");
+  await page.reload();
+  await expect(page.getByTestId("index-item").first()).toContainText("✎");
 });

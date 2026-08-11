@@ -31,6 +31,13 @@ export function Deck({
     Math.min(Math.max(initialIndex, 0), Math.max(cards.length - 1, 0)),
   );
 
+  // Khởi tạo từ bản server gửi xuống, rồi từ đó CHỮ SỐNG Ở ĐÂY. `cards` không
+  // bao giờ được đọc lại để lấy ghi chú sau lần khởi tạo này — nó là ảnh chụp
+  // lúc mở trang, còn người học thì đang gõ.
+  const [notes, setNotes] = useState<Record<number, string>>(() =>
+    Object.fromEntries(cards.map((c) => [c.id, c.note])),
+  );
+
   const go = useCallback(
     (next: number) => {
       setIndex((cur) => {
@@ -58,14 +65,19 @@ export function Deck({
 
   return (
     <div className="flex gap-4">
-      <WordIndex cards={cards} current={index} onPick={go} />
+      <WordIndex cards={cards} notes={notes} current={index} onPick={go} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-4">
         <p data-testid="deck-position" className="text-sm text-slate-500">
           Từ {index + 1} / {cards.length}
         </p>
 
-        <WordCard key={card.id} card={card} />
+        <WordCard
+          key={card.id}
+          card={card}
+          note={notes[card.id] ?? ""}
+          onNoteChange={(next) => setNotes((n) => ({ ...n, [card.id]: next }))}
+        />
 
         <div className="flex gap-2">
           <button

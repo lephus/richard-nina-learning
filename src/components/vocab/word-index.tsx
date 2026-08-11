@@ -16,10 +16,14 @@ import type { VocabCard } from "@/lib/vocab/load-cards";
  */
 export function WordIndex({
   cards,
+  notes,
   current,
   onPick,
 }: {
   cards: VocabCard[];
+  /** Chữ ghi chú ĐANG SỐNG, không phải `card.note` tĩnh từ server: dấu ✎ phải
+      xuất hiện ngay lúc gõ, không đợi tải lại trang. */
+  notes: Record<number, string>;
   current: number;
   onPick: (index: number) => void;
 }) {
@@ -42,10 +46,13 @@ export function WordIndex({
             }`}
           >
             <span className="w-5 shrink-0 text-slate-400">{i + 1}</span>
-            <span className="flex-1 truncate">{c.word}</span>
+            {/* data-testid riêng cho CHỮ, tách khỏi số thứ tự và dấu ✎ đứng
+                sau: e2e cần đọc đúng mỗi tên từ mà không phải cắt chuỗi khỏi
+                textContent của cả nút — xem e2e/vocab.spec.ts. */}
+            <span data-testid="index-word" className="flex-1 truncate">{c.word}</span>
             {/* Dấu ✎ cho biết từ nào mình đã ghi chú — thứ duy nhất phân biệt
                 được các từ khi lướt lại một danh sách 60 dòng. */}
-            {c.note.trim() !== "" && (
+            {(notes[c.id] ?? "").trim() !== "" && (
               <span aria-label="đã có ghi chú" className="text-slate-400">✎</span>
             )}
           </button>

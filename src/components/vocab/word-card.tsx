@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from "react";
 import type { VocabCard } from "@/lib/vocab/load-cards";
+import { NoteBox } from "./note-box";
 
-export function WordCard({ card }: { card: VocabCard }) {
+export function WordCard({
+  card,
+  note,
+  onNoteChange,
+}: {
+  card: VocabCard;
+  note: string;
+  onNoteChange: (next: string) => void;
+}) {
   // Phát hiện sau khi mount, không phải trong lần render đầu: render đầu chạy
   // trên server (window luôn undefined ở đó), nên tính thẳng
   // `"speechSynthesis" in window` trong thân component cho ra hai kết quả khác
@@ -46,6 +55,7 @@ export function WordCard({ card }: { card: VocabCard }) {
         {card.exampleEn}
       </p>
       <p className="mt-1 text-sm text-slate-500">{card.exampleVi}</p>
+      <NoteBox wordId={card.id} body={note} onChange={onNoteChange} />
     </div>
   );
 }
