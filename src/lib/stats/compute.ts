@@ -3,12 +3,10 @@
  * database. Trang chỉ hiển thị những gì các hàm dưới đây trả ra, nên một lỗi
  * ở đây là một con số sai hiển thị cho người học mà không có gì đối chiếu.
  *
- * Cùng khuôn với `src/lib/assessment/next-step.ts`: `now` luôn là tham số,
- * không bao giờ đọc đồng hồ hệ thống bên trong logic, để test kiểm được mọi
- * nhánh thời gian mà không phải chờ, và để mọi so sánh dùng chung một nguồn.
+ * `now` luôn là tham số, không bao giờ đọc đồng hồ hệ thống bên trong logic,
+ * để test kiểm được mọi nhánh thời gian mà không phải chờ, và để mọi so sánh
+ * dùng chung một nguồn.
  */
-
-import { assessmentLabel } from "@/lib/assessment/slots";
 
 export const WEEKLY_TARGET = 2;
 export const TOP_WRONG_LIMIT = 10;
@@ -28,7 +26,7 @@ export interface WordLite {
 
 export interface AssessmentLite {
   id: number;
-  type: "review" | "test" | "remedial";
+  type: "lesson" | "review" | "remedial" | "grammar";
   scope: number[];
   score: number;
   passed: boolean;
@@ -129,6 +127,31 @@ export function rhythm(eventTimes: readonly string[], now: Date): Rhythm {
   return { streakWeeks, thisWeekSessions, target: WEEKLY_TARGET };
 }
 
+const KIND_LABEL: Record<AssessmentLite["type"], string> = {
+  lesson: "Buổi",
+  review: "Ôn tập buổi",
+  remedial: "Bổ túc buổi",
+  grammar: "Ngữ pháp",
+};
+
+/**
+ * Nhãn một bài đã nộp, ví dụ "Ôn tập buổi 1–2".
+ *
+ * Dấu gạch giữa hai số là EN DASH — U+2013 (–), KHÔNG phải dấu gạch nối
+ * thường (-, U+002D). `tests/stats-compute.test.ts` khoá ký tự này bằng
+ * `codePointAt` số học, không chỉ so chuỗi "–" suông — hai ký tự chỉ khác một
+ * byte, một phép so chuỗi trong chính test cũng có thể ăn may đúng nếu ai đó
+ * gõ nhầm dấu gạch nối thường ở CẢ HAI phía.
+ *
+ * `lessons[0]` và `lessons[length-1]` chứ không phải chỉ số cố định: bài bổ
+ * túc thường chỉ có một phần tử trong `scope`, còn bài ngữ pháp có mảng rỗng.
+ */
+function label(type: AssessmentLite["type"], scope: readonly number[]): string {
+  if (type === "grammar" || scope.length === 0) return KIND_LABEL[type];
+  const range = scope.length > 1 ? `${scope[0]}–${scope[scope.length - 1]}` : `${scope[0]}`;
+  return `${KIND_LABEL[type]} ${range}`;
+}
+
 /**
  * Chuỗi điểm số theo thời gian, đã sắp xếp — mảng vào có thể ở bất kỳ thứ tự
  * nào (Postgres không đảm bảo thứ tự trả về nếu không ORDER BY), nên hàm tự
@@ -139,7 +162,7 @@ export function scoreSeries(rows: readonly AssessmentLite[]): ScorePoint[] {
     .sort((a, b) => Date.parse(a.submittedAt) - Date.parse(b.submittedAt) || a.id - b.id)
     .map((r) => ({
       id: r.id,
-      label: assessmentLabel(r.type, r.scope),
+      label: label(r.type, r.scope),
       score: r.score,
       passed: r.passed,
     }));

@@ -104,14 +104,47 @@ describe("scoreSeries", () => {
     expect(scoreSeries(rows).map((p) => p.id)).toEqual([1, 2, 3]);
   });
 
+  it("bài buổi (type: lesson) ra đúng nhãn 'Buổi N'", () => {
+    // Ba nhánh kia của KIND_LABEL (review/remedial/grammar) đều đã có test
+    // riêng trong describe này — nhánh "lesson" (đơn giản nhất, chỉ ghép
+    // "Buổi" + một số buổi duy nhất) trước đây chưa được khoá.
+    const rows: AssessmentLite[] = [row({ type: "lesson", scope: [7] })];
+    expect(scoreSeries(rows)[0]?.label).toBe("Buổi 7");
+  });
+
   it("nhãn ghép loại bài + phạm vi buổi, phạm vi một buổi không có dấu gạch", () => {
-    const rows: AssessmentLite[] = [row({ type: "test", scope: [1, 2, 3, 4] })];
-    expect(scoreSeries(rows)[0]?.label).toBe("Kiểm tra buổi 1–4");
+    // scope 4 phần tử (không phải 2) — cố ý, để phân biệt được lessons[0]/
+    // lessons[length-1] với một cách viết sai lessons[0]/lessons[1]: mảng 2
+    // phần tử thì hai cách viết cho cùng một kết quả, không bắt được lỗi.
+    const rows: AssessmentLite[] = [row({ type: "review", scope: [1, 2, 3, 4] })];
+    expect(scoreSeries(rows)[0]?.label).toBe("Ôn tập buổi 1–4");
+  });
+
+  it("dấu gạch ngang trong nhãn là EN DASH U+2013, không phải dấu gạch nối thường", () => {
+    // Phục dựng phép kiểm từng có ở tests/slots.test.ts (assessmentLabel),
+    // xoá cùng luồng cũ ở Task 3 — compute.ts giờ là nơi DUY NHẤT còn dựng
+    // nhãn dạng "Ôn tập buổi 1–2". So chuỗi "–" suông (như test ngay phía
+    // trên) vẫn ăn may đúng nếu ai đó gõ nhầm dấu gạch nối thường (-,
+    // U+002D) ở CẢ HAI phía — nguồn (label() trong compute.ts) lẫn kỳ vọng
+    // trong chính test — vì hai ký tự chỉ khác một byte, mắt thường không
+    // phân biệt được khi đọc diff hay copy dán. Khoá thẳng bằng codePointAt
+    // số học mới chắc chắn phát hiện được sai lệch.
+    const rows: AssessmentLite[] = [row({ type: "review", scope: [1, 2, 3, 4] })];
+    const label = scoreSeries(rows)[0]!.label;
+    expect(label.codePointAt(label.indexOf("1") + 1)).toBe(0x2013);
   });
 
   it("phạm vi một buổi duy nhất (bổ túc) không có dấu gạch nối", () => {
     const rows: AssessmentLite[] = [row({ type: "remedial", scope: [5] })];
     expect(scoreSeries(rows)[0]?.label).toBe("Bổ túc buổi 5");
+  });
+
+  it("bài ngữ pháp (scope rỗng) ra đúng nhãn 'Ngữ pháp', không có đuôi 'undefined'", () => {
+    // Bẫy cụ thể: nếu nhánh `type === "grammar"` bị bỏ khỏi label() và hàm
+    // rơi xuống thẳng `scope[0]` (scope rỗng nên scope[0] === undefined), kết
+    // quả sẽ là "Ngữ pháp undefined" thay vì "Ngữ pháp".
+    const rows: AssessmentLite[] = [row({ type: "grammar", scope: [] })];
+    expect(scoreSeries(rows)[0]?.label).toBe("Ngữ pháp");
   });
 
   it("danh sách rỗng — người vừa đăng ký, chưa làm bài đánh giá nào", () => {

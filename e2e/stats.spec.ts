@@ -38,8 +38,6 @@ test.afterEach(async () => {
     if (delWord.error) throw delWord.error;
     const delGrammar = await admin.from("grammar_mastery").delete().eq("user_id", u.id);
     if (delGrammar.error) throw delGrammar.error;
-    const delProgress = await admin.from("user_lesson_progress").delete().eq("user_id", u.id);
-    if (delProgress.error) throw delProgress.error;
   }
 });
 
@@ -54,11 +52,12 @@ test("tài khoản chưa học gì vào /stats không thấy trang vỡ", async 
   await page.goto("/stats");
 
   // Khẳng định DƯƠNG TÍNH trang thật sự đã render, không phải một error
-  // boundary: tiêu đề trang VÀ câu mời làm bài ôn tập đầu tiên (do
-  // ScoreChart hiện khi series rỗng) đều phải thấy được. Chỉ đếm "0 score-bar"
-  // không đủ — một trang lỗi cũng có 0 score-bar.
+  // boundary: tiêu đề trang VÀ câu mời học từ vựng (do ScoreChart hiện khi
+  // series rỗng — lát 2a chưa có bài thi nào nên không mời làm bài) đều phải
+  // thấy được. Chỉ đếm "0 score-bar" không đủ — một trang lỗi cũng có 0
+  // score-bar.
   await expect(page.getByRole("heading", { name: "Thống kê học tập" })).toBeVisible();
-  await expect(page.getByText("Làm bài ôn tập đầu tiên")).toBeVisible();
+  await expect(page.getByText("Học từ vựng trước đã")).toBeVisible();
 
   await expect(page.getByTestId("stats-mastered")).toHaveText("0 / 605");
   await expect(page.getByTestId("score-bar")).toHaveCount(0);
@@ -100,7 +99,8 @@ test("có dữ liệu thì hiện đúng số — đếm cột mastered, không 
     score: 88, // cố ý không phải 0 hay 100 — hai giá trị dễ trùng mặc định
     passed: true,
     started_at: now,
-    expires_at: now,
+    // KHÔNG có expires_at — cột đó đã bị xoá khỏi assessments ở migration
+    // 0010 (lát 2a); chèn cột này sẽ bị Postgres từ chối (undefined_column).
     submitted_at: now,
   });
   if (assessmentErr) throw assessmentErr;
@@ -121,10 +121,10 @@ test("có dữ liệu thì hiện đúng số — đếm cột mastered, không 
 
   // Nhịp học là thứ DUY NHẤT trên trang không được kiểm ở bất kỳ tầng nào khác:
   // `tests/stats-compute.test.ts` kiểm `rhythm()` KHI ĐÃ CÓ mảng mốc thời gian,
-  // nhưng không có gì kiểm trang dựng mảng đó đúng — nó là hợp của
-  // `user_lesson_progress.completed_at` và `assessments.submitted_at`. Bỏ sót
-  // một nguồn, hay đếm đôi một nguồn, thì cả bộ test không hề đỏ.
-  // Một bài đã nộp lúc `now` → tuần này có đúng 1 buổi, và chuỗi là 1.
+  // nhưng không có gì kiểm trang dựng mảng đó đúng từ `assessments.submitted_at`
+  // — nguồn DUY NHẤT kể từ khi user_lesson_progress bị xoá ở lát 2a (xem
+  // stats/page.tsx). Một bài đã nộp lúc `now` → tuần này có đúng 1 buổi, và
+  // chuỗi là 1.
   await expect(page.getByTestId("stats-week-progress")).toHaveText("1 / 2");
   await expect(page.getByTestId("stats-streak")).toHaveText("1");
 

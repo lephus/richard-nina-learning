@@ -15,10 +15,14 @@ export function ScoreChart({ series }: { series: ScorePoint[] }) {
     return (
       <section className="rounded border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold">Điểm số qua các bài</h2>
+        {/* Lát 2a cố ý chưa có bài thi nào (bài thi là lát 2b) — mời "làm bài
+            ôn tập" ở đây từng dẫn về /dashboard, nơi không có bài nào để làm,
+            là ngõ cụt duy nhất trên /stats. Dẫn đúng việc làm được NGAY BÂY
+            GIỜ: học từ vựng. */}
         <p className="mt-3 text-sm text-slate-500">
-          Chưa có bài đánh giá nào đã nộp.{" "}
-          <Link href="/dashboard" className="underline">
-            Làm bài ôn tập đầu tiên
+          Chưa có bài đánh giá nào đã nộp — bài thi đang được xây ở lát tiếp theo.{" "}
+          <Link href="/vocab" className="underline">
+            Học từ vựng trước đã
           </Link>
           .
         </p>

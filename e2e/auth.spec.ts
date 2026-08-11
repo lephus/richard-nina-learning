@@ -42,42 +42,40 @@ test("đăng nhập sai thì báo lỗi và vẫn ở /login", async ({ page }) 
   await expect(page).toHaveURL(/\/login$/);
 });
 
-test("đăng nhập đúng thì thấy 35 hoạt động, trong đó 20 dòng buổi học với buổi 1 mở, buổi 2 khoá, và buổi 1 có tên bài ngữ pháp", async ({
+test("đăng nhập đúng thì thấy hai thẻ chọn lộ trình: từ vựng và ngữ pháp", async ({
   page,
 }) => {
   await login(page);
 
-  // Lát 1c biến 20 buổi thành 35 hoạt động (buổi + ôn tập + kiểm tra) — mọi
-  // dòng, bất kể loại, đều mang data-testid="lesson-row".
-  const rows = page.getByTestId("lesson-row");
-  await expect(rows).toHaveCount(35);
-
-  // Chỉ đếm riêng dòng buổi học qua data-kind, không đếm mọi lesson-row nữa —
-  // 20 buổi vẫn phải còn nguyên trong chuỗi 35 hoạt động. Neo vào
-  // [data-testid="lesson-row"] chứ không khớp data-kind trần trên toàn tài
-  // liệu — nếu một phần tử khác của trang sau này cũng mang data-kind="lesson"
-  // vì lý do gì đó, locator này không được âm thầm khớp nhầm nó.
-  const lessonRows = page.locator('[data-testid="lesson-row"][data-kind="lesson"]');
-  await expect(lessonRows).toHaveCount(20);
-  await expect(lessonRows.nth(0)).toHaveAttribute("data-status", "available");
-  await expect(lessonRows.nth(1)).toHaveAttribute("data-status", "locked");
-
-  // Canh cửa cho ép kiểu `as unknown as LessonWithGrammar[]` trong
-  // dashboard/page.tsx: nếu postgrest-js một ngày nào đó trả quan hệ nhúng
-  // dạng mảng thay vì object đơn, `grammar_lessons?.title` sẽ undefined và ô
-  // này render RỖNG. Assertion phải đọc đúng span chứa tên bài, không phải
-  // toàn bộ text của dòng — dòng còn chứa nhãn trạng thái ("Sẵn sàng") nên
-  // luôn "không rỗng" dù thiếu tên bài.
-  await expect(lessonRows.nth(0)).toContainText("Buổi 1");
-  const title = await lessonRows.nth(0).locator(".text-slate-600").innerText();
-  expect(title.trim().length).toBeGreaterThan(0);
+  // Task 14 dựng dashboard thật: track-vocab nay là một <Link> có số liệu
+  // (X/10 nhóm) và dòng "Tiếp tục" (data-testid="continue-hint"), còn
+  // track-grammar vẫn là placeholder "Sắp có" (lộ trình ngữ pháp thuộc lát
+  // 2c). Ở đây chỉ giữ phép kiểm HÌNH DẠNG — cả hai thẻ đều hiện — vì nội
+  // dung chi tiết của track-vocab (số liệu, dòng gợi ý, đường dẫn) đã có
+  // phép kiểm riêng, sâu hơn "toBeVisible", trong e2e/vocab.spec.ts.
+  await expect(page.getByTestId("track-vocab")).toBeVisible();
+  await expect(page.getByTestId("track-grammar")).toBeVisible();
 });
 
-test('bấm "Học tiếp" thì tới trang buổi 1', async ({ page }) => {
-  await login(page);
-  await page.getByTestId("continue-link").click();
-  await expect(page.getByTestId("learn-heading")).toHaveText("Buổi 1");
-});
+// Task 14 (dashboard thật): quyết định XOÁ hẳn kịch bản "Học tiếp" từng bị
+// skip ở đây, không viết lại tại chỗ. Lý do: dashboard thật không còn nút
+// bấm một-phát-tới-buổi nào nữa — "Tiếp tục" giờ chỉ là DÒNG CHỮ gợi ý
+// (data-testid="continue-hint"), không phải link hay nút (xem comment tại
+// nextActivity trong progress.ts: "GỢI Ý, không phải luật"). Hành vi tương
+// đương thật sự — từ dashboard đi đúng đường thì tới đúng Buổi 1 — giờ nằm ở
+// e2e/vocab.spec.ts: kịch bản "dashboard dẫn sang trang từ vựng..." canh
+// dòng gợi ý và cú bấm thẻ Từ vựng. vocab.spec.ts vốn đã an toàn cho việc
+// này (afterEach dọn lesson_cursor theo user_id), còn auth.spec.ts thì không
+// có hạ tầng dọn tương đương — đây vẫn là lý do KHÔNG viết lại tại chỗ.
+//
+// (Vòng soát cuối 2a — sửa câu đã lỗi thời ở đây: từng nói tiếp một kịch bản
+// "canh quan hệ nhúng lessons(ordinal)" đi từ dòng gợi ý vào đúng buổi 1 và
+// canh cả định dạng tiêu đề mới. Kịch bản đó đã bị XOÁ khỏi vocab.spec.ts
+// (Vòng sửa 1, soát Task 14): quan hệ nhúng nó canh không còn trong mã nguồn
+// — dashboard/page.tsx bỏ hẳn truy vấn `lesson_cursor` — nên không còn gì để
+// một test "canh cửa". Phần định dạng tiêu đề "Nhóm N · Buổi M" còn giá trị
+// thật thì vocab.spec.ts giữ lại dưới một tên đúng với thứ nó kiểm, không
+// mượn danh "canh quan hệ nhúng" nữa; xem vocab.spec.ts dòng ~474-487.)
 
 test("đăng xuất rồi quay lại /dashboard thì bị đẩy về /login", async ({ page }) => {
   await login(page);

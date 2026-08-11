@@ -22,15 +22,25 @@ import { NextResponse, type NextRequest } from "next/server";
 // còn cách nào lệch khỏi hệ thống tệp, vì nó không còn giữ một bản sao (dù là
 // bản sao đúng hay sai) của hệ thống tệp đó nữa.
 //
-// `/api/*` cố tình đứng NGOÀI phép kiểm này: một request POST JSON bị
-// redirect sang /login sẽ vỡ hợp đồng response mà phía gọi (`fetch`) đang
-// chờ. Route đó tự kiểm `getUser()` (trả 401 JSON) và `Sec-Fetch-Site`, một
-// lớp phòng thủ độc lập với middleware — xem
-// src/app/api/assessment/[id]/submit/route.ts.
+// `/api/*` TỪNG đứng ngoài phép kiểm này: một request POST JSON bị redirect
+// sang /login sẽ vỡ hợp đồng response mà phía gọi (`fetch`) đang chờ, và
+// route DUY NHẤT khi đó dưới `/api/` (`src/app/api/assessment/[id]/submit/route.ts`)
+// tự kiểm `getUser()` (trả 401 JSON) và `Sec-Fetch-Site` — một lớp phòng thủ
+// độc lập với middleware, nên miễn trừ là chính đáng.
+//
+// Lát 2a (Task 3) xoá route đó cùng cả luồng cũ — `src/app/api/` giờ RỖNG.
+// Lý do biện minh cho miễn trừ đã mất, nhưng bản thân nhánh miễn trừ thì
+// không tự mất theo: để nguyên nó sẽ thành một lối vòng qua xác thực đang mở
+// sẵn, không có gì phía sau canh gác — route `/api/*` ĐẦU TIÊN mà một lát sau
+// này thêm vào sẽ ÂM THẦM thừa hưởng lỗ hổng đó mà không ai chủ ý cho phép.
+// Vì vậy KHÔNG còn nhánh riêng cho `/api/*` ở đây — nó rơi vào đúng mặc định
+// fail-closed như mọi route khác. Lát nào thêm route API trở lại thì phải TỰ
+// cân nhắc lại điều này một cách có ý thức (route đó có tự kiểm `getUser()`
+// không? có cần trả JSON thay vì redirect không?), không được thừa hưởng một
+// miễn trừ cũ đã mất căn cứ.
 const PUBLIC_PATHS = ["/", "/login", "/register"];
 
 function isProtectedRoute(pathname: string): boolean {
-  if (pathname.startsWith("/api/")) return false;
   return !PUBLIC_PATHS.includes(pathname);
 }
 
