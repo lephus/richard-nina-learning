@@ -6,8 +6,6 @@
  * (lib/vocab/load-cards.ts) lẫn việc dựng đề (lib/exam/) đều đọc chính bảng đó
  * và phải quy về cùng một hình dạng.
  */
-
-/** Chỉ những cột `authenticated` được phép đọc — xem 0004_rls.sql:41-44. */
 export interface VocabLite {
   id: number;
   word: string;
