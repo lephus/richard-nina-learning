@@ -20,6 +20,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Không có link này thì /stats không tồn tại với người học dù route
             đã build xong — đúng lỗi đã xảy ra ở lát 1b. */}
         <div className="flex items-center gap-4">
+          <Link href="/vocab" data-testid="vocab-link" className="text-sm underline">
+            Từ vựng
+          </Link>
           <Link href="/stats" data-testid="stats-link" className="text-sm underline">
             Thống kê
           </Link>
