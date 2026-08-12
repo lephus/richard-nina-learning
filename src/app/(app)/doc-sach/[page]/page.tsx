@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BookImage } from "@/components/book/BookImage";
+import { BookNav } from "@/components/book/BookNav";
 import {
   BOOK_BUCKET, TOTAL_BOOK_PAGES, parseBookPage, printedPageOf, storagePath,
 } from "@/lib/book/pages";
@@ -54,6 +55,12 @@ export default async function BookReaderPage({
           Sau ›
         </PagerLink>
       </nav>
+
+      <BookNav
+        page={page}
+        prevHref={prev === null ? null : `/doc-sach/${prev}`}
+        nextHref={next === null ? null : `/doc-sach/${next}`}
+      />
 
       {error || src === null ? (
         <div

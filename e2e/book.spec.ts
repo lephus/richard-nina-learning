@@ -64,3 +64,47 @@ test("link ở header tới được trang đọc sách", async ({ page }) => {
 
   await expect(page).toHaveURL(/\/doc-sach\/1$/);
 });
+
+test("nhảy thẳng tới số trang đã nhập", async ({ page }) => {
+  await login(page);
+  await page.goto("/doc-sach/1");
+
+  await page.getByTestId("book-jump-input").fill("50");
+  await page.getByTestId("book-jump-submit").click();
+
+  await expect(page).toHaveURL(/\/doc-sach\/50$/);
+  await expect(page.getByTestId("book-label")).toHaveText("Trang 50/112 · sách in: 51");
+});
+
+test("số trang không hợp lệ thì báo tại chỗ, không điều hướng", async ({ page }) => {
+  await login(page);
+  await page.goto("/doc-sach/5");
+
+  await page.getByTestId("book-jump-input").fill("999");
+  await page.getByTestId("book-jump-submit").click();
+
+  await expect(page.getByTestId("book-jump-error")).toBeVisible();
+  await expect(page).toHaveURL(/\/doc-sach\/5$/);
+});
+
+test("phím mũi tên lật trang", async ({ page }) => {
+  await login(page);
+  await page.goto("/doc-sach/5");
+
+  await page.keyboard.press("ArrowRight");
+  await expect(page).toHaveURL(/\/doc-sach\/6$/);
+
+  await page.keyboard.press("ArrowLeft");
+  await expect(page).toHaveURL(/\/doc-sach\/5$/);
+});
+
+test("phím mũi tên không cướp phím khi đang gõ vào ô số trang", async ({ page }) => {
+  await login(page);
+  await page.goto("/doc-sach/5");
+
+  await page.getByTestId("book-jump-input").click();
+  await page.keyboard.press("ArrowRight");
+
+  // Vẫn ở trang 5: mũi tên lúc này là để di chuyển con trỏ trong ô nhập.
+  await expect(page).toHaveURL(/\/doc-sach\/5$/);
+});
