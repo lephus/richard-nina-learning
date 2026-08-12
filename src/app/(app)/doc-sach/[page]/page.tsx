@@ -9,6 +9,10 @@ import {
 
 const SIGNED_URL_TTL_SECONDS = 3600;
 
+// KHÔNG thêm loading.tsx cho route này. Bọc Suspense sẽ đẩy khung rỗng đi
+// trước khi notFound() (ở trên) kịp chạy, khoá cứng response ở HTTP 200 —
+// đúng vấn đề mà src/app/(app)/vocab/(list)/loading.tsx đã ghi lại và tái
+// hiện thật. Ở route này nó sẽ làm hỏng bài e2e "số trang ngoài dải trả 404".
 export default async function BookReaderPage({
   params,
 }: {
@@ -21,24 +25,21 @@ export default async function BookReaderPage({
   const prev = page > 1 ? page - 1 : null;
   const next = page < TOTAL_BOOK_PAGES ? page + 1 : null;
 
-  // Xin luôn URL trang kế trong CÙNG một lời gọi để prefetch mà không tốn
-  // thêm một vòng mạng. Ở trang cuối thì chỉ xin một đường dẫn: `113.webp`
-  // không tồn tại, và xin nó sẽ đẻ ra một lỗi giả đúng ở chỗ không có gì sai.
-  const paths = next === null
-    ? [storagePath(page)]
-    : [storagePath(page), storagePath(next)];
-
   const supabase = await createClient();
   const { data, error } = await supabase.storage
     .from(BOOK_BUCKET)
-    .createSignedUrls(paths, SIGNED_URL_TTL_SECONDS);
+    .createSignedUrl(storagePath(page), SIGNED_URL_TTL_SECONDS);
 
-  const src = data?.find((d) => d.path === storagePath(page))?.signedUrl ?? null;
-  // Hỏng URL trang KẾ chỉ làm mất phần tăng tốc, không được phép làm hỏng
-  // phần đọc — nên nó không tham gia vào điều kiện báo lỗi bên dưới.
-  const nextSrc = next === null
-    ? null
-    : data?.find((d) => d.path === storagePath(next))?.signedUrl ?? null;
+  const src = data?.signedUrl ?? null;
+  // Object vắng mặt lộ ra NGAY Ở BƯỚC KÝ này, không phải lúc ảnh tải hỏng ở
+  // trình duyệt: Supabase trả StorageApiError với `code: "NoSuchKey"` khi
+  // object không tồn tại (kiểm chứng bằng cách ký thử một trang không tồn
+  // tại trên bucket thật — xem tests/book-bucket.test.ts). Rẽ nhánh theo
+  // `code` chứ không theo `message`: JSDoc của StorageApiError trong
+  // storage-js nói rõ `code` là trường dành để rẽ nhánh, `message` không có
+  // hợp đồng ổn định. Trường hợp này đi cùng đường với "ảnh chưa upload" ở
+  // BookImage — `src === null` khiến nó tự render đúng thông báo đó.
+  const thieuAnh = (error as { code?: string } | null)?.code === "NoSuchKey";
 
   return (
     <main className="flex flex-col gap-4">
@@ -62,7 +63,7 @@ export default async function BookReaderPage({
         nextHref={next === null ? null : `/doc-sach/${next}`}
       />
 
-      {error || src === null ? (
+      {error && !thieuAnh ? (
         <div
           data-testid="book-error"
           className="flex flex-col items-center gap-3 rounded border border-amber-200 bg-amber-50 p-8 text-center text-sm text-amber-900"
@@ -75,8 +76,6 @@ export default async function BookReaderPage({
       ) : (
         <BookImage src={src} page={page} />
       )}
-
-      {nextSrc && <link rel="prefetch" as="image" href={nextSrc} />}
     </main>
   );
 }

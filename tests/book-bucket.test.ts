@@ -33,7 +33,25 @@ describe.skipIf(!hasEnv)("bucket ảnh trang sách", () => {
     expect(names[TOTAL_BOOK_PAGES - 1]).toBe("112.webp");
   });
 
-  // Hai `it` phía trên dùng SERVICE ROLE — key này BỎ QUA RLS hoàn toàn, nên
+  it("createSignedUrl trả StorageApiError code NoSuchKey cho object KHÔNG tồn tại", async () => {
+    // "113.webp" luôn nằm ngoài dải 1..TOTAL_BOOK_PAGES (112) nên chắc chắn
+    // không tồn tại trên bucket thật — ký thử một đường dẫn vắng mặt là thao
+    // tác chỉ đọc, không cần tạo hay xoá gì trên bucket để kiểm thử an toàn.
+    //
+    // Đây chính là hợp đồng mà src/app/(app)/doc-sach/[page]/page.tsx dựa
+    // vào để định tuyến "ảnh chưa upload" sang thông báo "chưa có ảnh" thay
+    // vì thông báo "thử lại" vô ích — xem BookImage.tsx. Pin lại ở đây để một
+    // lần Supabase đổi hình dạng lỗi này không âm thầm làm hỏng định tuyến đó
+    // mà không có bài test nào đỏ lên trước.
+    const { data, error } = await db.storage
+      .from(BOOK_BUCKET)
+      .createSignedUrl("113.webp", 60);
+
+    expect(data).toBeNull();
+    expect((error as { code?: string } | null)?.code).toBe("NoSuchKey");
+  });
+
+  // Ba `it` phía trên dùng SERVICE ROLE — key này BỎ QUA RLS hoàn toàn, nên
   // chúng vẫn xanh ngay cả khi policy read_book_pages bị xóa mất hoặc bị nới
   // rộng ra cho cả vai trò anon. Hai bài test dưới đây mới thực sự chạy qua
   // RLS: một client thật sự đăng nhập (vai trò authenticated) và một client
@@ -83,7 +101,12 @@ describe.skipIf(!hasEnv)("bucket ảnh trang sách", () => {
       // thay vì giả định chặn ở đâu, vì hành vi thật là bằng chứng, không
       // phải suy đoán.
       if (error) {
-        expect(error).not.toBeNull();
+        // `data` không đi kèm signedUrl nào khi có lỗi ký — kiểu trả về của
+        // createSignedUrl là hợp (union) hai nhánh loại trừ nhau
+        // ({data, error: null} | {data: null, error}), nên TS đã tự thu hẹp
+        // `data` về `null` ở đây; assert thẳng để phản ánh đúng điều đó thay
+        // vì lặp lại `error` mà nhánh `if` đã chứng minh rồi.
+        expect(data).toBeNull();
       } else {
         const res = await fetch(data!.signedUrl);
         expect(res.status, "URL ký cho client ẩn danh vẫn tải được ảnh — RLS rò rỉ").not.toBe(200);

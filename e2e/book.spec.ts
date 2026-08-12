@@ -98,6 +98,27 @@ test("phím mũi tên lật trang", async ({ page }) => {
   await expect(page).toHaveURL(/\/doc-sach\/5$/);
 });
 
+test("phím mũi tên kèm phím bổ trợ (Alt/Ctrl/Meta/Shift) không lật trang", async ({ page }) => {
+  await login(page);
+  await page.goto("/doc-sach/5");
+
+  // Alt+←/→ (Windows/Linux) và Cmd+←/→ (macOS) là phím tắt Back/Forward của
+  // trình duyệt; Shift+← là phím chọn chữ. Nếu listener vẫn lật trang khi
+  // giữ các phím này, nó lật CÙNG LÚC trình duyệt điều hướng lịch sử, đẩy
+  // người dùng tới một trang họ không xin và làm rối lịch sử thêm.
+  await page.keyboard.press("Alt+ArrowRight");
+  await expect(page).toHaveURL(/\/doc-sach\/5$/);
+
+  await page.keyboard.press("Control+ArrowRight");
+  await expect(page).toHaveURL(/\/doc-sach\/5$/);
+
+  await page.keyboard.press("Meta+ArrowRight");
+  await expect(page).toHaveURL(/\/doc-sach\/5$/);
+
+  await page.keyboard.press("Shift+ArrowLeft");
+  await expect(page).toHaveURL(/\/doc-sach\/5$/);
+});
+
 test("phím mũi tên không cướp phím khi đang gõ vào ô số trang", async ({ page }) => {
   await login(page);
   await page.goto("/doc-sach/5");
