@@ -10,7 +10,7 @@ const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const hasEnv = Boolean(URL && SERVICE && ANON);
 
 describe.skipIf(!hasEnv)("bucket ảnh trang sách", () => {
-  const db = createClient(URL ?? "http://localhost", SERVICE ?? "khong-dung", {
+  const db = createClient(URL ?? "http://localhost", SERVICE ?? "không-dùng", {
     auth: { persistSession: false },
   });
 
@@ -86,7 +86,7 @@ describe.skipIf(!hasEnv)("bucket ảnh trang sách", () => {
         expect(error).not.toBeNull();
       } else {
         const res = await fetch(data!.signedUrl);
-        expect(res.status, "URL ky cho client an danh van tai duoc anh — RLS ro ri").not.toBe(200);
+        expect(res.status, "URL ký cho client ẩn danh vẫn tải được ảnh — RLS rò rỉ").not.toBe(200);
       }
     });
   });
