@@ -28,16 +28,16 @@ describe.skipIf(!hasEnv)("bucket ảnh trang sách", () => {
 
     const names = (data ?? []).map((o) => o.name).sort();
     expect(names).toHaveLength(TOTAL_BOOK_PAGES);
-    // Kiem ca hai bien: lech mot don vi o buoc doi ten se lo ra o day.
+    // Kiểm cả hai biên: lệch một đơn vị ở bước đổi tên sẽ lộ ra ở đây.
     expect(names[0]).toBe("001.webp");
     expect(names[TOTAL_BOOK_PAGES - 1]).toBe("112.webp");
   });
 
-  // Hai `it` phia tren dung SERVICE ROLE — key nay BO QUA RLS hoan toan, nen
-  // chung van xanh ngay ca khi policy read_book_pages bi xoa mat hoac bi noi
-  // rong ra cho ca vai tro anon. Hai bai test duoi day moi thuc su chay qua
-  // RLS: mot client that su dang nhap (vai tro authenticated) va mot client
-  // chua dang nhap (vai tro anon), cung khuon voi tests/rls.test.ts.
+  // Hai `it` phía trên dùng SERVICE ROLE — key này BỎ QUA RLS hoàn toàn, nên
+  // chúng vẫn xanh ngay cả khi policy read_book_pages bị xóa mất hoặc bị nới
+  // rộng ra cho cả vai trò anon. Hai bài test dưới đây mới thực sự chạy qua
+  // RLS: một client thật sự đăng nhập (vai trò authenticated) và một client
+  // chưa đăng nhập (vai trò anon), cùng khuôn với tests/rls.test.ts.
   describe("policy read_book_pages qua RLS", () => {
     let reader: SupabaseClient;
     let readerId = "";
@@ -54,8 +54,8 @@ describe.skipIf(!hasEnv)("bucket ảnh trang sách", () => {
       await reader.auth.signInWithPassword({ email, password: "test-pass-1234" });
     });
 
-    // Don tai khoan test that khoi auth.users — khong don se de lai tai khoan
-    // that trong he thong xac thuc moi lan chay tren project That.
+    // Dọn tài khoản test thật khỏi auth.users — không dọn sẽ để lại tài khoản
+    // thật trong hệ thống xác thực mỗi lần chạy trên project Thật.
     afterAll(async () => {
       if (readerId) await db.auth.admin.deleteUser(readerId);
     });
@@ -78,10 +78,10 @@ describe.skipIf(!hasEnv)("bucket ảnh trang sách", () => {
         .from(BOOK_BUCKET)
         .createSignedUrl("001.webp", 60);
 
-      // RLS co the chan ngay o buoc ky URL (createSignedUrl tra loi) hoac
-      // muon hon o buoc GET thuc su vao URL da ky — kiem ca hai truong hop
-      // thay vi gia dinh chan o dau, vi hanh vi that la bang chung, khong
-      // phai suy doan.
+      // RLS có thể chặn ngay ở bước ký URL (createSignedUrl trả lỗi) hoặc
+      // muộn hơn ở bước GET thực sự vào URL đã ký — kiểm cả hai trường hợp
+      // thay vì giả định chặn ở đâu, vì hành vi thật là bằng chứng, không
+      // phải suy đoán.
       if (error) {
         expect(error).not.toBeNull();
       } else {
