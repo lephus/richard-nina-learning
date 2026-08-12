@@ -20,6 +20,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         {/* Không có link này thì /stats không tồn tại với người học dù route
             đã build xong — đúng lỗi đã xảy ra ở lát 1b. */}
         <div className="flex items-center gap-4">
+          {/* Trỏ thẳng /doc-sach/1 chứ không phải /doc-sach: click đỡ một
+              vòng round-trip qua redirect, và prefetch của Next dành cho
+              đúng trang đích thay vì trang trung chuyển. /doc-sach vẫn còn
+              cho URL gõ tay. */}
+          <Link href="/doc-sach/1" data-testid="book-link" className="text-sm underline">
+            Đọc sách
+          </Link>
           <Link href="/vocab" data-testid="vocab-link" className="text-sm underline">
             Từ vựng
           </Link>

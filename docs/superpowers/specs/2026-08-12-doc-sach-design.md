@@ -80,10 +80,22 @@ tài liệu có bản quyền của nhóm Toeic Practice Club. Bucket công khai
 lý do là tiện.
 
 **Đánh đổi phải chấp nhận:** signed URL đổi token mỗi lần sinh, nên trình duyệt
-không tái dùng được ảnh đã tải giữa các lần vào trang. Giảm nhẹ bằng cách xin
-signed URL cho trang hiện tại **và trang kế** trong cùng một lời gọi
-`createSignedUrls`, rồi prefetch trang kế. Mỗi trang ~250 KB và người đọc xem
-mỗi trang một lần, nên chi phí này nhỏ.
+không tái dùng được ảnh đã tải giữa các lần vào trang — mỗi lần vào một trang
+là một lượt tải mới, kể cả khi trang đó vừa được xem trước đó trong phiên.
+
+Bản thiết kế ban đầu định giảm nhẹ đánh đổi này bằng cách xin luôn signed URL
+cho **trang kế** trong cùng một lời gọi `createSignedUrls`, rồi phát
+`<link rel="prefetch" as="image">` cho URL đó. Ý này đã bị bỏ ở vòng soát toàn
+nhánh trước khi merge, vì nó tự mâu thuẫn với đúng tiền đề vừa nêu ở trên:
+token đổi mỗi lần sinh nghĩa là URL ký cho trang kế **lúc render trang hiện
+tại** chắc chắn khác với URL mà trang kế **tự ký cho chính nó** khi người đọc
+thật sự lật tới — hai URL khác `?token=...` là hai khoá cache HTTP khác nhau,
+nên trình duyệt không bao giờ nhận ra chúng cùng trỏ tới một ảnh và luôn tải
+lại từ đầu. Nói cách khác, phần "prefetch" chỉ tốn thêm đúng gấp đôi egress
+Storage và dữ liệu di động của người học, không đổi lại được một byte
+cache-hit nào. Đã bỏ hẳn phần này thay vì dựng thêm một tầng cache ký URL —
+chi phí ~250 KB/trang cho một lượt xem một lần vẫn chấp nhận được mà không
+cần giảm nhẹ gì thêm.
 
 ## 5. Không dùng `next/image`
 
@@ -140,10 +152,15 @@ một dòng, đổi lấy việc không phải đi truy một lỗi như vậy s
 
 1. `const { page } = await params` — `params` là Promise ở bản Next này.
 2. Parse số. Không phải số nguyên trong 1–112 → `notFound()`.
-3. `createSignedUrls(['048.webp', '049.webp'], 3600)` — lấy luôn trang kế.
-   **Ở trang 112 thì chỉ xin một đường dẫn**, vì `113.webp` không tồn tại và
-   xin nó sẽ tạo ra một lỗi giả ngay ở trang cuối, đúng chỗ không có gì sai.
-4. Render `<img>` trang hiện tại, `<link rel="prefetch">` trang kế (nếu có).
+3. `createSignedUrl('048.webp', 3600)` — chỉ một đường dẫn, đúng trang đang
+   xem. Không còn xin trước trang kế (đã bỏ prefetch, xem mục 4): với chỉ một
+   đường dẫn cần ký, `createSignedUrl` số ít là lời gọi tự nhiên, và trường
+   hợp đặc biệt ở trang 112 — từng phải xin ít hơn một đường dẫn vì
+   `113.webp` không tồn tại — biến mất theo, vì giờ không còn "đường dẫn thứ
+   hai" nào để bớt đi nữa.
+4. Object không tồn tại lộ ra ngay ở bước ký này, không phải lúc `<img>` tải
+   hỏng: Supabase trả lỗi `StorageApiError` với `code: "NoSuchKey"` (xem mục
+   10). Render `<img>` trang hiện tại khi ký thành công.
 
 Trang nằm trong nhóm `(app)` nên thừa hưởng lớp chặn đăng nhập của
 `(app)/layout.tsx`; không viết lại lớp bảo vệ thứ hai ở đây.
@@ -178,13 +195,23 @@ ra một lần ở lát 1b và được ghi lại ngay trong chú thích của `
 | Tình huống | Cách xử lý |
 |---|---|
 | Số trang ngoài dải hoặc không phải số | `notFound()` |
-| `createSignedUrls` không trả được URL **trang hiện tại** | Thông báo tiếng Việt + nút thử lại; không để trang trắng |
-| Không trả được URL **trang kế** (chỉ dùng để prefetch) | Bỏ qua im lặng, vẫn render trang hiện tại. Hỏng phần tăng tốc thì không được phép làm hỏng phần đọc |
-| Ảnh chưa upload hoặc tải hỏng | `onError` đổi sang khối "Chưa có ảnh trang này", **giữ nguyên thanh điều hướng** để đi tiếp được |
+| `createSignedUrl` lỗi, **không phải** vì object vắng mặt (`error.code !== "NoSuchKey"`) | Thông báo tiếng Việt + nút thử lại; không để trang trắng |
+| `createSignedUrl` lỗi **vì object vắng mặt** (`error.code === "NoSuchKey"`) — ảnh chưa upload | Khối "Chưa có ảnh trang này", **giữ nguyên thanh điều hướng** để đi tiếp được |
+| Ảnh tải hỏng ở trình duyệt sau khi đã ký thành công (hiếm — ví dụ mạng đứt giữa chừng) | `onError` của `<img>` đổi sang cùng khối "Chưa có ảnh trang này": nội dung không khớp tuyệt đối với lý do, nhưng vẫn ưu tiên để người đọc đi tiếp thay vì thấy ảnh vỡ |
 
-Trường hợp thứ ba không phải phòng xa: script upload chạy tách rời với deploy,
+Trường hợp thứ hai không phải phòng xa: script upload chạy tách rời với deploy,
 nên hoàn toàn có thể app đã live trong khi bucket còn thiếu trang. Lúc đó người
 đọc cần đi tiếp được, không phải mắc kẹt.
+
+Bản thiết kế ban đầu gán tình huống này cho `onError` của `<img>` (dòng cuối
+bảng trên) — tưởng ảnh chưa upload chỉ lộ ra lúc trình duyệt thử tải. Thực tế
+lộ ra sớm hơn: `createSignedUrl` tự kiểm tra object có tồn tại hay không
+**trước khi** phát hành chữ ký, nên với object vắng mặt, lỗi xảy ra ngay ở
+server, `src` truyền xuống `<img>` là `null`, và trình duyệt còn chưa kịp thử
+tải gì cả — `onError` không bao giờ được gọi trong trường hợp này. Đã kiểm
+chứng trực tiếp bằng cách ký thử một trang không tồn tại trên bucket thật
+(xem `tests/book-bucket.test.ts`). Định tuyến theo `error.code` để hai thông
+báo "chưa có ảnh" và "thử lại" không lẫn vào nhau.
 
 ## 11. Kiểm thử
 
@@ -210,3 +237,12 @@ nên hoàn toàn có thể app đã live trong khi bucket còn thiếu trang. L�
 - Đọc các file ngữ pháp `.docx` là chuyện khác hẳn: `data/clean/grammar.json` đã
   có sẵn 20 bài dạng markdown, nên đó là trang render văn bản, không phải trình
   đọc ảnh.
+- **Nếu có ngày policy `read_book_pages` bị thu hẹp** từ dạng cho phép cả khối
+  (`to authenticated using (bucket_id = 'book-pages')`) xuống dạng phân quyền
+  theo từng người hoặc từng dòng, thì phải kiểm chứng lại cách định tuyến
+  `error.code === "NoSuchKey"` ở mục 10. Hiện tại không có tình huống "object
+  tồn tại nhưng bị cấm" mà người đã đăng nhập chạm tới được, nên `NoSuchKey`
+  chỉ có thể nghĩa là vắng mặt thật. Với policy hẹp hơn, một lỗi phân quyền có
+  nguy cơ bị dán nhãn thành "chưa có ảnh" — tức nói sai nguyên nhân cho người
+  đọc. `storage-js` phát mã `AccessDenied` riêng cho trường hợp cấm, nên chỗ
+  cần sửa khi đó là phân biệt thêm mã này.
