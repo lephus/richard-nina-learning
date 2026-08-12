@@ -14,7 +14,8 @@
     "phase0:grammar": "tsx scripts/phase0/03-extract-grammar.ts",
     "phase0:grammar-lessons": "tsx scripts/phase0/build-grammar-lessons.ts",
     "phase0:questions": "tsx scripts/phase0/04-parse-questions.ts",
-    "phase0:seed": "tsx scripts/phase0/05-seed.ts"
+    "phase0:seed": "tsx scripts/phase0/05-seed.ts",
+    "phase0:book": "tsx scripts/phase0/06-pack-book-pages.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
@@ -22,6 +23,7 @@
     "@types/node": "^22.10.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
