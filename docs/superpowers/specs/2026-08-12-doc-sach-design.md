@@ -237,3 +237,12 @@ báo "chưa có ảnh" và "thử lại" không lẫn vào nhau.
 - Đọc các file ngữ pháp `.docx` là chuyện khác hẳn: `data/clean/grammar.json` đã
   có sẵn 20 bài dạng markdown, nên đó là trang render văn bản, không phải trình
   đọc ảnh.
+- **Nếu có ngày policy `read_book_pages` bị thu hẹp** từ dạng cho phép cả khối
+  (`to authenticated using (bucket_id = 'book-pages')`) xuống dạng phân quyền
+  theo từng người hoặc từng dòng, thì phải kiểm chứng lại cách định tuyến
+  `error.code === "NoSuchKey"` ở mục 10. Hiện tại không có tình huống "object
+  tồn tại nhưng bị cấm" mà người đã đăng nhập chạm tới được, nên `NoSuchKey`
+  chỉ có thể nghĩa là vắng mặt thật. Với policy hẹp hơn, một lỗi phân quyền có
+  nguy cơ bị dán nhãn thành "chưa có ảnh" — tức nói sai nguyên nhân cho người
+  đọc. `storage-js` phát mã `AccessDenied` riêng cho trường hợp cấm, nên chỗ
+  cần sửa khi đó là phân biệt thêm mã này.
