@@ -42,13 +42,31 @@ function markdownSangHtml(md: string, nhanBai: string): string {
   // anybody" o bai dai-tu ("on" nam trong tu "one", roi theo sau la " =") —
   // mot cau ngu phap hop le, khong phai the HTML. Neo vao "<[^>]*" la cach
   // tach markup khoi van xuoi.
+  //
+  // MO RONG O VONG SOAT CUOI lat 2d (muc minor): ba mau goc (script/iframe/on...=)
+  // bo sot nam duong khac cung dua toi thuc thi ma hoac dieu huong ngoai y
+  // muon trong mot chuoi HTML render bang dangerouslySetInnerHTML — <object>/
+  // <embed> nhung noi dung/plugin ngoai (tuong duong <iframe> ve muc do rui
+  // ro), <base> doi lai GOC tuong doi cua CA TRANG (moi link/anh tuong doi
+  // sau do tro sai cho, ke ca cac lien ket noi bo khac cua chinh app), <form>
+  // dung mot form khong do app kiem soat, va URL luoc do "javascript:" (co
+  // the nam trong href/src cua BAT KY the nao, khong rieng <a>). Khong bai
+  // nao trong 20 bai hien co khop cac mau nay (da kiem that tren
+  // data/clean/grammar.json) — day la vien phong chong hoi quy, khong phai
+  // sua du lieu.
   if (
     /<script/i.test(html) ||
     /<iframe/i.test(html) ||
+    /<object\b/i.test(html) ||
+    /<embed\b/i.test(html) ||
+    /<base\b/i.test(html) ||
+    /<form\b/i.test(html) ||
+    /javascript:/i.test(html) ||
     /<[^>]*\son[a-z]+\s*=/i.test(html)
   ) {
     throw new Error(
-      `HTML sinh ra cho bai "${nhanBai}" chua noi dung khong an toan (script/iframe/on...=)`,
+      `HTML sinh ra cho bai "${nhanBai}" chua noi dung khong an toan ` +
+        `(script/iframe/object/embed/base/form/javascript:/on...=)`,
     );
   }
   return html;

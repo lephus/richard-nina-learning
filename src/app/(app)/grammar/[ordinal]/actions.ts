@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { timHoacDungBaiNguPhap } from "@/lib/exam/run";
+import { baiDangLamCua, timHoacDungBaiNguPhap } from "@/lib/exam/run";
 import type { GrammarQuestionLite } from "@/lib/exam/build-grammar";
 
 /**
@@ -20,6 +20,31 @@ export async function batDauBaiNguPhap(ordinal: number): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  // SỬA Ở VÒNG SOÁT CUỐI lát 2d (mục 6, IMPORTANT): tấm chắn SỚM mà CẢ HAI
+  // hàm chị em (`batDauBaiThi`, `batDauOnTap` — `exam/[id]/actions.ts`) đều có
+  // TRƯỚC bản vá này bị THIẾU ở đây. Hệ quả: một học viên bỏ dở BẤT KỲ bài nào
+  // (kể cả vocab) rồi bấm LÀM BÀI ở một bài ngữ pháp phải trả giá TOÀN BỘ chi
+  // phí dựng đề (đọc hết câu hỏi + tới 100 round-trip RPC `answer_for_question`
+  // bên dưới) trước khi `timHoacDungBaiNguPhap` mới phát hiện ra đã có bài
+  // đang làm dở và huỷ bỏ hết công đó — bấm nút "LÀM BÀI" ở bài 100 câu tốn
+  // gần trăm vòng mạng chỉ để bị redirect đi nơi khác. Kiểm TRƯỚC, y hệt hai
+  // hàm chị em: nhánh "làm tiếp" (case thường gặp nhất của bẫy bỏ dở bài, yêu
+  // cầu C bàn giao) không còn phải trả giá bất kỳ vòng mạng nào trong số đó.
+  // Đây là một TỐI ƯU đặt CHỒNG lên trên sự đúng đắn mà `timHoacDungBaiNguPhap`
+  // bên dưới tự đảm bảo được ngay cả khi thiếu bước này (nó tự kiểm lại) —
+  // không phải điều kiện bắt buộc để tránh 23505.
+  //
+  // Kèm `tuLoai=grammar&tuBuoi=${ordinal}` khi redirect vào một bài `in_progress`
+  // CÓ SẴN — cùng khuôn hai hàm chị em: `/exam/[id]` (page.tsx) đọc lại hai
+  // tham số này để biết có phải người học đang bị đưa vào MỘT BÀI KHÁC (loại
+  // khác, hoặc bài ngữ pháp khác) với thứ họ vừa bấm hay không, và cảnh báo rõ
+  // thay vì im lặng (mục 2 vòng soát cuối — trước bản vá này, `batDauBaiNguPhap`
+  // là hàm bấm-ra-bài DUY NHẤT không đính kèm cặp tham số này, nên hướng vocab
+  // → grammar luôn cảnh báo, còn hướng grammar → vocab luôn im lặng, một sự
+  // BẤT ĐỐI XỨNG không có lý do kỹ thuật nào biện minh được).
+  const dangLam = await baiDangLamCua(supabase, user.id);
+  if (dangLam !== null) redirect(`/exam/${dangLam}?tuLoai=grammar&tuBuoi=${ordinal}`);
 
   const { data: bai, error: baiErr } = await supabase
     .from("grammar_lessons")
@@ -62,10 +87,51 @@ export async function batDauBaiNguPhap(ordinal: number): Promise<void> {
   // tại thời điểm trả lời — nó chỉ phục vụ bước kiểm biên nội bộ của
   // `buildGrammarExam` và một field trả về mà `createGrammarExam` không bao
   // giờ ghi xuống payload (payload chỉ có prompt/options/kind).
+  //
+  // VÒNG SOÁT CUỐI (mục 6, IMPORTANT) — CÂN NHẮC BỎ vòng lặp RPC này, KHÔNG
+  // bỏ được, ghi lại lý do thay vì lặng lẽ giữ nguyên: tấm chắn sớm
+  // (`baiDangLamCua`) thêm ở trên đã cắt hết chi phí này cho nhánh "làm tiếp
+  // bài cũ" — nhánh CÒN LẠI (dựng bài MỚI thật sự) vẫn cần tới N vòng RPC vì
+  // BA lý do cộng dồn, không lý do nào tự nó đủ:
+  //   1. RLS (`0004_rls.sql:46-48`) revoke cột `answer` khỏi vai `authenticated`
+  //      — đã THỬ THẬT ở trên, không suy đoán — nên không có cách nào đọc
+  //      thẳng nó bằng một SELECT duy nhất từ client này.
+  //   2. Bàn giao lát này CẤM đổi schema, nên không thể thêm một RPC GỘP kiểu
+  //      `answers_for_lesson(lesson_id)` để thay N cuộc gọi bằng một — con
+  //      đường TỰ NHIÊN nhất để giảm chi phí mạng lại chính là con đường bị
+  //      cấm.
+  //   3. `buildGrammarExam` (Task 2, `src/lib/exam/build-grammar.ts`) đòi
+  //      `GrammarQuestionLite.answer` là THAM SỐ BẮT BUỘC của chữ ký hàm — đây
+  //      là hàm THUẦN đã kiểm kỹ trên cả 537 câu thật
+  //      (`tests/exam-build-grammar.test.ts`), và chính khẳng định "đáp án là
+  //      CHỮ HIỂN THỊ đúng, suy từ chữ cái A–D" của bộ test đó là thứ đang giữ
+  //      cho phép biến đổi chữ cái ↔ chữ hiển thị không âm thầm sai. Đổi chữ ký
+  //      để KHÔNG đòi `answer` nữa (ví dụ chỉ nhận `id/stem/options`) sẽ xoá
+  //      luôn khẳng định đó khỏi test — ĐÚNG nghĩa "làm yếu một khẳng định" mà
+  //      bàn giao dặn không được làm để đổi lấy tốc độ. Truyền một chữ cái giả
+  //      cố định (ví dụ luôn `"A"`) để né vòng lặp còn TỆ hơn: bounds-check
+  //      trong `buildGrammarExam` sẽ LUÔN qua một cách vô nghĩa (không còn
+  //      kiểm tra gì thật về dữ liệu của CHÍNH lượt dựng đề này nữa).
+  // Kết luận: giữ nguyên vòng lặp RPC cho nhánh dựng bài MỚI — tấm chắn sớm ở
+  // trên đã loại bỏ phần lớn chi phí này khỏi đường đi PHỔ BIẾN NHẤT (bấm LÀM
+  // BÀI trong khi còn bài dang dở), và phần còn lại không gỡ được nếu không vi
+  // phạm một trong hai ràng buộc bàn giao (không đổi schema, không làm yếu
+  // assertion).
+  // `.order("id")` — SỬA Ở VÒNG SOÁT CUỐI (mục minor): thiếu order thì thứ tự
+  // hàng trả về là thứ tự VẬT LÝ không cam kết của Postgres, có thể đổi giữa
+  // hai lần gọi (autovacuum, index khác được chọn…). `buildGrammarExam` gọi
+  // `seededShuffle(questions, seed)` — một xáo trộn Fisher-Yates THEO VỊ TRÍ
+  // mảng đầu vào (`src/content/shuffle-options.ts`), không theo khoá nào của
+  // từng câu — nên "cùng seed cho cùng đề" (đã kiểm ở
+  // `tests/exam-build-grammar.test.ts`) chỉ đúng khi mảng ĐẦU VÀO cũng cùng
+  // thứ tự mỗi lần gọi. Neo thứ tự đó vào `id` (khoá chính, ổn định) để tính
+  // tất định thật sự nằm ở tầng ứng dụng, không mượn một hành vi Postgres
+  // không được đảm bảo.
   const { data: rows, error: cauErr } = await supabase
     .from("grammar_questions")
     .select("id, stem, options")
-    .eq("lesson_id", grammarLessonId);
+    .eq("lesson_id", grammarLessonId)
+    .order("id");
   if (cauErr) throw cauErr;
 
   const questions: GrammarQuestionLite[] = await Promise.all(

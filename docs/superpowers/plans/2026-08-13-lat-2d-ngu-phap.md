@@ -10,13 +10,52 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-13-lat-2d-lo-trinh-ngu-phap-design.md`
 
+> **SỬA Ở VÒNG SOÁT CUỐI lát 2d, TRƯỚC KHI MERGE — kế hoạch này (viết TRƯỚC
+> Task 3) sai ở hai chỗ, đã kiểm chứng thật, không phải suy luận lại.** Giữ
+> nguyên mọi đoạn gốc bên dưới (đánh dấu **[SAI — xem đây]** tại chỗ) thay vì
+> xoá, để ghi lại kế hoạch từng nói gì — cùng tinh thần spec §5
+> (`docs/superpowers/specs/2026-08-13-lat-2d-lo-trinh-ngu-phap-design.md`,
+> mục 5), nơi có đầy đủ bằng chứng INSERT thật cho lỗi thứ nhất.
+>
+> 1. **`scope` của bài ngữ pháp KHÔNG phải `[ordinal]`.** Nó luôn **RỖNG**
+>    (`[]`). Danh tính bài học nằm ở cột riêng `assessments.grammar_lesson_id`
+>    (FK tới `grammar_lessons.id` — một ID THẬT, KHÔNG phải ordinal), ràng
+>    buộc bởi CHECK `assessments_grammar_scope`
+>    (`supabase/migrations/0010_phase2_reset.sql:83`). Một INSERT
+>    `{type: 'grammar', scope: [ordinal]}` không kèm `grammar_lesson_id` bị
+>    Postgres từ chối thẳng với lỗi `23514` — đã thử thật bằng service role ở
+>    Task 3 (xem spec §5). Mọi câu bên dưới nói "`scope = [ordinal]`" hay
+>    "`grammarLessonId` lấy từ `scope`" đều sai theo nghĩa này — code thật
+>    (`src/lib/exam/run.ts`, hàm `createGrammarExam`) đi theo sự thật đã kiểm,
+>    không theo kế hoạch này.
+> 2. **`content_html` KHÔNG sinh qua việc sửa `scripts/phase0/03-extract-grammar.ts`
+>    rồi chạy `npm run phase0:grammar`, như Task 1 Bước 3 dưới đây hướng dẫn.**
+>    `03-extract-grammar.ts` chỉ trích `.docx` thành các file markdown THÔ
+>    (`data/raw/grammar/*.md`) — nó không hề có khái niệm `GrammarLesson`, và
+>    không đụng tới `data/clean/grammar.json`, nên Bước 3 như viết nguyên văn
+>    không thể đạt được mục tiêu của chính nó ("sinh `GrammarLesson.contentHtml`
+>    trong `data/clean/grammar.json`"). Muốn đạt mục tiêu đó theo đúng nghĩa
+>    đen của kế hoạch buộc phải chạy `build-grammar-lessons.ts` (lệnh
+>    `npm run phase0:grammar-lessons`) — và ĐÓ chính là lệnh nguy hiểm: script
+>    này đã LỆCH khỏi `data/clean/grammar.json` từ commit `3c1914d` (xem spec
+>    §9), chạy nó sẽ ÂM THẦM GHI ĐÈ bài 2 về bản cũ (thiếu lý thuyết danh từ,
+>    sai slug), làm đỏ hai file test đang xanh và lệch khỏi dữ liệu đang seed
+>    thật. Cách THẬT đã làm (Task 1, xem báo cáo và commit `a48a7c6`): một
+>    script MỚI, `scripts/phase0/add-grammar-html.ts`
+>    (`npm run phase0:grammar-html`), đọc THẲNG `contentMd` đã có sẵn trong
+>    `data/clean/grammar.json` (nguồn sự thật đã seed) và chỉ thêm
+>    `contentHtml` — không đi qua `03-extract-grammar.ts` lẫn
+>    `build-grammar-lessons.ts`. Backfill dữ liệu ĐÃ seed dùng
+>    `scripts/phase0/backfill-grammar-html.ts`
+>    (`npm run phase0:backfill-grammar-html`) — không qua `phase0:seed`.
+
 ## Global Constraints
 
 - Tiếng Việt cho mọi chữ người dùng thấy và mọi chú thích; **đủ dấu** trong `src/` và `tests/`, **không dấu** trong `scripts/`, `supabase/migrations/` và thông điệp commit. Chú thích giải thích **vì sao**.
-- Bài `grammar` ghi `type: "grammar"` và **`scope = [ordinal bài ngữ pháp]`** (1..20 của `grammar_lessons`, một phần tử). Đây là **không gian số khác** với `scope` của bài từ vựng; `progress.ts` lọc theo `type` **trước** khi so `scope` nên hai bên không lẫn — ghi rõ sự thật đó tại chỗ.
+- Bài `grammar` ghi `type: "grammar"` và **`scope = [ordinal bài ngữ pháp]`** (1..20 của `grammar_lessons`, một phần tử). Đây là **không gian số khác** với `scope` của bài từ vựng; `progress.ts` lọc theo `type` **trước** khi so `scope` nên hai bên không lẫn — ghi rõ sự thật đó tại chỗ. **[SAI — xem "SỬA Ở VÒNG SOÁT CUỐI" ngay trên Global Constraints, mục 1. Sự thật: `scope = []` luôn rỗng, danh tính nằm ở `assessments.grammar_lesson_id`.]**
 - Bài thi ngữ pháp lấy **toàn bộ** câu của bài (20–100 câu tuỳ bài). Không cắt bớt.
 - Phương án **lấy nguyên từ dữ liệu** — `grammar_questions.options` đã có sẵn 4 phương án và `answer` là chữ cái A–D. Không sinh phương án nhiễu.
-- Chấm câu ngữ pháp bằng RPC `answer_for_question`; ghi tiến độ bằng `applyGrammarMastery(supabase, userId, grammarLessonId, correct)`. **`grammarLessonId` lấy từ `scope` của bài thi, không suy từ `ref_id`.**
+- Chấm câu ngữ pháp bằng RPC `answer_for_question`; ghi tiến độ bằng `applyGrammarMastery(supabase, userId, grammarLessonId, correct)`. **`grammarLessonId` lấy từ `scope` của bài thi, không suy từ `ref_id`.** **[SAI — xem mục 1 ở trên. Sự thật: `grammarLessonId` lấy từ cột `assessments.grammar_lesson_id`, không có gì để lấy từ `scope` (luôn rỗng).]**
 - Giữ nguyên CAS `user_answer is null` và luật "chỉ cộng tiến độ ở lần trả lời đầu". Không nhánh nào được đi vòng qua chúng.
 - Bài `grammar` **không có bổ túc**. Trang kết quả phải rẽ theo `type`, không chỉ theo `passed`.
 - `PASS_MARK` vẫn là một hằng số 80% cho mọi loại.
@@ -27,7 +66,7 @@
 
 | Tệp | Trách nhiệm |
 |---|---|
-| `scripts/phase0/03-extract-grammar.ts` | **Sửa.** Sinh thêm HTML, tự kiểm an toàn. |
+| `scripts/phase0/03-extract-grammar.ts` | **Sửa.** Sinh thêm HTML, tự kiểm an toàn. **[SAI — xem "SỬA Ở VÒNG SOÁT CUỐI" mục 2, đầu tài liệu. Tệp thật đã sửa: `scripts/phase0/add-grammar-html.ts` (mới), không phải tệp này.]** |
 | `supabase/migrations/0012_grammar_content_html.sql` | **Tạo.** Thêm cột `content_html`. |
 | `scripts/phase0/05-seed.ts` | **Sửa.** Chèn `content_html` vào dòng `grammar_lessons` khi insert, để lần seed hợp lệ tiếp theo không xoá cột đó về rỗng (mặc định của migration 0012) — backfill cho dữ liệu HIỆN CÓ chạy qua `backfill-grammar-html.ts` (Task 1 Step 8), *không* qua lệnh seed này. |
 | `src/content/types.ts` | **Sửa.** `GrammarLesson` thêm `contentHtml`. |
@@ -111,7 +150,21 @@ Ngay sau khi sinh, **kiểm tại chỗ và nổ nếu vi phạm** — cùng ba 
 
 Cập nhật `GrammarLesson` trong `src/content/types.ts` thêm `contentHtml: string`.
 
+> **[SAI — xem "SỬA Ở VÒNG SOÁT CUỐI" mục 2, đầu tài liệu.]** Bước này như
+> viết nguyên văn không thể thực hiện được: `03-extract-grammar.ts` chỉ đọc
+> `.docx` và ghi các file markdown thô vào `data/raw/grammar/*.md`, không hề
+> có khái niệm `GrammarLesson`/`contentHtml`, và không đụng tới
+> `data/clean/grammar.json`. Cách THẬT đã làm: một script MỚI,
+> `scripts/phase0/add-grammar-html.ts`, đọc thẳng `contentMd` đã có sẵn
+> trong `data/clean/grammar.json` (nguồn sự thật đã seed, xem spec §9) và chỉ
+> thêm `contentHtml` — kiểm tại chỗ y hệt ý định của bước này (nổ nếu vi phạm
+> ba mẫu an toàn), chỉ khác input.
+
 - [ ] **Step 4: Chạy lại trích xuất**
+
+**[SAI — xem mục 2 ở trên.]** Lệnh thật đã chạy là `npm run phase0:grammar-html`
+(script `add-grammar-html.ts`), không phải lệnh dưới đây — `npm run phase0:grammar`
+chỉ tái tạo `data/raw/grammar/*.md`, không sinh `contentHtml` nào cả.
 
 Run: `npm run phase0:grammar`
 Expected: 20 bài, không nổ.
@@ -164,6 +217,12 @@ Expected: 20/20 dòng cập nhật, không lỗi. Xác minh qua REST rằng 20 d
 `content_html` khác rỗng và `content_md`/`title`/`ordinal` không đổi.
 
 - [ ] **Step 9: Commit**
+
+**[SAI — xem mục 2, đầu tài liệu.]** Danh sách file dưới đây liệt kê theo kế
+hoạch gốc; commit thật (`a48a7c6`) add `scripts/phase0/add-grammar-html.ts`
+(file MỚI, không có trong kế hoạch) thay cho `03-extract-grammar.ts`, và
+không sửa `05-seed.ts` (backfill đi qua `backfill-grammar-html.ts` như Step 8
+đã tự sửa lại phía trên, không qua đường seed).
 
 ```bash
 git add scripts/phase0/03-extract-grammar.ts scripts/phase0/05-seed.ts src/content/types.ts supabase/migrations/0012_grammar_content_html.sql tests/grammar-html.test.ts data/clean/grammar.json
@@ -293,13 +352,14 @@ git commit -m "feat(2d): dung de bai thi ngu phap tu du lieu co san"
 
 **Interfaces:**
 - Consumes: `buildGrammarExam` (Task 2); `applyGrammarMastery` từ `@/lib/mastery/write`.
-- Produces: `createGrammarExam(supabase, userId, grammarLessonOrdinal, questions, seed): Promise<number>`; `recordAnswer` rẽ theo `item_type`.
+- Produces: `createGrammarExam(supabase, userId, grammarLessonOrdinal, questions, seed): Promise<number>`; `recordAnswer` rẽ theo `item_type`. **[SAI — xem "SỬA Ở VÒNG SOÁT CUỐI" mục 1, đầu tài liệu. Chữ ký thật:
+  tham số thứ ba là `grammarLessonId` — ID THẬT (`grammar_lessons.id`), KHÔNG phải ordinal — vì `scope` không mang được danh tính bài học (luôn rỗng).]**
 
 - [ ] **Step 1: Viết test thất bại**
 
 Tạo `tests/exam-grammar.test.ts` theo khuôn `tests/exam-security.test.ts` (tạo người dùng thật, dọn trong `afterAll`). Bốn khẳng định:
 
-1. Bài ngữ pháp ghi `type: "grammar"` và `scope = [ordinal]`, `item_type` của mọi item là `'grammar'`.
+1. Bài ngữ pháp ghi `type: "grammar"` và `scope = [ordinal]`, `item_type` của mọi item là `'grammar'`. **[SAI — xem mục 1, đầu tài liệu. Sự thật: `scope = []` rỗng; danh tính bài học ghi ở `assessments.grammar_lesson_id`, khẳng định thật kiểm cột đó thay vì `scope`.]**
 2. `payload` chỉ có `prompt`, `options`, `kind` — không có đáp án.
 3. Trả lời đúng một câu ghi `grammar_mastery` theo khoá `(user_id, grammar_lesson_id)` với `correct_count = 1`; trả lời sai ghi `wrong_count`; **không** đụng `word_mastery`.
 4. Trả lời lại cùng một câu **không** cộng lần hai (CAS giữ nguyên).
@@ -313,9 +373,9 @@ Expected: FAIL — `createGrammarExam` chưa tồn tại.
 
 Trong `src/lib/exam/run.ts`:
 
-- `createGrammarExam` dựng đề bằng `buildGrammarExam`, ghi `assessments` với `type: "grammar"`, `scope: [ordinal]`, rồi ghi `assessment_items` với `item_type: "grammar"`, `ref_id` = id câu hỏi, `payload` = `{ prompt, options, kind: "grammar" }`. Đi qua `timHoacDungBaiThi` như các loại khác.
+- `createGrammarExam` dựng đề bằng `buildGrammarExam`, ghi `assessments` với `type: "grammar"`, `scope: [ordinal]`, rồi ghi `assessment_items` với `item_type: "grammar"`, `ref_id` = id câu hỏi, `payload` = `{ prompt, options, kind: "grammar" }`. Đi qua `timHoacDungBaiThi` như các loại khác. **[SAI — xem mục 1, đầu tài liệu. Sự thật: `scope: []`, kèm `grammar_lesson_id: grammarLessonId` (cột riêng).]**
 - `recordAnswer` rẽ theo `item_type` đọc từ chính dòng item:
-  - `'grammar'` → đáp án lấy qua RPC `answer_for_question(ref_id)`; sau khi CAS thắng, gọi `applyGrammarMastery(supabase, userId, grammarLessonId, dung)` với `grammarLessonId` lấy từ `scope[0]` của bài thi (**không** suy từ `ref_id` — đây là cái bẫy `write.ts` cũ đã ghi lại).
+  - `'grammar'` → đáp án lấy qua RPC `answer_for_question(ref_id)`; sau khi CAS thắng, gọi `applyGrammarMastery(supabase, userId, grammarLessonId, dung)` với `grammarLessonId` lấy từ `scope[0]` của bài thi (**không** suy từ `ref_id` — đây là cái bẫy `write.ts` cũ đã ghi lại). **[SAI — xem mục 1, đầu tài liệu. Sự thật: `grammarLessonId` lấy từ cột `assessments.grammar_lesson_id` (đọc kèm qua quan hệ nhúng trong SELECT của chính `recordAnswer`), không phải từ `scope[0]` — `scope` luôn rỗng cho bài `grammar` nên `scope[0]` luôn `undefined`.]**
   - `'vocab'` → nguyên như cũ.
 
 Giữ nguyên CAS và luật cộng-một-lần cho cả hai nhánh.
@@ -450,7 +510,7 @@ git commit -m "feat(2d): trang ket qua khong hien bo tuc cho bai ngu phap"
 | 2. Bất biến an toàn của HTML | 1 |
 | 3. Dựng đề từ dữ liệu có sẵn, chạy trên cả 20 bài | 2 |
 | 4. Nhánh `item_type`, `grammarLessonId` từ `scope` | 3 |
-| 5. `scope` là ordinal bài ngữ pháp, không gian số riêng | 3 |
+| 5. `scope` là ordinal bài ngữ pháp, không gian số riêng — **[SAI, xem mục 1 đầu tài liệu và spec §5: `scope` luôn rỗng, danh tính ở `grammar_lesson_id`]** | 3 |
 | 6. `/grammar`, `/grammar/[ordinal]`, thẻ dashboard | 4 |
 | 6. Kết quả không có bổ túc cho `grammar` | 5 |
 | 7. Cảnh báo lệch loại; bài 100 câu; tiêu đề | 3, 5 |

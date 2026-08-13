@@ -15,6 +15,7 @@
     "phase0:grammar-lessons": "tsx scripts/phase0/build-grammar-lessons.ts",
     "phase0:grammar-html": "tsx scripts/phase0/add-grammar-html.ts",
     "phase0:backfill-grammar-html": "tsx scripts/phase0/backfill-grammar-html.ts",
+    "phase0:backfill-grammar-media": "tsx scripts/phase0/backfill-grammar-media.ts",
     "phase0:questions": "tsx scripts/phase0/04-parse-questions.ts",
     "phase0:seed": "tsx scripts/phase0/05-seed.ts",
     "phase0:book": "tsx scripts/phase0/06-pack-book-pages.ts"

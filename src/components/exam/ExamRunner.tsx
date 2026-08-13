@@ -46,6 +46,30 @@ function tenNhomAnToan(buoi: number | null): string {
   }
 }
 
+/**
+ * Nhãn nút "Bỏ bài" — SỬA Ở VÒNG SOÁT CUỐI lát 2d (mục 1): bản trước hard-code
+ * đúng MỘT câu "…quay lại buổi học" cho MỌI loại bài, kể cả `grammar` và
+ * `review`/`remedial` phạm vi nhóm — cả ba loại đó đều KHÔNG đưa người học về
+ * một "buổi học" (xem `boBaiThi`, `src/app/(app)/exam/[id]/actions.ts`: bài
+ * `grammar` → `/grammar`, bài phạm vi nhóm → `/vocab`), nên nhãn cũ hứa sai
+ * điểm đến. Ba nhánh dưới đây khớp ĐÚNG ba đích mà `boBaiThi` thật sự đưa tới,
+ * cùng khuôn với `tieuDe` ngay trên — một hàm DUY NHẤT thay vì để nhãn trôi
+ * dạt khỏi hành vi thật ở hai nơi bấm nút (`cauHoi.length === 0` và nhánh
+ * chính) dùng chung.
+ */
+function nhanBoBai(
+  loaiBai: "lesson" | "remedial" | "review" | "grammar",
+  phamViNhieuBuoi: boolean,
+): string {
+  if (loaiBai === "grammar") {
+    return "Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại Ngữ pháp";
+  }
+  if (loaiBai === "review" || phamViNhieuBuoi) {
+    return "Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại Từ vựng";
+  }
+  return "Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học";
+}
+
 /** Số lần thử TỐI ĐA cho một lượt gọi `traLoi` — 1 lần gốc + 2 lần thử lại. */
 const SO_LAN_THU_TOI_DA = 3;
 
@@ -223,7 +247,7 @@ export function ExamRunner({
           onClick={() => batDauBo(() => boBaiThi(assessmentId))}
           className="self-start text-sm text-rose-700 underline disabled:opacity-50"
         >
-          Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học
+          {nhanBoBai(loaiBai, phamViNhieuBuoi)}
         </button>
       </main>
     );
@@ -355,7 +379,7 @@ export function ExamRunner({
         onClick={() => batDauBo(() => boBaiThi(assessmentId))}
         className="self-start text-sm text-rose-700 underline disabled:opacity-50"
       >
-        Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học
+        {nhanBoBai(loaiBai, phamViNhieuBuoi)}
       </button>
     </main>
   );
