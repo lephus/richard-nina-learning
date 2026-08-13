@@ -52,9 +52,9 @@ describe("buildVocabExam", () => {
   });
 
   it("câu điền lấy cả 4 phương án ở dạng biến cách, không phải dạng gốc", () => {
-    // blankAnswer co the la "openings" trong khi word la "opening". Neu nhieu
-    // de o dang goc thi dap an dung tu lo — no thanh phuong an duy nhat khop
-    // ngu phap. Kiem: moi phuong an cua cau dien phai la mot blankAnswer nao do.
+    // blankAnswer có thể là "openings" trong khi word là "opening". Nếu nhiễu
+    // để ở dạng gốc thì đáp án đúng tự lộ — nó thành phương án duy nhất khớp
+    // ngữ pháp. Kiểm: mọi phương án của câu điền phải là một blankAnswer nào đó.
     const { words, blanks } = lieu(0, 30);
     const hopLe = new Set(blanks.values());
     for (const c of buildVocabExam(words, blanks, 3).filter((c) => c.kind === "dien")) {
@@ -80,13 +80,48 @@ describe("buildVocabExam", () => {
     for (const c of cau) expect(c.options).toHaveLength(4);
   });
 
-  // Bai thi la lan dau nguoi hoc gap phan cham diem. Neu build no tren MOT buoi
-  // cu the thi buoi do khong vao thi duoc — nen kiem ca 20 buoi, khong phai mot
-  // buoi mau. Xem muc 8 cua spec.
+  // Bài thi là lần đầu người học gặp phần chấm điểm. Nếu build nổ trên MỘT buổi
+  // cụ thể thì buổi đó không vào thi được — nên kiểm cả 20 buổi, không phải một
+  // buổi mẫu. Xem mục 8 của spec.
   it("dựng được đề cho cả 20 buổi, không buổi nào nổ", () => {
     for (let buoi = 0; buoi < 20; buoi++) {
       const { words, blanks } = lieu(buoi * 30, buoi * 30 + 30);
       expect(() => buildVocabExam(words, blanks, buoi + 1)).not.toThrow();
     }
+  });
+
+  // Bẫy "đồng nghĩa hai chiều": pickDistractors chỉ chặn được chiều target →
+  // ứng viên (qua tu.synonyms trong `taken`), không tự chặn chiều ngược lại vì
+  // quan hệ đồng nghĩa trong kho phần lớn là MỘT CHIỀU. Một câu nghĩa có thể vì
+  // vậy mang HAI đáp án đúng: đáp án thật, và một phương án nhiễu mà chính nó
+  // coi đáp án thật là đồng nghĩa của nó — người học chọn đúng vẫn bị chấm sai.
+  // Kiểm một seed một buổi là không đủ: rò rỉ chỉ lộ trên một phần seed (không
+  // phải seed nào cũng xáo trúng cặp từ rò rỉ vào cùng một câu hỏi), nên phải
+  // quét nhiều seed trên cả 20 buổi mới bắt được, đúng như cách người review
+  // phát hiện ra lỗi này trên corpus thật.
+  it("câu nghĩa không rò đáp án qua đồng nghĩa một chiều ngược lại", () => {
+    const dongNghiaCua = new Map(raw.map((w) => [w.word, w.synonyms]));
+    const roRi: string[] = [];
+
+    for (let buoi = 0; buoi < 20; buoi++) {
+      const { words, blanks } = lieu(buoi * 30, buoi * 30 + 30);
+      for (let seed = 1; seed <= 20; seed++) {
+        const cau = buildVocabExam(words, blanks, seed);
+        for (const c of cau.filter((c) => c.kind === "nghia")) {
+          for (const phuongAn of c.options) {
+            if (phuongAn === c.answer) continue;
+            const dongNghiaCuaNhieu = dongNghiaCua.get(phuongAn) ?? [];
+            if (dongNghiaCuaNhieu.includes(c.answer)) {
+              roRi.push(
+                `buổi ${buoi}, seed ${seed}: đáp án "${c.answer}" bị rò rỉ bởi ` +
+                  `phương án nhiễu "${phuongAn}" (synonyms của "${phuongAn}" chứa "${c.answer}")`,
+              );
+            }
+          }
+        }
+      }
+    }
+
+    expect(roRi).toEqual([]);
   });
 });

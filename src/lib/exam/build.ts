@@ -55,8 +55,17 @@ export function buildVocabExam(
       const nhieu = pickDistractors(tu, pool, seedCau, {
         textOf: (c) => c.word,
         // Đồng nghĩa của từ đích cũng là đáp án đúng về nghĩa — 185/605 từ có
-        // một từ đồng nghĩa cũng nằm trong kho. Không chặn thì đề có hai đáp án.
+        // một từ đồng nghĩa cũng nằm trong kho. `taken` chặn được CHIỀU TỪ
+        // ĐÍCH: đồng nghĩa của target không được làm nhiễu. Nhưng quan hệ
+        // đồng nghĩa trong kho phần lớn là MỘT CHIỀU — 136/202 cặp tham chiếu
+        // chéo chỉ khai một chiều — nên target có thể không liệt kê một ứng
+        // viên, trong khi chính ứng viên đó lại liệt kê target trong synonyms
+        // của nó (vd. target `certain`, ứng viên `confident` có synonyms chứa
+        // `certain`, dù `certain.synonyms` không hề nhắc tới `confident`).
+        // `reject` bên dưới chặn CHIỀU NGƯỢC LẠI đó: loại mọi ứng viên tự nhận
+        // đáp án đúng là đồng nghĩa của chính nó.
         taken: [dapAn, ...tu.synonyms],
+        reject: (c) => c.synonyms.includes(dapAn),
       });
       if (nhieu.length < 3) {
         throw new Error(`không đủ phương án nhiễu cho từ ${tu.id} (${tu.word}) dạng nghĩa`);
