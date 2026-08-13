@@ -17,6 +17,11 @@ function lieu(tu: number, den: number) {
     id: w.ordinal, word: w.word, pos: w.pos, ipa: w.ipa,
     meaningVi: w.meaningVi, definitionEn: w.definitionEn,
     synonyms: w.synonyms, exampleEn: w.exampleEn, exampleVi: w.exampleVi,
+    // Cố ý để rỗng, đúng như VocabLite thật ở phía client: cột blank_answer đã
+    // bị thu hồi khỏi `authenticated` nên object này không bao giờ mang đáp án.
+    // Nhờ vậy bộ test còn chứng minh thêm một điều: buildVocabExam lấy đáp án
+    // câu điền từ tham số `blankAnswers`, không thể lỡ đọc trộm từ chính từ.
+    blankAnswer: "",
   }));
   const blanks = new Map(lat.map((w) => [w.ordinal, w.blankAnswer]));
   return { words, blanks };
