@@ -54,9 +54,17 @@ const { data: words, error: vErr } = await db.from("vocab_words").insert(vRows).
 die("seed vocab", vErr);
 const wordIdByOrdinal = new Map(words!.map((w) => [w.ordinal as number, w.id as number]));
 
+// content_html PHAI co mat o day. Migration 0012 dat mac dinh cot nay la
+// chuoi rong ('') de chay duoc tren bang da co du lieu; neu insert thieu
+// truong nay thi moi lan seed lai se am tham reset ca 20 bai ve rong, xoa mat
+// ket qua cua backfill-grammar-html.ts ma khong co gi bao — dung y het cai bay
+// ma lat nay da mat hai vong review moi tranh duoc, chi doi sang mot lenh
+// khac (seed thay vi generate-lessons). tests/db-integrity.test.ts co doi
+// chieu content_html voi data/clean/grammar.json de bat neu dieu nay lai xay ra.
 const gRows = grammar.map((l) => ({
   ordinal: l.ordinal, slug: l.slug, title: l.title,
-  summary: l.summary, content_md: l.contentMd, source_file: l.sourceFile,
+  summary: l.summary, content_md: l.contentMd, content_html: l.contentHtml,
+  source_file: l.sourceFile,
 }));
 const { data: gl, error: gErr } = await db.from("grammar_lessons").insert(gRows).select("id, slug");
 die("seed grammar", gErr);

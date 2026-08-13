@@ -46,6 +46,30 @@ function tenNhomAnToan(buoi: number | null): string {
   }
 }
 
+/**
+ * Nhãn nút "Bỏ bài" — SỬA Ở VÒNG SOÁT CUỐI lát 2d (mục 1): bản trước hard-code
+ * đúng MỘT câu "…quay lại buổi học" cho MỌI loại bài, kể cả `grammar` và
+ * `review`/`remedial` phạm vi nhóm — cả ba loại đó đều KHÔNG đưa người học về
+ * một "buổi học" (xem `boBaiThi`, `src/app/(app)/exam/[id]/actions.ts`: bài
+ * `grammar` → `/grammar`, bài phạm vi nhóm → `/vocab`), nên nhãn cũ hứa sai
+ * điểm đến. Ba nhánh dưới đây khớp ĐÚNG ba đích mà `boBaiThi` thật sự đưa tới,
+ * cùng khuôn với `tieuDe` ngay trên — một hàm DUY NHẤT thay vì để nhãn trôi
+ * dạt khỏi hành vi thật ở hai nơi bấm nút (`cauHoi.length === 0` và nhánh
+ * chính) dùng chung.
+ */
+function nhanBoBai(
+  loaiBai: "lesson" | "remedial" | "review" | "grammar",
+  phamViNhieuBuoi: boolean,
+): string {
+  if (loaiBai === "grammar") {
+    return "Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại Ngữ pháp";
+  }
+  if (loaiBai === "review" || phamViNhieuBuoi) {
+    return "Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại Từ vựng";
+  }
+  return "Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học";
+}
+
 /** Số lần thử TỐI ĐA cho một lượt gọi `traLoi` — 1 lần gốc + 2 lần thử lại. */
 const SO_LAN_THU_TOI_DA = 3;
 
@@ -109,12 +133,20 @@ export function ExamRunner({
    * "remedial", nên một bài ôn tập nhóm (`batDauOnTap`) rơi vào nhánh mặc
    * định của `tieuDe` bên dưới và hiện "Bài buổi ?", không nói được đang thi
    * gì giữa 60 câu.
+   * THÊM Ở LÁT 2d: "grammar" — bài ngữ pháp (`batDauBaiNguPhap`) đi qua ĐÚNG
+   * trang `/exam/[id]` này, không phải một trang riêng. Không thêm nhánh cho
+   * nó thì TypeScript vẫn "sạch" ở phía gọi (page.tsx ép kiểu `as` từ
+   * `string`, không nổ), nhưng runtime rơi vào nhánh mặc định bên dưới và
+   * hiện nhãn "Bài buổi ?" cho MỌI bài ngữ pháp — sai hoàn toàn, không phải
+   * một trường hợp biên hiếm.
    */
-  loaiBai: "lesson" | "remedial" | "review";
+  loaiBai: "lesson" | "remedial" | "review" | "grammar";
   /** Buổi (ordinal — xem chú thích ở page.tsx về sự trùng hợp id/ordinal). `null` nếu scope rỗng.
       Với một bài mang phạm vi NHIỀU buổi (`phamViNhieuBuoi === true`), đây là ordinal buổi ĐẦU
       của nhóm (`scope[0]`) — dùng để suy ngược ra số nhóm qua `groupOf`, không phải một buổi để
-      hiện riêng. */
+      hiện riêng. Với `loaiBai === "grammar"`, đây là `grammar_lessons.ordinal` (1..20, một hệ số
+      HOÀN TOÀN KHÁC ordinal buổi từ vựng) — page.tsx tra qua quan hệ nhúng `grammar_lessons(ordinal)`
+      vì `scope` luôn rỗng cho loại bài này. */
   buoi: number | null;
   /**
    * THÊM Ở VÒNG SOÁT CUỐI (mục 1): `true` khi `scope` gốc của bài này có HAI
@@ -178,8 +210,16 @@ export function ExamRunner({
   // bổ túc buổi N" của bổ túc một-buổi (đọc `groupOf(buoi)` sẽ SAI ĐÍCH nếu
   // hiểu buoi như một buổi đơn — nó vẫn đúng số vì `groupOf` chỉ cần MỘT
   // ordinal bất kỳ trong nhóm, nhưng nhãn "buổi N" tự nó đã sai bản chất).
+  // THÊM Ở LÁT 2d: nhánh "grammar" đứng TRƯỚC "remedial"/"review" — bài ngữ
+  // pháp không có bổ túc (mục 3.3 thiết kế phase 2: "loại này không có"), nên
+  // không cần lo tổ hợp `phamViNhieuBuoi` ở đây (luôn `false` cho grammar, xem
+  // page.tsx). `buoi` là `grammar_lessons.ordinal`, không phải một buổi từ
+  // vựng — nhãn "Bài buổi N" của nhánh mặc định sẽ SAI DOMAIN nếu để lọt vào
+  // đó (đọc như "buổi học từ vựng thứ N", trong khi N ở đây là số bài NGỮ
+  // PHÁP), nên tách riêng thay vì gộp vào nhánh cuối.
   const tieuDe =
-    loaiBai === "remedial"
+    loaiBai === "grammar" ? `Bài ngữ pháp ${buoi ?? "?"}`
+    : loaiBai === "remedial"
       ? (phamViNhieuBuoi ? `Bài bổ túc nhóm ${tenNhomAnToan(buoi)}` : `Bài bổ túc buổi ${buoi ?? "?"}`)
     : loaiBai === "review" ? `Bài ôn tập nhóm ${tenNhomAnToan(buoi)}`
     : `Bài buổi ${buoi ?? "?"}`;
@@ -207,7 +247,7 @@ export function ExamRunner({
           onClick={() => batDauBo(() => boBaiThi(assessmentId))}
           className="self-start text-sm text-rose-700 underline disabled:opacity-50"
         >
-          Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học
+          {nhanBoBai(loaiBai, phamViNhieuBuoi)}
         </button>
       </main>
     );
@@ -339,7 +379,7 @@ export function ExamRunner({
         onClick={() => batDauBo(() => boBaiThi(assessmentId))}
         className="self-start text-sm text-rose-700 underline disabled:opacity-50"
       >
-        Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học
+        {nhanBoBai(loaiBai, phamViNhieuBuoi)}
       </button>
     </main>
   );

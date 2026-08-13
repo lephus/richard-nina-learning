@@ -49,6 +49,7 @@ export interface GrammarLesson {
   title: string;
   summary: string;
   contentMd: string;
+  contentHtml: string;
   sourceFile: string;
 }
 

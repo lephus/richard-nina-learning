@@ -168,12 +168,27 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
     throw new Error(`không bỏ được bài ${assessmentId} — không phải của bạn`);
   }
 
+  // SỬA Ở VÒNG SOÁT CUỐI lát 2d (mục 1, CRITICAL): bài `grammar` không thuộc
+  // buổi/nhóm từ vựng nào — danh tính của nó nằm ở cột riêng
+  // `assessments.grammar_lesson_id`, `scope` LUÔN RỖNG (xem `createGrammarExam`,
+  // `src/lib/exam/run.ts`). Trước bản vá này, nhánh này bị BỎ SÓT hoàn toàn:
+  // bỏ dở một bài ngữ pháp rơi thẳng xuống nhánh `phamViThuocNhom`/`scope[0]`
+  // bên dưới (viết CHỈ cho vocab), `phamViThuocNhom([])` là `false` nên rơi
+  // tiếp xuống khối `scope[0] === undefined` và THROW ngay 100% các lần —
+  // dòng `assessments` đã bị xoá THẬT (xoá xong mới đọc `baiDaXoa.type`, nên
+  // không ai bị khoá lại bài cũ), nhưng người học vẫn hạ cánh ở `error.tsx`
+  // với một thông điệp nhắc tới "buổi" — khái niệm loại bài `grammar` không
+  // hề có. Chặn Ở ĐÂY, TRƯỚC khi đọc `scope` — đúng khuôn `isGrammar` đã dùng
+  // ở trang kết quả (`ket-qua/page.tsx`), không lặp lại đúng bẫy đó ở một cửa
+  // khác trong cùng một lát.
+  if (baiDaXoa.type === "grammar") redirect("/grammar");
+
   // SỬA Ở LÁT 2c (yêu cầu F), MỞ RỘNG Ở VÒNG SOÁT CUỐI (mục 1): bài `review`
   // (ôn tập nhóm) không thuộc buổi nào — bản gốc của bản vá F chỉ chặn theo
   // `type === "review"`, bỏ sót đúng MỘT trường hợp: một bài `remedial` SINH
   // RA từ một bài `review` (xem `batDauBoTuc`) giữ nguyên `type: "remedial"`
   // nhưng vẫn mang `scope` HAI phần tử của cha — bỏ dở nó rồi lại rơi xuống
-  // nhánh dưới, đọc `scope[0]` (buổi ĐẦU của nhóm) và đưa người học về
+  // nhánh dưới, đọc `scope[0]` (buổi ĐẦU của nhóm) và đưa học viên về
   // `/vocab/learn/<buổi đầu>` thay vì `/vocab`, đúng cái bẫy mà bản vá F được
   // viết ra để đóng, chỉ lọt qua một cửa khác. `phamViThuocNhom` (đếm phần tử
   // `scope`, không đọc `type`) là predicate DUY NHẤT cho "phạm vi này thuộc

@@ -47,14 +47,18 @@ test("đăng nhập đúng thì thấy hai thẻ chọn lộ trình: từ vựng
 }) => {
   await login(page);
 
-  // Task 14 dựng dashboard thật: track-vocab nay là một <Link> có số liệu
-  // (X/10 nhóm) và dòng "Tiếp tục" (data-testid="continue-hint"), còn
-  // track-grammar vẫn là placeholder "Sắp có" (lộ trình ngữ pháp thuộc lát
-  // 2c). Ở đây chỉ giữ phép kiểm HÌNH DẠNG — cả hai thẻ đều hiện — vì nội
-  // dung chi tiết của track-vocab (số liệu, dòng gợi ý, đường dẫn) đã có
-  // phép kiểm riêng, sâu hơn "toBeVisible", trong e2e/vocab.spec.ts.
+  // CẬP NHẬT Ở LÁT 2d (Task 4): `track-grammar` KHÔNG còn là placeholder
+  // "Sắp có" — nó là một `<Link>` thật dẫn tới `/grammar`, cùng khuôn
+  // `track-vocab` (xem `src/app/(app)/dashboard/page.tsx`). Đây là chữ "Sắp
+  // có" CUỐI CÙNG của toàn app đã bị gỡ (mục tiêu ghi ở đầu thiết kế lát 2d).
+  // Ở đây vẫn chỉ giữ phép kiểm HÌNH DẠNG — cả hai thẻ đều hiện VÀ không còn
+  // chữ "Sắp có" — vì nội dung chi tiết của từng thẻ (số liệu, đường dẫn,
+  // hành vi bấm vào) đã có phép kiểm riêng, sâu hơn "toBeVisible", trong
+  // e2e/vocab.spec.ts (track-vocab) và e2e/grammar.spec.ts (track-grammar,
+  // Task 4) — cùng lý do track-vocab không được kiểm sâu ở FILE NÀY.
   await expect(page.getByTestId("track-vocab")).toBeVisible();
   await expect(page.getByTestId("track-grammar")).toBeVisible();
+  await expect(page.getByTestId("track-grammar")).not.toContainText("Sắp có");
 });
 
 // Task 14 (dashboard thật): quyết định XOÁ hẳn kịch bản "Học tiếp" từng bị

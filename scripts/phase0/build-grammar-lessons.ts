@@ -6,6 +6,17 @@ import type { GrammarLesson } from "../../src/content/types.js";
 // hoc. Cac file lon duoc tach theo ranh gioi chu de tu nhien co san trong tai
 // lieu goc (tieu de muc, bang so sanh tron ven) - xem task-7-report.md de biet
 // ly do chon tung diem tach.
+//
+// KHONG chay lai script nay de tai sinh data/clean/grammar.json. Tu commit
+// 3c1914d, bai 2 duoc sua tay thang vao grammar.json (them ly thuyet danh tu,
+// doi slug thanh "danh-tu-tinh-tu-va-trang-tu") ma LessonSpec duoi day chua
+// bao gio duoc cap nhat theo. Chay lai se am tham ghi de bai 2 ve ban cu, lech
+// voi du lieu dang seed that. Xem "Viec theo sau" trong
+// docs/superpowers/specs/2026-08-13-lat-2d-lo-trinh-ngu-phap-design.md.
+//
+// contentHtml khong con duoc sinh o day nua vi ly do tren — no duoc them rieng
+// tu chinh contentMd da co san trong grammar.json boi
+// scripts/phase0/add-grammar-html.ts, khong di qua LessonSpec.
 
 const SRC = "data/raw/grammar";
 const OUT = "data/clean/grammar.json";
@@ -221,7 +232,8 @@ function readSource(name: string): string {
   return content;
 }
 
-const lessons: GrammarLesson[] = specs.map((spec) => {
+// Omit contentHtml: script nay khong sinh truong do (xem chu thich dau file).
+const lessons: Omit<GrammarLesson, "contentHtml">[] = specs.map((spec) => {
   const content = readSource(spec.sourceFile);
   const body = spec.ranges
     ? spec.ranges.map(([from, to]) => lines(content, from, to)).join("\n\n")
