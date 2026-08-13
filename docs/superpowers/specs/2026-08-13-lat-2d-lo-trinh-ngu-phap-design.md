@@ -146,3 +146,40 @@ grammar_lesson_id)`; đúng và sai đều đếm; trả lời lại không cộ
 thành `<table>` thật, không phải chữ `+---+`** (đây là khẳng định đóng lại rủi
 ro 11.2); làm bài, thấy điểm; trang kết quả của bài ngữ pháp **không** có nút bổ
 túc.
+
+## 9. Việc theo sau
+
+**`build-grammar-lessons.ts` đã lệch với `data/clean/grammar.json` từ commit
+`3c1914d`, và lát này chủ động không sửa.** Commit đó sửa tay thẳng vào
+`data/clean/grammar.json`: mở rộng bài 2 với ~728 từ lý thuyết danh từ (biên
+tập từ `LÝ THUYẾT DANH TỪ.pdf`, không qua pandoc) và đổi slug bài 2 thành
+`danh-tu-tinh-tu-va-trang-tu`, nhưng không cập nhật lại `LessonSpec` tương ứng
+trong `build-grammar-lessons.ts` — script vẫn giữ slug cũ
+`tinh-tu-va-trang-tu` và không biết gì về nội dung danh từ.
+
+Chạy `npm run phase0:grammar-lessons` hôm nay sẽ **âm thầm ghi đè bài 2 về bản
+cũ** (1100 từ, thiếu lý thuyết danh từ, sai slug), làm đỏ hai file test đang
+xanh — `tests/integrity.test.ts` (buổi 2 trỏ tới slug không tồn tại, bài
+`tinh-tu-va-trang-tu` "0 câu") và `tests/questions.test.ts` (100 câu ở
+`data/clean/questions.json` trỏ tới slug lạ) — và lệch khỏi dữ liệu đang seed
+thật trên Supabase (xác minh gián tiếp qua `tests/db-integrity.test.ts`, vốn
+chỉ xanh nếu `grammar_lessons` seed hiện tại khớp bản `danh-tu-tinh-tu-va-trang-tu`).
+
+Lát 2d cần thêm `content_html` mà không được đụng tới nội dung đã seed, nên đã
+chọn: **sinh `content_html` từ `contentMd` đã có sẵn trong
+`data/clean/grammar.json`** (script `scripts/phase0/add-grammar-html.ts`),
+không đi qua `build-grammar-lessons.ts`. `data/clean/grammar.json` là nguồn sự
+thật cho lát này; generator thì không.
+
+**Ai cần chạy lại `build-grammar-lessons.ts` sau này phải đồng bộ lại
+`LessonSpec` của bài 2 trước** — ví dụ tách đoạn lý thuyết danh từ hiện có
+trong `contentMd` của bài 2 thành một file thô mới ở `data/raw/grammar/`, thêm
+vào `ranges`/`sourceFile` của spec bài 2, và đổi `slug`/`title`/`summary` khớp
+bản đang chạy. Việc này ngoài phạm vi lát 2d.
+
+Đã cân nhắc thêm một test bảo vệ ("output của generator khớp với
+`grammar.json` đã commit") để lần lệch tiếp theo bị bắt ngay ngày nó xảy ra.
+Chưa làm: test đó phải loại trừ đúng bài 2 (ngoại lệ đã biết) mà vẫn bắt được
+lệch ở 19 bài còn lại — cách loại trừ "an toàn" (không vô tình che luôn lệch
+thật) cần suy nghĩ kỹ hơn một vài dòng, nên để lại thành việc theo sau thay vì
+làm vội.
