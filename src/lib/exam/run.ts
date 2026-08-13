@@ -76,7 +76,7 @@ export async function recordAnswer(
 ): Promise<boolean> {
   const { data: item, error: itemErr } = await supabase
     .from("assessment_items")
-    .select("ref_id, payload, user_answer")
+    .select("ref_id, payload")
     .eq("assessment_id", assessmentId)
     .eq("position", position)
     .single();
@@ -89,6 +89,11 @@ export async function recordAnswer(
     if (error) throw error;
     dapAn = data as string;
   } else {
+    // Chỉ `blank_answer` bị revoke khỏi `authenticated` (0004_rls.sql) —
+    // `word` vẫn nằm trong danh sách cột đọc công khai, nên câu "nghĩa" đọc
+    // thẳng qua client thường là đủ, không cần vòng qua RPC như câu "điền".
+    // Đây là một sự KHÔNG ĐỐI XỨNG có chủ đích giữa hai nhánh, không phải
+    // thiếu nhất quán.
     const { data, error } = await supabase
       .from("vocab_words").select("word").eq("id", item.ref_id).single();
     if (error) throw error;
@@ -97,17 +102,40 @@ export async function recordAnswer(
 
   const dung = answer === dapAn;
 
-  const { error: ghiErr } = await supabase
+  // CAS NGAY TRONG WHERE (`user_answer` còn NULL) — đây là hàng rào THẬT DUY
+  // NHẤT chống cộng mastery hai lần khi hai lệnh gọi recordAnswer cho CÙNG một
+  // (assessmentId, position) chạy ĐỒNG THỜI (double-click, client tự gọi lại
+  // sau phản hồi chậm, hai tab). Đọc-rồi-quyết-định (đọc `user_answer` ở
+  // SELECT phía trên rồi so `=== null`, như bản trước sửa) KHÔNG đủ: cả hai
+  // lệnh gọi đều có thể đọc được `null` TRƯỚC KHI lệnh nào ghi xong — kinh
+  // điển TOCTOU (time-of-check-to-time-of-use), y hệt bài học đã trả giá ở
+  // `finalize_assessment_items` (xem comment đầu 0009_finalize_atomic.sql).
+  // Đặt điều kiện `user_answer is null` VÀO NGAY UPDATE khiến chỉ lệnh gọi nào
+  // THẮNG cuộc đua ghi mới khớp được dòng, lệnh thua khớp 0 dòng — Postgres tự
+  // xử lý phần loại trừ lẫn nhau, không cần khoá gì thêm ở TypeScript.
+  //
+  // "CÂU TRẢ LỜI ĐẦU TIÊN THẮNG": không có lượt ghi thứ hai vô điều kiện nào
+  // ở đây để "sửa lại" một đáp án đã lưu — cố ý CHỈ giữ một luật (đầu tiên
+  // thắng) thay vì hai luật chồng nhau, khớp với giao diện vốn không bao giờ
+  // cho lùi lại một câu đã trả lời. Lệnh gọi thua cuộc đua vẫn trả về đúng/sai
+  // của CHÍNH đáp án nó vừa nộp (không phải đáp án đã lưu trong DB) — người
+  // gọi chỉ dùng giá trị này để hiện dải "câu trước: đúng/sai" mang tính tham
+  // khảo, không dùng để quyết định có ghi hay không.
+  const { data: updated, error: ghiErr } = await supabase
     .from("assessment_items")
     .update({ user_answer: answer, is_correct: dung })
     .eq("assessment_id", assessmentId)
-    .eq("position", position);
+    .eq("position", position)
+    .is("user_answer", null)
+    .select("id");
   if (ghiErr) throw ghiErr;
 
-  // Chỉ cộng mastery cho lần trả lời ĐẦU TIÊN của câu này. Không có chốt chặn
-  // này thì bấm lại một câu đã trả lời sẽ cộng dồn hai lần, và "đã thuộc" đo
-  // số lần bấm chứ không đo trí nhớ.
-  if (item.user_answer === null) {
+  // Chỉ cộng mastery khi CHÍNH lệnh gọi này thắng cuộc đua ghi ở trên (có dòng
+  // trong `updated`). 0 dòng nghĩa là một lệnh gọi khác đã ghi trước — dù đó
+  // là một lượt trả lời lại TUẦN TỰ (bấm lại sau khi đã có đáp án) hay một
+  // lệnh gọi ĐỒNG THỜI vừa thắng — cả hai trường hợp đều không được cộng
+  // thêm, vì cả hai đều không phải "lần trả lời đầu tiên" của câu này nữa.
+  if (updated && updated.length > 0) {
     await applyWordMastery(supabase, userId, item.ref_id as number, dung);
   }
 

@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { buildVocabExam, type ExamQuestion } from "@/lib/exam/build";
 import { PASS_MARK, createVocabExam, recordAnswer, submitExam } from "@/lib/exam/run";
 
 const URL = process.env.SUPABASE_URL;
@@ -13,6 +14,11 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
   });
   let alice: SupabaseClient, bob: SupabaseClient;
   let aliceId = "", bobId = "", baiId = 0;
+  // Tái dựng lại ĐÚNG bộ câu hỏi mà createVocabExam đã dựng bên trong (cùng
+  // words/blanks/seed) — buildVocabExam là hàm THUẦN (Task 2) nên gọi lại ở
+  // đây cho ra chính xác cùng prompt/options/answer theo từng position, không
+  // cần đọc trộm cột đã bị revoke để biết đáp án thật của từng câu trong test.
+  let cauHoi: ExamQuestion[] = [];
 
   async function taoNguoiDung(nhan: string) {
     const email = `exam-${nhan}-${Date.now()}@test.local`;
@@ -46,6 +52,7 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
       blankAnswer: "",
     }));
     const blanks = new Map((rows ?? []).map((r) => [r.id as number, r.blank_answer as string]));
+    cauHoi = buildVocabExam(words, blanks, 1);
     baiId = await createVocabExam(alice, aliceId, "lesson", [1], words, blanks, 1);
   });
 
@@ -95,6 +102,43 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
       p_assessment_id: baiId, p_pass_mark: null, p_now: new Date().toISOString(),
     });
     expect(error?.code).toBe("22004");
+  });
+
+  it("recordAnswer trả về đúng khi khớp đáp án thật, sai khi không khớp", async () => {
+    const cauDung = cauHoi[1]!;
+    const dung1 = await recordAnswer(alice, aliceId, baiId, 1, cauDung.answer);
+    expect(dung1).toBe(true);
+
+    const cauSai = cauHoi[2]!;
+    const phuongAnSai = cauSai.options.find((o) => o !== cauSai.answer)!;
+    const dung2 = await recordAnswer(alice, aliceId, baiId, 2, phuongAnSai);
+    expect(dung2).toBe(false);
+  });
+
+  it("trả lời cùng một câu HAI LẦN TUẦN TỰ chỉ cộng mastery một lần", async () => {
+    const cau = cauHoi[3]!;
+    await recordAnswer(alice, aliceId, baiId, 3, cau.answer);
+    await recordAnswer(alice, aliceId, baiId, 3, cau.answer);
+
+    const { data } = await admin
+      .from("word_mastery")
+      .select("correct_count")
+      .eq("user_id", aliceId).eq("word_id", cau.wordId).single();
+    expect(data?.correct_count).toBe(1);
+  });
+
+  it("trả lời cùng một câu ĐỒNG THỜI (đua ghi) chỉ cộng mastery một lần", async () => {
+    const cau = cauHoi[4]!;
+    await Promise.all([
+      recordAnswer(alice, aliceId, baiId, 4, cau.answer),
+      recordAnswer(alice, aliceId, baiId, 4, cau.answer),
+    ]);
+
+    const { data } = await admin
+      .from("word_mastery")
+      .select("correct_count")
+      .eq("user_id", aliceId).eq("word_id", cau.wordId).single();
+    expect(data?.correct_count).toBe(1);
   });
 
   it("double-submit song song: đúng một lần thắng, điểm là số thật", async () => {
