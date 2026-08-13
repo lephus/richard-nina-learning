@@ -3,19 +3,6 @@ import { TEST_EMAIL, TEST_PASSWORD } from "./test-user";
 import { adminClient } from "./admin";
 
 async function login(page: Page): Promise<void> {
-  // DEBUG TẠM (điều tra lỗi "còn N câu chưa gửi được") — chuyển tiếp console
-  // của trình duyệt ra stdout Node để đọc được log debug thêm ở ExamRunner.
-  // Gỡ cùng lúc với debug ở ExamRunner.tsx, xem task-3-report.md.
-  page.on("console", (msg) => {
-    if (msg.type() === "error") console.log(`[browser console] ${msg.text()}`);
-  });
-  page.on("pageerror", (err) => console.log(`[browser pageerror] ${err.message}`));
-  page.on("requestfailed", (req) => {
-    console.log(`[requestfailed] ${req.method()} ${req.url()} — ${req.failure()?.errorText}`);
-  });
-  page.on("response", (res) => {
-    if (res.status() >= 400) console.log(`[response ${res.status()}] ${res.request().method()} ${res.url()}`);
-  });
   await page.goto("/login");
   await page.fill('input[name="email"]', TEST_EMAIL);
   await page.fill('input[name="password"]', TEST_PASSWORD);

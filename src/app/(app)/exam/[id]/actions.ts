@@ -95,15 +95,7 @@ export async function traLoi(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  // DEBUG TẠM (điều tra lỗi "còn N câu chưa gửi được" ở bài ôn tập 60 câu) —
-  // log lỗi THẬT ra stdout server trước khi Next redact message ở production
-  // build. Gỡ trước khi hoàn tất, xem task-3-report.md.
-  try {
-    return await recordAnswer(supabase, user.id, assessmentId, position, answer);
-  } catch (err) {
-    console.error(`[debug traLoi] bài ${assessmentId} vị trí ${position} lỗi:`, err);
-    throw err;
-  }
+  return recordAnswer(supabase, user.id, assessmentId, position, answer);
 }
 
 export async function nopBai(assessmentId: number): Promise<void> {

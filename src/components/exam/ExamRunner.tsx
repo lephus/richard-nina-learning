@@ -25,6 +25,58 @@ function chiSoDauTienChuaTraLoi(cauHoi: readonly CauHoi[]): number {
   return idx === -1 ? Math.max(cauHoi.length - 1, 0) : idx;
 }
 
+/** Số lần thử TỐI ĐA cho một lượt gọi `traLoi` — 1 lần gốc + 2 lần thử lại. */
+const SO_LAN_THU_TOI_DA = 3;
+
+/** Chờ `ms` mili giây — khoảng nghỉ giữa hai lần thử lại của `traLoiCoThuLai`. */
+function cho(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Gọi `traLoi`, thử lại tối đa `SO_LAN_THU_TOI_DA` lần nếu trượt.
+ *
+ * Điều tra lỗi "còn N câu chưa gửi được" ở bài ôn tập 60 câu (bắt lỗi thật
+ * bằng debug tạm rồi soát log server — xem task-3-report.md) tìm ra lỗi THẬT
+ * là một lần rớt mạng THOÁNG QUA ở tầng `fetch` (`TypeError: Failed to
+ * fetch`) — KHÔNG phải lỗi nghiệp vụ: server chưa từng thấy request đó (log
+ * server sạch, không một dòng nào của `traLoi` xuất hiện quanh thời điểm
+ * trượt). Chạy sạch cùng một đoạn code nhiều lần: có lần 0/60 câu trượt, có
+ * lần 1/60 trượt ở một vị trí ngẫu nhiên khác nhau mỗi lần — không lặp lại ở
+ * cùng vị trí hay cùng một ngưỡng số lượng cố định, đúng hình dạng nhiễu mạng
+ * thoáng qua chứ không phải một giới hạn cố định (không có lỗi 429/401 nào,
+ * không có thông điệp nghiệp vụ nào từ `recordAnswer`). Bài ôn tập 60 câu gấp
+ * đôi số vòng mạng tuần tự so với bài buổi 30 câu — không phải vì bấm nhanh
+ * hơn (hàng đợi `hangDoi` vẫn tuần tự y hệt, không đổi), chỉ vì có nhiều vòng
+ * mạng hơn nên một sự cố hiếm có nhiều cơ hội xảy ra hơn.
+ *
+ * Thử lại AN TOÀN nhờ chính `recordAnswer` (lib/exam/run.ts) đã thiết kế sẵn
+ * cho đúng tình huống này: CAS `user_answer is null` trong UPDATE khiến một
+ * lượt gọi lại cho ĐÚNG vị trí đã ghi thành công ở lần trước chỉ trả về
+ * `ghiNhanLanNay: false` (không cộng mastery lần hai, không ném lỗi) — comment
+ * tại đó liệt kê thẳng "client tự gọi lại sau phản hồi chậm" là tình huống đã
+ * lường trước. Thử lại ở đây chỉ tận dụng đúng sự an toàn có sẵn đó, không che
+ * giấu gì: mạng hỏng THẬT (không chỉ thoáng qua) thì mọi lần thử đều trượt,
+ * và hành vi chặn nộp + thông điệp cảnh báo cũ (`exam-loi-gui`) vẫn nguyên như
+ * trước — "làm sản phẩm suy giảm trung thực" (yêu cầu bàn giao) nghĩa là CHỈ
+ * chặn nộp khi sự cố thật sự dai dẳng, không phải ngay ở lần rớt gói tin đầu
+ * tiên mà bất kỳ kết nối mạng thật nào — kể cả của một người học bình thường,
+ * không liên quan gì tới tốc độ bấm — cũng có thể gặp.
+ */
+async function traLoiCoThuLai(assessmentId: number, pos: number, dapAn: string) {
+  for (let lan = 1; lan <= SO_LAN_THU_TOI_DA; lan++) {
+    try {
+      return await traLoi(assessmentId, pos, dapAn);
+    } catch (err) {
+      if (lan === SO_LAN_THU_TOI_DA) throw err;
+      await cho(300 * lan);
+    }
+  }
+  // Không bao giờ tới đây — vòng lặp trên luôn return hoặc throw ở lần cuối.
+  // Chỉ để TypeScript thấy hàm có giá trị trả về trên MỌI nhánh.
+  throw new Error("traLoiCoThuLai: không thể tới đây");
+}
+
 export function ExamRunner({
   assessmentId, cauHoi, loaiBai, buoi, canhBaoLechBuoi,
 }: {
@@ -137,7 +189,7 @@ export function ExamRunner({
   // sạch với TS mà không cần khẳng định non-null (`!`).
   function chon(pos: number, dapAn: string) {
     hangDoi.current = hangDoi.current
-      .then(() => traLoi(assessmentId, pos, dapAn))
+      .then(() => traLoiCoThuLai(assessmentId, pos, dapAn))
       .then(({ ghiNhanLanNay, dung }) => {
         viTriLoi.current.delete(pos);
         // SỬA SAU VÒNG SOÁT CUỐI (finding 3): chỉ hiện dải đúng/sai khi CHÍNH
@@ -150,13 +202,10 @@ export function ExamRunner({
         setKetQuaTruoc(ghiNhanLanNay ? dung : null);
         setLoiGui(viTriLoi.current.size > 0);
       })
-      .catch((err: unknown) => {
-        // DEBUG TẠM (điều tra lỗi "còn N câu chưa gửi được" ở bài ôn tập 60
-        // câu) — sẽ gỡ trước khi hoàn tất, xem task-3-report.md.
-        console.error(
-          "[debug traLoi]", pos,
-          err instanceof Error ? { message: err.message, digest: (err as { digest?: string }).digest, stack: err.stack } : err,
-        );
+      .catch(() => {
+        // Tới đây nghĩa là `traLoiCoThuLai` đã thử hết số lần cho phép và vẫn
+        // trượt — coi là hỏng THẬT, chặn nộp bằng cảnh báo trung thực (xem
+        // JSDoc của `traLoiCoThuLai`, và `exam-loi-gui` bên dưới).
         viTriLoi.current.add(pos);
         setLoiGui(true);
       });
