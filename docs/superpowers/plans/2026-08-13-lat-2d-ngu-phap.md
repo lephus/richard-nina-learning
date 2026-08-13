@@ -145,12 +145,23 @@ alter table grammar_lessons
 
 Đưa nội dung file cho người dùng dán vào Supabase Dashboard → SQL Editor → Run. **Không** chạy `supabase db push` hay `psql`. Xác minh độc lập qua REST API rằng cột đã tồn tại trước khi đi tiếp.
 
-- [ ] **Step 8: Seed cột mới**
+- [ ] **Step 8: Backfill cột mới — KHÔNG chạy `phase0:seed`**
 
-Trong `scripts/phase0/05-seed.ts`, thêm `content_html` vào phần chèn `grammar_lessons`.
+`npm run phase0:seed -- --force` xoá rồi chèn lại toàn bộ bảng nội dung
+(`grammar_lessons`, `vocab_words`, `grammar_questions`...). Đến thời điểm lát
+2d, database đã có tiến độ học tập thật (`word_mastery`, `assessments` từ các
+lát trước) — `word_mastery` trỏ tới `vocab_words` bằng khoá ngoại **không
+cascade**, nên lệnh xoá sẽ thất bại giữa chừng và để lại database dở dang
+(xem chú thích trong chính `05-seed.ts`). Chạy seed lại chỉ để lấp một cột là
+đánh đổi không đáng.
 
-Run: `npm run phase0:seed -- --force`
-Expected: seed xong, không lỗi. Xác minh qua REST rằng 20 dòng có `content_html` khác rỗng.
+Thay vào đó: `scripts/phase0/backfill-grammar-html.ts` — chỉ `update` cột
+`content_html`, khớp theo `slug` (không theo vị trí mảng), nổ ngay nếu thiếu
+slug nào trong 20 slug thay vì âm thầm cập nhật thiếu.
+
+Run: `npm run phase0:backfill-grammar-html`
+Expected: 20/20 dòng cập nhật, không lỗi. Xác minh qua REST rằng 20 dòng có
+`content_html` khác rỗng và `content_md`/`title`/`ordinal` không đổi.
 
 - [ ] **Step 9: Commit**
 
