@@ -95,7 +95,15 @@ export async function traLoi(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  return recordAnswer(supabase, user.id, assessmentId, position, answer);
+  // DEBUG TẠM (điều tra lỗi "còn N câu chưa gửi được" ở bài ôn tập 60 câu) —
+  // log lỗi THẬT ra stdout server trước khi Next redact message ở production
+  // build. Gỡ trước khi hoàn tất, xem task-3-report.md.
+  try {
+    return await recordAnswer(supabase, user.id, assessmentId, position, answer);
+  } catch (err) {
+    console.error(`[debug traLoi] bài ${assessmentId} vị trí ${position} lỗi:`, err);
+    throw err;
+  }
 }
 
 export async function nopBai(assessmentId: number): Promise<void> {
@@ -115,8 +123,8 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const scope = await boBaiDangLam(supabase, user.id, assessmentId);
-  if (scope === null) {
+  const baiDaXoa = await boBaiDangLam(supabase, user.id, assessmentId);
+  if (baiDaXoa === null) {
     // `boBaiDangLam` khớp 0 dòng — CAS trong chính lệnh xoá thua (SỬA SAU
     // VÒNG SOÁT 1, finding 1): bài không còn `in_progress` đúng vào lúc lệnh
     // xoá chạy tới, HOẶC không tồn tại/không phải của người dùng này. Đọc
@@ -147,10 +155,17 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
     throw new Error(`không bỏ được bài ${assessmentId} — không phải của bạn`);
   }
 
+  // SỬA Ở LÁT 2c (yêu cầu F): bài `review` (ôn tập nhóm) không thuộc buổi
+  // nào — trước bản vá, nhánh này luôn đọc `scope[0]` bất kể loại bài, đưa
+  // người bỏ dở một bài ôn tập nhóm về buổi ĐẦU của nhóm thay vì `/vocab`,
+  // nơi ô Ôn tập thật sự sống. Cosmetic (không ai bị kẹt, chỉ lạc đường một
+  // cú bấm) nhưng sửa luôn vì đang ở trong tệp.
+  if (baiDaXoa.type === "review") redirect("/vocab");
+
   // `scope` rỗng không nên xảy ra (bài lesson/remedial luôn ghi đúng một buổi
   // vào scope, xem createVocabExam) — chặn tường minh thay vì âm thầm điều
   // hướng tới `/vocab/learn/undefined`.
-  const lessonId = scope[0];
+  const lessonId = baiDaXoa.scope[0];
   if (lessonId === undefined) {
     throw new Error(`bài ${assessmentId} có scope rỗng, không xác định được buổi để quay lại`);
   }

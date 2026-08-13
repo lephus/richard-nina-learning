@@ -80,7 +80,7 @@ export default async function ExamPage({
     <ExamRunner
       assessmentId={assessmentId}
       cauHoi={cau}
-      loaiBai={bai.type as "lesson" | "remedial"}
+      loaiBai={bai.type as "lesson" | "remedial" | "review"}
       buoi={buoiHienTai}
       canhBaoLechBuoi={lechBuoi}
     />

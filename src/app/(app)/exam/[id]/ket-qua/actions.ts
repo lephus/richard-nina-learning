@@ -4,27 +4,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { baiDangLamCua, timHoacDungBaiThi } from "@/lib/exam/run";
 import { napPhamVi } from "@/lib/exam/load-scope";
-import { toVocabLite, type VocabLite } from "@/lib/vocab/word";
-
-/**
- * Một dòng `vocab_words` đọc qua quan hệ nhúng — cùng khuôn với `exam/[id]/actions.ts`.
- *
- * CÒN DÙNG Ở ĐÂY: chỉ còn một nơi gọi trong tệp này (`lamLaiBai`, cuối tệp) —
- * `batDauBoTuc` đã chuyển sang `napPhamVi` (lát 2c) nên không còn cần bản chép
- * này nữa. `lamLaiBai` KHÔNG nằm trong phạm vi Task 2 (không được liệt trong
- * bàn giao), nên giữ nguyên bản chép tay của nó ở đây thay vì rewiring luôn —
- * xoá interface này sẽ làm `lamLaiBai` không biên dịch được (`tsc` xác nhận
- * điều này khi thử xoá thẳng).
- */
-interface VocabWordRow {
-  id: number; word: string; pos: string; ipa: string;
-  meaning_vi: string; definition_en: string; synonyms: string[];
-  example_en: string; example_vi: string;
-}
-interface LessonWordRow {
-  word_id: number;
-  vocab_words: VocabWordRow | VocabWordRow[];
-}
 
 /**
  * Dựng bài bổ túc từ các từ SAI của bài cha.
@@ -146,41 +125,31 @@ export async function lamLaiBai(assessmentId: number): Promise<void> {
   const { data: cha, error: chaErr } = await supabase
     .from("assessments").select("type, scope").eq("id", parentId).single();
   if (chaErr) throw chaErr;
-  const lessonId = (cha.scope as number[])[0];
-  if (lessonId === undefined) {
+  // SỬA Ở LÁT 2c (yêu cầu D): bản trước đọc `(cha.scope as number[])[0]` —
+  // cùng lỗi `scope[0]` đã sửa ở `batDauBoTuc` phía trên, và comment cũ ngay
+  // dưới nhánh này từng khẳng định "cha.type chỉ có thể là 'lesson' vì ôn tập
+  // nhóm là lát sau" — khẳng định đó SAI kể từ khi `batDauOnTap` tồn tại (bài
+  // cha giờ có thể là `review`, `scope` HAI phần tử). Nạp TOÀN BỘ `cha.scope`
+  // qua `napPhamVi`, giống hệt cách `batDauBoTuc` đã sửa — không giới hạn ở
+  // phần tử đầu, kẻo "Làm lại bài" của một bổ túc sinh từ bài ôn tập nhóm chỉ
+  // dựng lại 30/60 từ (mất nguyên buổi thứ hai).
+  const phamViCha = cha.scope as number[];
+  if (phamViCha.length === 0) {
     throw new Error(`bài cha ${parentId} có scope rỗng, không xác định được buổi`);
   }
 
-  // Cùng cách đọc lesson_words/blank_answers_for_lesson như `batDauBaiThi` —
-  // bài chính luôn phủ TOÀN BỘ 30 từ của buổi, không thu hẹp theo từ sai như
-  // `batDauBoTuc` ở trên.
-  const { data: lw, error: lwErr } = await supabase
-    .from("lesson_words")
-    .select("word_id, vocab_words(id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en, example_vi)")
-    .eq("lesson_id", lessonId).order("position");
-  if (lwErr) throw lwErr;
-  const rows = (lw ?? []) as unknown as LessonWordRow[];
-  const words: VocabLite[] = rows.map((r) => {
-    const v = Array.isArray(r.vocab_words) ? r.vocab_words[0] : r.vocab_words;
-    if (!v) throw new Error(`thiếu vocab_words cho word_id ${r.word_id}`);
-    return toVocabLite(v);
-  });
+  // `napPhamVi` (lát 2c) thay cho bản chép tay lesson_words/blank_answers_for_lesson
+  // từng nằm ở đây — gộp đủ TOÀN BỘ `phamViCha`, dù một hay hai ordinal, cùng
+  // cách `batDauBoTuc` đã dùng ở trên. Bài chính luôn phủ TOÀN BỘ phạm vi của
+  // buổi/nhóm, không thu hẹp theo từ sai như `batDauBoTuc`.
+  const { words, blankAnswers } = await napPhamVi(supabase, phamViCha);
 
-  const { data: blanks, error: blankErr } = await supabase
-    .rpc("blank_answers_for_lesson", { p_lesson_id: lessonId });
-  if (blankErr) throw blankErr;
-  const bang = new Map(
-    Object.entries(blanks as Record<string, string>).map(
-      ([wordId, blankAnswer]) => [Number(wordId), blankAnswer] as [number, string],
-    ),
-  );
-
-  // `cha.type` chỉ có thể là `"lesson"` trong phạm vi lát này (bài ngữ
-  // pháp/ôn tập nhóm là lát sau — xem spec mục "Không thuộc phạm vi"); ép
-  // kiểu tường minh thay vì mở rộng chữ ký `timHoacDungBaiThi` cho những loại
-  // chưa ai gọi tới.
+  // `cha.type` giờ có thể là "lesson" (buổi thường) hoặc "review" (ôn tập
+  // nhóm — lát 2c, xem `batDauOnTap`), không còn CHỈ "lesson" như comment cũ
+  // khẳng định. Ép đủ nguyên chữ ký `timHoacDungBaiThi` chấp nhận thay vì thu
+  // hẹp lại thành một khẳng định hẹp khác có thể sai tiếp về sau.
   const id = await timHoacDungBaiThi(
-    supabase, user.id, cha.type as "lesson" | "remedial", [lessonId], words, bang, Date.now(),
+    supabase, user.id, cha.type as "lesson" | "review" | "remedial", phamViCha, words, blankAnswers, Date.now(),
   );
   redirect(`/exam/${id}`);
 }

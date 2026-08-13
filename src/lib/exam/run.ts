@@ -224,30 +224,42 @@ export async function timHoacDungBaiThi(
  * quyết định "đã xoá được chưa" luôn dựa trên việc XOÁ ĐÃ LÀM, không phải
  * việc ĐỌC đã thấy.
  *
- * Trả về `scope` nếu xoá được, `null` nếu KHÔNG khớp dòng nào — nghĩa là bài
- * không tồn tại/không phải của người dùng này, HOẶC đã `submitted` (thua CAS)
- * trước khi lệnh xoá này chạy tới. Nơi gọi (`boBaiThi`) đọc lại để phân biệt
- * hai trường hợp và xử lý đúng — không ném lỗi thô ở đây.
+ * Trả về `{type, scope}` của bài vừa xoá nếu xoá được, `null` nếu KHÔNG khớp
+ * dòng nào — nghĩa là bài không tồn tại/không phải của người dùng này, HOẶC
+ * đã `submitted` (thua CAS) trước khi lệnh xoá này chạy tới. Nơi gọi
+ * (`boBaiThi`) đọc lại để phân biệt hai trường hợp và xử lý đúng — không ném
+ * lỗi thô ở đây.
+ *
+ * SỬA Ở LÁT 2c (yêu cầu F): bản trước chỉ trả `scope`. Không đủ để `boBaiThi`
+ * biết bài vừa bỏ có phải bài `review` hay không — một bài ôn tập nhóm không
+ * thuộc buổi nào cả, nên điều hướng theo `scope[0]` (buổi ĐẦU của nhóm) sau
+ * khi bỏ nó là SAI ĐÍCH (xem `boBaiThi`). Trả kèm `type` để nơi gọi tự quyết
+ * định đúng đích quay lại, không phải đoán từ độ dài `scope`.
  */
+export interface BaiDaXoa {
+  type: string;
+  scope: number[];
+}
+
 export async function boBaiDangLam(
   supabase: SupabaseClient,
   userId: string,
   assessmentId: number,
-): Promise<number[] | null> {
+): Promise<BaiDaXoa | null> {
   const { data: deleted, error: delErr } = await supabase
     .from("assessments")
     .delete()
     .eq("id", assessmentId)
     .eq("user_id", userId)
     .eq("status", "in_progress")
-    .select("scope");
+    .select("type, scope");
   if (delErr) throw delErr;
   // Destructure thay vì `deleted[0]!`: `noUncheckedIndexedAccess` suy chỉ số
   // mảng ra `T | undefined` bất kể đã kiểm độ dài trước đó hay chưa — cùng
   // khuôn chặn tường minh (không khẳng định non-null) đã dùng khắp lát này.
   const [row] = deleted ?? [];
   if (!row) return null;
-  return row.scope as number[];
+  return { type: row.type as string, scope: row.scope as number[] };
 }
 
 /**

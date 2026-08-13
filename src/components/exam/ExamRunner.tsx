@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { boBaiThi, nopBai, traLoi } from "@/app/(app)/exam/[id]/actions";
+import { groupOf } from "@/lib/curriculum/groups";
 
 interface CauHoi {
   position: number;
@@ -29,9 +30,17 @@ export function ExamRunner({
 }: {
   assessmentId: number;
   cauHoi: CauHoi[];
-  /** Loại bài — hiện trên đầu trang (finding 5), người học biết đang thi gì. */
-  loaiBai: "lesson" | "remedial";
-  /** Buổi (ordinal — xem chú thích ở page.tsx về sự trùng hợp id/ordinal). `null` nếu scope rỗng. */
+  /**
+   * Loại bài — hiện trên đầu trang (finding 5), người học biết đang thi gì.
+   * SỬA Ở LÁT 2c (yêu cầu F): thêm "review" — trước bản vá chỉ có "lesson" |
+   * "remedial", nên một bài ôn tập nhóm (`batDauOnTap`) rơi vào nhánh mặc
+   * định của `tieuDe` bên dưới và hiện "Bài buổi ?", không nói được đang thi
+   * gì giữa 60 câu.
+   */
+  loaiBai: "lesson" | "remedial" | "review";
+  /** Buổi (ordinal — xem chú thích ở page.tsx về sự trùng hợp id/ordinal). `null` nếu scope rỗng.
+      Với bài `review`, đây là ordinal buổi ĐẦU của nhóm (`scope[0]`, xem `batDauOnTap`) — dùng để
+      suy ngược ra số nhóm qua `groupOf`, không phải một buổi để hiện riêng. */
   buoi: number | null;
   /** `true` khi bài đang mở KHÔNG phải bài người học vừa bấm (finding 5). */
   canhBaoLechBuoi: boolean;
@@ -68,7 +77,18 @@ export function ExamRunner({
   // thì chặn nộp".
   const viTriLoi = useRef<Set<number>>(new Set());
 
-  const tieuDe = loaiBai === "remedial" ? `Bài bổ túc buổi ${buoi ?? "?"}` : `Bài buổi ${buoi ?? "?"}`;
+  // SỬA Ở LÁT 2c (yêu cầu F): nhánh "review" đặt tên nhóm thay vì buổi — một
+  // bài ôn tập nhóm không thuộc buổi nào, hiện "Bài buổi ?" (nhánh mặc định
+  // cũ) không nói được người học đang thi cái gì giữa 60 câu (đúng điểm mà
+  // tiêu đề trang thi được thêm ở lát 2b nhắm tới). `buoi` của một bài
+  // `review` luôn là ordinal buổi ĐẦU của nhóm (`scope[0]`, xem `batDauOnTap`
+  // — HAI phần tử `scope` luôn theo đúng thứ tự `lessonsOf`), nên `groupOf`
+  // suy ngược ra đúng số nhóm — chính là nghịch đảo của `lessonsOf` mà bàn
+  // giao gợi ý dùng.
+  const tieuDe =
+    loaiBai === "remedial" ? `Bài bổ túc buổi ${buoi ?? "?"}`
+    : loaiBai === "review" ? `Bài ôn tập nhóm ${buoi === null ? "?" : groupOf(buoi)}`
+    : `Bài buổi ${buoi ?? "?"}`;
 
   // SỬA SAU VÒNG SOÁT CUỐI (finding 1, lớp phòng thủ thứ hai): một bài
   // `in_progress` có thể sống sót với 0 câu hỏi — trước bản vá `createVocabExam`
@@ -130,7 +150,13 @@ export function ExamRunner({
         setKetQuaTruoc(ghiNhanLanNay ? dung : null);
         setLoiGui(viTriLoi.current.size > 0);
       })
-      .catch(() => {
+      .catch((err: unknown) => {
+        // DEBUG TẠM (điều tra lỗi "còn N câu chưa gửi được" ở bài ôn tập 60
+        // câu) — sẽ gỡ trước khi hoàn tất, xem task-3-report.md.
+        console.error(
+          "[debug traLoi]", pos,
+          err instanceof Error ? { message: err.message, digest: (err as { digest?: string }).digest, stack: err.stack } : err,
+        );
         viTriLoi.current.add(pos);
         setLoiGui(true);
       });
