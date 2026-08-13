@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import type { VocabCard } from "@/lib/vocab/load-cards";
 import { saveCursor } from "@/app/(app)/vocab/actions";
 import { WordCard } from "./word-card";
@@ -25,14 +24,14 @@ const CURSOR_SAVE_DEBOUNCE_MS = 500;
 export function Deck({
   cards,
   initialIndex,
-  examHref,
+  examAction,
   lessonId,
   initialHideWord,
 }: {
   cards: VocabCard[];
   initialIndex: number;
   /** `null` ở chế độ xem lại — không có bài thi nào để làm. */
-  examHref: string | null;
+  examAction: (() => Promise<void>) | null;
   /** `null` ở chế độ xem lại: 60 từ của một nhóm không thuộc buổi nào để đánh dấu. */
   lessonId: number | null;
   /** Đọc từ cookie ở Server Component. Phải đến từ server chứ không phải
@@ -186,14 +185,16 @@ export function Deck({
           >
             Từ sau →
           </button>
-          {examHref && (
-            <Link
-              href={examHref}
-              data-testid="exam-button"
-              className="flex-1 rounded bg-slate-900 px-4 py-2 text-center text-white"
-            >
-              LÀM BÀI
-            </Link>
+          {examAction && (
+            <form action={examAction} className="flex-1">
+              <button
+                type="submit"
+                data-testid="exam-button"
+                className="w-full rounded bg-slate-900 px-4 py-2 text-center text-white"
+              >
+                LÀM BÀI
+              </button>
+            </form>
           )}
         </div>
       </div>
