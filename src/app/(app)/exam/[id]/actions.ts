@@ -2,7 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { baiDangLamCua, boBaiDangLam, recordAnswer, submitExam, timHoacDungBaiThi } from "@/lib/exam/run";
+import {
+  baiDangLamCua, boBaiDangLam, recordAnswer, submitExam, timHoacDungBaiThi,
+  type KetQuaTraLoi,
+} from "@/lib/exam/run";
 import { toVocabLite, type VocabLite } from "@/lib/vocab/word";
 
 /** Một dòng `vocab_words` đọc qua quan hệ nhúng — snake_case, đúng cột `authenticated` đọc được. */
@@ -29,8 +32,16 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
   // trên sự đúng đắn mà `timHoacDungBaiThi` bên dưới tự đảm bảo được ngay cả
   // khi thiếu bước này (nó tự kiểm lại) — không phải điều kiện bắt buộc để
   // tránh 23505.
+  // Finding 5 (vòng soát cuối): kèm buổi/loại bài VỪA BẤM vào query string khi
+  // redirect sang một bài `in_progress` CÓ SẴN — trang `/exam/[id]` (page.tsx)
+  // đọc lại hai tham số này để biết có phải người học đang bị đưa vào MỘT BÀI
+  // KHÁC (buổi khác, hoặc bài bổ túc thay vì bài buổi) với thứ họ vừa bấm hay
+  // không, và cảnh báo rõ thay vì im lặng — trước bản vá này, bấm LÀM BÀI ở
+  // buổi B trong khi còn bài `in_progress` của buổi A lặng lẽ đưa thẳng vào
+  // 30 câu của buổi A mà không một dấu hiệu nào cho biết đó không phải buổi
+  // vừa bấm.
   const dangLam = await baiDangLamCua(supabase, user.id);
-  if (dangLam !== null) redirect(`/exam/${dangLam}`);
+  if (dangLam !== null) redirect(`/exam/${dangLam}?tuLoai=lesson&tuBuoi=${lessonId}`);
 
   const { data: lw, error: lwErr } = await supabase
     .from("lesson_words")
@@ -85,7 +96,7 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
 
 export async function traLoi(
   assessmentId: number, position: number, answer: string,
-): Promise<boolean> {
+): Promise<KetQuaTraLoi> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -115,13 +126,20 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
     // VÒNG SOÁT 1, finding 1): bài không còn `in_progress` đúng vào lúc lệnh
     // xoá chạy tới, HOẶC không tồn tại/không phải của người dùng này. Đọc
     // LẠI ở đây (không dùng bất kỳ giá trị nào đọc TRƯỚC lệnh xoá —
-    // đó chính là khe hở TOCTOU vừa đóng) để phân biệt hai trường hợp:
+    // đó chính là khe hở TOCTOU vừa đóng) để phân biệt ba trường hợp:
     //   - Đã `submitted`: một tab khác vừa nộp giữa lúc người học bấm Bỏ bài
     //     — đưa thẳng sang trang kết quả THẬT của bài đó, đúng tinh thần yêu
     //     cầu C (không để người học rơi vào error.tsx với thông điệp sai
     //     "mất mạng" — finding 3 vòng soát 1 chỉ đích danh chính cái bẫy này).
-    //   - Không tìm thấy dòng nào của user_id này: bài không tồn tại/không
-    //     phải của mình — ném lỗi thật, không giả vờ thành công.
+    //   - Không còn dòng nào (dù CỦA user_id này hay không): SỬA SAU VÒNG
+    //     SOÁT CUỐI (mục "Also") — trước bản vá này nhánh này ném lỗi thật,
+    //     rơi xuống error.tsx với thông điệp sai "mất mạng", cho CẢ trường
+    //     hợp lành tính "bấm Bỏ bài LẦN HAI (tab khác, double-click) sau khi
+    //     lần đầu đã xoá xong" — dòng đã biến mất chính là điều người học
+    //     MUỐN, không phải một lỗi. Coi nó là THÀNH CÔNG: quay lại `/vocab`
+    //     thay vì báo lỗi. Nhánh còn lại (bài của người dùng khác) rơi vào
+    //     đúng chỗ này cũng vô hại — hành vi giống hệt "không tìm thấy",
+    //     không lộ thêm thông tin nào so với trước.
     const { data: bai, error: baiErr } = await supabase
       .from("assessments")
       .select("status")
@@ -130,7 +148,8 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
       .maybeSingle();
     if (baiErr) throw baiErr;
     if (bai?.status === "submitted") redirect(`/exam/${assessmentId}/ket-qua`);
-    throw new Error(`không bỏ được bài ${assessmentId} — không tồn tại hoặc không phải của bạn`);
+    if (bai === null) redirect("/vocab");
+    throw new Error(`không bỏ được bài ${assessmentId} — không phải của bạn`);
   }
 
   // `scope` rỗng không nên xảy ra (bài lesson/remedial luôn ghi đúng một buổi

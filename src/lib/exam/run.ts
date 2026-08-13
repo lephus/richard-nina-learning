@@ -58,7 +58,34 @@ export async function createVocabExam(
       payload: { prompt: q.prompt, options: q.options, kind: q.kind },
     })),
   );
-  if (itemErr) throw itemErr;
+  if (itemErr) {
+    // SỬA SAU VÒNG SOÁT CUỐI (finding 1) — BÙ TRỪ, không phải transaction
+    // thật: hai insert ở trên là hai lượt gọi PostgREST độc lập (không có
+    // BEGIN/COMMIT chung nào bọc ngoài), nên nếu lượt hai chết (timeout, mất
+    // kết nối, cold start) dòng `assessments` vừa insert xong sống sót lại
+    // với ĐÚNG 0 CÂU HỎI — một bài không làm được (ExamRunner dựng danh sách
+    // câu rỗng) và trước bản vá này cũng không bỏ được qua giao diện thường
+    // (nút "Bỏ bài" nằm SAU chỗ `return null` sớm của ExamRunner khi thiếu
+    // câu — xem component đó), khoá cứng người học ra khỏi MỌI bài thi vì chỉ
+    // số một-phần `assessments_one_in_progress` chỉ cho một dòng `in_progress`
+    // mỗi người. Xoá NGAY dòng vừa tạo để người học kết thúc với KHÔNG có bài
+    // nào, thay vì một bài không làm được cũng không bỏ được.
+    const { error: cleanupErr } = await supabase
+      .from("assessments").delete().eq("id", assessmentId);
+    if (cleanupErr) {
+      // Cả hai đều lỗi — hiếm (vd. mất kết nối ngay giữa hai lệnh liên tiếp)
+      // nhưng phải nói THẬT cả hai, không nuốt lỗi dọn dẹp: nuốt nó lặng lẽ
+      // để lại đúng dòng mồ côi mà đoạn này được viết ra để tránh, chỉ là im
+      // lặng hơn — trung thực hơn là im lặng, cùng nguyên tắc `timHoacDungBaiThi`
+      // dưới đây đã theo.
+      throw new Error(
+        `chèn assessment_items cho bài ${assessmentId} thất bại (${itemErr.message}), ` +
+          `VÀ dọn dẹp dòng assessments đó cũng thất bại (${cleanupErr.message}) — ` +
+          `có thể còn sót một dòng in_progress 0 câu hỏi, cần xoá tay`,
+      );
+    }
+    throw itemErr;
+  }
 
   return assessmentId;
 }
@@ -81,7 +108,34 @@ export async function baiDangLamCua(
     .eq("status", "in_progress")
     .maybeSingle();
   if (error) throw error;
-  return (data?.id as number | undefined) ?? null;
+  const id = (data?.id as number | undefined) ?? null;
+  if (id === null) return null;
+
+  // SỬA SAU VÒNG SOÁT CUỐI (finding 1, lớp phòng thủ thứ ba): dòng vừa tìm
+  // được có thể là một bài `in_progress` 0 CÂU HỎI — hoặc từ TRƯỚC khi
+  // `createVocabExam` có xoá bù ở trên, hoặc từ chính lượt xoá bù đó thất bại
+  // nốt (nhánh `cleanupErr` ở trên). Coi nó là "không tồn tại" cho MỌI nơi
+  // gọi hàm này (`timHoacDungBaiThi`, `batDauBaiThi`, `batDauBoTuc`): trả về
+  // dòng này nghĩa là đẩy người học vào đúng cái bẫy finding 1 mô tả (bài
+  // không làm được, và ExamRunner trước bản vá cũng không cho bỏ được). XOÁ
+  // LUÔN chứ không chỉ lờ đi: lờ đi để dòng nằm nguyên `in_progress` thì lượt
+  // tạo bài KẾ TIẾP đâm thẳng vào chỉ số một-phần `assessments_one_in_progress`
+  // — người học vẫn kẹt, chỉ đổi từ "vào bài rỗng" sang "vỡ ngay ở bước tạo
+  // bài mới". Tự chữa lành (garbage-collect) ở đây đóng cả hai đường.
+  const { count, error: countErr } = await supabase
+    .from("assessment_items")
+    .select("id", { count: "exact", head: true })
+    .eq("assessment_id", id);
+  if (countErr) throw countErr;
+  if ((count ?? 0) > 0) return id;
+
+  // CAS `status = 'in_progress'` trong chính WHERE của DELETE — cùng khuôn
+  // `boBaiDangLam` ngay dưới đây: nếu dòng vừa được nộp bài ĐÚNG lúc này (đua
+  // hiếm), lệnh xoá khớp 0 dòng, không đụng gì tới một bài đã chấm điểm thật.
+  const { error: delErr } = await supabase
+    .from("assessments").delete().eq("id", id).eq("status", "in_progress");
+  if (delErr) throw delErr;
+  return null;
 }
 
 /** Có phải lỗi 23505 (vi phạm ràng buộc DUY NHẤT) từ Postgres/PostgREST không. */
@@ -193,6 +247,30 @@ export async function boBaiDangLam(
 }
 
 /**
+ * Kết quả một lượt gọi `recordAnswer`.
+ *
+ * SỬA SAU VÒNG SOÁT CUỐI (finding 3 + finding 4): trước bản vá này hàm trả
+ * thẳng một `boolean` (đúng/sai của đáp án VỪA GỬI), khiến nơi gọi không có
+ * cách nào phân biệt "câu này VỪA được chấm" với "vị trí này đã có đáp án ghi
+ * từ trước, và giá trị đúng/sai dưới đây không mô tả điều đã được chấm" — hai
+ * tình huống hoàn toàn khác nhau nhưng trả về giống hệt nhau. `ghiNhanLanNay`
+ * tách rõ hai trường hợp đó: nơi gọi (ExamRunner) chỉ được phép hiện dải
+ * "câu trước: đúng/sai" khi cờ này là `true`.
+ */
+export interface KetQuaTraLoi {
+  /**
+   * `true` nếu CHÍNH lệnh gọi này thắng CAS ghi (`user_answer is null`) bên
+   * dưới — câu trả lời vừa được chấm và ghi thật vào `assessment_items`.
+   * `false` nghĩa là một lệnh gọi khác đã ghi trước (trả lời lại tuần tự sau
+   * khi mở lại một bài đang làm dở — finding 3, hoặc một lệnh gọi đồng thời
+   * vừa thắng) — khi đó `dung` chỉ là kết quả so sánh của CHÍNH đáp án lần
+   * gọi này với đáp án thật, KHÔNG phải điều đã ghi vào database.
+   */
+  ghiNhanLanNay: boolean;
+  dung: boolean;
+}
+
+/**
  * Chấm một câu và ghi kết quả. Chấm ở SERVER vì đáp án của câu điền nằm ở
  * `vocab_words.blank_answer`, cột đã bị revoke khỏi `authenticated`.
  */
@@ -202,14 +280,39 @@ export async function recordAnswer(
   assessmentId: number,
   position: number,
   answer: string,
-): Promise<boolean> {
+): Promise<KetQuaTraLoi> {
+  // Also-bàn giao (vòng soát cuối): `assessment_items` không tự mang trạng
+  // thái của bài — nằm ở bài cha (`assessments.status`). Đọc kèm qua quan hệ
+  // nhúng (FK `assessment_id`) rồi chặn sớm nếu bài đã `submitted`: cùng hình
+  // dạng lỗi "check-rồi-act không có khoá" mà lát này đã sửa bằng CAS ba lần
+  // (`boBaiDangLam`, `finalize_assessment_items`, và chính CAS `user_answer`
+  // bên dưới) — CHỈ khác là ở đây điều kiện nằm ở MỘT BẢNG KHÁC
+  // (`assessments`), nên không gộp được vào WHERE của UPDATE trên
+  // `assessment_items` mà không thêm một hàm RPC mới (đổi schema, ngoài phạm
+  // vi vòng soát này — xem yêu cầu "không cần đổi schema"). Vẫn còn một khe
+  // hở TOCTOU hẹp (bài có thể chuyển sang `submitted` đúng giữa lúc đọc và
+  // ghi bên dưới), nhưng đường này KHÔNG ai gọi tới được qua giao diện hiện
+  // tại (`/exam/[id]` tự chuyển sang `/ket-qua` ngay khi bài đã nộp, xem
+  // page.tsx) — đây là hàng rào phòng thủ thêm, không phải hàng rào chính.
   const { data: item, error: itemErr } = await supabase
     .from("assessment_items")
-    .select("ref_id, payload")
+    .select("ref_id, payload, assessments(status)")
     .eq("assessment_id", assessmentId)
     .eq("position", position)
     .single();
   if (itemErr) throw itemErr;
+
+  // postgrest-js đôi khi trả quan hệ 1-1 thành MẢNG (cùng cái bẫy đã ghi ở
+  // `exam/[id]/actions.ts` cho `lesson_words -> vocab_words`) — chuẩn hoá cả
+  // hai hình dạng thay vì giả định một trong hai.
+  const baiEmbed = item.assessments as { status: string } | { status: string }[] | null;
+  const trangThaiBai = Array.isArray(baiEmbed) ? baiEmbed[0]?.status : baiEmbed?.status;
+  if (trangThaiBai !== "in_progress") {
+    throw new Error(
+      `bài ${assessmentId} không còn ở trạng thái đang làm (status=${trangThaiBai ?? "?"}) ` +
+        `— không ghi câu trả lời được nữa`,
+    );
+  }
 
   const kind = (item.payload as { kind: string }).kind;
   let dapAn: string;
@@ -264,11 +367,33 @@ export async function recordAnswer(
   // là một lượt trả lời lại TUẦN TỰ (bấm lại sau khi đã có đáp án) hay một
   // lệnh gọi ĐỒNG THỜI vừa thắng — cả hai trường hợp đều không được cộng
   // thêm, vì cả hai đều không phải "lần trả lời đầu tiên" của câu này nữa.
-  if (updated && updated.length > 0) {
-    await applyWordMastery(supabase, userId, item.ref_id as number, dung);
+  const ghiNhanLanNay = Boolean(updated && updated.length > 0);
+  if (ghiNhanLanNay) {
+    // Câu trả lời đã NẰM TRONG DATABASE ngay tại UPDATE ở trên — ghi mastery
+    // là một bước SAU, tách rời. SỬA SAU VÒNG SOÁT CUỐI (finding 4, ghi chú
+    // "note while you are there"): TRƯỚC bản vá này, một lỗi ở BƯỚC NÀY (ví
+    // dụ mất mạng ngay sau khi UPDATE vừa commit) làm cả `recordAnswer` ném
+    // lỗi, khiến `ExamRunner` tưởng nhầm câu trả lời "chưa gửi được" và đưa
+    // vị trí này vào `viTriLoi` — SAI: đáp án đã ghi và đã được chấm đúng
+    // trong `assessment_items`, chặn nộp bài vì nó là chặn vô ích, và bảo
+    // người học "tải lại trang" (thông điệp finding 4 yêu cầu) không sửa
+    // được gì vì lỗi không nằm ở chỗ đó. Vì vậy lỗi ở bước này KHÔNG được ném
+    // tiếp lên — chỉ log lại để còn dấu vết gỡ lỗi, không nuốt hoàn toàn
+    // trong im lặng. (Bên trong `applyWordMastery`, lỗi ĐỌC vẫn bắt buộc
+    // throw — đó là một bất biến khác, bảo vệ chính upsert của nó khỏi ghi đè
+    // sạch tiến độ đã tích luỹ, xem chú thích tại `mastery/write.ts`.)
+    try {
+      await applyWordMastery(supabase, userId, item.ref_id as number, dung);
+    } catch (err) {
+      console.error(
+        `applyWordMastery lỗi sau khi đã ghi câu trả lời (bài ${assessmentId}, vị trí ${position})` +
+          ` — câu trả lời vẫn đúng trong assessment_items, chỉ word_mastery có thể thiếu lần ghi này`,
+        err,
+      );
+    }
   }
 
-  return dung;
+  return { ghiNhanLanNay, dung };
 }
 
 /**
@@ -288,5 +413,14 @@ export async function submitExam(
   });
   if (error) throw error;
   const row = Array.isArray(data) ? data[0] : data;
+  // Also-bàn giao (vòng soát cuối): `data[0]` suy ra `... | undefined` dưới
+  // `noUncheckedIndexedAccess` — trước bản vá này bị ép kiểu thẳng không kiểm.
+  // `finalize_assessment_items` luôn `return query select ...` đúng một dòng
+  // khi không ném lỗi (xem 0009_finalize_atomic.sql), nên nhánh này không nên
+  // xảy ra — nhưng "không nên" khác "không thể qua PostgREST", nên chặn tường
+  // minh thay vì tin ngầm, cùng khuôn mọi chỗ khác trong lát này.
+  if (!row) {
+    throw new Error(`finalize_assessment_items không trả về dòng nào cho bài ${assessmentId}`);
+  }
   return row as { total: number; correct: number; score: number; passed: boolean };
 }

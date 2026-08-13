@@ -106,6 +106,14 @@ test("trả lời sai hết thì thấy điểm, trạng thái chưa đạt, và
   await expect(page.getByTestId("ket-qua-diem")).toBeVisible();
   await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();
 
+  // Finding 6 (vòng soát cuối): spec §4 đòi "danh sách từ sai kèm nghĩa" —
+  // trước bản vá, `wrong_items_for_assessment` chỉ được dùng để đếm
+  // (`.length`), không render ra gì. Luôn chọn phương án đầu trên 30 câu thì
+  // chắc chắn có ít nhất một câu sai (nếu không đã không rơi vào nhánh "chưa
+  // đạt" và không có nút bổ túc ở trên).
+  await expect(page.getByTestId("ket-qua-tu-sai")).toBeVisible();
+  await expect(page.getByTestId("ket-qua-tu-sai").locator("li").first()).toBeVisible();
+
   const idBaiGoc = page.url().match(/\/exam\/(\d+)\/ket-qua$/)?.[1];
   expect(idBaiGoc).toBeTruthy();
 
@@ -153,9 +161,15 @@ test("bỏ dở bài rồi bấm LÀM BÀI lại thì vào lại đúng bài cũ
 
   // Phải vào lại ĐÚNG bài cũ (không insert bài mới đâm vào chỉ số một-phần),
   // và chắc chắn không phải trang lỗi chung — error.tsx không render
-  // exam-option nào cả.
-  await expect(page).toHaveURL(new RegExp(`/exam/${idCu}$`));
+  // exam-option nào cả. SỬA SAU VÒNG SOÁT CUỐI (finding 5): URL giờ mang
+  // thêm `?tuLoai=lesson&tuBuoi=3` — `batDauBaiThi` LUÔN đính kèm buổi/loại
+  // vừa bấm khi redirect vào một bài `in_progress` có sẵn (xem
+  // `exam/[id]/actions.ts`), kể cả khi (như ở đây) đó CHÍNH là bài vừa bấm,
+  // không phải một buổi khác — page.tsx tự so sánh và không hiện cảnh báo
+  // lệch buổi trong trường hợp này, khẳng định ngay dưới đây.
+  await expect(page).toHaveURL(new RegExp(`/exam/${idCu}(\\?.*)?$`));
   await expect(page.getByTestId("exam-option")).toHaveCount(4);
+  await expect(page.getByTestId("exam-lech-buoi")).toHaveCount(0);
 });
 
 test("bỏ bài bằng nút exam-bo-bai rồi làm bài mới thành công", async ({ page }) => {
@@ -186,5 +200,130 @@ test("bỏ bài bằng nút exam-bo-bai rồi làm bài mới thành công", asy
   // `assessments` cũ đã bị XOÁ THẬT (không phải chỉ "chuyển trang rồi quay
   // lại đúng chỗ cũ").
   expect(idMoi).not.toBe(idCu);
+  await expect(page.getByTestId("exam-option")).toHaveCount(4);
+});
+
+/* ───────────────── Vòng soát cuối — finding 3, 5, 6, và "Also" ───────────────── */
+
+test("tải lại trang giữa bài thi thì vào lại đúng câu tiếp theo, không hiện dải câu trước sai (finding 3)", async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto("/vocab/learn/5");
+  await page.getByTestId("exam-button").click();
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
+
+  // Trả lời 3 câu đầu, đợi ĐÚNG response của từng câu trước khi bấm câu kế —
+  // cùng lý do đã ghi ở kịch bản "bấm một đáp án là sang câu sau ngay": phải
+  // chắc chắn câu trả lời đã NẰM TRONG DATABASE trước khi tải lại trang bên
+  // dưới, nếu không việc "mất tiến độ" đo được có thể chỉ là do request còn
+  // đang bay, không phải do lỗi ở logic khôi phục.
+  for (let n = 1; n <= 3; n++) {
+    const guiDapAn = page.waitForResponse((r) => r.request().method() === "POST");
+    await page.getByTestId("exam-option").first().click();
+    await guiDapAn;
+  }
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 4/30");
+
+  // SỬA SAU VÒNG SOÁT CUỐI: trước bản vá, `/exam/[id]` luôn khởi động
+  // `ExamRunner` ở câu 1 bất kể đã trả lời bao nhiêu câu — tải lại trang ở
+  // đây sẽ tụt về lại "Câu 1/30" dù 3 câu đầu đã ghi xong trong database.
+  await page.reload();
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 4/30");
+  // Không có dải "câu trước: đúng/sai" nào — trang không đọc được `is_correct`
+  // (cột đã bị thu hồi khỏi `authenticated`), nên không được đoán bừa cho một
+  // câu vừa hiện lên sau khi tải lại trang mà chưa hề vừa được bấm trong
+  // phiên này.
+  await expect(page.getByTestId("exam-ket-qua-truoc")).toHaveCount(0);
+});
+
+test("làm bài buổi khác trong khi còn bài dang dở thì thấy cảnh báo lệch buổi (finding 5)", async ({ page }) => {
+  await login(page);
+  await page.goto("/vocab/learn/6");
+  await page.getByTestId("exam-button").click();
+  await expect(page).toHaveURL(/\/exam\/\d+$/);
+  await expect(page.getByTestId("exam-heading")).toHaveText("Bài buổi 6");
+  // Chưa có bài nào khác — chưa có gì để lệch.
+  await expect(page.getByTestId("exam-lech-buoi")).toHaveCount(0);
+
+  // Bấm LÀM BÀI ở một buổi KHÁC trong khi bài buổi 6 còn đang làm dở —
+  // `batDauBaiThi` đưa thẳng vào lại bài buổi 6 (không phải buổi 7), kèm
+  // buổi/loại VỪA BẤM trên query string.
+  await page.goto("/vocab/learn/7");
+  await page.getByTestId("exam-button").click();
+  await expect(page).toHaveURL(/\/exam\/\d+\?tuLoai=lesson&tuBuoi=7$/);
+  await expect(page.getByTestId("exam-heading")).toHaveText("Bài buổi 6");
+  await expect(page.getByTestId("exam-lech-buoi")).toBeVisible();
+});
+
+test("bỏ bài lần hai từ tab khác (đã bị tab kia xoá trước) thì quay về /vocab, không rơi vào trang lỗi (Also)", async ({
+  page,
+  context,
+}) => {
+  await login(page);
+  await page.goto("/vocab/learn/8");
+  await page.getByTestId("exam-button").click();
+  await expect(page).toHaveURL(/\/exam\/\d+$/);
+
+  // Tab thứ hai, CÙNG một phiên đăng nhập (cùng context → cùng cookie) — mở
+  // đúng bài đang làm dở, mô phỏng người học có hai tab cùng trỏ vào một bài.
+  const tabHai = await context.newPage();
+  await tabHai.goto(page.url());
+  await expect(tabHai.getByTestId("exam-bo-bai")).toBeVisible();
+
+  // Tab một bỏ bài trước — thành công, dòng `assessments` biến mất thật.
+  await page.getByTestId("exam-bo-bai").click();
+  await expect(page).toHaveURL(/\/vocab\/learn\/8$/);
+
+  // Tab hai, KHÔNG biết dòng đã bị xoá, bấm "Bỏ bài" trên chính bài đó lần
+  // NỮA. Trước bản vá (mục "Also"), nhánh "không tìm thấy dòng nào" ném lỗi
+  // thật, rơi xuống error.tsx với thông điệp sai "mất mạng" — dòng đã biến
+  // mất chính là điều người học MUỐN, không phải một lỗi.
+  await tabHai.getByTestId("exam-bo-bai").click();
+  await expect(tabHai).toHaveURL(/\/vocab$/);
+
+  await tabHai.close();
+});
+
+test("đạt bài bổ túc thì thấy nút Làm lại bài, bấm vào dựng được bài chính mới (finding 6)", async ({ page }) => {
+  test.setTimeout(180_000);
+  await login(page);
+  await page.goto("/vocab/learn/9");
+  await page.getByTestId("exam-button").click();
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
+
+  for (let n = 1; n <= 30; n++) {
+    await expect(page.getByTestId("exam-tien-do")).toHaveText(`Câu ${n}/30`);
+    await page.getByTestId("exam-option").first().click();
+  }
+  await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 60_000 });
+  await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();
+
+  await page.getByTestId("ket-qua-bo-tuc").click();
+  await expect(page).toHaveURL(/\/exam\/\d+$/);
+  const idBoTuc = page.url().match(/\/exam\/(\d+)$/)?.[1];
+  expect(idBoTuc).toBeTruthy();
+
+  // Ép bài bổ túc này ĐẠT trực tiếp qua admin (service role, bỏ qua RLS).
+  // Mục tiêu của kịch bản này là GIAO DIỆN trang kết quả khi đã đạt bổ túc
+  // (nút "Làm lại bài", spec §4) — không phải kiểm lại logic chấm điểm (đã có
+  // tests/exam-security.test.ts lo phần đó). Trả lời đúng 30/30 một bài bổ
+  // túc qua UI đòi biết trước đáp án thật của từng câu — thứ trang không hề
+  // lộ ra, đúng thiết kế bảo mật của lát này (`payload` không bao giờ chứa
+  // đáp án).
+  const admin = adminClient();
+  const { error } = await admin
+    .from("assessments")
+    .update({ status: "submitted", score: 100, passed: true, submitted_at: new Date().toISOString() })
+    .eq("id", Number(idBoTuc));
+  if (error) throw error;
+
+  await page.goto(`/exam/${idBoTuc}/ket-qua`);
+  await expect(page.getByTestId("ket-qua-lam-lai")).toBeVisible();
+
+  await page.getByTestId("ket-qua-lam-lai").click();
+  // Bài MỚI, dựng lại đúng BÀI CHÍNH (buổi 9) chứ không phải bài bổ túc.
+  await expect(page).toHaveURL(/\/exam\/\d+$/);
+  await expect(page.getByTestId("exam-heading")).toHaveText("Bài buổi 9");
   await expect(page.getByTestId("exam-option")).toHaveCount(4);
 });

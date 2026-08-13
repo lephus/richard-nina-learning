@@ -2,7 +2,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { buildVocabExam, type ExamQuestion } from "@/lib/exam/build";
 import {
-  PASS_MARK, boBaiDangLam, createVocabExam, recordAnswer, submitExam, timHoacDungBaiThi,
+  PASS_MARK, baiDangLamCua, boBaiDangLam, createVocabExam, recordAnswer, submitExam,
+  timHoacDungBaiThi,
 } from "@/lib/exam/run";
 import type { VocabLite } from "@/lib/vocab/word";
 
@@ -112,15 +113,30 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
     expect(error?.code).toBe("22004");
   });
 
-  it("recordAnswer trả về đúng khi khớp đáp án thật, sai khi không khớp", async () => {
+  it("recordAnswer trả về đúng khi khớp đáp án thật, sai khi không khớp — VÀ ghiNhanLanNay=true (finding 3)", async () => {
     const cauDung = cauHoi[1]!;
-    const dung1 = await recordAnswer(alice, aliceId, baiId, 1, cauDung.answer);
-    expect(dung1).toBe(true);
+    const ket1 = await recordAnswer(alice, aliceId, baiId, 1, cauDung.answer);
+    expect(ket1.dung).toBe(true);
+    expect(ket1.ghiNhanLanNay).toBe(true);
 
     const cauSai = cauHoi[2]!;
     const phuongAnSai = cauSai.options.find((o) => o !== cauSai.answer)!;
-    const dung2 = await recordAnswer(alice, aliceId, baiId, 2, phuongAnSai);
-    expect(dung2).toBe(false);
+    const ket2 = await recordAnswer(alice, aliceId, baiId, 2, phuongAnSai);
+    expect(ket2.dung).toBe(false);
+    expect(ket2.ghiNhanLanNay).toBe(true);
+  });
+
+  // Finding 3, vòng soát cuối: lệnh gọi THUA cuộc đua ghi (vị trí đã có đáp
+  // án từ trước) phải báo `ghiNhanLanNay=false` — ExamRunner dựa vào đúng cờ
+  // này để KHÔNG hiện dải "câu trước: đúng/sai" cho một giá trị không mô tả
+  // điều đã ghi trong database (xem chú thích tại `recordAnswer`).
+  it("trả lời lại một vị trí ĐÃ có đáp án báo ghiNhanLanNay=false (finding 3)", async () => {
+    const cau = cauHoi[5]!;
+    const lanDau = await recordAnswer(alice, aliceId, baiId, 5, cau.answer);
+    expect(lanDau.ghiNhanLanNay).toBe(true);
+
+    const lanHai = await recordAnswer(alice, aliceId, baiId, 5, cau.answer);
+    expect(lanHai.ghiNhanLanNay).toBe(false);
   });
 
   it("trả lời cùng một câu HAI LẦN TUẦN TỰ chỉ cộng mastery một lần", async () => {
@@ -311,6 +327,117 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
       await admin.from("assessments").delete().eq("user_id", daveId);
       await admin.from("word_mastery").delete().eq("user_id", daveId);
       await admin.auth.admin.deleteUser(daveId);
+    }
+  });
+
+  /* ───────────────── Vòng soát cuối — finding 1 (bù trừ + tự chữa lành) ─────────────────
+   *
+   * Yêu cầu bàn giao đòi CHÍNH XÁC một test: "force the item insert to fail
+   * and assert no orphan `assessments` row survives" — đây là test đó. Ép
+   * `assessment_items.insert` lỗi bằng một CLIENT GIẢ bọc quanh client thật
+   * (cùng khuôn `tests/mastery-write.test.ts` đã dùng cho `applyWordMastery` —
+   * xem chú thích ở đó: một lỗi ghi THẬT không ép xảy ra được một cách xác
+   * định ở đây qua RLS/permission thông thường, vì mọi insert hợp lệ đều
+   * thành công bình thường). `from("assessments")` đi NGUYÊN VẸN tới client
+   * thật — insert THẬT xảy ra, dòng THẬT được tạo — chỉ riêng
+   * `from("assessment_items").insert` bị ép lỗi, đúng đường `createVocabExam`
+   * đi qua NGAY SAU KHI đã insert xong `assessments`.
+   */
+  it("chèn assessment_items lỗi thì xoá bù dòng assessments vừa tạo, không để mồ côi (finding 1)", async () => {
+    const { client: frank, id: frankId } = await taoNguoiDung("frank");
+
+    try {
+      const clientGia = {
+        from: (table: string) => {
+          if (table === "assessment_items") {
+            return { insert: async () => ({ error: { message: "lỗi giả lập chèn item", code: "XXXXX" } }) };
+          }
+          return frank.from(table);
+        },
+      } as unknown as SupabaseClient;
+
+      await expect(
+        createVocabExam(clientGia, frankId, "lesson", [1], words, blanks, 99),
+      ).rejects.toBeTruthy();
+
+      const { data: conLai } = await admin
+        .from("assessments").select("id").eq("user_id", frankId);
+      // KHÔNG còn dòng nào — chứng minh TRỰC TIẾP lệnh xoá bù đã chạy và xoá
+      // đúng dòng `assessments` vừa insert, không phải suy luận từ việc
+      // `createVocabExam` đã ném lỗi (ném lỗi không tự nó chứng minh đã dọn
+      // sạch — chính finding 1 mô tả một dòng mồ côi VẪN sống sót SAU khi
+      // lỗi được ném lên).
+      expect(conLai).toEqual([]);
+    } finally {
+      await admin.from("assessments").delete().eq("user_id", frankId);
+      await admin.auth.admin.deleteUser(frankId);
+    }
+  });
+
+  // Finding 1, vòng soát cuối — lớp phòng thủ THỨ BA: một dòng `in_progress`
+  // 0 câu hỏi có thể tồn tại từ TRƯỚC bản vá xoá bù ở trên (hoặc nếu chính
+  // lượt xoá bù đó cũng lỗi nốt — nhánh `cleanupErr` trong `createVocabExam`).
+  // `baiDangLamCua` phải coi dòng đó là "không tồn tại" cho MỌI nơi gọi, và
+  // TỰ DỌN nó — không chỉ lờ đi (lờ đi để dòng nằm nguyên `in_progress` thì
+  // lượt tạo bài KẾ TIẾP đâm thẳng vào chỉ số một-phần
+  // `assessments_one_in_progress`, người học vẫn kẹt). Dựng dòng mồ côi
+  // TRỰC TIẾP bằng admin (không qua `createVocabExam`) — mô phỏng đúng "một
+  // dòng cũ sống sót từ trước bản vá", độc lập với test ép lỗi insert ở trên.
+  it("baiDangLamCua coi một bài in_progress 0 câu hỏi là không tồn tại, và tự dọn nó (finding 1)", async () => {
+    const { client: gina, id: ginaId } = await taoNguoiDung("gina");
+
+    try {
+      const { data: moCoi, error: insErr } = await admin
+        .from("assessments")
+        .insert({ user_id: ginaId, type: "lesson", scope: [1] })
+        .select("id").single();
+      if (insErr) throw insErr;
+
+      const ket = await baiDangLamCua(gina, ginaId);
+      expect(ket).toBeNull();
+
+      const { data: conLai } = await admin
+        .from("assessments").select("id").eq("id", moCoi.id as number);
+      expect(conLai).toEqual([]);
+
+      // Chỗ trống đã THẬT SỰ được giải phóng: tạo được một bài MỚI ngay sau
+      // đó mà không đâm 23505 — nếu `baiDangLamCua` chỉ LỜ ĐI dòng mồ côi
+      // thay vì xoá, insert dưới đây sẽ chết ngay ở chỉ số một-phần.
+      const idMoi = await createVocabExam(gina, ginaId, "lesson", [1], words, blanks, 98);
+      expect(idMoi).not.toBe(moCoi.id);
+    } finally {
+      await admin.from("assessments").delete().eq("user_id", ginaId);
+      await admin.auth.admin.deleteUser(ginaId);
+    }
+  });
+
+  // Mục "Also" bàn giao, vòng soát cuối: `recordAnswer` phải từ chối ghi khi
+  // bài đã `submitted` — trước bản vá này hàm chỉ kiểm CAS `user_answer is
+  // null` trên CHÍNH câu hỏi, và một câu CHƯA trả lời trong một bài ĐÃ NỘP
+  // vẫn khớp đúng CAS đó (finalize chỉ set `is_correct=false` cho câu bỏ
+  // trống, KHÔNG đụng `user_answer` — xem 0009_finalize_atomic.sql bước 4),
+  // nên trước bản vá này lệnh ghi vẫn lọt qua.
+  it("recordAnswer từ chối ghi khi bài đã submitted (Also — vòng soát cuối)", async () => {
+    const { client: heidi, id: heidiId } = await taoNguoiDung("heidi");
+
+    try {
+      const baiXong = await createVocabExam(heidi, heidiId, "lesson", [1], words, blanks, 97);
+      await submitExam(heidi, baiXong);
+
+      await expect(
+        recordAnswer(heidi, heidiId, baiXong, 10, cauHoi[10]!.answer),
+      ).rejects.toBeTruthy();
+
+      const { data: sau } = await admin
+        .from("assessment_items")
+        .select("user_answer").eq("assessment_id", baiXong).eq("position", 10).single();
+      // Không ghi gì cả — bằng chứng TRỰC TIẾP đọc từ database, không suy
+      // luận từ việc lệnh gọi đã ném lỗi.
+      expect(sau?.user_answer).toBeNull();
+    } finally {
+      await admin.from("assessments").delete().eq("user_id", heidiId);
+      await admin.from("word_mastery").delete().eq("user_id", heidiId);
+      await admin.auth.admin.deleteUser(heidiId);
     }
   });
 });

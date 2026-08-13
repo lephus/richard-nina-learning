@@ -57,6 +57,38 @@ có 25% đoán trúng.
 Ngưỡng nằm ở **một chỗ duy nhất** (`src/lib/mastery/apply.ts`) và `/stats` đếm
 cột `mastered` chứ không tự tính lại — giữ nguyên nguyên tắc của lát 1d.
 
+### 2.1 Sửa lại sau vòng soát cuối lát 2b (finding 7)
+
+Đoạn trên nói "một từ luôn trả lời đúng được chạm **tối đa 2 lần trong cả
+đời**". Tiền đề đó SAI trong code đã triển khai — KHÔNG xoá các câu ở trên,
+ghi lại đúng chỗ sai ở đây để không ai đọc lại tưởng nó vẫn còn đúng.
+
+Bài bổ túc (mục 4, mục 6 tài liệu này) và nút "Làm lại bài" (thêm ở vòng soát
+cuối cùng một loạt sửa khác, xem báo cáo vòng soát đó) làm cho việc LÀM LẠI
+một bài cùng phạm vi là một luồng **bắt buộc tồn tại** của ứng dụng, không
+phải một khả năng lý thuyết bị bỏ qua: sau khi nộp, LÀM BÀI dựng một bài thi
+**MỚI** trên đúng 30 từ đó (`timHoacDungBaiThi` → `createVocabExam`, seed
+mới), và `recordAnswer` cộng mastery lại ở lần trả lời ĐẦU TIÊN của bài mới
+này — y hệt lần đầu tiên. Một từ vì vậy có thể được chạm **nhiều hơn hai lần
+trong cả đời** nếu người học làm lại buổi đó nhiều lần (retake một buổi đã
+đạt, học lại một buổi thuộc nhóm đã hoàn thành, hoặc dùng "Làm lại bài" sau
+khi đạt bổ túc).
+
+**`MASTERY_THRESHOLD = 2` VẪN GIỮ NGUYÊN — quyết định đó không đổi.** Điều
+phải sửa là CÁCH HIỂU: "đã thuộc" nghĩa là "đúng ròng (đúng trừ sai) đạt 2,
+tính trên **mọi lần thử** của cả đời", không phải "đúng ở đúng hai lần kiểm
+cố định, cách nhau nhiều ngày" như lập luận gốc mô tả. Vì retake luôn sẵn có,
+ngưỡng 2 giờ đạt được **nhanh hơn** lập luận gốc giả định — một từ có thể "đã
+thuộc" chỉ sau vài lần làm lại cùng một buổi, không cần đợi tới bài ôn tập
+nhóm như câu chuyện ban đầu kể.
+
+Nếu điều này về sau chứng minh là **quá dễ** (thẻ "đã thuộc" tăng nhanh hơn kỳ
+vọng, không còn phản ánh đúng nghĩa "nhớ lâu qua thời gian"), lựa chọn còn để
+ngỏ là: **chỉ cộng mastery cho lần nộp ĐẦU TIÊN của mỗi `(type, scope)`** —
+bỏ qua các lần retake sau khi đã có một lần nộp cho đúng cặp đó — thay vì đổi
+lại ngưỡng. Vòng soát này CHƯA triển khai lựa chọn đó; ghi lại đây để người
+sau không phải suy luận lại từ đầu nếu cần dùng tới.
+
 ## 3. Bộ máy bài thi
 
 Ba module, ranh giới rõ, mỗi cái test được riêng:
