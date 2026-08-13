@@ -106,9 +106,23 @@ test("trả lời sai hết thì thấy điểm, trạng thái chưa đạt, và
   await expect(page.getByTestId("ket-qua-diem")).toBeVisible();
   await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();
 
+  const idBaiGoc = page.url().match(/\/exam\/(\d+)\/ket-qua$/)?.[1];
+  expect(idBaiGoc).toBeTruthy();
+
   await page.getByTestId("ket-qua-bo-tuc").click();
   await expect(page).toHaveURL(/\/exam\/\d+$/);
   await expect(page.getByTestId("exam-option")).toHaveCount(4);
+
+  // Yêu cầu C, finding 3 (SỬA SAU VÒNG SOÁT 1): quay lại đúng bài GỐC đã
+  // nộp (không phải bài bổ túc vừa dựng ở trên) — mô phỏng bấm "quay lại"
+  // của trình duyệt ngay sau khi vừa nộp, một thao tác bình thường, không
+  // phải tấn công. Trước bản vá, `/exam/[id]` không rẽ nhánh theo `status`
+  // nên vẫn hiện lại đủ 30 câu VÀ nút "Bỏ bài" — bấm nút đó ném lỗi thật (bài
+  // đã nộp không xoá được), rơi xuống `error.tsx` với thông điệp sai "mất
+  // mạng", tái tạo đúng cái bẫy yêu cầu C tồn tại để loại bỏ.
+  await page.goto(`/exam/${idBaiGoc}`);
+  await expect(page).toHaveURL(new RegExp(`/exam/${idBaiGoc}/ket-qua$`));
+  await expect(page.getByTestId("ket-qua-diem")).toBeVisible();
 });
 
 /* ───────────────── Yêu cầu C: khoá bẫy bài thi bỏ dở ───────────────── */
@@ -149,6 +163,14 @@ test("bỏ bài bằng nút exam-bo-bai rồi làm bài mới thành công", asy
   await page.goto("/vocab/learn/4");
   await page.getByTestId("exam-button").click();
   await expect(page).toHaveURL(/\/exam\/\d+$/);
+  // SỬA SAU VÒNG SOÁT 1 (finding 2): bắt buộc phải nắm được id CŨ để so sánh
+  // sau — chỉ khớp pattern `/exam/\d+$/` không phân biệt được "dựng bài MỚI
+  // thành công" với "delete khớp 0 dòng (thua CAS ở boBaiDangLam) rồi
+  // baiDangLamCua vẫn tìm thấy đúng bài CŨ chưa hề bị xoá và lặng lẽ đưa vào
+  // lại NÓ" — cả hai đều cho URL khớp `/exam/\d+$/` và 4 phương án, nhưng chỉ
+  // một trong hai là "dựng bài mới" như tên kịch bản khẳng định.
+  const idCu = page.url().match(/\/exam\/(\d+)$/)?.[1];
+  expect(idCu).toBeTruthy();
 
   await page.getByTestId("exam-bo-bai").click();
   await expect(page).toHaveURL(/\/vocab\/learn\/4$/);
@@ -158,5 +180,11 @@ test("bỏ bài bằng nút exam-bo-bai rồi làm bài mới thành công", asy
   // không chỉ điều hướng đi nơi khác trong khi dòng in_progress cũ còn nguyên.
   await page.getByTestId("exam-button").click();
   await expect(page).toHaveURL(/\/exam\/\d+$/);
+  const idMoi = page.url().match(/\/exam\/(\d+)$/)?.[1];
+  expect(idMoi).toBeTruthy();
+  // Khẳng định THÊM: id phải KHÁC id cũ — bằng chứng trực tiếp rằng dòng
+  // `assessments` cũ đã bị XOÁ THẬT (không phải chỉ "chuyển trang rồi quay
+  // lại đúng chỗ cũ").
+  expect(idMoi).not.toBe(idCu);
   await expect(page.getByTestId("exam-option")).toHaveCount(4);
 });

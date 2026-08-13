@@ -110,6 +110,29 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
   if (!user) redirect("/login");
 
   const scope = await boBaiDangLam(supabase, user.id, assessmentId);
+  if (scope === null) {
+    // `boBaiDangLam` khớp 0 dòng — CAS trong chính lệnh xoá thua (SỬA SAU
+    // VÒNG SOÁT 1, finding 1): bài không còn `in_progress` đúng vào lúc lệnh
+    // xoá chạy tới, HOẶC không tồn tại/không phải của người dùng này. Đọc
+    // LẠI ở đây (không dùng bất kỳ giá trị nào đọc TRƯỚC lệnh xoá —
+    // đó chính là khe hở TOCTOU vừa đóng) để phân biệt hai trường hợp:
+    //   - Đã `submitted`: một tab khác vừa nộp giữa lúc người học bấm Bỏ bài
+    //     — đưa thẳng sang trang kết quả THẬT của bài đó, đúng tinh thần yêu
+    //     cầu C (không để người học rơi vào error.tsx với thông điệp sai
+    //     "mất mạng" — finding 3 vòng soát 1 chỉ đích danh chính cái bẫy này).
+    //   - Không tìm thấy dòng nào của user_id này: bài không tồn tại/không
+    //     phải của mình — ném lỗi thật, không giả vờ thành công.
+    const { data: bai, error: baiErr } = await supabase
+      .from("assessments")
+      .select("status")
+      .eq("id", assessmentId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (baiErr) throw baiErr;
+    if (bai?.status === "submitted") redirect(`/exam/${assessmentId}/ket-qua`);
+    throw new Error(`không bỏ được bài ${assessmentId} — không tồn tại hoặc không phải của bạn`);
+  }
+
   // `scope` rỗng không nên xảy ra (bài lesson/remedial luôn ghi đúng một buổi
   // vào scope, xem createVocabExam) — chặn tường minh thay vì âm thầm điều
   // hướng tới `/vocab/learn/undefined`.

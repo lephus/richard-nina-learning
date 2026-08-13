@@ -147,37 +147,49 @@ export async function timHoacDungBaiThi(
  * không cần undo, tiến bộ đã ghi cho một từ là thật bất kể bài thi có bị bỏ
  * hay không.
  *
- * Chỉ cho bỏ bài còn `in_progress` — một bài `submitted` là dữ liệu đã chốt,
- * không phải thứ hành động này được phép xoá. Điều kiện `user_id` trong WHERE
- * là lớp phòng thủ thứ hai bên cạnh RLS (`own_assess`, 0004_rls.sql) — không
- * dựa vào một hàng rào duy nhất.
+ * CAS NGAY TRONG DELETE (`status = 'in_progress'` nằm trong WHERE của chính
+ * lệnh xoá, không phải một SELECT riêng đọc trước rồi mới quyết định) — SỬA
+ * SAU VÒNG SOÁT 1 (finding 1): bản trước đọc `status` bằng một SELECT tách
+ * rời, rồi DELETE chỉ lọc theo `id`/`user_id`. Giữa hai lệnh đó có một khe hở
+ * TOCTOU thật: một tab KHÁC của CHÍNH người học có thể NỘP bài (chuyển
+ * `in_progress` → `submitted`) đúng lúc này, và DELETE vẫn chạy vì nó không
+ * hề biết trạng thái đã đổi — xoá mất một bài ĐÃ CHẤM ĐIỂM thật, đúng thứ
+ * yêu cầu C tồn tại để ngăn ("mất lịch sử đã nộp của người học"). RLS
+ * `own_assess` (0004_rls.sql, `FOR ALL USING (user_id = auth.uid())`) không
+ * lọc theo `status`, và cờ `disabled` phía client (`ExamRunner`) chỉ là state
+ * CỦA MỘT TAB, không chặn được tab thứ hai — nên hàng rào THẬT DUY NHẤT phải
+ * nằm ở chính điều kiện của lệnh xoá, cùng khuôn CAS đã dùng ở
+ * `recordAnswer` (`user_answer is null` trong UPDATE) và
+ * `finalize_assessment_items` (`status = 'in_progress'` trong UPDATE,
+ * 0009_finalize_atomic.sql). `.select("scope")` sau DELETE đọc lại ĐÚNG
+ * những dòng lệnh này vừa xoá — không phải đọc từ SELECT trước đó — nên
+ * quyết định "đã xoá được chưa" luôn dựa trên việc XOÁ ĐÃ LÀM, không phải
+ * việc ĐỌC đã thấy.
  *
- * Trả về `scope` (buổi/nhóm buổi của bài) để nơi gọi biết quay lại buổi nào.
+ * Trả về `scope` nếu xoá được, `null` nếu KHÔNG khớp dòng nào — nghĩa là bài
+ * không tồn tại/không phải của người dùng này, HOẶC đã `submitted` (thua CAS)
+ * trước khi lệnh xoá này chạy tới. Nơi gọi (`boBaiThi`) đọc lại để phân biệt
+ * hai trường hợp và xử lý đúng — không ném lỗi thô ở đây.
  */
 export async function boBaiDangLam(
   supabase: SupabaseClient,
   userId: string,
   assessmentId: number,
-): Promise<number[]> {
-  const { data: bai, error: baiErr } = await supabase
-    .from("assessments")
-    .select("status, scope")
-    .eq("id", assessmentId)
-    .eq("user_id", userId)
-    .single();
-  if (baiErr) throw baiErr;
-  if (bai.status !== "in_progress") {
-    throw new Error(`bài ${assessmentId} đã nộp rồi, không bỏ được nữa`);
-  }
-
-  const { error: delErr } = await supabase
+): Promise<number[] | null> {
+  const { data: deleted, error: delErr } = await supabase
     .from("assessments")
     .delete()
     .eq("id", assessmentId)
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .eq("status", "in_progress")
+    .select("scope");
   if (delErr) throw delErr;
-
-  return bai.scope as number[];
+  // Destructure thay vì `deleted[0]!`: `noUncheckedIndexedAccess` suy chỉ số
+  // mảng ra `T | undefined` bất kể đã kiểm độ dài trước đó hay chưa — cùng
+  // khuôn chặn tường minh (không khẳng định non-null) đã dùng khắp lát này.
+  const [row] = deleted ?? [];
+  if (!row) return null;
+  return row.scope as number[];
 }
 
 /**

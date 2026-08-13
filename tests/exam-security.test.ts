@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { buildVocabExam, type ExamQuestion } from "@/lib/exam/build";
 import {
-  PASS_MARK, createVocabExam, recordAnswer, submitExam, timHoacDungBaiThi,
+  PASS_MARK, boBaiDangLam, createVocabExam, recordAnswer, submitExam, timHoacDungBaiThi,
 } from "@/lib/exam/run";
 import type { VocabLite } from "@/lib/vocab/word";
 
@@ -204,6 +204,113 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
     } finally {
       await admin.from("assessments").delete().eq("user_id", carolId);
       await admin.auth.admin.deleteUser(carolId);
+    }
+  });
+
+  // Finding 1, vòng soát 1 — bằng chứng CHÍNH, TẤT ĐỊNH (không phụ thuộc ai
+  // thắng cuộc đua schedule, xem test đua thật ngay dưới đây để biết vì sao
+  // thứ tự dispatch KHÔNG kiểm soát được đáng tin cậy xuyên môi trường). Test
+  // này KHÔNG đua — nộp bài XONG HẲN trước (await, xác nhận `submitted` thật
+  // trong DB), rồi MỚI gọi `boBaiDangLam` trên đúng bài đó. Đây chính là vị
+  // ngữ (predicate) mà finding 1 yêu cầu sửa: `.eq("status", "in_progress")`
+  // ngay trong WHERE của DELETE — test này khẳng định trực tiếp, tất định,
+  // không nhờ may rủi lịch trình: gọi trên một bài ĐÃ CHẮC CHẮN `submitted`
+  // phải trả `null` (không khớp dòng nào) và KHÔNG được đụng tới dòng đó.
+  it("boBaiDangLam từ chối xoá một bài ĐÃ submitted — CAS đúng vị trí (finding 1, tất định)", async () => {
+    const email = `exam-erin-${Date.now()}@test.local`;
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
+      email, password: "test-pass-1234", email_confirm: true,
+    });
+    if (createErr) throw createErr;
+    const erinId = created.user.id;
+    const erin = createClient(URL!, ANON!, { auth: { persistSession: false } });
+    await erin.auth.signInWithPassword({ email, password: "test-pass-1234" });
+
+    try {
+      const baiXong = await createVocabExam(erin, erinId, "lesson", [1], words, blanks, 4);
+      const ketQuaNop = await submitExam(erin, baiXong);
+      expect(ketQuaNop.score).not.toBeNull();
+
+      const scopeXoa = await boBaiDangLam(erin, erinId, baiXong);
+      // Bài đã `submitted` từ trước — CAS trong DELETE phải khớp 0 dòng,
+      // trả `null`, KHÔNG được xoá.
+      expect(scopeXoa).toBeNull();
+
+      const { data: sau } = await admin
+        .from("assessments").select("status, score").eq("id", baiXong).maybeSingle();
+      // Dòng vẫn CÒN NGUYÊN, vẫn đúng điểm đã chốt — bằng chứng trực tiếp
+      // DELETE không hề đụng vào nó, không phải suy luận từ giá trị trả về.
+      expect(sau?.status).toBe("submitted");
+      expect(sau?.score).toBe(ketQuaNop.score);
+    } finally {
+      await admin.from("assessments").delete().eq("user_id", erinId);
+      await admin.from("word_mastery").delete().eq("user_id", erinId);
+      await admin.auth.admin.deleteUser(erinId);
+    }
+  });
+
+  // Finding 1, vòng soát 1: bản đầu của `boBaiDangLam` đọc `status` bằng một
+  // SELECT tách rời rồi DELETE không lọc theo status — một tab KHÁC nộp bài
+  // GIỮA hai lệnh đó khiến DELETE vẫn xoá mất một bài ĐÃ CHẤM ĐIỂM thật. Sửa
+  // bằng cách đưa `status = 'in_progress'` vào NGAY WHERE của lệnh xoá (CAS,
+  // cùng khuôn `recordAnswer`/`finalize_assessment_items`).
+  //
+  // Test này ĐUA THẬT `submitExam` và `boBaiDangLam` trên CÙNG một bài qua
+  // `Promise.allSettled` — không giả lập, không mock, không giả định ai
+  // thắng. THỬ NGHIỆM THẬT (chạy lặp lại, xem lịch sử phiên làm việc): liệt
+  // kê `submitExam` trước trong mảng khiến nó thắng ỔN ĐỊNH khi chạy MỘT
+  // MÌNH file này, nhưng khi chạy trong `npm test` (toàn bộ 26 tệp, cùng
+  // `fileParallelism: false` nhưng khác tải hệ thống) cuộc đua ĐẢO CHIỀU —
+  // `submitExam` reject thật (RPC thấy dòng đã biến mất giữa chừng, tự ném
+  // 42501 hoặc "khong co cau nao"). Tức thứ tự liệt kê KHÔNG kiểm soát được
+  // ai thắng một cách đáng tin cậy xuyên môi trường — nên bài test PHẢI chấp
+  // nhận CẢ HAI kết cục và khẳng định đúng bất biến cho từng kết cục, đọc từ
+  // TRẠNG THÁI THẬT trong database (giống hệt cách test "double-submit song
+  // song" ở trên đã làm), không đoán trước ai thắng.
+  it("boBaiDangLam đua với submitExam: không bao giờ xoá mất một bài đã nộp thật sự (finding 1)", async () => {
+    const email = `exam-dave-${Date.now()}@test.local`;
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
+      email, password: "test-pass-1234", email_confirm: true,
+    });
+    if (createErr) throw createErr;
+    const daveId = created.user.id;
+    const dave = createClient(URL!, ANON!, { auth: { persistSession: false } });
+    await dave.auth.signInWithPassword({ email, password: "test-pass-1234" });
+
+    try {
+      const baiDua = await createVocabExam(dave, daveId, "lesson", [1], words, blanks, 3);
+
+      const [, ketQuaXoa] = await Promise.allSettled([
+        submitExam(dave, baiDua),
+        boBaiDangLam(dave, daveId, baiDua),
+      ]);
+
+      const { data: sau } = await admin
+        .from("assessments").select("status, score").eq("id", baiDua).maybeSingle();
+
+      if (sau !== null) {
+        // Bài còn tồn tại sau cuộc đua — CHỈ hợp lệ nếu nó đã NỘP THẬT SỰ:
+        // đúng kịch bản finding 1 mô tả (submit thắng), và `boBaiDangLam`
+        // PHẢI đã thua CAS một cách TRUNG THỰC (trả `null`, không ném lỗi
+        // thô, không xoá mất nó) — đúng hợp đồng nơi gọi (`boBaiThi`,
+        // exam/[id]/actions.ts) đang dựa vào để quyết định redirect sang
+        // trang kết quả thay vì để lỗi rơi xuống error.tsx. Đây là bất biến
+        // CHÍNH mà finding 1 đòi phải giữ.
+        expect(sau.status).toBe("submitted");
+        expect(sau.score).not.toBeNull();
+        expect(ketQuaXoa.status).toBe("fulfilled");
+        expect(ketQuaXoa.status === "fulfilled" ? ketQuaXoa.value : "rejected").toBeNull();
+      }
+      // Nếu bài KHÔNG còn tồn tại (`sau === null`): xoá đã thắng trong khi
+      // bài vẫn còn in_progress — hợp lệ, KHÔNG phải trường hợp finding 1 lo
+      // ngại (chưa từng có gì "đã nộp" để mất; `submitExam` phản ánh đúng sự
+      // thật đó bằng cách reject, như đã đo thật ở trên). Không cần khẳng
+      // định gì thêm ở nhánh này — hành vi CHÍNH XÁC của `submitExam` khi bài
+      // của nó biến mất giữa chừng không thuộc phạm vi finding 1.
+    } finally {
+      await admin.from("assessments").delete().eq("user_id", daveId);
+      await admin.from("word_mastery").delete().eq("user_id", daveId);
+      await admin.auth.admin.deleteUser(daveId);
     }
   });
 });
