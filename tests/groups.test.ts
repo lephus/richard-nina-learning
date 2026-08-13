@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  groupOf, lessonsOf, wordRangeLabel, TOTAL_GROUPS, TOTAL_LESSONS,
+  groupOf, lessonsOf, phamViThuocNhom, wordRangeLabel, TOTAL_GROUPS, TOTAL_LESSONS,
 } from "@/lib/curriculum/groups";
 
 describe("groupOf", () => {
@@ -49,6 +49,26 @@ describe("lessonsOf", () => {
     for (let g = 1; g <= TOTAL_GROUPS; g++) {
       for (const ordinal of lessonsOf(g)) expect(groupOf(ordinal)).toBe(g);
     }
+  });
+});
+
+// THÊM Ở VÒNG SOÁT CUỐI lát 2c (mục 1): `phamViThuocNhom` là predicate DÙNG
+// CHUNG thay cho năm chỗ từng tự viết `scope.length > 1` (trang kết quả,
+// `boBaiThi`, tiêu đề `ExamRunner`) — bản thân hàm thuần này trước đó chưa có
+// test nào canh riêng, chỉ được kiểm gián tiếp qua các nơi gọi nó.
+describe("phamViThuocNhom", () => {
+  it("scope một phần tử (bài buổi, hoặc bổ túc/làm lại của nó) — false", () => {
+    expect(phamViThuocNhom([1])).toBe(false);
+    expect(phamViThuocNhom([20])).toBe(false);
+  });
+
+  it("scope hai phần tử (bài ôn tập nhóm, hoặc bổ túc/làm lại của nó) — true", () => {
+    expect(phamViThuocNhom([1, 2])).toBe(true);
+    expect(phamViThuocNhom(lessonsOf(5))).toBe(true);
+  });
+
+  it("scope rỗng — false, không phải một lỗi ở CHÍNH hàm này (nơi gọi tự chặn rỗng riêng)", () => {
+    expect(phamViThuocNhom([])).toBe(false);
   });
 });
 

@@ -128,6 +128,31 @@ test("bổ túc và làm lại bài từ bài ôn tập nhóm đều phủ đủ
   await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 180_000 });
   await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();
 
+  // THÊM Ở VÒNG SOÁT CUỐI: spec §6, dòng cuối cùng — "nộp xong thì ô hiện
+  // điểm" — chưa có phép kiểm e2e nào xác nhận ô Ôn tập trên `/vocab` đổi
+  // khỏi "chưa học"/"đang thi" SAU khi nộp bài ôn tập nhóm. Tận dụng CHÍNH
+  // bài vừa nộp ở trên thay vì dựng thêm một bài ôn tập 60 câu khác (mỗi vòng
+  // trả lời tốn ~1 vòng mạng thật/câu, xem chú thích đầu file) — đi và quay
+  // lại `/vocab` không tốn gì hơn một lượt điều hướng.
+  await page.goto("/vocab");
+  // Nhóm 1 là hàng ĐẦU TIÊN (groupStates dựng tuần tự group 1..10), và ô Ôn
+  // tập là hoạt động thứ BA trong mỗi hàng ([buổi A, buổi B, ôn tập] —
+  // progress.ts). Bài vừa nộp ở trên CHẮC CHẮN trượt (mọi câu đều cố tình
+  // chọn phương án đầu, không phải đáp án thật — xem vòng lặp 60 câu phía
+  // trên), nên `describe()` ((list)/page.tsx) phải hiện "{score}đ · bổ túc",
+  // không còn "chưa học"/"đang thi" — kiểm cả chữ "đ" (đã có điểm số) lẫn
+  // `data-kind` để không khoá cứng vào một điểm cụ thể (điểm phụ thuộc đáp án
+  // ngẫu nhiên theo seed).
+  const onTapNhom1 = page.getByTestId("group-row").first().getByTestId("activity").nth(2);
+  await expect(onTapNhom1).toContainText("đ");
+  await expect(onTapNhom1).toHaveAttribute("data-kind", "chua-dat");
+
+  // Quay lại trang kết quả để tiếp tục kịch bản D/E bên dưới — điều hướng đi
+  // rồi về không đổi trạng thái bài (đã `submitted`, không phải `in_progress`
+  // để có gì mất khi rời trang).
+  await page.goto(`/exam/${idOnTap}/ket-qua`);
+  await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();
+
   // Đọc thẳng `assessment_items` qua admin (service role, bỏ qua RLS/grant
   // cột) thay vì RPC `wrong_items_for_assessment`: RPC đó kiểm `auth.uid()`
   // bên trong thân hàm (0008_assessment_items_grants.sql) — gọi bằng service

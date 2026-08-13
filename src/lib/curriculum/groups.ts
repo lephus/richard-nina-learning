@@ -34,6 +34,27 @@ export function lessonsOf(group: number): [number, number] {
 }
 
 /**
+ * `true` khi phạm vi (`assessments.scope`) trải HAI buổi trở lên — tức thuộc
+ * một bài ÔN TẬP NHÓM (`type: "review"`), hoặc một bài BỔ TÚC/LÀM LẠI sinh ra
+ * từ một bài ôn tập nhóm (`type: "remedial"`, hoặc `"review"` nếu là chính
+ * `lamLaiBai` dựng lại lần thử chính) — cả hai giữ nguyên `scope` hai phần tử
+ * của bài `review` cha, không thu hẹp về một buổi (xem `batDauBoTuc`/
+ * `lamLaiBai` ở `ket-qua/actions.ts`). Bài buổi, và bổ túc/làm lại sinh ra từ
+ * NÓ, luôn có đúng một phần tử.
+ *
+ * Đếm số phần tử của `scope` — KHÔNG đọc `assessments.type` — chính vì lý do
+ * trên: `type` một mình không phân biệt được "một bài bổ túc của một buổi"
+ * với "một bài bổ túc của một nhóm ôn tập", cả hai đều mang `type ===
+ * "remedial"`. Một predicate DUY NHẤT ở đây thay cho việc mỗi nơi cần biết
+ * (trang kết quả, `boBaiThi`, tiêu đề `ExamRunner`, …) tự viết `scope.length >
+ * 1` — gộp lại một chỗ để sửa một lần, không để năm bản chép trôi dạt khỏi
+ * nhau (vòng soát cuối lát 2c, mục 1).
+ */
+export function phamViThuocNhom(scope: readonly number[]): boolean {
+  return scope.length > 1;
+}
+
+/**
  * Nhãn phạm vi từ của một nhóm, ví dụ "từ 1–60".
  *
  * Dấu giữa hai số là EN DASH — U+2013 (–), KHÔNG phải dấu gạch nối thường

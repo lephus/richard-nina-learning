@@ -35,6 +35,11 @@ describe.skipIf(!hasEnv)("napPhamVi", () => {
   });
 
   it("ném khi một ordinal không tồn tại, thay vì trả phạm vi ngắn hơn", async () => {
-    await expect(napPhamVi(db, [999])).rejects.toBeTruthy();
+    // SỬA Ở VÒNG SOÁT CUỐI: `rejects.toBeTruthy()` khớp với BẤT KỲ lý do
+    // reject nào — kể cả một lỗi kết nối không liên quan gì tới hành vi đang
+    // muốn kiểm (ví dụ Supabase local không chạy). Test khi đó vẫn xanh dù
+    // nhánh "ném khi thiếu ordinal" (load-scope.ts) chưa từng chạy tới. Assert
+    // đúng thông điệp mà `napPhamVi` tự ném cho đúng nhánh này.
+    await expect(napPhamVi(db, [999])).rejects.toThrow(/không tìm thấy buổi ứng với ordinal 999/);
   });
 });

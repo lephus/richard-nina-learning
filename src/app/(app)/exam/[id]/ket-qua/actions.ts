@@ -70,6 +70,21 @@ export async function batDauBoTuc(assessmentId: number): Promise<void> {
   const { words: toanBoPhamVi, blankAnswers: bang } = await napPhamVi(supabase, phamViCha);
 
   const tuSai = toanBoPhamVi.filter((w) => idSai.includes(w.id));
+  // THÊM Ở VÒNG SOÁT CUỐI (mục 3 minor): `filter` có thể lặng lẽ trả về ÍT
+  // phần tử hơn `idSai` nếu một id sai không còn nằm trong `toanBoPhamVi`
+  // (một thay đổi dữ liệu vocab giữa chừng — từ bị gỡ khỏi buổi/nhóm sau khi
+  // bài đã nộp — hoặc một lỗi logic khác khiến `phamViCha` không thật sự phủ
+  // hết phạm vi bài cha). Bài bổ túc dựng ra khi đó THIẾU đúng từ người học
+  // cần ôn lại nhất, và không một lỗi nào bật ra để biết — im lặng thu hẹp
+  // đúng kiểu lỗi mà lát này đã nhiều lần chặn (xem `napPhamVi`, `batDauOnTap`).
+  // Ném ngay khi số lượng lệch nhau, ồn ào hơn là im lặng.
+  if (tuSai.length !== idSai.length) {
+    throw new Error(
+      `bài ${assessmentId}: RPC báo ${idSai.length} từ sai nhưng chỉ tra được ` +
+        `${tuSai.length} từ trong phạm vi bài cha (scope=${JSON.stringify(phamViCha)}) — ` +
+        `dữ liệu không khớp, không dựng bổ túc thiếu từ trong im lặng`,
+    );
+  }
   // `timHoacDungBaiThi` chứ không `createVocabExam` thẳng — cùng lý do đã
   // ghi ở `batDauBaiThi`: tự đóng đường đua TOCTOU nếu tấm chắn sớm ở trên
   // lọt (hai request cùng lúc), tìm lại đúng bài đã thắng thay vì để 23505

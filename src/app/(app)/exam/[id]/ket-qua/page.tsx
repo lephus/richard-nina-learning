@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { phamViThuocNhom } from "@/lib/curriculum/groups";
 import { batDauBoTuc, lamLaiBai } from "./actions";
 
 export default async function KetQuaPage({
@@ -54,12 +55,18 @@ export default async function KetQuaPage({
   const boTuc = batDauBoTuc.bind(null, assessmentId);
   const lamLai = lamLaiBai.bind(null, assessmentId);
   // `noUncheckedIndexedAccess` suy chỉ số mảng ra `number | undefined` dù
-  // scope là cột `int[] not null` luôn có đúng một phần tử cho bài
-  // lesson/remedial (xem createVocabExam) — chặn tường minh thay vì âm thầm
-  // dựng link "/vocab/learn/undefined" hoặc trỏ nhầm buổi nếu giả định đó có
-  // ngày nào đó sai, cùng khuôn `batDauBoTuc`/`boBaiThi` đã dùng cho đúng vấn
-  // đề này.
-  const lessonId = (bai.scope as number[])[0];
+  // scope là cột `int[] not null`. SỬA Ở VÒNG SOÁT CUỐI (mục 1): khẳng định
+  // cũ ở đây — "luôn có đúng một phần tử cho bài lesson/remedial" — SAI cho
+  // một bài `remedial` sinh ra từ một bài `review` (ôn tập nhóm): nó giữ
+  // nguyên `scope` HAI phần tử của cha (xem `batDauBoTuc`), `type` vẫn là
+  // "remedial" nên không đủ để phân biệt. `phamViThuocNhom` (đếm phần tử
+  // `scope`, không đọc `type`) là predicate DÙNG CHUNG cho đúng câu hỏi này ở
+  // cả `boBaiThi` và `ExamRunner` — sửa một chỗ, không để ba bản trôi dạt.
+  // Chặn `scope` rỗng vẫn tường minh như cũ thay vì âm thầm dựng link
+  // "/vocab/learn/undefined", cùng khuôn `batDauBoTuc`/`boBaiThi`.
+  const scope = bai.scope as number[];
+  const nhieuBuoi = phamViThuocNhom(scope);
+  const lessonId = scope[0];
   if (lessonId === undefined) {
     throw new Error(`bài ${assessmentId} có scope rỗng, không xác định được buổi`);
   }
@@ -116,9 +123,23 @@ export default async function KetQuaPage({
         </div>
       )}
 
-      <Link href={`/vocab/learn/${lessonId}`} className="underline">
-        ← Quay lại buổi học
-      </Link>
+      {/* SỬA Ở VÒNG SOÁT CUỐI (mục 1): mọi bài mang phạm vi NHIỀU buổi — bài
+          `review` chính nó, hoặc một bài `remedial`/`làm lại` sinh ra từ nó —
+          không thuộc riêng một buổi nào để "quay lại". Trước bản vá này, MỌI
+          bài (kể cả những bài này) đều nhận link `/vocab/learn/${scope[0]}`,
+          đưa người vừa ôn tập xong 60 từ hai buổi về một buổi họ không hề
+          học riêng — đúng lối mòn mà `boBaiThi` đã sửa ở lát 2c, chỉ khác nơi
+          chạm trán (đây là trang MỌI người học đều ghé qua, không phải một
+          nút "Bỏ bài" ít ai bấm). */}
+      {nhieuBuoi ? (
+        <Link href="/vocab" className="underline">
+          ← Quay lại Từ vựng
+        </Link>
+      ) : (
+        <Link href={`/vocab/learn/${lessonId}`} className="underline">
+          ← Quay lại buổi học
+        </Link>
+      )}
     </main>
   );
 }

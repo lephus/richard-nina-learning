@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { phamViThuocNhom } from "@/lib/curriculum/groups";
 import { ExamRunner } from "@/components/exam/ExamRunner";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -60,17 +61,24 @@ export default async function ExamPage({
   }));
 
   // Finding 5 (vòng soát cuối): buổi/loại bài NGƯỜI HỌC VỪA BẤM, nếu redirect
-  // tới đây mang theo (xem `batDauBaiThi`/`batDauBoTuc`). `scope[0]` là
-  // `lessons.id` — trùng với ordinal HÔM NAY chỉ vì cách seed hiện tại
-  // (xem test khẳng định ở tests/db-integrity.test.ts, finding 2) — hiển thị
-  // trực tiếp thay vì join `lessons` để lấy ordinal "cho đúng": cùng khuôn
-  // `src/lib/stats/compute.ts` đã dùng, một trong hai nửa đang dựa vào chính
-  // sự trùng hợp đó (finding 2 chỉ ghi lại nợ này, không refactor).
+  // tới đây mang theo (xem `batDauBaiThi`/`batDauBoTuc`). SỬA Ở VÒNG SOÁT CUỐI
+  // lát 2c (mục 2): `scope[0]` là ORDINAL buổi, không còn là `lessons.id` như
+  // chú thích cũ ở đây khẳng định — khẳng định đó vốn đã SAI cho bài `review`
+  // (scope của nó luôn là ordinal, xem `batDauOnTap`) từ trước lát này, và
+  // `batDauBaiThi` giờ cũng tra ngược `id -> ordinal` một lần rồi ghi ordinal
+  // xuống `scope` cho bài `lesson` (xem chú thích tại đó) — nên phát biểu
+  // đúng giờ là ĐỒNG NHẤT cho cả ba loại bài: `scope` chỉ còn MỘT nghĩa
+  // (ordinal) ở khắp nơi. Hiển thị trực tiếp ở đây (không join `lessons` để
+  // tra lại ordinal) giờ đúng theo CẤU TRÚC, không còn là một sự trùng hợp
+  // như trước — dù `src/lib/stats/compute.ts` vẫn còn đọc scope của những
+  // dòng CŨ (ghi trước lát này) theo cùng cách, và những dòng đó vẫn đúng chỉ
+  // nhờ `lessons.id === ordinal` (`tests/db-integrity.test.ts`).
   const sp = await searchParams;
   const loaiVuaBam = motGiaTri(sp.tuLoai);
   const buoiVuaBamRaw = motGiaTri(sp.tuBuoi);
   const buoiVuaBam = buoiVuaBamRaw !== undefined ? Number(buoiVuaBamRaw) : null;
-  const buoiHienTai = (bai.scope as number[])[0] ?? null;
+  const scope = bai.scope as number[];
+  const buoiHienTai = scope[0] ?? null;
   const lechBuoi =
     loaiVuaBam !== undefined &&
     buoiVuaBam !== null &&
@@ -82,6 +90,14 @@ export default async function ExamPage({
       cauHoi={cau}
       loaiBai={bai.type as "lesson" | "remedial" | "review"}
       buoi={buoiHienTai}
+      // THÊM Ở VÒNG SOÁT CUỐI (mục 1): `ExamRunner` chỉ nhận `buoi` (một
+      // ordinal), không có cách nào tự biết `scope` gốc có hai phần tử hay
+      // không (một bài `remedial` sinh từ `review` và một bài `remedial` sinh
+      // từ `lesson` đều chỉ lộ ra MỘT ordinal qua `buoi`). Tính sẵn ở đây
+      // (nơi có `scope` đầy đủ) bằng đúng predicate dùng chung với
+      // `boBaiThi`/trang kết quả, rồi truyền xuống làm dữ liệu — client
+      // component không tự suy ra được điều nó không có.
+      phamViNhieuBuoi={phamViThuocNhom(scope)}
       canhBaoLechBuoi={lechBuoi}
     />
   );

@@ -7,7 +7,7 @@ import {
   type KetQuaTraLoi,
 } from "@/lib/exam/run";
 import { napPhamVi } from "@/lib/exam/load-scope";
-import { lessonsOf } from "@/lib/curriculum/groups";
+import { lessonsOf, phamViThuocNhom } from "@/lib/curriculum/groups";
 
 /** Dựng bài thi cho một buổi rồi chuyển thẳng vào bài. */
 export async function batDauBaiThi(lessonId: number): Promise<void> {
@@ -31,25 +31,46 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
   // 30 câu của buổi A mà không một dấu hiệu nào cho biết đó không phải buổi
   // vừa bấm.
   const dangLam = await baiDangLamCua(supabase, user.id);
+  // `tuBuoi` ở nhánh SỚM này vẫn mang `lessonId` (route param, một
+  // `lessons.id`) CHƯA tra ngược thành ordinal — tra trước khi biết có cần
+  // dựng bài mới hay không sẽ trả giá đúng một vòng mạng mà tấm chắn sớm này
+  // tồn tại để tránh (xem khối chú thích ngay trên). Vô hại: `tuBuoi` ở đây
+  // chỉ để `/exam/[id]` SO SÁNH với `scope[0]` của bài `in_progress` tìm được,
+  // và `lessons.id === ordinal` cho cả 20 dòng hôm nay (`tests/db-integrity.test.ts`)
+  // nên so sánh vẫn đúng — cùng mức tin cậy vào sự trùng hợp đó mà
+  // `progress.ts`/`stats/compute.ts` đã dựa vào từ trước, không phải một nợ
+  // MỚI phát sinh ở đây.
   if (dangLam !== null) redirect(`/exam/${dangLam}?tuLoai=lesson&tuBuoi=${lessonId}`);
 
-  // `napPhamVi` (lát 2c) thay cho bản chép tay lesson_words/blank_answers_for_lesson
-  // từng nằm ở đây — gộp chung với đường ôn tập nhóm và bổ túc. Nó nhận
-  // ORDINAL buổi, còn `lessonId` truyền vào hàm này là `lessons.id` (route
-  // `/vocab/learn/[lessonId]` truyền thẳng khoá chính, xem page.tsx ở đó) —
-  // hai giá trị này TRÙNG NHAU hôm nay chỉ vì seed chưa từng reset sequence
-  // (`tests/db-integrity.test.ts`, "lessons.id trùng với ordinal"), CHƯA BAO
-  // GIỜ được sửa ở lát này (spec lát 2c mục 2: "không sửa nợ đó, chỉ không
-  // được làm nó tệ hơn"). `scope` ghi xuống `assessments` vẫn là `[lessonId]`
-  // y hệt trước bản vá — không đổi ý nghĩa cột đó cho bài `lesson`.
-  const { words, blankAnswers } = await napPhamVi(supabase, [lessonId]);
+  // SỬA Ở VÒNG SOÁT CUỐI lát 2c (mục 2): `napPhamVi` đòi ORDINAL buổi (nó tự
+  // `.in("ordinal", …)` bên trong) — nhưng `lessonId` truyền vào hàm này là
+  // `lessons.id` (route `/vocab/learn/[lessonId]` truyền thẳng khoá chính,
+  // xem page.tsx ở đó). Bản TRƯỚC vòng soát này truyền thẳng `[lessonId]` vào
+  // CẢ `napPhamVi` LẪN `scope` ghi xuống `assessments` — tức GHI một id rồi
+  // mọi nơi khác (`progress.ts`, `stats/compute.ts`, chính `napPhamVi`) lại
+  // ĐỌC LẠI đúng giá trị đó như một ordinal. "Đúng" trước đây chỉ vì
+  // `lessons.id` trùng `ordinal` cho cả 20 dòng (`tests/db-integrity.test.ts`,
+  // "lessons.id trùng với ordinal") — KHÔNG đúng bằng cấu trúc, hai nghĩa
+  // khác nhau của cùng một cột chỉ tình cờ trùng số. Tra NGƯỢC một lần Ở ĐÂY
+  // (`id -> ordinal`) rồi dùng đúng ordinal đó cho CẢ `napPhamVi` LẪN `scope`
+  // — sau bản vá `scope` chỉ còn MỘT nghĩa (ordinal) ở khắp nơi. Rẻ để sửa
+  // NGAY BÂY GIỜ trong khi bất biến id===ordinal còn được test trên giữ cho
+  // vỡ ra thành tiếng nếu ai re-seed; sẽ đắt hơn nhiều nếu để tới lúc bất biến
+  // đó vỡ thật (mọi bài `lesson`/`remedial` đã ghi từ trước sẽ mang `scope`
+  // sai nghĩa, không migrate được bằng suy luận ngược).
+  const { data: buoi, error: buoiErr } = await supabase
+    .from("lessons").select("ordinal").eq("id", lessonId).single();
+  if (buoiErr) throw buoiErr;
+  const ordinal = buoi.ordinal as number;
+
+  const { words, blankAnswers } = await napPhamVi(supabase, [ordinal]);
 
   // `timHoacDungBaiThi` chứ không `createVocabExam` thẳng: nó tự kiểm lại
   // (đường đua TOCTOU hiếm — hai request cùng lúc, ví dụ bấm đúp — có thể lọt
   // qua tấm chắn sớm ở trên) và tìm lại đúng bài đã thắng cuộc đua nếu insert
   // vẫn đâm 23505, thay vì để lỗi thô rơi xuống error.tsx.
   const id = await timHoacDungBaiThi(
-    supabase, user.id, "lesson", [lessonId], words, blankAnswers, Date.now(),
+    supabase, user.id, "lesson", [ordinal], words, blankAnswers, Date.now(),
   );
   redirect(`/exam/${id}`);
 }
@@ -147,16 +168,26 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
     throw new Error(`không bỏ được bài ${assessmentId} — không phải của bạn`);
   }
 
-  // SỬA Ở LÁT 2c (yêu cầu F): bài `review` (ôn tập nhóm) không thuộc buổi
-  // nào — trước bản vá, nhánh này luôn đọc `scope[0]` bất kể loại bài, đưa
-  // người bỏ dở một bài ôn tập nhóm về buổi ĐẦU của nhóm thay vì `/vocab`,
-  // nơi ô Ôn tập thật sự sống. Cosmetic (không ai bị kẹt, chỉ lạc đường một
-  // cú bấm) nhưng sửa luôn vì đang ở trong tệp.
-  if (baiDaXoa.type === "review") redirect("/vocab");
+  // SỬA Ở LÁT 2c (yêu cầu F), MỞ RỘNG Ở VÒNG SOÁT CUỐI (mục 1): bài `review`
+  // (ôn tập nhóm) không thuộc buổi nào — bản gốc của bản vá F chỉ chặn theo
+  // `type === "review"`, bỏ sót đúng MỘT trường hợp: một bài `remedial` SINH
+  // RA từ một bài `review` (xem `batDauBoTuc`) giữ nguyên `type: "remedial"`
+  // nhưng vẫn mang `scope` HAI phần tử của cha — bỏ dở nó rồi lại rơi xuống
+  // nhánh dưới, đọc `scope[0]` (buổi ĐẦU của nhóm) và đưa người học về
+  // `/vocab/learn/<buổi đầu>` thay vì `/vocab`, đúng cái bẫy mà bản vá F được
+  // viết ra để đóng, chỉ lọt qua một cửa khác. `phamViThuocNhom` (đếm phần tử
+  // `scope`, không đọc `type`) là predicate DUY NHẤT cho "phạm vi này thuộc
+  // một NHÓM, không phải một buổi" — dùng chung ở đây, ở trang kết quả, và ở
+  // tiêu đề `ExamRunner`, để ba chỗ này không trôi dạt khỏi nhau lần nữa.
+  if (phamViThuocNhom(baiDaXoa.scope)) redirect("/vocab");
 
-  // `scope` rỗng không nên xảy ra (bài lesson/remedial luôn ghi đúng một buổi
-  // vào scope, xem createVocabExam) — chặn tường minh thay vì âm thầm điều
-  // hướng tới `/vocab/learn/undefined`.
+  // `scope` rỗng không nên xảy ra (bài lesson/remedial của MỘT buổi luôn ghi
+  // đúng một phần tử vào scope, xem createVocabExam) — SỬA chú thích ở vòng
+  // soát cuối: khẳng định cũ "bài lesson/remedial luôn ghi đúng một buổi" bỏ
+  // sót đúng trường hợp vừa chặn ở nhánh trên (remedial sinh từ review, HAI
+  // phần tử) — nhánh đó đã redirect và return ở trên, nên xuống tới đây chỉ
+  // còn bài một-buổi thật sự. Chặn tường minh thay vì âm thầm điều hướng tới
+  // `/vocab/learn/undefined`.
   const lessonId = baiDaXoa.scope[0];
   if (lessonId === undefined) {
     throw new Error(`bài ${assessmentId} có scope rỗng, không xác định được buổi để quay lại`);
