@@ -6,18 +6,8 @@ import {
   baiDangLamCua, boBaiDangLam, recordAnswer, submitExam, timHoacDungBaiThi,
   type KetQuaTraLoi,
 } from "@/lib/exam/run";
-import { toVocabLite, type VocabLite } from "@/lib/vocab/word";
-
-/** Một dòng `vocab_words` đọc qua quan hệ nhúng — snake_case, đúng cột `authenticated` đọc được. */
-interface VocabWordRow {
-  id: number; word: string; pos: string; ipa: string;
-  meaning_vi: string; definition_en: string; synonyms: string[];
-  example_en: string; example_vi: string;
-}
-interface LessonWordRow {
-  word_id: number;
-  vocab_words: VocabWordRow | VocabWordRow[];
-}
+import { napPhamVi } from "@/lib/exam/load-scope";
+import { lessonsOf, phamViThuocNhom } from "@/lib/curriculum/groups";
 
 /** Dựng bài thi cho một buổi rồi chuyển thẳng vào bài. */
 export async function batDauBaiThi(lessonId: number): Promise<void> {
@@ -41,55 +31,81 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
   // 30 câu của buổi A mà không một dấu hiệu nào cho biết đó không phải buổi
   // vừa bấm.
   const dangLam = await baiDangLamCua(supabase, user.id);
+  // `tuBuoi` ở nhánh SỚM này vẫn mang `lessonId` (route param, một
+  // `lessons.id`) CHƯA tra ngược thành ordinal — tra trước khi biết có cần
+  // dựng bài mới hay không sẽ trả giá đúng một vòng mạng mà tấm chắn sớm này
+  // tồn tại để tránh (xem khối chú thích ngay trên). Vô hại: `tuBuoi` ở đây
+  // chỉ để `/exam/[id]` SO SÁNH với `scope[0]` của bài `in_progress` tìm được,
+  // và `lessons.id === ordinal` cho cả 20 dòng hôm nay (`tests/db-integrity.test.ts`)
+  // nên so sánh vẫn đúng — cùng mức tin cậy vào sự trùng hợp đó mà
+  // `progress.ts`/`stats/compute.ts` đã dựa vào từ trước, không phải một nợ
+  // MỚI phát sinh ở đây.
   if (dangLam !== null) redirect(`/exam/${dangLam}?tuLoai=lesson&tuBuoi=${lessonId}`);
 
-  const { data: lw, error: lwErr } = await supabase
-    .from("lesson_words")
-    .select("word_id, vocab_words(id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en, example_vi)")
-    .eq("lesson_id", lessonId)
-    .order("position");
-  if (lwErr) throw lwErr;
+  // SỬA Ở VÒNG SOÁT CUỐI lát 2c (mục 2): `napPhamVi` đòi ORDINAL buổi (nó tự
+  // `.in("ordinal", …)` bên trong) — nhưng `lessonId` truyền vào hàm này là
+  // `lessons.id` (route `/vocab/learn/[lessonId]` truyền thẳng khoá chính,
+  // xem page.tsx ở đó). Bản TRƯỚC vòng soát này truyền thẳng `[lessonId]` vào
+  // CẢ `napPhamVi` LẪN `scope` ghi xuống `assessments` — tức GHI một id rồi
+  // mọi nơi khác (`progress.ts`, `stats/compute.ts`, chính `napPhamVi`) lại
+  // ĐỌC LẠI đúng giá trị đó như một ordinal. "Đúng" trước đây chỉ vì
+  // `lessons.id` trùng `ordinal` cho cả 20 dòng (`tests/db-integrity.test.ts`,
+  // "lessons.id trùng với ordinal") — KHÔNG đúng bằng cấu trúc, hai nghĩa
+  // khác nhau của cùng một cột chỉ tình cờ trùng số. Tra NGƯỢC một lần Ở ĐÂY
+  // (`id -> ordinal`) rồi dùng đúng ordinal đó cho CẢ `napPhamVi` LẪN `scope`
+  // — sau bản vá `scope` chỉ còn MỘT nghĩa (ordinal) ở khắp nơi. Rẻ để sửa
+  // NGAY BÂY GIỜ trong khi bất biến id===ordinal còn được test trên giữ cho
+  // vỡ ra thành tiếng nếu ai re-seed; sẽ đắt hơn nhiều nếu để tới lúc bất biến
+  // đó vỡ thật (mọi bài `lesson`/`remedial` đã ghi từ trước sẽ mang `scope`
+  // sai nghĩa, không migrate được bằng suy luận ngược).
+  const { data: buoi, error: buoiErr } = await supabase
+    .from("lessons").select("ordinal").eq("id", lessonId).single();
+  if (buoiErr) throw buoiErr;
+  const ordinal = buoi.ordinal as number;
 
-  // postgrest-js đôi khi trả quan hệ 1-1 thành MẢNG (không có generic Database
-  // trên client để nó suy đúng bản chất FK). Không chuẩn hoá thì ô render rỗng
-  // mà không có lỗi nào — đúng cái bẫy ghi ở mục 7 tài liệu bàn giao. Ép qua
-  // `unknown` trước vì kiểu postgrest-js suy ra và kiểu tay viết ở đây không
-  // giao nhau đủ để TS cho ép thẳng — cùng cách `load-cards.ts` đã làm.
-  const rows = (lw ?? []) as unknown as LessonWordRow[];
-  const words: VocabLite[] = rows.map((r) => {
-    const v = Array.isArray(r.vocab_words) ? r.vocab_words[0] : r.vocab_words;
-    if (!v) throw new Error(`thiếu vocab_words cho word_id ${r.word_id}`);
-    // Dùng lại `toVocabLite` (lib/vocab/word.ts) thay vì tự tay ánh xạ từng
-    // trường: nó đã quy đúng `blankAnswer: ""` (cột bị revoke khỏi
-    // `authenticated`, 0004_rls.sql) — bản brief gốc tự dựng object tay và bỏ
-    // sót trường bắt buộc này, `tsc` từ chối biên dịch (TS2322: thiếu
-    // `blankAnswer`).
-    return toVocabLite(v);
-  });
-
-  const { data: blanks, error: blankErr } = await supabase
-    .rpc("blank_answers_for_lesson", { p_lesson_id: lessonId });
-  if (blankErr) throw blankErr;
-  // RPC trả về MỘT object JSONB — `jsonb_object_agg(v.id::text, v.blank_answer)`
-  // (0007_assessment_parent.sql:50-60) — KHÔNG PHẢI mảng {word_id, blank_answer}[].
-  // Bản brief ban đầu coi nó là mảng rồi gọi `.map()` thẳng lên — `.map` không
-  // tồn tại trên một object thường, nên đó là TypeError ngay khi chạy, không
-  // phải chuyện biên dịch qua rồi mới sai. `loadCards` (lib/vocab/load-cards.ts)
-  // gọi ĐÚNG RPC này và đã đọc nó đúng hình dạng object — quy về `Map<number,
-  // string>` bằng `Object.entries` cho khớp chữ ký `blankAnswers` mà
-  // `buildVocabExam` (qua `createVocabExam`) đòi.
-  const bang = new Map(
-    Object.entries(blanks as Record<string, string>).map(
-      ([wordId, blankAnswer]) => [Number(wordId), blankAnswer] as [number, string],
-    ),
-  );
+  const { words, blankAnswers } = await napPhamVi(supabase, [ordinal]);
 
   // `timHoacDungBaiThi` chứ không `createVocabExam` thẳng: nó tự kiểm lại
   // (đường đua TOCTOU hiếm — hai request cùng lúc, ví dụ bấm đúp — có thể lọt
   // qua tấm chắn sớm ở trên) và tìm lại đúng bài đã thắng cuộc đua nếu insert
   // vẫn đâm 23505, thay vì để lỗi thô rơi xuống error.tsx.
   const id = await timHoacDungBaiThi(
-    supabase, user.id, "lesson", [lessonId], words, bang, Date.now(),
+    supabase, user.id, "lesson", [ordinal], words, blankAnswers, Date.now(),
+  );
+  redirect(`/exam/${id}`);
+}
+
+/**
+ * Dựng bài ÔN TẬP cho một nhóm (60 từ, hai buổi liên tiếp) rồi chuyển thẳng
+ * vào bài — nút Ôn tập (Task 3, lát 2c) đi đúng đường này, y hệt nút LÀM BÀI
+ * của buổi thường đi qua `batDauBaiThi` ở trên.
+ */
+export async function batDauOnTap(groupId: number): Promise<void> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  // Cùng tối ưu + cùng cảnh báo lệch phạm vi đã dùng ở `batDauBaiThi` — xem
+  // chú thích tại đó. `tuBuoi` ở đây chỉ mang MỘT giá trị (trang `/exam/[id]`
+  // hiện chỉ so khớp `scope[0]`) nên dùng buổi ĐẦU của nhóm — đủ để phát hiện
+  // lệch nhóm/lệch loại bài, dù không phân biệt được lệch ở buổi thứ hai.
+  const dangLam = await baiDangLamCua(supabase, user.id);
+  if (dangLam !== null) {
+    redirect(`/exam/${dangLam}?tuLoai=review&tuBuoi=${lessonsOf(groupId)[0]}`);
+  }
+
+  const { words, blankAnswers } = await napPhamVi(supabase, lessonsOf(groupId));
+
+  // `scope` PHẢI là mảng HAI ordinal buổi, đúng thứ tự `lessonsOf` trả về —
+  // KHÔNG phải `[groupId]`. `progress.ts:108` so khớp bài với ô Ôn tập bằng
+  // `sameScope(r.scope, lessonsOf(group))`; ghi sai thứ tự hoặc ghi `[groupId]`
+  // thì bài nộp xong sẽ không khớp ô nào và ô Ôn tập vĩnh viễn hiện "chưa làm"
+  // — hỏng ÂM THẦM, không một lỗi nào bật ra (thiết kế lát 2c mục 2). Nguồn
+  // nhiễu bỏ trống (không truyền `distractorPool`) là ĐÚNG ý — `buildVocabExam`
+  // mặc định lấy `words` làm nguồn nhiễu khi không truyền, và `words` ở đây đã
+  // là đủ 60 từ của nhóm, đúng yêu cầu "nguồn nhiễu là cả 60 từ".
+  const id = await timHoacDungBaiThi(
+    supabase, user.id, "review", [...lessonsOf(groupId)], words, blankAnswers, Date.now(),
   );
   redirect(`/exam/${id}`);
 }
@@ -120,8 +136,8 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const scope = await boBaiDangLam(supabase, user.id, assessmentId);
-  if (scope === null) {
+  const baiDaXoa = await boBaiDangLam(supabase, user.id, assessmentId);
+  if (baiDaXoa === null) {
     // `boBaiDangLam` khớp 0 dòng — CAS trong chính lệnh xoá thua (SỬA SAU
     // VÒNG SOÁT 1, finding 1): bài không còn `in_progress` đúng vào lúc lệnh
     // xoá chạy tới, HOẶC không tồn tại/không phải của người dùng này. Đọc
@@ -152,10 +168,27 @@ export async function boBaiThi(assessmentId: number): Promise<void> {
     throw new Error(`không bỏ được bài ${assessmentId} — không phải của bạn`);
   }
 
-  // `scope` rỗng không nên xảy ra (bài lesson/remedial luôn ghi đúng một buổi
-  // vào scope, xem createVocabExam) — chặn tường minh thay vì âm thầm điều
-  // hướng tới `/vocab/learn/undefined`.
-  const lessonId = scope[0];
+  // SỬA Ở LÁT 2c (yêu cầu F), MỞ RỘNG Ở VÒNG SOÁT CUỐI (mục 1): bài `review`
+  // (ôn tập nhóm) không thuộc buổi nào — bản gốc của bản vá F chỉ chặn theo
+  // `type === "review"`, bỏ sót đúng MỘT trường hợp: một bài `remedial` SINH
+  // RA từ một bài `review` (xem `batDauBoTuc`) giữ nguyên `type: "remedial"`
+  // nhưng vẫn mang `scope` HAI phần tử của cha — bỏ dở nó rồi lại rơi xuống
+  // nhánh dưới, đọc `scope[0]` (buổi ĐẦU của nhóm) và đưa người học về
+  // `/vocab/learn/<buổi đầu>` thay vì `/vocab`, đúng cái bẫy mà bản vá F được
+  // viết ra để đóng, chỉ lọt qua một cửa khác. `phamViThuocNhom` (đếm phần tử
+  // `scope`, không đọc `type`) là predicate DUY NHẤT cho "phạm vi này thuộc
+  // một NHÓM, không phải một buổi" — dùng chung ở đây, ở trang kết quả, và ở
+  // tiêu đề `ExamRunner`, để ba chỗ này không trôi dạt khỏi nhau lần nữa.
+  if (phamViThuocNhom(baiDaXoa.scope)) redirect("/vocab");
+
+  // `scope` rỗng không nên xảy ra (bài lesson/remedial của MỘT buổi luôn ghi
+  // đúng một phần tử vào scope, xem createVocabExam) — SỬA chú thích ở vòng
+  // soát cuối: khẳng định cũ "bài lesson/remedial luôn ghi đúng một buổi" bỏ
+  // sót đúng trường hợp vừa chặn ở nhánh trên (remedial sinh từ review, HAI
+  // phần tử) — nhánh đó đã redirect và return ở trên, nên xuống tới đây chỉ
+  // còn bài một-buổi thật sự. Chặn tường minh thay vì âm thầm điều hướng tới
+  // `/vocab/learn/undefined`.
+  const lessonId = baiDaXoa.scope[0];
   if (lessonId === undefined) {
     throw new Error(`bài ${assessmentId} có scope rỗng, không xác định được buổi để quay lại`);
   }

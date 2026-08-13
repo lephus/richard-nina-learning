@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { batDauOnTap } from "@/app/(app)/exam/[id]/actions";
 import { wordRangeLabel, WORDS_PER_LESSON } from "@/lib/curriculum/groups";
 import {
   groupStates, groupDone, toAssessmentRow, toCursorRow,
@@ -78,10 +79,16 @@ export default async function VocabPage() {
 
             <div className="grid grid-cols-3 gap-2">
               {s.activities.map((activity, i) => {
-                // Ô ôn tập chưa có đích tới ở lát 2a (bài thi là 2b). Ô buổi
-                // chỉ có link khi tra được id thật — thiếu dòng `lessons` thì
-                // để `null`, không dựng ra "/vocab/learn/undefined".
-                const lessonId = i === 2 ? undefined : idByOrdinal.get(s.lessons[i as 0 | 1]);
+                // Ô Ôn tập (i === 2) không thuộc buổi nào — không có `lessonId`
+                // để tra, và từ Task 3 (lát 2c) nó tự dựng bài qua
+                // `batDauOnTap` (OnTapBox bên dưới) thay vì đi qua `<Link>`
+                // như hai ô buổi thường.
+                if (i === 2) {
+                  return <OnTapBox key={i} group={s.group} state={activity} />;
+                }
+                // Ô buổi chỉ có link khi tra được id thật — thiếu dòng `lessons`
+                // thì để `null`, không dựng ra "/vocab/learn/undefined".
+                const lessonId = idByOrdinal.get(s.lessons[i as 0 | 1]);
                 return (
                   <ActivityBox
                     key={i}
@@ -89,9 +96,8 @@ export default async function VocabPage() {
                     // trang học đặt tiêu đề "Buổi 5", nên nhãn ở đây cũng phải
                     // là "Buổi 5". Đánh số lại theo nhóm thì bấm "Buổi 1" ở
                     // nhóm 3 sẽ mở ra một trang tên "Buổi 5".
-                    label={i === 2 ? "Ôn tập" : `Buổi ${s.lessons[i as 0 | 1]}`}
+                    label={`Buổi ${s.lessons[i as 0 | 1]}`}
                     state={activity}
-                    isReview={i === 2}
                     href={lessonId === undefined ? null : `/vocab/learn/${lessonId}`}
                   />
                 );
@@ -104,19 +110,10 @@ export default async function VocabPage() {
   );
 }
 
-function describe(state: ActivityState, isReview: boolean): string {
+function describe(state: ActivityState): string {
   switch (state.kind) {
     case "chua-lam":
-      // Ô Ôn tập không có bài thi nào để làm ở lát 2a — loại "review" chưa
-      // từng được ghi vào `assessments` (bài thi là lát 2b), nên trạng thái
-      // của nó CHỈ có thể là "chua-lam" suốt lát này. "chưa học" ngụ ý người
-      // học bỏ dở một việc có thể làm; nói vậy cho ô này là sai — đổi thành
-      // "sắp có", nhất quán với thẻ Ngữ pháp trên dashboard ("Sắp có"). Trang
-      // `/sap-co` mà bản chú thích gốc nhắc tới đã bị xoá ở lát 2b (Task 5):
-      // nút LÀM BÀI của buổi học giờ dựng bài thi thật và vào thẳng
-      // `/exam/[id]` (xem `batDauBaiThi`, exam/[id]/actions.ts) — ô Ôn tập ở
-      // ĐÂY vẫn chưa có đích tới, không liên quan tới đường dẫn cũ đã mất.
-      return isReview ? "sắp có" : "chưa học";
+      return "chưa học";
     case "dang-hoc":
       // +1 vì `wordIndex` đếm từ 0 còn người học đếm từ 1.
       return `từ ${state.wordIndex + 1}/${WORDS_PER_LESSON}`;
@@ -130,12 +127,11 @@ function describe(state: ActivityState, isReview: boolean): string {
 }
 
 function ActivityBox({
-  label, state, href, isReview,
+  label, state, href,
 }: {
   label: string;
   state: ActivityState;
   href: string | null;
-  isReview: boolean;
 }) {
   const shell = "rounded border px-2 py-3 text-center text-xs";
   const tone =
@@ -147,14 +143,11 @@ function ActivityBox({
   const inner = (
     <>
       <span className="block font-medium">{label}</span>
-      <span className="block text-slate-600">{describe(state, isReview)}</span>
+      <span className="block text-slate-600">{describe(state)}</span>
     </>
   );
   return (
     <div data-testid="activity" data-kind={state.kind}>
-      {/* Ô ôn tập chưa có đích tới ở lát 2a — bài thi là lát 2b. Vẫn render
-          đúng trạng thái để `progress.ts` được kiểm chứng thật trên màn hình,
-          chỉ không bấm được. */}
       {href ? (
         <Link href={href} className={`${shell} ${tone} block bg-white hover:border-slate-500`}>
           {inner}
@@ -163,5 +156,33 @@ function ActivityBox({
         <div className={`${shell} ${tone}`}>{inner}</div>
       )}
     </div>
+  );
+}
+
+/**
+ * Ô Ôn tập — Task 3 (lát 2c). Khác hai ô buổi thường: không phải `<Link>` tới
+ * trang học mà là một Server Action Form, cùng khuôn nút LÀM BÀI của
+ * `deck.tsx` (`<form action={...}><button type="submit">...</button></form>`)
+ * — bấm là dựng (hoặc tìm lại) bài ôn tập 60 câu của cả nhóm và vào thẳng
+ * `/exam/[id]` (`batDauOnTap`, exam/[id]/actions.ts), không có bước trung
+ * gian nào để một `<Link>` trỏ tới trước khi bài tồn tại.
+ *
+ * Luôn bấm được bất kể trạng thái hiện tại (kể cả đã "dat") — cùng thiết kế
+ * với nút LÀM BÀI của buổi học: không có tấm chắn "đã đạt thì khoá lại" ở bất
+ * kỳ đâu trong lát này, `batDauOnTap`/`timHoacDungBaiThi` tự lo việc tìm lại
+ * bài đang làm dở hoặc dựng bài mới.
+ */
+function OnTapBox({ group, state }: { group: number; state: ActivityState }) {
+  return (
+    <form data-testid="activity" data-kind={state.kind} action={batDauOnTap.bind(null, group)}>
+      <button
+        type="submit"
+        data-testid={`on-tap-${group}`}
+        className="block w-full rounded bg-slate-900 px-2 py-3 text-center text-xs text-white hover:bg-slate-800"
+      >
+        <span className="block font-medium">Ôn tập</span>
+        <span className="block text-slate-300">{describe(state)}</span>
+      </button>
+    </form>
   );
 }

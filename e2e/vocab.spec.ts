@@ -1,4 +1,4 @@
-import { expect, test as base, type Page } from "@playwright/test";
+import { expect, test as base, type Page, type Request } from "@playwright/test";
 import { TEST_EMAIL, TEST_PASSWORD } from "./test-user";
 import { adminClient } from "./admin";
 
@@ -30,19 +30,74 @@ import { adminClient } from "./admin";
 // đứng im.
 const DRAIN_SAVES_DEADLINE_MS = 5_000;
 
+// Gỡ hồi quy "còn 1 POST treo sau 5s" ở test 406 (lát 2c): bộ đếm CHỈ tất
+// toán trên `requestfinished`/`requestfailed` — cả hai đều chờ THÂN response
+// tải xong (hoặc huỷ). Nhưng POST duy nhất mà `login()` bắn ra
+// (Server Action `signIn`, gọi `redirect("/dashboard")`) theo đúng mô hình
+// "single roundtrip" của Next: response của NÓ mang luôn RSC payload đã
+// render sẵn của /dashboard, nên thân response vẫn có thể còn đang tải sau
+// khi trình duyệt đã chuyển trang. Mọi kịch bản trong file này đều gọi
+// `page.goto()` thật ngay sau `login()` — đúng kiểu điều hướng "huỷ request
+// còn đang bay" mà khối chú thích trên `login()` mô tả. Khi việc huỷ đó rơi
+// đúng lúc thân response còn dở, Chromium đôi khi KHÔNG bắn `requestfinished`
+// lẫn `requestfailed` cho phần thân bị bỏ dở — một khoảng hở CDP quan sát
+// được, không phụ thuộc trang nào đang mở. Tái hiện: gắn log vào từng sự
+// kiện, chạy lặp lại `drainSaves: còn 1 POST treo sau 5s` cả trên commit
+// TRƯỚC lát này lẫn trên lát này — SỬA Ở VÒNG SOÁT CUỐI: tỉ lệ đo được là
+// ~1/5 lượt trên lát này và ~2/14 lượt trên commit TRƯỚC lát này (hai lần đo
+// riêng, không phải cùng một lần chạy) — ngang nhau trong biên độ nhiễu của
+// một mẫu nhỏ như vậy, kết luận cũ ("không phải hồi quy của lát 2c, mà là một
+// lỗ hổng có sẵn trong chính bộ đếm, ẩn mình vì hiếm khi trúng đúng khoảng hở
+// đó") vẫn đứng vững — ghi lại cả hai con số đo được thay vì gộp thành một tỉ
+// lệ chung, vì bản thân phép đo là bằng chứng cho kết luận "ngang nhau", không
+// phải một hằng số cố định. Buffer log của một lần trúng cho thấy đúng MỘT
+// dòng: request POST /login rồi im lặng — không một sự kiện tất toán nào bắn
+// ra trong 5 giây kế tiếp.
+//
+// Sửa tại gốc: tất toán ngay khi có sự kiện `response` (server đã nhận và
+// xử lý xong — với Server Action, đây là đúng cái POST đang lưu cần biết:
+// "ghi đã tới nơi chưa", không phải "trình duyệt tải xong thân response chưa"),
+// không đợi `requestfinished`. `requestfailed` vẫn giữ lại cho lỗi mạng THẬT
+// SỰ trước khi có response (DNS/connection refused/timeout) — case một backend
+// treo giữa chừng, không trả lời gì, vẫn đúng như trước: không `response`,
+// không `requestfailed`, `pending` đứng yên và deadline vẫn nổ. `settled`
+// chặn tất toán hai lần cho cùng một request (vì `response` VÀ
+// `requestfinished` có thể cùng bắn cho một request bình thường) — tất toán
+// kép sẽ trừ nhầm sang một POST khác thật sự còn treo.
+//
+// GIẢ ĐỊNH mà cách sửa này dựa vào (THÊM Ở VÒNG SOÁT CUỐI, ghi lại vì chưa
+// từng nói tường minh): sự kiện `response` chỉ đáng tin làm tín hiệu "lượt
+// ghi đã tới nơi" NẾU Next KHÔNG xả (flush) header của response Server Action
+// trước khi chính hàm action đó chạy xong ở server — tức toàn bộ response
+// (header lẫn thân, kể cả RSC payload render sẵn) chỉ rời server SAU khi
+// `traLoi`/action đã ghi xong xuống database. Đây là một CHI TIẾT TRIỂN KHAI
+// của cơ chế Server Action trong Next hiện tại (quan sát được, không phải một
+// điều khoản trong tài liệu chính thức của Next) — nó có thể đổi ở một bản
+// Next sau này (ví dụ nếu Next bắt đầu streaming sớm hơn), lúc đó `response`
+// sẽ bắn ra TRƯỚC khi ghi thật sự xong và toàn bộ suy luận "response nghĩa là
+// đã ghi" ở trên sẽ không còn đúng — không phải một hợp đồng được đảm bảo giữ
+// nguyên qua các phiên bản.
 const test = base.extend<{ drainSaves: () => Promise<void> }>({
   drainSaves: [
     async ({ page }, use) => {
       let pending = 0;
-      const onRequest = (req: { method(): string }) => {
+      const settled = new WeakSet<Request>();
+      const onRequest = (req: Request) => {
         if (req.method() === "POST") pending++;
       };
-      const onSettled = (req: { method(): string }) => {
-        if (req.method() === "POST") pending = Math.max(0, pending - 1);
+      const settleOnce = (req: Request) => {
+        if (req.method() !== "POST") return;
+        if (settled.has(req)) return;
+        settled.add(req);
+        pending = Math.max(0, pending - 1);
       };
+      const onResponse = (res: { request(): Request }) => settleOnce(res.request());
+      const onFinished = (req: Request) => settleOnce(req);
+      const onFailed = (req: Request) => settleOnce(req);
       page.on("request", onRequest);
-      page.on("requestfinished", onSettled);
-      page.on("requestfailed", onSettled);
+      page.on("response", onResponse);
+      page.on("requestfinished", onFinished);
+      page.on("requestfailed", onFailed);
 
       await use(async () => {
         const start = Date.now();
@@ -62,8 +117,9 @@ const test = base.extend<{ drainSaves: () => Promise<void> }>({
       // sống tới hết `afterEach`, không dọn thì các listener này tiếp tục
       // đếm request ngoài phạm vi kịch bản đã dùng chúng.
       page.off("request", onRequest);
-      page.off("requestfinished", onSettled);
-      page.off("requestfailed", onSettled);
+      page.off("response", onResponse);
+      page.off("requestfinished", onFinished);
+      page.off("requestfailed", onFailed);
     },
     // Fixture Playwright chỉ khởi tạo khi có test/hook nào đó THAM CHIẾU tới
     // nó — phần lớn kịch bản trong tệp này không cần gọi `drainSaves()` trực

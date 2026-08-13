@@ -124,4 +124,44 @@ describe("buildVocabExam", () => {
 
     expect(roRi).toEqual([]);
   });
+
+  // THÊM Ở VÒNG SOÁT CUỐI lát 2c (mục 3 minor, spec §6): bài ÔN TẬP NHÓM
+  // (`batDauOnTap`) là nơi DUY NHẤT `buildVocabExam` thật sự chạy trên 60 từ —
+  // `napPhamVi` gộp `lessonsOf(group)` (hai buổi liên tiếp = 60 từ) trước khi
+  // gọi hàm này. Trước bản vá này không test nào kiểm phần chia 30–30 hay
+  // tính không-rò-đồng-nghĩa ở đúng kích thước đó — hai test hồi quy phía
+  // trên chỉ quét 30 từ (một buổi). Dùng lại ĐÚNG khuôn của hai test đó (đếm
+  // câu/chia đôi, và quét nhiều seed trên nhiều phạm vi để bắt rò rỉ hiếm),
+  // chỉ đổi đơn vị quét từ "buổi" (30 từ) sang "nhóm" (60 từ, hai buổi gộp) —
+  // đúng cách `napPhamVi` gộp thật trong `batDauOnTap`.
+  it("60 từ (một nhóm, hai buổi gộp) cho đúng 60 câu, mỗi từ một câu, chia 30–30, không rò đồng nghĩa", () => {
+    const dongNghiaCua = new Map(raw.map((w) => [w.word, w.synonyms]));
+    const roRi: string[] = [];
+
+    for (let nhom = 0; nhom < 10; nhom++) {
+      const { words, blanks } = lieu(nhom * 60, nhom * 60 + 60);
+      for (let seed = 1; seed <= 20; seed++) {
+        const cau = buildVocabExam(words, blanks, seed);
+        expect(cau).toHaveLength(60);
+        expect(new Set(cau.map((c) => c.wordId)).size).toBe(60);
+        expect(cau.filter((c) => c.kind === "nghia")).toHaveLength(30);
+        expect(cau.filter((c) => c.kind === "dien")).toHaveLength(30);
+
+        for (const c of cau.filter((c) => c.kind === "nghia")) {
+          for (const phuongAn of c.options) {
+            if (phuongAn === c.answer) continue;
+            const dongNghiaCuaNhieu = dongNghiaCua.get(phuongAn) ?? [];
+            if (dongNghiaCuaNhieu.includes(c.answer)) {
+              roRi.push(
+                `nhóm ${nhom}, seed ${seed}: đáp án "${c.answer}" bị rò rỉ bởi ` +
+                  `phương án nhiễu "${phuongAn}" (synonyms của "${phuongAn}" chứa "${c.answer}")`,
+              );
+            }
+          }
+        }
+      }
+    }
+
+    expect(roRi).toEqual([]);
+  });
 });

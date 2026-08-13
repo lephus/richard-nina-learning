@@ -3,28 +3,20 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { baiDangLamCua, timHoacDungBaiThi } from "@/lib/exam/run";
-import { toVocabLite, type VocabLite } from "@/lib/vocab/word";
-
-/** Một dòng `vocab_words` đọc qua quan hệ nhúng — cùng khuôn với `exam/[id]/actions.ts`. */
-interface VocabWordRow {
-  id: number; word: string; pos: string; ipa: string;
-  meaning_vi: string; definition_en: string; synonyms: string[];
-  example_en: string; example_vi: string;
-}
-interface LessonWordRow {
-  word_id: number;
-  vocab_words: VocabWordRow | VocabWordRow[];
-}
+import { napPhamVi } from "@/lib/exam/load-scope";
 
 /**
  * Dựng bài bổ túc từ các từ SAI của bài cha.
  *
- * Nguồn nhiễu là phạm vi (scope) của bài CHA — TOÀN BỘ buổi, không phải danh
- * sách từ sai: sai 2 từ thì không đủ 4 phương án, và `buildVocabExam` sẽ nổ
- * đúng như thiết kế ("không đủ phương án nhiễu"). Bảng đáp án câu điền
- * (`blank_answers_for_lesson`) vì lý do tương tự cũng phải phủ TOÀN BỘ buổi:
- * `buildVocabExam` tra `blankAnswers.get(...)` cho từng ứng viên nhiễu lấy từ
- * `distractorPool` (toàn buổi), không chỉ từ các từ sai.
+ * Nguồn nhiễu là phạm vi (scope) của bài CHA — TOÀN BỘ phạm vi đó, không phải
+ * danh sách từ sai: sai 2 từ thì không đủ 4 phương án, và `buildVocabExam` sẽ
+ * nổ đúng như thiết kế ("không đủ phương án nhiễu"). Bảng đáp án câu điền vì
+ * lý do tương tự cũng phải phủ TOÀN BỘ phạm vi cha: `buildVocabExam` tra
+ * `blankAnswers.get(...)` cho từng ứng viên nhiễu lấy từ `distractorPool`
+ * (toàn bộ phạm vi cha), không chỉ từ các từ sai. Bài cha là `lesson`/`remedial`
+ * thì đó là 30 từ một buổi; bài cha là `review` (lát 2c) thì đó là 60 từ hai
+ * buổi — `napPhamVi` bên dưới xử lý cả hai như nhau, nhận bao nhiêu ordinal
+ * cũng gộp đủ.
  */
 export async function batDauBoTuc(assessmentId: number): Promise<void> {
   const supabase = await createClient();
@@ -38,26 +30,34 @@ export async function batDauBoTuc(assessmentId: number): Promise<void> {
   // đúng khi bài `in_progress` tìm thấy KHÔNG phải bài bổ túc này (xem
   // `page.tsx`). Cái giá: một lượt đọc PK rẻ (`assessments` theo `id`) chạy
   // cả khi sắp redirect — vẫn còn bỏ được ba lượt đọc nặng hơn phía dưới
-  // (RPC wrong_items, lesson_words, blank_answers_for_lesson), nên phần lớn
-  // tối ưu gốc vẫn giữ nguyên.
+  // (RPC wrong_items, lesson_words, blank_answers_for_lesson qua `napPhamVi`),
+  // nên phần lớn tối ưu gốc vẫn giữ nguyên.
   const { data: cha, error: chaErr } = await supabase
     .from("assessments").select("scope").eq("id", assessmentId).single();
   if (chaErr) throw chaErr;
-  // `noUncheckedIndexedAccess` suy chỉ số mảng ra `number | undefined` dù
-  // `scope` là cột `int[] not null` và bài lesson/remedial luôn ghi đúng một
-  // phần tử (xem `createVocabExam`) — chặn tường minh ở đây thay vì ép kiểu,
-  // cùng khuôn `ExamRunner.tsx` đã dùng cho chính vấn đề này.
-  const lessonId = (cha.scope as number[])[0];
-  if (lessonId === undefined) {
+  // SỬA Ở LÁT 2c: bản trước đọc `(cha.scope as number[])[0]` với chú thích
+  // khẳng định "bài lesson/remedial luôn ghi đúng một phần tử" — khẳng định
+  // đó SAI kể từ khi bài `review` tồn tại (`batDauOnTap`, exam/[id]/actions.ts,
+  // ghi `scope = lessonsOf(group)`, HAI phần tử). Bổ túc dựng từ một bài
+  // `review` trượt mà chỉ đọc `scope[0]` sẽ nạp phạm vi nhiễu CHỈ MỘT buổi —
+  // nếu từ sai thuộc buổi còn lại, nó bị lọc mất khỏi `tuSai` bên dưới một
+  // cách ÂM THẦM (không ném lỗi gì) và bài bổ túc thiếu đúng từ người học cần
+  // ôn lại nhất. Nạp TOÀN BỘ `phamViCha` — không giới hạn ở phần tử đầu.
+  const phamViCha = cha.scope as number[];
+  if (phamViCha.length === 0) {
     throw new Error(`bài ${assessmentId} có scope rỗng, không xác định được buổi`);
   }
 
   // Cùng tấm chắn với `batDauBaiThi` (yêu cầu C bàn giao) — bổ túc là một
   // đường dựng bài NGANG HÀNG với LÀM BÀI — cùng bẫy bỏ dở áp dụng y hệt: bấm
   // Bổ túc, bỏ dở bài bổ túc, quay lại trang kết quả bấm Bổ túc lần nữa sẽ
-  // đâm vào đúng chỉ số đó nếu không kiểm trước.
+  // đâm vào đúng chỉ số đó nếu không kiểm trước. `tuBuoi` chỉ mang MỘT giá
+  // trị (trang `/exam/[id]` hiện chỉ so khớp `scope[0]`, xem page.tsx) — dùng
+  // buổi ĐẦU của phạm vi cha, đủ để cảnh báo lệch bài/lệch nhóm.
   const dangLam = await baiDangLamCua(supabase, user.id);
-  if (dangLam !== null) redirect(`/exam/${dangLam}?tuLoai=remedial&tuBuoi=${lessonId}`);
+  if (dangLam !== null) {
+    redirect(`/exam/${dangLam}?tuLoai=remedial&tuBuoi=${phamViCha[0]}`);
+  }
 
   const { data: sai, error: saiErr } = await supabase
     .rpc("wrong_items_for_assessment", { p_assessment_id: assessmentId });
@@ -65,40 +65,37 @@ export async function batDauBoTuc(assessmentId: number): Promise<void> {
   const idSai = (sai as { ref_id: number }[]).map((r) => r.ref_id);
   if (idSai.length === 0) redirect(`/exam/${assessmentId}/ket-qua`);
 
-  const { data: lw, error: lwErr } = await supabase
-    .from("lesson_words")
-    .select("word_id, vocab_words(id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en, example_vi)")
-    .eq("lesson_id", lessonId).order("position");
-  if (lwErr) throw lwErr;
+  // `napPhamVi` (lát 2c) thay cho bản chép tay lesson_words/blank_answers_for_lesson
+  // từng nằm ở đây — gộp đủ TOÀN BỘ `phamViCha`, dù một hay hai ordinal.
+  const { words: toanBoPhamVi, blankAnswers: bang } = await napPhamVi(supabase, phamViCha);
 
-  // Cùng cách chuẩn hoá quan hệ nhúng như `batDauBaiThi` — postgrest-js đôi
-  // khi trả quan hệ 1-1 thành MẢNG.
-  const rows = (lw ?? []) as unknown as LessonWordRow[];
-  const toanBuoi: VocabLite[] = rows.map((r) => {
-    const v = Array.isArray(r.vocab_words) ? r.vocab_words[0] : r.vocab_words;
-    if (!v) throw new Error(`thiếu vocab_words cho word_id ${r.word_id}`);
-    return toVocabLite(v);
-  });
-
-  const { data: blanks, error: blankErr } = await supabase
-    .rpc("blank_answers_for_lesson", { p_lesson_id: lessonId });
-  if (blankErr) throw blankErr;
-  // RPC trả về MỘT object JSONB, không phải mảng — xem chú thích tại
-  // `batDauBaiThi` (exam/[id]/actions.ts) đã đo lỗi này thật.
-  const bang = new Map(
-    Object.entries(blanks as Record<string, string>).map(
-      ([wordId, blankAnswer]) => [Number(wordId), blankAnswer] as [number, string],
-    ),
-  );
-
-  const tuSai = toanBuoi.filter((w) => idSai.includes(w.id));
+  const tuSai = toanBoPhamVi.filter((w) => idSai.includes(w.id));
+  // THÊM Ở VÒNG SOÁT CUỐI (mục 3 minor): `filter` có thể lặng lẽ trả về ÍT
+  // phần tử hơn `idSai` nếu một id sai không còn nằm trong `toanBoPhamVi`
+  // (một thay đổi dữ liệu vocab giữa chừng — từ bị gỡ khỏi buổi/nhóm sau khi
+  // bài đã nộp — hoặc một lỗi logic khác khiến `phamViCha` không thật sự phủ
+  // hết phạm vi bài cha). Bài bổ túc dựng ra khi đó THIẾU đúng từ người học
+  // cần ôn lại nhất, và không một lỗi nào bật ra để biết — im lặng thu hẹp
+  // đúng kiểu lỗi mà lát này đã nhiều lần chặn (xem `napPhamVi`, `batDauOnTap`).
+  // Ném ngay khi số lượng lệch nhau, ồn ào hơn là im lặng.
+  if (tuSai.length !== idSai.length) {
+    throw new Error(
+      `bài ${assessmentId}: RPC báo ${idSai.length} từ sai nhưng chỉ tra được ` +
+        `${tuSai.length} từ trong phạm vi bài cha (scope=${JSON.stringify(phamViCha)}) — ` +
+        `dữ liệu không khớp, không dựng bổ túc thiếu từ trong im lặng`,
+    );
+  }
   // `timHoacDungBaiThi` chứ không `createVocabExam` thẳng — cùng lý do đã
   // ghi ở `batDauBaiThi`: tự đóng đường đua TOCTOU nếu tấm chắn sớm ở trên
   // lọt (hai request cùng lúc), tìm lại đúng bài đã thắng thay vì để 23505
   // thô rơi xuống error.tsx.
+  // `scope` của bài bổ túc mới PHẢN ÁNH ĐÚNG phạm vi bài cha — `phamViCha`
+  // nguyên vẹn (một hay hai ordinal), không thu hẹp về một phần tử: giữ đúng
+  // bất biến "bổ túc mang cùng phạm vi với cha" cho cả hai loại cha (`lesson`
+  // lẫn `review`), thay vì chỉ đúng cho `lesson` như bản trước.
   const id = await timHoacDungBaiThi(
-    supabase, user.id, "remedial", [lessonId], tuSai, bang, Date.now(),
-    assessmentId, toanBuoi,
+    supabase, user.id, "remedial", phamViCha, tuSai, bang, Date.now(),
+    assessmentId, toanBoPhamVi,
   );
   redirect(`/exam/${id}`);
 }
@@ -143,41 +140,31 @@ export async function lamLaiBai(assessmentId: number): Promise<void> {
   const { data: cha, error: chaErr } = await supabase
     .from("assessments").select("type, scope").eq("id", parentId).single();
   if (chaErr) throw chaErr;
-  const lessonId = (cha.scope as number[])[0];
-  if (lessonId === undefined) {
+  // SỬA Ở LÁT 2c (yêu cầu D): bản trước đọc `(cha.scope as number[])[0]` —
+  // cùng lỗi `scope[0]` đã sửa ở `batDauBoTuc` phía trên, và comment cũ ngay
+  // dưới nhánh này từng khẳng định "cha.type chỉ có thể là 'lesson' vì ôn tập
+  // nhóm là lát sau" — khẳng định đó SAI kể từ khi `batDauOnTap` tồn tại (bài
+  // cha giờ có thể là `review`, `scope` HAI phần tử). Nạp TOÀN BỘ `cha.scope`
+  // qua `napPhamVi`, giống hệt cách `batDauBoTuc` đã sửa — không giới hạn ở
+  // phần tử đầu, kẻo "Làm lại bài" của một bổ túc sinh từ bài ôn tập nhóm chỉ
+  // dựng lại 30/60 từ (mất nguyên buổi thứ hai).
+  const phamViCha = cha.scope as number[];
+  if (phamViCha.length === 0) {
     throw new Error(`bài cha ${parentId} có scope rỗng, không xác định được buổi`);
   }
 
-  // Cùng cách đọc lesson_words/blank_answers_for_lesson như `batDauBaiThi` —
-  // bài chính luôn phủ TOÀN BỘ 30 từ của buổi, không thu hẹp theo từ sai như
-  // `batDauBoTuc` ở trên.
-  const { data: lw, error: lwErr } = await supabase
-    .from("lesson_words")
-    .select("word_id, vocab_words(id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en, example_vi)")
-    .eq("lesson_id", lessonId).order("position");
-  if (lwErr) throw lwErr;
-  const rows = (lw ?? []) as unknown as LessonWordRow[];
-  const words: VocabLite[] = rows.map((r) => {
-    const v = Array.isArray(r.vocab_words) ? r.vocab_words[0] : r.vocab_words;
-    if (!v) throw new Error(`thiếu vocab_words cho word_id ${r.word_id}`);
-    return toVocabLite(v);
-  });
+  // `napPhamVi` (lát 2c) thay cho bản chép tay lesson_words/blank_answers_for_lesson
+  // từng nằm ở đây — gộp đủ TOÀN BỘ `phamViCha`, dù một hay hai ordinal, cùng
+  // cách `batDauBoTuc` đã dùng ở trên. Bài chính luôn phủ TOÀN BỘ phạm vi của
+  // buổi/nhóm, không thu hẹp theo từ sai như `batDauBoTuc`.
+  const { words, blankAnswers } = await napPhamVi(supabase, phamViCha);
 
-  const { data: blanks, error: blankErr } = await supabase
-    .rpc("blank_answers_for_lesson", { p_lesson_id: lessonId });
-  if (blankErr) throw blankErr;
-  const bang = new Map(
-    Object.entries(blanks as Record<string, string>).map(
-      ([wordId, blankAnswer]) => [Number(wordId), blankAnswer] as [number, string],
-    ),
-  );
-
-  // `cha.type` chỉ có thể là `"lesson"` trong phạm vi lát này (bài ngữ
-  // pháp/ôn tập nhóm là lát sau — xem spec mục "Không thuộc phạm vi"); ép
-  // kiểu tường minh thay vì mở rộng chữ ký `timHoacDungBaiThi` cho những loại
-  // chưa ai gọi tới.
+  // `cha.type` giờ có thể là "lesson" (buổi thường) hoặc "review" (ôn tập
+  // nhóm — lát 2c, xem `batDauOnTap`), không còn CHỈ "lesson" như comment cũ
+  // khẳng định. Ép đủ nguyên chữ ký `timHoacDungBaiThi` chấp nhận thay vì thu
+  // hẹp lại thành một khẳng định hẹp khác có thể sai tiếp về sau.
   const id = await timHoacDungBaiThi(
-    supabase, user.id, cha.type as "lesson" | "remedial", [lessonId], words, bang, Date.now(),
+    supabase, user.id, cha.type as "lesson" | "review" | "remedial", phamViCha, words, blankAnswers, Date.now(),
   );
   redirect(`/exam/${id}`);
 }

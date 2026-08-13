@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { boBaiThi, nopBai, traLoi } from "@/app/(app)/exam/[id]/actions";
+import { groupOf } from "@/lib/curriculum/groups";
 
 interface CauHoi {
   position: number;
@@ -24,15 +25,109 @@ function chiSoDauTienChuaTraLoi(cauHoi: readonly CauHoi[]): number {
   return idx === -1 ? Math.max(cauHoi.length - 1, 0) : idx;
 }
 
+/**
+ * Tên nhóm suy từ một ordinal buổi bất kỳ trong nhóm đó, "?" nếu không suy
+ * được — SỬA Ở VÒNG SOÁT CUỐI (mục 3 minor): trước bản vá này chỉ nhánh
+ * `review` của `tieuDe` gọi thẳng `groupOf(buoi)`, hàm ném `RangeError` khi
+ * `buoi` ngoài biên 1..20 (`scope[0]` hỏng — dữ liệu sai, không nên xảy ra,
+ * nhưng KHÔNG PHẢI KHÔNG THỂ). Ném giữa THÂN RENDER của một client component
+ * giết cả trang, trong khi hai nhánh còn lại (`lesson`/`remedial` một buổi)
+ * chỉ lặng lẽ hiện "?" cho đúng tình huống tương tự (`buoi ?? "?"`, không ném
+ * gì) — không cân xứng: cùng một loại hỏng dữ liệu, hai hậu quả khác hẳn nhau
+ * tuỳ rơi vào nhánh nào. Bọc `groupOf` ở một chỗ DUY NHẤT để cả ba nhánh
+ * xuống cấp giống hệt nhau khi `buoi` hỏng.
+ */
+function tenNhomAnToan(buoi: number | null): string {
+  if (buoi === null) return "?";
+  try {
+    return String(groupOf(buoi));
+  } catch {
+    return "?";
+  }
+}
+
+/** Số lần thử TỐI ĐA cho một lượt gọi `traLoi` — 1 lần gốc + 2 lần thử lại. */
+const SO_LAN_THU_TOI_DA = 3;
+
+/** Chờ `ms` mili giây — khoảng nghỉ giữa hai lần thử lại của `traLoiCoThuLai`. */
+function cho(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Gọi `traLoi`, thử lại tối đa `SO_LAN_THU_TOI_DA` lần nếu trượt.
+ *
+ * Điều tra lỗi "còn N câu chưa gửi được" ở bài ôn tập 60 câu (bắt lỗi thật
+ * bằng debug tạm rồi soát log server — xem task-3-report.md) tìm ra lỗi THẬT
+ * là một lần rớt mạng THOÁNG QUA ở tầng `fetch` (`TypeError: Failed to
+ * fetch`) — KHÔNG phải lỗi nghiệp vụ: server chưa từng thấy request đó (log
+ * server sạch, không một dòng nào của `traLoi` xuất hiện quanh thời điểm
+ * trượt). Chạy sạch cùng một đoạn code nhiều lần: có lần 0/60 câu trượt, có
+ * lần 1/60 trượt ở một vị trí ngẫu nhiên khác nhau mỗi lần — không lặp lại ở
+ * cùng vị trí hay cùng một ngưỡng số lượng cố định, đúng hình dạng nhiễu mạng
+ * thoáng qua chứ không phải một giới hạn cố định (không có lỗi 429/401 nào,
+ * không có thông điệp nghiệp vụ nào từ `recordAnswer`). Bài ôn tập 60 câu gấp
+ * đôi số vòng mạng tuần tự so với bài buổi 30 câu — không phải vì bấm nhanh
+ * hơn (hàng đợi `hangDoi` vẫn tuần tự y hệt, không đổi), chỉ vì có nhiều vòng
+ * mạng hơn nên một sự cố hiếm có nhiều cơ hội xảy ra hơn.
+ *
+ * Thử lại AN TOÀN nhờ chính `recordAnswer` (lib/exam/run.ts) đã thiết kế sẵn
+ * cho đúng tình huống này: CAS `user_answer is null` trong UPDATE khiến một
+ * lượt gọi lại cho ĐÚNG vị trí đã ghi thành công ở lần trước chỉ trả về
+ * `ghiNhanLanNay: false` (không cộng mastery lần hai, không ném lỗi) — comment
+ * tại đó liệt kê thẳng "client tự gọi lại sau phản hồi chậm" là tình huống đã
+ * lường trước. Thử lại ở đây chỉ tận dụng đúng sự an toàn có sẵn đó, không che
+ * giấu gì: mạng hỏng THẬT (không chỉ thoáng qua) thì mọi lần thử đều trượt,
+ * và hành vi chặn nộp + thông điệp cảnh báo cũ (`exam-loi-gui`) vẫn nguyên như
+ * trước — "làm sản phẩm suy giảm trung thực" (yêu cầu bàn giao) nghĩa là CHỈ
+ * chặn nộp khi sự cố thật sự dai dẳng, không phải ngay ở lần rớt gói tin đầu
+ * tiên mà bất kỳ kết nối mạng thật nào — kể cả của một người học bình thường,
+ * không liên quan gì tới tốc độ bấm — cũng có thể gặp.
+ */
+async function traLoiCoThuLai(assessmentId: number, pos: number, dapAn: string) {
+  for (let lan = 1; lan <= SO_LAN_THU_TOI_DA; lan++) {
+    try {
+      return await traLoi(assessmentId, pos, dapAn);
+    } catch (err) {
+      if (lan === SO_LAN_THU_TOI_DA) throw err;
+      await cho(300 * lan);
+    }
+  }
+  // Không bao giờ tới đây — vòng lặp trên luôn return hoặc throw ở lần cuối.
+  // Chỉ để TypeScript thấy hàm có giá trị trả về trên MỌI nhánh.
+  throw new Error("traLoiCoThuLai: không thể tới đây");
+}
+
 export function ExamRunner({
-  assessmentId, cauHoi, loaiBai, buoi, canhBaoLechBuoi,
+  assessmentId, cauHoi, loaiBai, buoi, phamViNhieuBuoi, canhBaoLechBuoi,
 }: {
   assessmentId: number;
   cauHoi: CauHoi[];
-  /** Loại bài — hiện trên đầu trang (finding 5), người học biết đang thi gì. */
-  loaiBai: "lesson" | "remedial";
-  /** Buổi (ordinal — xem chú thích ở page.tsx về sự trùng hợp id/ordinal). `null` nếu scope rỗng. */
+  /**
+   * Loại bài — hiện trên đầu trang (finding 5), người học biết đang thi gì.
+   * SỬA Ở LÁT 2c (yêu cầu F): thêm "review" — trước bản vá chỉ có "lesson" |
+   * "remedial", nên một bài ôn tập nhóm (`batDauOnTap`) rơi vào nhánh mặc
+   * định của `tieuDe` bên dưới và hiện "Bài buổi ?", không nói được đang thi
+   * gì giữa 60 câu.
+   */
+  loaiBai: "lesson" | "remedial" | "review";
+  /** Buổi (ordinal — xem chú thích ở page.tsx về sự trùng hợp id/ordinal). `null` nếu scope rỗng.
+      Với một bài mang phạm vi NHIỀU buổi (`phamViNhieuBuoi === true`), đây là ordinal buổi ĐẦU
+      của nhóm (`scope[0]`) — dùng để suy ngược ra số nhóm qua `groupOf`, không phải một buổi để
+      hiện riêng. */
   buoi: number | null;
+  /**
+   * THÊM Ở VÒNG SOÁT CUỐI (mục 1): `true` khi `scope` gốc của bài này có HAI
+   * phần tử — bài `review` chính nó, HOẶC một bài `remedial`/"làm lại" sinh
+   * ra từ một bài `review` (giữ nguyên `scope` của cha, xem `batDauBoTuc`).
+   * Trước bản vá này, `tieuDe` bên dưới chỉ rẽ theo `loaiBai`, nên một bài
+   * bổ túc sinh từ một bài ôn tập nhóm bị gắn nhãn "Bài bổ túc buổi X" dù nó
+   * phủ 60 từ của HAI buổi — sai giống hệt lỗi đã sửa ở `boBaiThi`/trang kết
+   * quả, chỉ khác chỗ lộ ra. Tính sẵn ở `page.tsx` (nơi có `scope` đầy đủ)
+   * bằng đúng predicate dùng chung (`phamViThuocNhom`) — component này không
+   * tự có `scope` để tự suy ra.
+   */
+  phamViNhieuBuoi: boolean;
   /** `true` khi bài đang mở KHÔNG phải bài người học vừa bấm (finding 5). */
   canhBaoLechBuoi: boolean;
 }) {
@@ -68,7 +163,26 @@ export function ExamRunner({
   // thì chặn nộp".
   const viTriLoi = useRef<Set<number>>(new Set());
 
-  const tieuDe = loaiBai === "remedial" ? `Bài bổ túc buổi ${buoi ?? "?"}` : `Bài buổi ${buoi ?? "?"}`;
+  // SỬA Ở LÁT 2c (yêu cầu F): nhánh "review" đặt tên nhóm thay vì buổi — một
+  // bài ôn tập nhóm không thuộc buổi nào, hiện "Bài buổi ?" (nhánh mặc định
+  // cũ) không nói được người học đang thi cái gì giữa 60 câu (đúng điểm mà
+  // tiêu đề trang thi được thêm ở lát 2b nhắm tới). `buoi` của một bài mang
+  // phạm vi nhiều buổi luôn là ordinal buổi ĐẦU của nhóm (`scope[0]` — HAI
+  // phần tử `scope` luôn theo đúng thứ tự `lessonsOf`), nên `groupOf` suy
+  // ngược ra đúng số nhóm — chính là nghịch đảo của `lessonsOf` mà bàn giao
+  // gợi ý dùng.
+  //
+  // MỞ RỘNG Ở VÒNG SOÁT CUỐI (mục 1): nhánh "remedial" giờ tách theo
+  // `phamViNhieuBuoi` — một bài bổ túc sinh từ bài `review` (phạm vi nhiều
+  // buổi) được gắn nhãn "Bài bổ túc nhóm N", không còn dùng chung nhãn "Bài
+  // bổ túc buổi N" của bổ túc một-buổi (đọc `groupOf(buoi)` sẽ SAI ĐÍCH nếu
+  // hiểu buoi như một buổi đơn — nó vẫn đúng số vì `groupOf` chỉ cần MỘT
+  // ordinal bất kỳ trong nhóm, nhưng nhãn "buổi N" tự nó đã sai bản chất).
+  const tieuDe =
+    loaiBai === "remedial"
+      ? (phamViNhieuBuoi ? `Bài bổ túc nhóm ${tenNhomAnToan(buoi)}` : `Bài bổ túc buổi ${buoi ?? "?"}`)
+    : loaiBai === "review" ? `Bài ôn tập nhóm ${tenNhomAnToan(buoi)}`
+    : `Bài buổi ${buoi ?? "?"}`;
 
   // SỬA SAU VÒNG SOÁT CUỐI (finding 1, lớp phòng thủ thứ hai): một bài
   // `in_progress` có thể sống sót với 0 câu hỏi — trước bản vá `createVocabExam`
@@ -117,7 +231,7 @@ export function ExamRunner({
   // sạch với TS mà không cần khẳng định non-null (`!`).
   function chon(pos: number, dapAn: string) {
     hangDoi.current = hangDoi.current
-      .then(() => traLoi(assessmentId, pos, dapAn))
+      .then(() => traLoiCoThuLai(assessmentId, pos, dapAn))
       .then(({ ghiNhanLanNay, dung }) => {
         viTriLoi.current.delete(pos);
         // SỬA SAU VÒNG SOÁT CUỐI (finding 3): chỉ hiện dải đúng/sai khi CHÍNH
@@ -131,6 +245,9 @@ export function ExamRunner({
         setLoiGui(viTriLoi.current.size > 0);
       })
       .catch(() => {
+        // Tới đây nghĩa là `traLoiCoThuLai` đã thử hết số lần cho phép và vẫn
+        // trượt — coi là hỏng THẬT, chặn nộp bằng cảnh báo trung thực (xem
+        // JSDoc của `traLoiCoThuLai`, và `exam-loi-gui` bên dưới).
         viTriLoi.current.add(pos);
         setLoiGui(true);
       });
