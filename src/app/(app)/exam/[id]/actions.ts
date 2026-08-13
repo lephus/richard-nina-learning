@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { createVocabExam, recordAnswer, submitExam } from "@/lib/exam/run";
+import { baiDangLamCua, boBaiDangLam, recordAnswer, submitExam, timHoacDungBaiThi } from "@/lib/exam/run";
 import { toVocabLite, type VocabLite } from "@/lib/vocab/word";
 
 /** Một dòng `vocab_words` đọc qua quan hệ nhúng — snake_case, đúng cột `authenticated` đọc được. */
@@ -21,6 +21,16 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+
+  // Kiểm TRƯỚC khi dựng bài mới, SỚM nhất có thể — trước cả hai lượt đọc
+  // lesson_words/blank_answers_for_lesson bên dưới, để nhánh "làm tiếp" (case
+  // thường gặp nhất của bẫy bỏ dở, yêu cầu C bàn giao) không phải trả giá hai
+  // vòng mạng vô ích chỉ để rồi redirect. Đây là một TỐI ƯU đặt CHỒNG lên
+  // trên sự đúng đắn mà `timHoacDungBaiThi` bên dưới tự đảm bảo được ngay cả
+  // khi thiếu bước này (nó tự kiểm lại) — không phải điều kiện bắt buộc để
+  // tránh 23505.
+  const dangLam = await baiDangLamCua(supabase, user.id);
+  if (dangLam !== null) redirect(`/exam/${dangLam}`);
 
   const { data: lw, error: lwErr } = await supabase
     .from("lesson_words")
@@ -63,7 +73,11 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
     ),
   );
 
-  const id = await createVocabExam(
+  // `timHoacDungBaiThi` chứ không `createVocabExam` thẳng: nó tự kiểm lại
+  // (đường đua TOCTOU hiếm — hai request cùng lúc, ví dụ bấm đúp — có thể lọt
+  // qua tấm chắn sớm ở trên) và tìm lại đúng bài đã thắng cuộc đua nếu insert
+  // vẫn đâm 23505, thay vì để lỗi thô rơi xuống error.tsx.
+  const id = await timHoacDungBaiThi(
     supabase, user.id, "lesson", [lessonId], words, bang, Date.now(),
   );
   redirect(`/exam/${id}`);
@@ -82,4 +96,26 @@ export async function nopBai(assessmentId: number): Promise<void> {
   const supabase = await createClient();
   await submitExam(supabase, assessmentId);
   redirect(`/exam/${assessmentId}/ket-qua`);
+}
+
+/**
+ * Bỏ bài đang làm dở — lối thoát cho người học không muốn làm tiếp bài cũ mà
+ * `batDauBaiThi`/`batDauBoTuc` đưa họ vào lại (xem yêu cầu C bàn giao). Đặt ở
+ * ngay trang thi (`ExamRunner`, `data-testid="exam-bo-bai"`) vì đó là chỗ
+ * người học bị kẹt thật sự đang đứng.
+ */
+export async function boBaiThi(assessmentId: number): Promise<void> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const scope = await boBaiDangLam(supabase, user.id, assessmentId);
+  // `scope` rỗng không nên xảy ra (bài lesson/remedial luôn ghi đúng một buổi
+  // vào scope, xem createVocabExam) — chặn tường minh thay vì âm thầm điều
+  // hướng tới `/vocab/learn/undefined`.
+  const lessonId = scope[0];
+  if (lessonId === undefined) {
+    throw new Error(`bài ${assessmentId} có scope rỗng, không xác định được buổi để quay lại`);
+  }
+  redirect(`/vocab/learn/${lessonId}`);
 }

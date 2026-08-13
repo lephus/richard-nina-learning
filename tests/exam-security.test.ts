@@ -1,7 +1,10 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { buildVocabExam, type ExamQuestion } from "@/lib/exam/build";
-import { PASS_MARK, createVocabExam, recordAnswer, submitExam } from "@/lib/exam/run";
+import {
+  PASS_MARK, createVocabExam, recordAnswer, submitExam, timHoacDungBaiThi,
+} from "@/lib/exam/run";
+import type { VocabLite } from "@/lib/vocab/word";
 
 const URL = process.env.SUPABASE_URL;
 const SERVICE = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -19,6 +22,11 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
   // đây cho ra chính xác cùng prompt/options/answer theo từng position, không
   // cần đọc trộm cột đã bị revoke để biết đáp án thật của từng câu trong test.
   let cauHoi: ExamQuestion[] = [];
+  // Hoist ra ngoài `beforeAll` (khác bản gốc chỉ khai báo cục bộ trong đó) để
+  // test đua bên dưới (`timHoacDungBaiThi`) dùng lại được, khỏi đọc lại
+  // `vocab_words` một lần nữa cho cùng 30 từ.
+  let words: VocabLite[] = [];
+  let blanks = new Map<number, string>();
 
   async function taoNguoiDung(nhan: string) {
     const email = `exam-${nhan}-${Date.now()}@test.local`;
@@ -41,7 +49,7 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
       .from("vocab_words")
       .select("id, word, pos, ipa, meaning_vi, definition_en, synonyms, example_en, example_vi, blank_answer")
       .order("ordinal").limit(30);
-    const words = (rows ?? []).map((r) => ({
+    words = (rows ?? []).map((r) => ({
       id: r.id as number, word: r.word as string, pos: r.pos as string,
       ipa: r.ipa as string, meaningVi: r.meaning_vi as string,
       definitionEn: r.definition_en as string, synonyms: (r.synonyms ?? []) as string[],
@@ -51,7 +59,7 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
       // qua `blanks` bên dưới.
       blankAnswer: "",
     }));
-    const blanks = new Map((rows ?? []).map((r) => [r.id as number, r.blank_answer as string]));
+    blanks = new Map((rows ?? []).map((r) => [r.id as number, r.blank_answer as string]));
     cauHoi = buildVocabExam(words, blanks, 1);
     baiId = await createVocabExam(alice, aliceId, "lesson", [1], words, blanks, 1);
   });
@@ -153,5 +161,49 @@ describe.skipIf(!hasEnv)("an toàn bài thi", () => {
     expect(data?.status).toBe("submitted");
     expect(data?.score).not.toBeNull();
     expect(data?.passed).not.toBeNull();
+  });
+
+  // Yêu cầu C bàn giao (lát 2b, Task 6): đóng bẫy bỏ dở bài thi.
+  // `assessments_one_in_progress` (0010_phase2_reset.sql:73) chỉ cho MỖI
+  // NGƯỜI DÙNG một bài `in_progress`. `timHoacDungBaiThi` kiểm TRƯỚC khi
+  // insert (đường thường — đã được `e2e/exam.spec.ts` khẳng định qua UI), và
+  // BẮT LẠI 23505 nếu vẫn đua (đường TOCTOU hiếm, không dựng được ổn định
+  // qua UI) — test này khẳng định đúng nhánh bắt đó bằng cách CỐ Ý đua hai
+  // lệnh gọi thật đồng thời trên một người dùng MỚI, chưa có bài nào cả (khác
+  // Alice/Bob ở trên, để không lẫn với `baiId` đã có sẵn từ `beforeAll`).
+  it("dựng bài ĐUA nhau (TOCTOU) chỉ tạo một bài duy nhất, không rơi lỗi 23505 thô", async () => {
+    const email = `exam-carol-${Date.now()}@test.local`;
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
+      email, password: "test-pass-1234", email_confirm: true,
+    });
+    if (createErr) throw createErr;
+    const carolId = created.user.id;
+    const carol = createClient(URL!, ANON!, { auth: { persistSession: false } });
+    await carol.auth.signInWithPassword({ email, password: "test-pass-1234" });
+
+    try {
+      const [idA, idB] = await Promise.all([
+        timHoacDungBaiThi(carol, carolId, "lesson", [1], words, blanks, 2),
+        timHoacDungBaiThi(carol, carolId, "lesson", [1], words, blanks, 2),
+      ]);
+      // Cả hai lệnh gọi phải trả về CÙNG một id: một thắng cuộc đua insert,
+      // lệnh thua bắt được 23505 và tìm lại đúng bài đối thủ vừa thắng —
+      // KHÔNG lệnh nào được phép ném lỗi thô ra ngoài (Promise.all ở đây,
+      // không phải allSettled, tự làm việc đó: một lệnh reject là cả test lỗi).
+      expect(idA).toBe(idB);
+
+      const { data: rows } = await admin
+        .from("assessments")
+        .select("id")
+        .eq("user_id", carolId)
+        .eq("status", "in_progress");
+      // Đúng MỘT dòng in_progress — không phải hai dòng mồ côi từ hai lệnh
+      // insert cùng thắng (đúng ra không thể, chỉ số một-phần chặn), và cũng
+      // không phải 0 dòng do một nhánh nào đó âm thầm xoá nhầm.
+      expect(rows).toHaveLength(1);
+    } finally {
+      await admin.from("assessments").delete().eq("user_id", carolId);
+      await admin.auth.admin.deleteUser(carolId);
+    }
   });
 });

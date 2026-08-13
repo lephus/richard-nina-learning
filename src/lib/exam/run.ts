@@ -64,6 +64,123 @@ export async function createVocabExam(
 }
 
 /**
+ * Tìm bài `in_progress` hiện có của người dùng, nếu có — trả về `null` nếu
+ * không. Chỉ số MỘT PHẦN `assessments_one_in_progress`
+ * (0010_phase2_reset.sql:73, dựng lại từ 0007_assessment_parent.sql) giới hạn
+ * MỖI NGƯỜI DÙNG chỉ một dòng `in_progress` tại một thời điểm — không phân
+ * biệt buổi/loại bài.
+ */
+export async function baiDangLamCua(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<number | null> {
+  const { data, error } = await supabase
+    .from("assessments")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("status", "in_progress")
+    .maybeSingle();
+  if (error) throw error;
+  return (data?.id as number | undefined) ?? null;
+}
+
+/** Có phải lỗi 23505 (vi phạm ràng buộc DUY NHẤT) từ Postgres/PostgREST không. */
+function laLoiTrungKhoa(err: unknown): boolean {
+  return typeof err === "object" && err !== null && (err as { code?: unknown }).code === "23505";
+}
+
+/**
+ * Tìm bài `in_progress` hiện có, hoặc dựng bài mới nếu chưa có — gọi thay cho
+ * `createVocabExam` trực tiếp ở mọi nơi người học có thể BẤM ra bài thi
+ * (`batDauBaiThi`, `batDauBoTuc`). Đóng đủ CẢ HAI lớp của bẫy bỏ dở bài (yêu
+ * cầu C bàn giao):
+ *
+ *   1. Đường THƯỜNG: kiểm `baiDangLamCua` TRƯỚC khi insert. Người học bỏ dở
+ *      một bài rồi bấm LÀM BÀI/Bổ túc lại luôn rơi vào nhánh này — không bao
+ *      giờ chạm tới insert, nên không bao giờ đâm vào chỉ số một-phần.
+ *   2. Đường ĐUA (TOCTOU hiếm, ví dụ bấm đúp cực nhanh hai request cùng lúc):
+ *      cả hai có thể cùng thấy bước 1 trả `null` rồi cùng insert — một thắng,
+ *      một đâm 23505. Bản thân insert (`createVocabExam`) KHÔNG tự bắt lỗi
+ *      này (nó là hàm dựng đề THUẦN theo nghĩa side-effect, không biết gì về
+ *      ngữ cảnh gọi nó) — bắt Ở ĐÂY, sau khi thua cuộc đua thì tìm lại đúng
+ *      bài đối thủ vừa thắng (chắc chắn tồn tại, vì lỗi 23505 tự nó là bằng
+ *      chứng có một bài in_progress) và trả về CÙNG một id, thay vì để lỗi
+ *      thô rơi xuống tấm chắn chung `error.tsx` với thông điệp sai ("mất
+ *      mạng") — xem `tests/exam-security.test.ts` phần "dựng bài ĐUA nhau".
+ */
+export async function timHoacDungBaiThi(
+  supabase: SupabaseClient,
+  userId: string,
+  type: "lesson" | "remedial",
+  scope: number[],
+  words: readonly VocabLite[],
+  blankAnswers: ReadonlyMap<number, string>,
+  seed: number,
+  parentId?: number,
+  distractorPool?: readonly VocabLite[],
+): Promise<number> {
+  const dangLam = await baiDangLamCua(supabase, userId);
+  if (dangLam !== null) return dangLam;
+
+  try {
+    return await createVocabExam(
+      supabase, userId, type, scope, words, blankAnswers, seed, parentId, distractorPool,
+    );
+  } catch (err) {
+    if (!laLoiTrungKhoa(err)) throw err;
+    const dangLamSauDua = await baiDangLamCua(supabase, userId);
+    if (dangLamSauDua !== null) return dangLamSauDua;
+    // Không tìm thấy dù vừa đâm 23505 — cực khó xảy ra (bài đối thủ vừa
+    // thắng lại bị bỏ/nộp ngay trong tích tắc giữa hai lệnh đọc). Ném lại lỗi
+    // GỐC thay vì tự suy ra một giá trị thay thế: trung thực hơn là im lặng.
+    throw err;
+  }
+}
+
+/**
+ * Bỏ một bài đang làm dở, không nộp — lối thoát còn lại cho người học không
+ * muốn làm tiếp bài cũ mà `baiDangLamCua` ở trên đưa họ vào lại. Xoá dòng
+ * `assessments`; `assessment_items` tự theo qua `on delete cascade`
+ * (0003_user_state.sql:53). KHÔNG đụng `word_mastery`: mastery đã cộng cho
+ * từng câu đã trả lời (qua `applyWordMastery` trong `recordAnswer` ở trên) là
+ * của TỪNG TỪ, độc lập với bài thi chứa nó — bỏ bài không undo được, và cũng
+ * không cần undo, tiến bộ đã ghi cho một từ là thật bất kể bài thi có bị bỏ
+ * hay không.
+ *
+ * Chỉ cho bỏ bài còn `in_progress` — một bài `submitted` là dữ liệu đã chốt,
+ * không phải thứ hành động này được phép xoá. Điều kiện `user_id` trong WHERE
+ * là lớp phòng thủ thứ hai bên cạnh RLS (`own_assess`, 0004_rls.sql) — không
+ * dựa vào một hàng rào duy nhất.
+ *
+ * Trả về `scope` (buổi/nhóm buổi của bài) để nơi gọi biết quay lại buổi nào.
+ */
+export async function boBaiDangLam(
+  supabase: SupabaseClient,
+  userId: string,
+  assessmentId: number,
+): Promise<number[]> {
+  const { data: bai, error: baiErr } = await supabase
+    .from("assessments")
+    .select("status, scope")
+    .eq("id", assessmentId)
+    .eq("user_id", userId)
+    .single();
+  if (baiErr) throw baiErr;
+  if (bai.status !== "in_progress") {
+    throw new Error(`bài ${assessmentId} đã nộp rồi, không bỏ được nữa`);
+  }
+
+  const { error: delErr } = await supabase
+    .from("assessments")
+    .delete()
+    .eq("id", assessmentId)
+    .eq("user_id", userId);
+  if (delErr) throw delErr;
+
+  return bai.scope as number[];
+}
+
+/**
  * Chấm một câu và ghi kết quả. Chấm ở SERVER vì đáp án của câu điền nằm ở
  * `vocab_words.blank_answer`, cột đã bị revoke khỏi `authenticated`.
  */

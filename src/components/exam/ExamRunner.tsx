@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { nopBai, traLoi } from "@/app/(app)/exam/[id]/actions";
+import { boBaiThi, nopBai, traLoi } from "@/app/(app)/exam/[id]/actions";
 
 interface CauHoi {
   position: number;
@@ -20,6 +20,11 @@ export function ExamRunner({
   const [ketQuaTruoc, setKetQuaTruoc] = useState<boolean | null>(null);
   const [loiGui, setLoiGui] = useState(false);
   const [dangNop, batDauNop] = useTransition();
+  // Transition RIÊNG cho "Bỏ bài": dùng chung với dangNop thì bấm bỏ bài giữa
+  // lúc câu cuối đang nộp (dangNop=true) sẽ vô tình bị khoá theo, dù hai hành
+  // động không loại trừ nhau về mặt dữ liệu (nộp xong hay bỏ giữa chừng đều
+  // hợp lệ tuỳ người học bấm cái nào trước).
+  const [dangBo, batDauBo] = useTransition();
 
   // Hàng đợi TUẦN TỰ: mỗi đáp án nối vào cuối lời hứa trước. Bấm nhanh hơn mạng
   // vẫn giữ đúng thứ tự ghi, và `hangDoi.current` chính là thứ phải cạn trước
@@ -110,7 +115,7 @@ export function ExamRunner({
             key={o}
             type="button"
             data-testid="exam-option"
-            disabled={dangNop}
+            disabled={dangNop || dangBo}
             onClick={() => chon(cau.position, o)}
             className="rounded border border-slate-300 px-4 py-2 text-left hover:bg-slate-50 disabled:opacity-50"
           >
@@ -124,6 +129,20 @@ export function ExamRunner({
           Chưa gửi được câu trả lời. Kiểm tra mạng rồi chọn lại đáp án.
         </p>
       )}
+
+      {/* Lối thoát cho người học không muốn làm tiếp bài này: bấm LÀM BÀI ở
+          buổi học sẽ đưa thẳng vào lại bài dang dở (yêu cầu C bàn giao), nên
+          phải có một cách BỎ HẲN ngay tại đây — nếu không, người từng bỏ dở
+          một bài không còn muốn làm sẽ mắc kẹt vĩnh viễn ở chính bài đó. */}
+      <button
+        type="button"
+        data-testid="exam-bo-bai"
+        disabled={dangNop || dangBo}
+        onClick={() => batDauBo(() => boBaiThi(assessmentId))}
+        className="self-start text-sm text-rose-700 underline disabled:opacity-50"
+      >
+        Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học
+      </button>
     </main>
   );
 }
