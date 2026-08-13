@@ -29,7 +29,7 @@
 |---|---|
 | `scripts/phase0/03-extract-grammar.ts` | **Sửa.** Sinh thêm HTML, tự kiểm an toàn. |
 | `supabase/migrations/0012_grammar_content_html.sql` | **Tạo.** Thêm cột `content_html`. |
-| `scripts/phase0/05-seed.ts` | **Sửa.** Seed cột mới. |
+| `scripts/phase0/05-seed.ts` | **Sửa.** Chèn `content_html` vào dòng `grammar_lessons` khi insert, để lần seed hợp lệ tiếp theo không xoá cột đó về rỗng (mặc định của migration 0012) — backfill cho dữ liệu HIỆN CÓ chạy qua `backfill-grammar-html.ts` (Task 1 Step 8), *không* qua lệnh seed này. |
 | `src/content/types.ts` | **Sửa.** `GrammarLesson` thêm `contentHtml`. |
 | `tests/grammar-html.test.ts` | **Tạo.** Bất biến an toàn + bảng đã thành `<table>`. |
 | `src/lib/exam/build-grammar.ts` | **Tạo.** Dựng đề ngữ pháp, hàm thuần. |

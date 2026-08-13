@@ -121,4 +121,26 @@ describe.skipIf(!hasEnv)("toàn vẹn database đối chiếu data/clean/", () =
       expect(row.id).toBe(row.ordinal);
     }
   });
+
+  // Vòng soát Task 1-2 (lát 2d) phát hiện: `05-seed.ts` từng insert
+  // `grammar_lessons` mà KHÔNG có `content_html`, và migration 0012 mặc định
+  // cột đó là chuỗi rỗng. Vì seed XOÁ RỒI CHÈN LẠI toàn bộ bảng mỗi lần chạy,
+  // lần seed hợp lệ tiếp theo sẽ âm thầm xoá HTML của cả 20 bài về rỗng —
+  // xoá luôn kết quả của `backfill-grammar-html.ts` — mà không có gì báo đỏ,
+  // vì `tests/grammar-html.test.ts` chỉ đọc file JSON cục bộ, chưa từng đọc
+  // database. Test này đóng đúng lỗ hổng đó: kiểm cả "không rỗng" lẫn "khớp
+  // với data/clean/grammar.json" cho toàn bộ 20 dòng.
+  it("content_html của grammar_lessons không rỗng và khớp data/clean/grammar.json", async () => {
+    const { data, error } = await admin.from("grammar_lessons").select("slug, content_html");
+    if (error) throw error;
+    expect(data).toHaveLength(grammar.length);
+
+    const htmlBySlug = new Map(grammar.map((l) => [l.slug, l.contentHtml]));
+    for (const row of data ?? []) {
+      const slug = row.slug as string;
+      const contentHtml = row.content_html as string;
+      expect(contentHtml.length).toBeGreaterThan(0);
+      expect(contentHtml).toBe(htmlBySlug.get(slug));
+    }
+  });
 });
