@@ -23,7 +23,11 @@ export const PASS_MARK = 80;
 export async function createVocabExam(
   supabase: SupabaseClient,
   userId: string,
-  type: "lesson" | "remedial",
+  // Thêm "review" ở lát 2c — bài ôn tập nhóm (batDauOnTap, exam/[id]/actions.ts)
+  // ghi thẳng type này. Cột `assessments.type` (enum assessment_type_v2,
+  // 0010_phase2_reset.sql) đã chấp nhận giá trị này từ trước; chữ ký ở đây chỉ
+  // vừa bắt kịp, không phải một thay đổi schema.
+  type: "lesson" | "review" | "remedial",
   scope: number[],
   words: readonly VocabLite[],
   blankAnswers: ReadonlyMap<number, string>,
@@ -165,7 +169,7 @@ function laLoiTrungKhoa(err: unknown): boolean {
 export async function timHoacDungBaiThi(
   supabase: SupabaseClient,
   userId: string,
-  type: "lesson" | "remedial",
+  type: "lesson" | "review" | "remedial",
   scope: number[],
   words: readonly VocabLite[],
   blankAnswers: ReadonlyMap<number, string>,
