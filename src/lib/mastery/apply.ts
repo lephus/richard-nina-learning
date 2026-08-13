@@ -5,13 +5,23 @@ export interface MasteryRow {
 }
 
 /**
- * Một từ coi là "đã thuộc" khi số lần đúng vượt số lần sai đúng bằng ngưỡng
- * này. Tha thứ cho vài lần sai lúc đầu nhưng đòi đúng nhiều hơn sai rõ rệt.
+ * Một từ coi là "đã thuộc" khi số lần đúng vượt số lần sai đúng bằng ngưỡng này.
  *
- * Ngưỡng nằm ở đây, một chỗ duy nhất, để `/stats` ở lát 1d đếm "đã thuộc bao
- * nhiêu trên 605" bằng cùng một luật.
+ * Ngưỡng là 2 chứ không phải 3 vì cấu trúc sau lát 2a chạm mỗi từ **tối đa hai
+ * lần trong cả đời**: đúng một câu trong bài buổi (30 câu/30 từ) và đúng một
+ * câu trong bài ôn tập nhóm (60 câu/60 từ). Bài bổ túc chỉ chứa từ đã sai. Với
+ * ngưỡng 3, trần đạt được là 2 — nghĩa là KHÔNG từ nào có thể "đã thuộc", bao
+ * giờ, và thẻ "đã thuộc /605" trên dashboard đứng ở 0 vĩnh viễn.
+ *
+ * Ngưỡng 2 nghĩa là "đúng ở cả hai lần kiểm riêng biệt, cách nhau nhiều ngày" —
+ * mức cao nhất mà cấu trúc mới còn cho phép, và vẫn mang nghĩa thật. Ngưỡng 1
+ * thì "đã thuộc" chỉ còn nghĩa "đã đoán trúng một lần": câu 4 phương án có 25%
+ * đoán trúng.
+ *
+ * Ngưỡng nằm ở đây, một chỗ duy nhất, để `/stats` đếm cột `mastered` bằng cùng
+ * một luật thay vì tự tính lại.
  */
-export const MASTERY_THRESHOLD = 3;
+export const MASTERY_THRESHOLD = 2;
 
 export function masteryDelta(
   current: MasteryRow | null,
