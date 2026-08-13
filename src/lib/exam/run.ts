@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { buildVocabExam } from "./build";
-import { applyWordMastery } from "@/lib/mastery/write";
+import { buildGrammarExam, type GrammarQuestionLite } from "./build-grammar";
+import { applyGrammarMastery, applyWordMastery } from "@/lib/mastery/write";
 import type { VocabLite } from "@/lib/vocab/word";
 
 /**
@@ -84,6 +85,99 @@ export async function createVocabExam(
       // dưới đây đã theo.
       throw new Error(
         `chèn assessment_items cho bài ${assessmentId} thất bại (${itemErr.message}), ` +
+          `VÀ dọn dẹp dòng assessments đó cũng thất bại (${cleanupErr.message}) — ` +
+          `có thể còn sót một dòng in_progress 0 câu hỏi, cần xoá tay`,
+      );
+    }
+    throw itemErr;
+  }
+
+  return assessmentId;
+}
+
+/**
+ * Dựng một bài thi ngữ pháp cho MỘT bài học (`grammar_lessons`), lấy TOÀN BỘ
+ * câu hỏi của bài đó — xem `buildGrammarExam`.
+ *
+ * KHÔNG khớp brief nguyên văn ở HAI điểm, cả hai đã kiểm chứng thật trên
+ * database (INSERT thật, không suy đoán) trước khi viết hàm này — xem đầy đủ
+ * bằng chứng ở docblock đầu `tests/exam-grammar.test.ts` và báo cáo Task 3:
+ *
+ * 1. `scope` ghi `[]` (RỖNG), không phải `[ordinal]` như brief nói. Cột
+ *    `assessments.grammar_lesson_id` (FK tới `grammar_lessons.id`) đã được
+ *    `0010_phase2_reset.sql:76-84` dựng RIÊNG cho việc mang danh tính bài ngữ
+ *    pháp, kèm ràng buộc CHECK `assessments_grammar_scope: (type = 'grammar')
+ *    = (grammar_lesson_id is not null)` — chính migration đó ghi lại lý do
+ *    KHÔNG dùng `scope`: "scope dang mang ordinal buoi tu vung (1..20), con
+ *    id bai ngu phap la mot he so hoan toan khac. Tron hai he vao mot cot la
+ *    loi khong bao, khong vo, chi sai". Một INSERT `type: 'grammar', scope:
+ *    [ordinal]` KHÔNG kèm `grammar_lesson_id` bị Postgres từ chối ngay với lỗi
+ *    23514 (đã thử thật) — không phải một lựa chọn thiết kế, mà là bắt buộc.
+ *    Việc này còn khớp với một giả định đã có SẴN từ TRƯỚC lát này ở
+ *    `src/lib/stats/compute.ts` (hàm `label`, comment "bài ngữ pháp có mảng
+ *    rỗng") — không phải một quy ước mới tự đặt ra ở đây.
+ *
+ * 2. Tham số thứ ba là `grammarLessonId` — ID THẬT (`grammar_lessons.id`),
+ *    KHÔNG phải `grammarLessonOrdinal` như chữ ký trong brief. Cột
+ *    `grammar_lesson_id` là một FOREIGN KEY tới `grammar_lessons.id`, không
+ *    phải ordinal — truyền ordinal vào đây chỉ "đúng may" khi hai giá trị đó
+ *    trùng nhau (hiện trùng cho cả 20 bài, đã kiểm), giống HỆT cái bẫy
+ *    `id`/`ordinal` mà chính codebase này đã tự ghi lại cho `lessons` ở
+ *    `tests/db-integrity.test.ts` ("lessons.id trùng với ordinal cho cả 20
+ *    dòng — hai nửa ứng dụng đang dựa vào sự trùng hợp này", vòng soát cuối
+ *    lát 2b) — không lặp lại đúng bẫy đó thêm một lần nữa cho ngữ pháp. Nơi
+ *    gọi (Task 4) đã phải tra `grammar_lessons` theo `ordinal` để lấy câu hỏi
+ *    của bài (`grammar_questions.lesson_id` tham chiếu `grammar_lessons.id`),
+ *    nên `id` thật đã có sẵn trong tay, không tốn thêm truy vấn nào.
+ */
+export async function createGrammarExam(
+  supabase: SupabaseClient,
+  userId: string,
+  grammarLessonId: number,
+  questions: readonly GrammarQuestionLite[],
+  seed: number,
+): Promise<number> {
+  const items = buildGrammarExam(questions, seed);
+
+  const { data: bai, error: baiErr } = await supabase
+    .from("assessments")
+    .insert({
+      user_id: userId,
+      type: "grammar",
+      scope: [],
+      grammar_lesson_id: grammarLessonId,
+    })
+    .select("id")
+    .single();
+  if (baiErr) throw baiErr;
+  const assessmentId = bai.id as number;
+
+  // `payload` CHỈ mang prompt/options/kind — cùng luật với `createVocabExam`
+  // (đáp án không bao giờ tới tay client). `ref_id` là id câu hỏi
+  // (`grammar_questions.id`), KHÔNG phải id bài học — chấm điểm đọc lại nó
+  // qua RPC `answer_for_question`.
+  const { error: itemErr } = await supabase.from("assessment_items").insert(
+    items.map((q, i) => ({
+      assessment_id: assessmentId,
+      position: i,
+      item_type: "grammar",
+      ref_id: q.questionId,
+      payload: { prompt: q.prompt, options: q.options, kind: "grammar" },
+    })),
+  );
+  if (itemErr) {
+    // Cùng bẫy đã trả giá ở `createVocabExam` ngay phía trên (xem chú thích
+    // đầy đủ tại đó): hai insert này là hai lượt gọi PostgREST độc lập, không
+    // có transaction chung nào bọc ngoài. Chỉ số MỘT PHẦN
+    // `assessments_one_in_progress` không phân biệt theo `type` — một dòng
+    // `assessments` mồ côi 0 câu hỏi ở NHÁNH NGỮ PHÁP khoá cứng người học ra
+    // khỏi MỌI bài thi (kể cả từ vựng) giống hệt nhánh từ vựng, nên phải dọn
+    // bù giống hệt, không được coi là rủi ro nhỏ hơn vì "chỉ là ngữ pháp".
+    const { error: cleanupErr } = await supabase
+      .from("assessments").delete().eq("id", assessmentId);
+    if (cleanupErr) {
+      throw new Error(
+        `chèn assessment_items cho bài ngữ pháp ${assessmentId} thất bại (${itemErr.message}), ` +
           `VÀ dọn dẹp dòng assessments đó cũng thất bại (${cleanupErr.message}) — ` +
           `có thể còn sót một dòng in_progress 0 câu hỏi, cần xoá tay`,
       );
@@ -310,9 +404,16 @@ export async function recordAnswer(
   // ghi bên dưới), nhưng đường này KHÔNG ai gọi tới được qua giao diện hiện
   // tại (`/exam/[id]` tự chuyển sang `/ket-qua` ngay khi bài đã nộp, xem
   // page.tsx) — đây là hàng rào phòng thủ thêm, không phải hàng rào chính.
+  // `grammar_lesson_id` được đọc kèm ngay ở đây (không phải một truy vấn
+  // riêng sau này) vì nhánh ngữ pháp cần nó để ghi `grammar_mastery` — lấy
+  // THẲNG từ cột `assessments.grammar_lesson_id` (dựng riêng cho việc này ở
+  // `0010_phase2_reset.sql`, xem chú thích tại `createGrammarExam`), KHÔNG
+  // suy từ `scope` (luôn rỗng cho bài ngữ pháp) hay từ `ref_id` (cái bẫy
+  // `write.ts` cũ đã ghi lại — một câu hỏi không tự biết nó thuộc bài học
+  // nào theo chiều ngược).
   const { data: item, error: itemErr } = await supabase
     .from("assessment_items")
-    .select("ref_id, payload, assessments(status)")
+    .select("item_type, ref_id, payload, assessments(status, grammar_lesson_id)")
     .eq("assessment_id", assessmentId)
     .eq("position", position)
     .single();
@@ -321,8 +422,12 @@ export async function recordAnswer(
   // postgrest-js đôi khi trả quan hệ 1-1 thành MẢNG (cùng cái bẫy đã ghi ở
   // `exam/[id]/actions.ts` cho `lesson_words -> vocab_words`) — chuẩn hoá cả
   // hai hình dạng thay vì giả định một trong hai.
-  const baiEmbed = item.assessments as { status: string } | { status: string }[] | null;
-  const trangThaiBai = Array.isArray(baiEmbed) ? baiEmbed[0]?.status : baiEmbed?.status;
+  const baiEmbed = item.assessments as
+    | { status: string; grammar_lesson_id: number | null }
+    | { status: string; grammar_lesson_id: number | null }[]
+    | null;
+  const bai = Array.isArray(baiEmbed) ? baiEmbed[0] : baiEmbed;
+  const trangThaiBai = bai?.status;
   if (trangThaiBai !== "in_progress") {
     throw new Error(
       `bài ${assessmentId} không còn ở trạng thái đang làm (status=${trangThaiBai ?? "?"}) ` +
@@ -330,22 +435,33 @@ export async function recordAnswer(
     );
   }
 
-  const kind = (item.payload as { kind: string }).kind;
+  const itemType = item.item_type as string;
   let dapAn: string;
-  if (kind === "dien") {
-    const { data, error } = await supabase.rpc("answer_for_word", { p_word_id: item.ref_id });
+  if (itemType === "grammar") {
+    // Đáp án của câu ngữ pháp nằm ở `grammar_questions.answer` (một chữ cái
+    // A-D), cột đã bị revoke khỏi `authenticated` (0004_rls.sql) — RPC
+    // `answer_for_question` (security definer, 0006_lesson_position.sql) suy
+    // sẵn CHỮ HIỂN THỊ tương ứng, cùng khuôn `answer_for_word` bên dưới.
+    const { data, error } = await supabase.rpc("answer_for_question", { p_question_id: item.ref_id });
     if (error) throw error;
     dapAn = data as string;
   } else {
-    // Chỉ `blank_answer` bị revoke khỏi `authenticated` (0004_rls.sql) —
-    // `word` vẫn nằm trong danh sách cột đọc công khai, nên câu "nghĩa" đọc
-    // thẳng qua client thường là đủ, không cần vòng qua RPC như câu "điền".
-    // Đây là một sự KHÔNG ĐỐI XỨNG có chủ đích giữa hai nhánh, không phải
-    // thiếu nhất quán.
-    const { data, error } = await supabase
-      .from("vocab_words").select("word").eq("id", item.ref_id).single();
-    if (error) throw error;
-    dapAn = data.word as string;
+    const kind = (item.payload as { kind: string }).kind;
+    if (kind === "dien") {
+      const { data, error } = await supabase.rpc("answer_for_word", { p_word_id: item.ref_id });
+      if (error) throw error;
+      dapAn = data as string;
+    } else {
+      // Chỉ `blank_answer` bị revoke khỏi `authenticated` (0004_rls.sql) —
+      // `word` vẫn nằm trong danh sách cột đọc công khai, nên câu "nghĩa" đọc
+      // thẳng qua client thường là đủ, không cần vòng qua RPC như câu "điền".
+      // Đây là một sự KHÔNG ĐỐI XỨNG có chủ đích giữa hai nhánh, không phải
+      // thiếu nhất quán.
+      const { data, error } = await supabase
+        .from("vocab_words").select("word").eq("id", item.ref_id).single();
+      if (error) throw error;
+      dapAn = data.word as string;
+    }
   }
 
   const dung = answer === dapAn;
@@ -395,15 +511,36 @@ export async function recordAnswer(
     // người học "tải lại trang" (thông điệp finding 4 yêu cầu) không sửa
     // được gì vì lỗi không nằm ở chỗ đó. Vì vậy lỗi ở bước này KHÔNG được ném
     // tiếp lên — chỉ log lại để còn dấu vết gỡ lỗi, không nuốt hoàn toàn
-    // trong im lặng. (Bên trong `applyWordMastery`, lỗi ĐỌC vẫn bắt buộc
-    // throw — đó là một bất biến khác, bảo vệ chính upsert của nó khỏi ghi đè
-    // sạch tiến độ đã tích luỹ, xem chú thích tại `mastery/write.ts`.)
+    // trong im lặng. (Bên trong `applyWordMastery`/`applyGrammarMastery`, lỗi
+    // ĐỌC vẫn bắt buộc throw — đó là một bất biến khác, bảo vệ chính upsert
+    // của nó khỏi ghi đè sạch tiến độ đã tích luỹ, xem chú thích tại
+    // `mastery/write.ts`.)
+    //
+    // Rẽ theo `item_type`, ĐÚNG một trong hai bảng mastery được đụng tới cho
+    // mỗi câu — không có nhánh nào gọi cả hai. `grammarLessonId` lấy từ
+    // `bai.grammar_lesson_id` đã đọc kèm ở SELECT phía trên (không phải suy
+    // từ `scope` hay `ref_id`, xem chú thích tại `createGrammarExam`); ràng
+    // buộc CHECK `assessments_grammar_scope` đảm bảo cột này KHÔNG NULL cho
+    // mọi bài `type = 'grammar'`, nhưng vẫn chặn tường minh thay vì ép kiểu
+    // `!` — cùng khuôn phòng thủ mọi chỗ khác trong tệp này.
     try {
-      await applyWordMastery(supabase, userId, item.ref_id as number, dung);
+      if (itemType === "grammar") {
+        const grammarLessonId = bai?.grammar_lesson_id;
+        if (grammarLessonId === null || grammarLessonId === undefined) {
+          throw new Error(
+            `bài ${assessmentId} có item_type='grammar' nhưng assessments.grammar_lesson_id ` +
+              `là null — vi phạm ràng buộc assessments_grammar_scope, không ghi được grammar_mastery`,
+          );
+        }
+        await applyGrammarMastery(supabase, userId, grammarLessonId, dung);
+      } else {
+        await applyWordMastery(supabase, userId, item.ref_id as number, dung);
+      }
     } catch (err) {
       console.error(
-        `applyWordMastery lỗi sau khi đã ghi câu trả lời (bài ${assessmentId}, vị trí ${position})` +
-          ` — câu trả lời vẫn đúng trong assessment_items, chỉ word_mastery có thể thiếu lần ghi này`,
+        `ghi mastery lỗi sau khi đã ghi câu trả lời (bài ${assessmentId}, vị trí ${position}, ` +
+          `item_type=${itemType}) — câu trả lời vẫn đúng trong assessment_items, chỉ bảng mastery ` +
+          `tương ứng có thể thiếu lần ghi này`,
         err,
       );
     }
