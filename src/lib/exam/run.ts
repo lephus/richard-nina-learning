@@ -242,23 +242,64 @@ function laLoiTrungKhoa(err: unknown): boolean {
 }
 
 /**
- * Tìm bài `in_progress` hiện có, hoặc dựng bài mới nếu chưa có — gọi thay cho
- * `createVocabExam` trực tiếp ở mọi nơi người học có thể BẤM ra bài thi
- * (`batDauBaiThi`, `batDauBoTuc`). Đóng đủ CẢ HAI lớp của bẫy bỏ dở bài (yêu
- * cầu C bàn giao):
+ * Lõi CHUNG của "tìm bài đang làm dở, hoặc dựng bài mới" — đóng CẢ HAI lớp
+ * của bẫy bỏ dở bài (yêu cầu C bàn giao) cho BẤT KỲ loại bài nào, không riêng
+ * vocab:
  *
  *   1. Đường THƯỜNG: kiểm `baiDangLamCua` TRƯỚC khi insert. Người học bỏ dở
  *      một bài rồi bấm LÀM BÀI/Bổ túc lại luôn rơi vào nhánh này — không bao
  *      giờ chạm tới insert, nên không bao giờ đâm vào chỉ số một-phần.
  *   2. Đường ĐUA (TOCTOU hiếm, ví dụ bấm đúp cực nhanh hai request cùng lúc):
  *      cả hai có thể cùng thấy bước 1 trả `null` rồi cùng insert — một thắng,
- *      một đâm 23505. Bản thân insert (`createVocabExam`) KHÔNG tự bắt lỗi
- *      này (nó là hàm dựng đề THUẦN theo nghĩa side-effect, không biết gì về
- *      ngữ cảnh gọi nó) — bắt Ở ĐÂY, sau khi thua cuộc đua thì tìm lại đúng
- *      bài đối thủ vừa thắng (chắc chắn tồn tại, vì lỗi 23505 tự nó là bằng
- *      chứng có một bài in_progress) và trả về CÙNG một id, thay vì để lỗi
- *      thô rơi xuống tấm chắn chung `error.tsx` với thông điệp sai ("mất
- *      mạng") — xem `tests/exam-security.test.ts` phần "dựng bài ĐUA nhau".
+ *      một đâm 23505. Bản thân insert (`dungBai`, tham số THUẦN side-effect —
+ *      hàm này không tự biết ngữ cảnh gọi nó) KHÔNG tự bắt lỗi này — bắt Ở
+ *      ĐÂY, sau khi thua cuộc đua thì tìm lại đúng bài đối thủ vừa thắng
+ *      (chắc chắn tồn tại, vì lỗi 23505 tự nó là bằng chứng có một bài
+ *      in_progress) và trả về CÙNG một id, thay vì để lỗi thô rơi xuống tấm
+ *      chắn chung `error.tsx` với thông điệp sai ("mất mạng") — xem
+ *      `tests/exam-security.test.ts` phần "dựng bài ĐUA nhau".
+ *
+ * TÁCH RA ở lát 2d (bài ngữ pháp, yêu cầu A bàn giao Task 4): trước bản này,
+ * đoạn logic ở trên nằm THẲNG trong thân `timHoacDungBaiThi`, khoá chặt vào
+ * chữ ký tham số vocab (`words`/`blankAnswers`/`distractorPool`). Task 3 cố
+ * tình để lại "chưa đi qua `timHoacDungBaiThi`" cho `createGrammarExam` làm
+ * khoảng hở của Task 4 (xem task-3-report.md, mục "Điều không khớp với
+ * brief" #4) — thay vì đổi chữ ký `timHoacDungBaiThi` (đụng MỌI nơi gọi hiện
+ * có: `exam/[id]/actions.ts`, `ket-qua/actions.ts`,
+ * `tests/exam-security.test.ts`, `tests/exam-review.test.ts`) hoặc viết một
+ * bản side-by-side KHÔNG dùng lại tấm chắn này (đúng cái bẫy "mở lại khoá
+ * bằng một cửa mới" mà yêu cầu A cảnh báo), lõi được tách ra đây rồi
+ * `timHoacDungBaiThi` (vocab) VÀ `timHoacDungBaiNguPhap` (grammar, ngay dưới)
+ * đều chỉ là một lớp mỏng gọi lại đúng MỘT lõi này — chữ ký công khai của
+ * `timHoacDungBaiThi` giữ NGUYÊN 100%, không nơi gọi nào phải đổi.
+ */
+async function timHoacDungBai(
+  supabase: SupabaseClient,
+  userId: string,
+  dungBai: () => Promise<number>,
+): Promise<number> {
+  const dangLam = await baiDangLamCua(supabase, userId);
+  if (dangLam !== null) return dangLam;
+
+  try {
+    return await dungBai();
+  } catch (err) {
+    if (!laLoiTrungKhoa(err)) throw err;
+    const dangLamSauDua = await baiDangLamCua(supabase, userId);
+    if (dangLamSauDua !== null) return dangLamSauDua;
+    // Không tìm thấy dù vừa đâm 23505 — cực khó xảy ra (bài đối thủ vừa
+    // thắng lại bị bỏ/nộp ngay trong tích tắc giữa hai lệnh đọc). Ném lại lỗi
+    // GỐC thay vì tự suy ra một giá trị thay thế: trung thực hơn là im lặng.
+    throw err;
+  }
+}
+
+/**
+ * Tìm bài `in_progress` hiện có, hoặc dựng bài VOCAB mới nếu chưa có — gọi
+ * thay cho `createVocabExam` trực tiếp ở mọi nơi người học có thể BẤM ra bài
+ * thi (`batDauBaiThi`, `batDauBoTuc`). Chỉ còn một lớp mỏng bọc `timHoacDungBai`
+ * (xem JSDoc tại đó để có đầy đủ giải thích TOCTOU/23505) — hành vi và chữ ký
+ * giữ NGUYÊN như trước lát 2d.
  */
 export async function timHoacDungBaiThi(
   supabase: SupabaseClient,
@@ -271,22 +312,32 @@ export async function timHoacDungBaiThi(
   parentId?: number,
   distractorPool?: readonly VocabLite[],
 ): Promise<number> {
-  const dangLam = await baiDangLamCua(supabase, userId);
-  if (dangLam !== null) return dangLam;
+  return timHoacDungBai(supabase, userId, () =>
+    createVocabExam(supabase, userId, type, scope, words, blankAnswers, seed, parentId, distractorPool),
+  );
+}
 
-  try {
-    return await createVocabExam(
-      supabase, userId, type, scope, words, blankAnswers, seed, parentId, distractorPool,
-    );
-  } catch (err) {
-    if (!laLoiTrungKhoa(err)) throw err;
-    const dangLamSauDua = await baiDangLamCua(supabase, userId);
-    if (dangLamSauDua !== null) return dangLamSauDua;
-    // Không tìm thấy dù vừa đâm 23505 — cực khó xảy ra (bài đối thủ vừa
-    // thắng lại bị bỏ/nộp ngay trong tích tắc giữa hai lệnh đọc). Ném lại lỗi
-    // GỐC thay vì tự suy ra một giá trị thay thế: trung thực hơn là im lặng.
-    throw err;
-  }
+/**
+ * Bản song song của `timHoacDungBaiThi` ở trên, cho bài NGỮ PHÁP (lát 2d) —
+ * xem JSDoc `timHoacDungBai` vì sao đây là một hàm RIÊNG thay vì mở rộng chữ
+ * ký `timHoacDungBaiThi` (hai loại bài không chia sẻ tham số: vocab cần
+ * words/blankAnswers/distractorPool, grammar chỉ cần grammarLessonId +
+ * questions). Gọi ở `batDauBaiNguPhap`
+ * (`src/app/(app)/grammar/[ordinal]/actions.ts`) — nơi DUY NHẤT người học có
+ * thể bấm ra một bài ngữ pháp mới, cùng vai trò `timHoacDungBaiThi` giữ cho
+ * mọi lối bấm ra bài vocab. Không có lối nào khác gọi thẳng `createGrammarExam`
+ * trong `src/app` — nếu có, nó sẽ bỏ qua đúng tấm chắn này.
+ */
+export async function timHoacDungBaiNguPhap(
+  supabase: SupabaseClient,
+  userId: string,
+  grammarLessonId: number,
+  questions: readonly GrammarQuestionLite[],
+  seed: number,
+): Promise<number> {
+  return timHoacDungBai(supabase, userId, () =>
+    createGrammarExam(supabase, userId, grammarLessonId, questions, seed),
+  );
 }
 
 /**

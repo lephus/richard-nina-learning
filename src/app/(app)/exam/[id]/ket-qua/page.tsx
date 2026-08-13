@@ -21,6 +21,36 @@ export default async function KetQuaPage({
     .maybeSingle();
   if (!bai || bai.status !== "submitted") notFound();
 
+  // THÊM Ở LÁT 2d (ngoài phạm vi liệt kê tường minh của brief Task 4, nhưng
+  // bắt buộc — xem báo cáo Task 4): trang này dùng CHUNG cho MỌI loại bài,
+  // và `nopBai` (exam/[id]/actions.ts) redirect thẳng vào đây sau khi nộp bất
+  // kỳ bài nào, kể cả `grammar`. Toàn bộ khối "từ sai"/"bổ túc"/"buổi" bên
+  // dưới được viết CHỈ cho vocab, và KHÔNG áp dụng được cho grammar theo hai
+  // cách khác nhau, cả hai đã kiểm chứng bằng cách đọc thẳng code/schema,
+  // không suy đoán:
+  //   1. `scope` LUÔN rỗng cho bài `grammar` (xem `createGrammarExam`) — đọc
+  //      thẳng `scope[0]` như bản cũ sẽ THROW ngay lập tức, 100% các lần, cho
+  //      MỌI bài ngữ pháp vừa nộp (đã dò bằng cách đọc chính điều kiện `if
+  //      (lessonId === undefined) throw` ở bản cũ — không phải một trường hợp
+  //      biên hiếm mà là đường đi DUY NHẤT của mọi bài grammar).
+  //   2. `wrong_items_for_assessment` trả `ref_id` là id của
+  //      `assessment_items` — với bài grammar đó là `grammar_questions.id`,
+  //      KHÔNG phải `vocab_words.id`. Cả hai bảng đều là `bigserial` bắt đầu
+  //      từ 1 (`grammar_questions` có 537 dòng, `vocab_words` có 605 dòng) nên
+  //      hai dải id CHỒNG LẤN nhau thật — tra thẳng `vocab_words` bằng những
+  //      id đó (bản cũ) không lỗi, không rỗng, mà trả về NHỮNG TỪ VỰNG KHÁC
+  //      HẲN, không liên quan gì tới câu ngữ pháp đã sai, rồi hiện ra như thể
+  //      đó là "từ sai" thật — hỏng ÂM THẦM, đúng loại lỗi mà toàn bộ lát này
+  //      đã nhiều lần chặn (xem các chú thích "hỏng ÂM THẦM" rải khắp
+  //      `run.ts`/`load-scope.ts`), chỉ khác chỗ lộ ra.
+  // Mục 3.3 (thiết kế phase 2) và §6 (thiết kế lát 2d) đều nói RÕ bài ngữ
+  // pháp không có bổ túc — `isGrammar` gate cả nút bổ túc lẫn khối "từ sai"
+  // (không hiện gì thay vì hiện sai), và dẫn về `/grammar` thay vì suy một
+  // "buổi" không tồn tại cho loại bài này. Đây KHÔNG phải dựng một tính năng
+  // "câu sai" mới cho ngữ pháp (ngoài phạm vi Task 4) — chỉ là làm cho trang
+  // AN TOÀN khi một bài grammar đi qua nó, đúng như nó BẮT BUỘC phải đi qua.
+  const isGrammar = bai.type === "grammar";
+
   // `wrong_items_for_assessment` từ chối CẢ CHÍNH CHỦ khi bài còn in_progress
   // (0007_assessment_parent.sql) — chỉ gọi được TỪ ĐÂY, SAU khi đã chắc chắn
   // `status === 'submitted'` ở nhánh trên.
@@ -36,7 +66,7 @@ export default async function KetQuaPage({
   // các cột public — `word`, `meaning_vi` không nằm trong danh sách bị revoke
   // ở 0004_rls.sql) thay vì cố suy nghĩa từ payload.
   let tuSai: { id: number; word: string; meaningVi: string }[] = [];
-  if (soSai > 0) {
+  if (!isGrammar && soSai > 0) {
     const ids = saiRows.map((r) => r.ref_id);
     const { data: words, error: wordsErr } = await supabase
       .from("vocab_words").select("id, word, meaning_vi").in("id", ids);
@@ -63,11 +93,13 @@ export default async function KetQuaPage({
   // `scope`, không đọc `type`) là predicate DÙNG CHUNG cho đúng câu hỏi này ở
   // cả `boBaiThi` và `ExamRunner` — sửa một chỗ, không để ba bản trôi dạt.
   // Chặn `scope` rỗng vẫn tường minh như cũ thay vì âm thầm dựng link
-  // "/vocab/learn/undefined", cùng khuôn `batDauBoTuc`/`boBaiThi`.
+  // "/vocab/learn/undefined", cùng khuôn `batDauBoTuc`/`boBaiThi` — TRỪ bài
+  // `grammar`, luôn `scope` rỗng một cách BÌNH THƯỜNG (không phải lỗi dữ
+  // liệu), nên tách nhánh sớm thay vì rơi vào `throw` dành cho vocab.
   const scope = bai.scope as number[];
-  const nhieuBuoi = phamViThuocNhom(scope);
-  const lessonId = scope[0];
-  if (lessonId === undefined) {
+  const nhieuBuoi = !isGrammar && phamViThuocNhom(scope);
+  const lessonId = isGrammar ? undefined : scope[0];
+  if (!isGrammar && lessonId === undefined) {
     throw new Error(`bài ${assessmentId} có scope rỗng, không xác định được buổi`);
   }
 
@@ -78,7 +110,12 @@ export default async function KetQuaPage({
         {bai.score}đ — {bai.passed ? "Đạt" : "Chưa đạt"}
       </p>
 
-      {!bai.passed && soSai > 0 && (
+      {/* `!isGrammar` — mục 3.3 (thiết kế phase 2) và §6 (thiết kế lát 2d) đều
+          nói bài ngữ pháp KHÔNG có bổ túc. Không chỉ là ẩn đúng ý spec: bấm
+          nút này trên một bài grammar sẽ gọi `batDauBoTuc`, đọc
+          `cha.scope` (luôn rỗng) rồi THROW ngay ("không xác định được buổi")
+          — gate ở đây còn tránh một crash thật, không riêng một lựa chọn UX. */}
+      {!isGrammar && !bai.passed && soSai > 0 && (
         <form action={boTuc}>
           <button
             type="submit"
@@ -131,7 +168,16 @@ export default async function KetQuaPage({
           học riêng — đúng lối mòn mà `boBaiThi` đã sửa ở lát 2c, chỉ khác nơi
           chạm trán (đây là trang MỌI người học đều ghé qua, không phải một
           nút "Bỏ bài" ít ai bấm). */}
-      {nhieuBuoi ? (
+      {/* THÊM Ở LÁT 2d: bài `grammar` không thuộc buổi/nhóm từ vựng nào —
+          `lessonId` cố tình để `undefined` ở trên cho loại bài này (xem chú
+          thích tại khai báo `isGrammar`), nên nhánh nhieuBuoi/lessonId cũ chỉ
+          còn đúng cho vocab. Dẫn về `/grammar` (danh sách 20 bài), khớp đúng
+          nơi `batDauBaiNguPhap` xuất phát. */}
+      {isGrammar ? (
+        <Link href="/grammar" className="underline">
+          ← Quay lại Ngữ pháp
+        </Link>
+      ) : nhieuBuoi ? (
         <Link href="/vocab" className="underline">
           ← Quay lại Từ vựng
         </Link>

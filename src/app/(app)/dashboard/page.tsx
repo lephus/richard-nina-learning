@@ -21,14 +21,29 @@ export default async function DashboardPage() {
   // này xoá theo luôn phép ép kiểu `as unknown as` không cần thiết nữa.
   // Trang `/vocab` (khác file, không đụng ở đây) vẫn đọc `lesson_cursor` thật
   // vì NÓ hiển thị "đang học" trên từng ô buổi — dashboard thì không.
+  // THÊM cột `grammar_lesson_id` ở lát 2d — CÙNG một truy vấn `assessments`
+  // này giờ phục vụ CẢ HAI thẻ (không phải hai lượt đọc riêng): `toAssessmentRow`
+  // bên dưới không đọc cột này (nó chỉ lo nhánh vocab), nên tính đếm "đạt bao
+  // nhiêu bài ngữ pháp" phải làm TRƯỚC khi map qua nó, đọc thẳng từ dữ liệu
+  // thô — xem `grammarDoneCount` ngay dưới.
   const assessmentsRes = await supabase
     .from("assessments")
-    .select("id, type, scope, status, passed, score, parent_id")
+    .select("id, type, scope, status, passed, score, parent_id, grammar_lesson_id")
     .eq("user_id", user.id)
     .order("id");
   if (assessmentsRes.error) throw assessmentsRes.error;
 
-  const assessments = (assessmentsRes.data ?? []).map(toAssessmentRow);
+  const rawAssessments = assessmentsRes.data ?? [];
+  const assessments = rawAssessments.map(toAssessmentRow);
+
+  // Số bài ngữ pháp đã ĐẠT — đếm theo BÀI (grammar_lesson_id), không theo số
+  // dòng `assessments`: làm lại một bài đã đạt (tự do, không khoá) không được
+  // đếm hai lần. `Set` khử trùng lặp cho đúng ý đó.
+  const grammarDoneCount = new Set(
+    rawAssessments
+      .filter((a) => a.type === "grammar" && a.passed === true)
+      .map((a) => a.grammar_lesson_id as number),
+  ).size;
   const states = groupStates(assessments, []);
   const doneCount = states.filter(groupDone).length;
   const next = nextActivity(states);
@@ -73,17 +88,15 @@ export default async function DashboardPage() {
           )}
         </Link>
 
-        <div
+        <Link
+          href="/grammar"
           data-testid="track-grammar"
-          className="flex flex-col items-center gap-1 rounded border border-slate-200 bg-slate-100 p-8 text-center text-slate-400"
+          className="flex flex-col items-center gap-1 rounded border border-slate-200 bg-white p-8 text-center hover:border-slate-400"
         >
           <span className="text-3xl" aria-hidden>📗</span>
           <span className="font-semibold tracking-wide">NGỮ PHÁP</span>
-          <span className="text-sm">20 bài</span>
-          {/* Lộ trình ngữ pháp là lát 2c. Thẻ vẫn hiện để hình dạng dashboard
-              đúng ngay từ bây giờ, nhưng chưa dẫn đi đâu. */}
-          <span className="mt-2 text-xs">Sắp có</span>
-        </div>
+          <span className="text-sm text-slate-600">{grammarDoneCount}/20 bài</span>
+        </Link>
       </div>
     </main>
   );

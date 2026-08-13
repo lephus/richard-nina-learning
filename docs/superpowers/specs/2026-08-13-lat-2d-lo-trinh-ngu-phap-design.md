@@ -85,21 +85,46 @@ bài đều có câu hỏi. Bài thi lấy **toàn bộ** câu của bài đó �
 - `'grammar'` → chấm bằng `answer_for_question(ref_id)`, ghi bằng
   `applyGrammarMastery(userId, grammarLessonId, correct)`.
 - `grammarLessonId` **không suy ra được từ `ref_id`** — đây đúng cái bẫy mà bản
-  `write.ts` cũ đã ghi lại. Nó phải lấy từ `scope` của chính bài thi.
+  `write.ts` cũ đã ghi lại. ~~Nó phải lấy từ `scope` của chính bài thi.~~ SAI —
+  xem mục 5 (sửa ở Task 4): `scope` LUÔN rỗng cho bài ngữ pháp, không có gì ở
+  đó để lấy. Nó lấy từ cột `assessments.grammar_lesson_id`.
 
 Giữ nguyên CAS `user_answer is null` và luật "chỉ cộng tiến độ ở lần trả lời
 đầu" — hai thứ đã trả giá ở lát 2b, không được rẽ nhánh nào đi vòng qua chúng.
 
-## 5. `scope` của bài ngữ pháp
+## 5. `scope` của bài ngữ pháp — SỬA Ở TASK 4: bản dưới đây đã SAI, đã kiểm chứng thật
 
-`scope = [ordinal bài ngữ pháp]`, một phần tử. `grammar_lessons.ordinal` chạy
-1..20, độc lập với `lessons.ordinal` của từ vựng.
-
-Điều này làm `scope` mang **hai không gian số** tuỳ theo `type`: buổi từ vựng với
-`lesson`/`review`/`remedial`, bài ngữ pháp với `grammar`. Hai bên không bao giờ
-so với nhau vì `progress.ts:108` lọc theo `type` **trước** khi so `scope` — nhưng
-sự thật đó phải được ghi ra, vì nó không hiển nhiên và một người đọc lướt sẽ
-tưởng `scope[0] = 5` luôn có nghĩa "buổi 5".
+> **Bản gốc của mục này nói:** `scope = [ordinal bài ngữ pháp]`, một phần tử,
+> độc lập với không gian ordinal của `lessons` từ vựng. **Điều đó SAI với
+> database đang chạy thật** — không phải một cách diễn đạt khác, mà là một
+> INSERT bị Postgres từ chối thẳng. Giữ nguyên đoạn trên (thay vì xoá) để ghi
+> lại rằng kế hoạch từng nói vậy, và để không ai lặp lại đúng lỗi đó lần nữa
+> — đây là lần plan sai thứ mấy trong lát này đã được ghi lại, xem
+> `task-3-report.md` và `task-4-report.md`.
+>
+> **Sự thật, đã kiểm bằng INSERT thật (Task 3), không phải suy luận từ đọc
+> migration:** bài ngữ pháp ghi `type = 'grammar'`, **`scope = []` (RỖNG)**,
+> và danh tính bài học nằm ở cột riêng **`assessments.grammar_lesson_id`**
+> (FK tới `grammar_lessons.id` — một ID thật, KHÔNG phải ordinal). Ràng buộc
+> `check ((type = 'grammar') = (grammar_lesson_id is not null))`, tên
+> `assessments_grammar_scope`, sống ở
+> **`supabase/migrations/0010_phase2_reset.sql:83`** (cột `grammar_lesson_id`
+> được thêm ở dòng 81 của cùng migration đó) — migration này được viết TRƯỚC
+> lát 2d, tự ghi lại lý do bằng lời ngay tại chỗ: *"scope dang mang ordinal
+> buoi tu vung (1..20), con id bai ngu phap la mot he so hoan toan khac. Tron
+> hai he vao mot cot la loi khong bao, khong vo, chi sai."* Một INSERT
+> `{type: 'grammar', scope: [ordinal]}` **không kèm** `grammar_lesson_id`
+> (đúng câu chữ bản gốc mục này) bị từ chối ngay với lỗi `23514` — đã thử
+> thật bằng service role, một user tạm, xoá ngay sau khi xác nhận (Task 3).
+>
+> Hệ quả cho phần còn lại của tài liệu này: mọi nơi khác nhắc tới `scope` của
+> bài ngữ pháp (nếu có) phải đọc lại theo sự thật ở trên. Bài ngữ pháp không
+> mang "hai không gian số" trong CÙNG một cột `scope` như bản gốc mô tả — nó
+> đơn giản là KHÔNG DÙNG `scope`, dùng một cột khác hẳn. `progress.ts` (lộ
+> trình từ vựng) không đọc `grammar_lesson_id` nên không bị ảnh hưởng; `label`
+> ở `src/lib/stats/compute.ts` đã giả định sẵn "bài ngữ pháp có `scope` rỗng"
+> từ TRƯỚC lát 2d — giả định đó hoá ra ĐÚNG, dù không phải vì lý do bản gốc
+> mục này đưa ra.
 
 ## 6. Màn hình
 

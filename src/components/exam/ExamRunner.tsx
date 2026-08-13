@@ -109,12 +109,20 @@ export function ExamRunner({
    * "remedial", nên một bài ôn tập nhóm (`batDauOnTap`) rơi vào nhánh mặc
    * định của `tieuDe` bên dưới và hiện "Bài buổi ?", không nói được đang thi
    * gì giữa 60 câu.
+   * THÊM Ở LÁT 2d: "grammar" — bài ngữ pháp (`batDauBaiNguPhap`) đi qua ĐÚNG
+   * trang `/exam/[id]` này, không phải một trang riêng. Không thêm nhánh cho
+   * nó thì TypeScript vẫn "sạch" ở phía gọi (page.tsx ép kiểu `as` từ
+   * `string`, không nổ), nhưng runtime rơi vào nhánh mặc định bên dưới và
+   * hiện nhãn "Bài buổi ?" cho MỌI bài ngữ pháp — sai hoàn toàn, không phải
+   * một trường hợp biên hiếm.
    */
-  loaiBai: "lesson" | "remedial" | "review";
+  loaiBai: "lesson" | "remedial" | "review" | "grammar";
   /** Buổi (ordinal — xem chú thích ở page.tsx về sự trùng hợp id/ordinal). `null` nếu scope rỗng.
       Với một bài mang phạm vi NHIỀU buổi (`phamViNhieuBuoi === true`), đây là ordinal buổi ĐẦU
       của nhóm (`scope[0]`) — dùng để suy ngược ra số nhóm qua `groupOf`, không phải một buổi để
-      hiện riêng. */
+      hiện riêng. Với `loaiBai === "grammar"`, đây là `grammar_lessons.ordinal` (1..20, một hệ số
+      HOÀN TOÀN KHÁC ordinal buổi từ vựng) — page.tsx tra qua quan hệ nhúng `grammar_lessons(ordinal)`
+      vì `scope` luôn rỗng cho loại bài này. */
   buoi: number | null;
   /**
    * THÊM Ở VÒNG SOÁT CUỐI (mục 1): `true` khi `scope` gốc của bài này có HAI
@@ -178,8 +186,16 @@ export function ExamRunner({
   // bổ túc buổi N" của bổ túc một-buổi (đọc `groupOf(buoi)` sẽ SAI ĐÍCH nếu
   // hiểu buoi như một buổi đơn — nó vẫn đúng số vì `groupOf` chỉ cần MỘT
   // ordinal bất kỳ trong nhóm, nhưng nhãn "buổi N" tự nó đã sai bản chất).
+  // THÊM Ở LÁT 2d: nhánh "grammar" đứng TRƯỚC "remedial"/"review" — bài ngữ
+  // pháp không có bổ túc (mục 3.3 thiết kế phase 2: "loại này không có"), nên
+  // không cần lo tổ hợp `phamViNhieuBuoi` ở đây (luôn `false` cho grammar, xem
+  // page.tsx). `buoi` là `grammar_lessons.ordinal`, không phải một buổi từ
+  // vựng — nhãn "Bài buổi N" của nhánh mặc định sẽ SAI DOMAIN nếu để lọt vào
+  // đó (đọc như "buổi học từ vựng thứ N", trong khi N ở đây là số bài NGỮ
+  // PHÁP), nên tách riêng thay vì gộp vào nhánh cuối.
   const tieuDe =
-    loaiBai === "remedial"
+    loaiBai === "grammar" ? `Bài ngữ pháp ${buoi ?? "?"}`
+    : loaiBai === "remedial"
       ? (phamViNhieuBuoi ? `Bài bổ túc nhóm ${tenNhomAnToan(buoi)}` : `Bài bổ túc buổi ${buoi ?? "?"}`)
     : loaiBai === "review" ? `Bài ôn tập nhóm ${tenNhomAnToan(buoi)}`
     : `Bài buổi ${buoi ?? "?"}`;
