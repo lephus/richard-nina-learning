@@ -28,7 +28,7 @@ npm run phase0:render    # PDF → data/images/*.png → OCR → data/raw/ocr/
 npm run phase0:vocab     # OCR → data/raw/vocab-raw.json → data/clean/vocab.json
 npm run phase0:grammar   # .docx → data/clean/grammar.json
 npm run phase0:questions # → data/clean/questions.json
-npm run phase0:seed      # data/clean/*.json → Supabase (refuses to run if learner progress exists; --force overrides)
+npm run phase0:seed      # data/clean/*.json → Supabase. DANGEROUS now — see below.
 npm run phase0:book      # data/images/*.png → WebP 1600px q80 → Storage bucket `book-pages`
 ```
 
@@ -50,6 +50,8 @@ npm run phase0:book      # data/images/*.png → WebP 1600px q80 → Storage buc
 The domain vocabulary is Vietnamese: a **buổi** (lesson) is 30 words, a **nhóm** (group) is 2 buổi, 20 buổi total.
 
 ## Database and migrations — read before touching schema
+
+**Never run `npm run phase0:seed` — with or without `--force` — now that learners have progress.** It deletes and re-inserts the content tables, and `word_mastery` references `vocab_words` through a foreign key that does **not** cascade, so the delete fails partway and leaves the database half-wiped. The `--force` flag only bypasses the "progress exists" refusal; it does not make the operation safe. To change seeded content, write a targeted `update` script instead — `scripts/phase0/backfill-grammar-html.ts` is the worked example: it touches one column, matches by `slug` rather than array position, and throws before writing if any expected row is missing. This plan was written twice in one session and caught both times before it ran.
 
 **Never run `supabase db push`, `supabase link`, or `psql` against this project.** Three independent reasons:
 
