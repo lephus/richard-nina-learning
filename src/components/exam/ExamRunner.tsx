@@ -1,0 +1,229 @@
+"use client";
+
+import { useRef, useState, useTransition } from "react";
+import { boBaiThi, nopBai, traLoi } from "@/app/(app)/exam/[id]/actions";
+
+interface CauHoi {
+  position: number;
+  prompt: string;
+  options: string[];
+  kind: string;
+  /** Đã có `user_answer` ghi từ trước (mở lại một bài làm dở) — xem finding 3. */
+  daTraLoi: boolean;
+}
+
+/**
+ * Vị trí đầu tiên CHƯA trả lời — điểm khởi động của một phiên `ExamRunner`.
+ * Tất cả đã trả lời (không nên xảy ra bình thường: câu cuối luôn kích hoạt
+ * nộp bài ngay khi trả lời xong — nhưng có thể còn sót nếu `nopBai` chết giữa
+ * chừng sau khi hàng đợi đã gửi hết) thì dừng ở câu CUỐI thay vì chỉ số vượt
+ * biên, để người học ít nhất còn thấy được một câu và nút "Bỏ bài".
+ */
+function chiSoDauTienChuaTraLoi(cauHoi: readonly CauHoi[]): number {
+  const idx = cauHoi.findIndex((c) => !c.daTraLoi);
+  return idx === -1 ? Math.max(cauHoi.length - 1, 0) : idx;
+}
+
+export function ExamRunner({
+  assessmentId, cauHoi, loaiBai, buoi, canhBaoLechBuoi,
+}: {
+  assessmentId: number;
+  cauHoi: CauHoi[];
+  /** Loại bài — hiện trên đầu trang (finding 5), người học biết đang thi gì. */
+  loaiBai: "lesson" | "remedial";
+  /** Buổi (ordinal — xem chú thích ở page.tsx về sự trùng hợp id/ordinal). `null` nếu scope rỗng. */
+  buoi: number | null;
+  /** `true` khi bài đang mở KHÔNG phải bài người học vừa bấm (finding 5). */
+  canhBaoLechBuoi: boolean;
+}) {
+  const [i, setI] = useState(() => chiSoDauTienChuaTraLoi(cauHoi));
+  const [ketQuaTruoc, setKetQuaTruoc] = useState<boolean | null>(null);
+  const [loiGui, setLoiGui] = useState(false);
+  const [dangNop, batDauNop] = useTransition();
+  // Transition RIÊNG cho "Bỏ bài": dùng chung với dangNop thì bấm bỏ bài giữa
+  // lúc câu cuối đang nộp (dangNop=true) sẽ vô tình bị khoá theo, dù hai hành
+  // động không loại trừ nhau về mặt dữ liệu (nộp xong hay bỏ giữa chừng đều
+  // hợp lệ tuỳ người học bấm cái nào trước).
+  const [dangBo, batDauBo] = useTransition();
+
+  // Hàng đợi TUẦN TỰ: mỗi đáp án nối vào cuối lời hứa trước. Bấm nhanh hơn mạng
+  // vẫn giữ đúng thứ tự ghi, và `hangDoi.current` chính là thứ phải cạn trước
+  // khi nộp — không cần đếm số request đang bay.
+  const hangDoi = useRef<Promise<void>>(Promise.resolve());
+
+  // Tập VỊ TRÍ chưa gửi được — một Ref chứ không phải state. Quyết định chặn
+  // nộp ở dưới chạy TRONG closure bất đồng bộ của `batDauNop`; closure đó chụp
+  // state tại đúng thời điểm BẤM, nên không bao giờ thấy được kết quả gửi của
+  // CHÍNH cú bấm đang kích hoạt nó (câu cuối) — kết quả đó chỉ có SAU khi hàm
+  // async đã bắt đầu chạy. Ref thì luôn đọc được giá trị MỚI NHẤT bất kể
+  // closure nào tạo ra nó, cùng lý do `hangDoi` ở trên cũng phải là ref.
+  // Dùng một TẬP theo vị trí thay vì một cờ boolean đơn: nếu chỉ có một cờ và
+  // lần gửi THÀNH CÔNG nào cũng xoá nó, thì một câu giữa bài lỡ gửi hỏng sẽ bị
+  // "rửa sạch" bởi một câu KHÁC gửi thành công sau đó — trong khi câu hỏng kia
+  // vẫn còn `user_answer` NULL trong database. Theo dõi từng vị trí thì gửi lại
+  // thành công CHO ĐÚNG vị trí vừa hỏng (chỉ khả thi với câu cuối — câu duy
+  // nhất còn hiện lại được sau khi hỏng, vì giao diện không có nút lùi) mới
+  // xoá được cảnh báo, còn câu hỏng ở giữa bài (không còn cách nào gửi lại) sẽ
+  // chặn nộp vĩnh viễn cho tới hết phiên — đúng yêu cầu "còn câu chưa gửi được
+  // thì chặn nộp".
+  const viTriLoi = useRef<Set<number>>(new Set());
+
+  const tieuDe = loaiBai === "remedial" ? `Bài bổ túc buổi ${buoi ?? "?"}` : `Bài buổi ${buoi ?? "?"}`;
+
+  // SỬA SAU VÒNG SOÁT CUỐI (finding 1, lớp phòng thủ thứ hai): một bài
+  // `in_progress` có thể sống sót với 0 câu hỏi — trước bản vá `createVocabExam`
+  // có xoá bù (src/lib/exam/run.ts) khi insert `assessment_items` thất bại
+  // giữa chừng, hoặc chính lượt xoá bù đó cũng lỗi nốt. `cauHoi[i]` khi đó
+  // LUÔN `undefined`. Cho một lối thoát THẬT ở đây thay vì `return null` (im
+  // lặng render trang trắng) — TRƯỚC bản vá này nút "Bỏ bài" nằm SAU chỗ
+  // return sớm nên không bao giờ tới lượt hiện ra, khoá cứng người học ra
+  // khỏi mọi bài thi vì chỉ số một-phần `assessments_one_in_progress`.
+  if (cauHoi.length === 0) {
+    return (
+      <main className="flex flex-col gap-4">
+        <h1 data-testid="exam-heading" className="text-lg font-semibold">{tieuDe}</h1>
+        <p data-testid="exam-rong" role="alert" className="text-sm text-rose-700">
+          Bài thi này không còn câu hỏi nào — có gì đó đã hỏng lúc dựng đề.
+          Bấm &quot;Bỏ bài&quot; bên dưới để quay lại buổi học và làm bài mới.
+        </p>
+        <button
+          type="button"
+          data-testid="exam-bo-bai"
+          disabled={dangBo}
+          onClick={() => batDauBo(() => boBaiThi(assessmentId))}
+          className="self-start text-sm text-rose-700 underline disabled:opacity-50"
+        >
+          Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học
+        </button>
+      </main>
+    );
+  }
+
+  const cau = cauHoi[i];
+  // `noUncheckedIndexedAccess` khiến `cauHoi[i]` suy ra `CauHoi | undefined` dù
+  // bất biến của component đảm bảo `i` luôn nằm trong biên (khởi tạo bằng
+  // `chiSoDauTienChuaTraLoi`, luôn kẹp trong [0, cauHoi.length-1] vì `cauHoi`
+  // không rỗng ở nhánh này; `setI(i + 1)` chỉ chạy khi `!cuoi` tức
+  // `i < cauHoi.length - 1`). Chặn ở đây — cùng khuôn `card`/`if (!card)
+  // return null` của `Deck` (components/vocab/deck.tsx) — để TS thu hẹp kiểu
+  // cho phần thân còn lại, kể cả bên trong `chon` được định nghĩa sau dòng này.
+  if (!cau) return null;
+  const cuoi = i >= cauHoi.length - 1;
+
+  // Nhận `pos` từ nơi gọi thay vì đọc `cau.position` ngay trong thân hàm: TS
+  // không mang phần thu hẹp `if (!cau) return null` ở trên vào một hàm lồng
+  // được ĐỊNH NGHĨA sau đó (dù chỉ ĐỌC cùng biến `const` không đổi) — đây
+  // KHÔNG phải một cái bẫy hiếm gặp, cắt ngay tại điểm gọi là cách chắc chắn
+  // sạch với TS mà không cần khẳng định non-null (`!`).
+  function chon(pos: number, dapAn: string) {
+    hangDoi.current = hangDoi.current
+      .then(() => traLoi(assessmentId, pos, dapAn))
+      .then(({ ghiNhanLanNay, dung }) => {
+        viTriLoi.current.delete(pos);
+        // SỬA SAU VÒNG SOÁT CUỐI (finding 3): chỉ hiện dải đúng/sai khi CHÍNH
+        // lượt bấm này vừa được chấm thật (`ghiNhanLanNay`). Vị trí đã có đáp
+        // án ghi từ trước (mở lại một bài đang làm dở rồi lỡ bấm lại một câu
+        // — hiếm vì `i` đã khởi động ở câu đầu tiên CHƯA trả lời, nhưng vẫn
+        // có thể xảy ra ở đúng câu khởi động nếu một tab khác vừa trả lời nó
+        // song song) sẽ trả `dung` không mô tả điều đã ghi trong database —
+        // ẩn dải đi còn trung thực hơn hiện một giá trị có thể sai.
+        setKetQuaTruoc(ghiNhanLanNay ? dung : null);
+        setLoiGui(viTriLoi.current.size > 0);
+      })
+      .catch(() => {
+        viTriLoi.current.add(pos);
+        setLoiGui(true);
+      });
+
+    if (cuoi) {
+      batDauNop(async () => {
+        await hangDoi.current;
+        // Còn vị trí nào chưa gửi được thì CHẶN nộp: nộp lúc này cho điểm thấp
+        // giả, và người học không có cách nào biết vì sao. Đọc
+        // `viTriLoi.current` (ref, luôn mới nhất) chứ không phải state
+        // `loiGui` chụp lúc bấm — xem chú thích tại chỗ khai báo ref phía trên.
+        if (viTriLoi.current.size > 0) return;
+        await nopBai(assessmentId);
+      });
+      return;
+    }
+    setI(i + 1);
+  }
+
+  return (
+    <main className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h1 data-testid="exam-heading" className="text-lg font-semibold">{tieuDe}</h1>
+        <span data-testid="exam-tien-do" className="text-sm font-medium">
+          Câu {i + 1}/{cauHoi.length}
+        </span>
+      </div>
+
+      {/* Finding 5 (vòng soát cuối): bài `in_progress` tìm thấy KHÁC với thứ
+          người học vừa bấm (buổi khác, hoặc bổ túc thay vì bài buổi) — trước
+          bản vá này im lặng đưa thẳng vào 30 câu vô danh. */}
+      {canhBaoLechBuoi && (
+        <p data-testid="exam-lech-buoi" role="alert" className="text-sm text-amber-700">
+          Đây KHÔNG phải bài bạn vừa chọn — bạn đang có một bài làm dở khác
+          ({tieuDe}) nên được đưa vào đây để làm tiếp. Bấm &quot;Bỏ bài&quot;
+          bên dưới nếu muốn huỷ bài này rồi bắt đầu đúng bài vừa chọn.
+        </p>
+      )}
+
+      {ketQuaTruoc !== null && (
+        <span
+          data-testid="exam-ket-qua-truoc"
+          className={ketQuaTruoc ? "text-sm text-emerald-700" : "text-sm text-rose-700"}
+        >
+          {ketQuaTruoc ? "Câu trước: đúng" : "Câu trước: sai"}
+        </span>
+      )}
+
+      <p data-testid="exam-de" className="text-lg">{cau.prompt}</p>
+
+      <div className="flex flex-col gap-2">
+        {cau.options.map((o) => (
+          <button
+            key={o}
+            type="button"
+            data-testid="exam-option"
+            disabled={dangNop || dangBo}
+            onClick={() => chon(cau.position, o)}
+            className="rounded border border-slate-300 px-4 py-2 text-left hover:bg-slate-50 disabled:opacity-50"
+          >
+            {o}
+          </button>
+        ))}
+      </div>
+
+      {/* SỬA SAU VÒNG SOÁT CUỐI (finding 4): thông điệp cũ ("Kiểm tra mạng
+          rồi chọn lại đáp án") không đúng sự thật cho phần lớn trường hợp —
+          giao diện không có nút lùi, nên với một câu hỏng ở GIỮA bài không hề
+          có đáp án nào để "chọn lại". Nói đúng thứ đang biết (còn bao nhiêu
+          câu chưa gửi được) và thứ THẬT SỰ hành động được (tải lại trang giờ
+          đã an toàn — finding 3 làm cho việc mở lại bài giữ đúng tiến độ và
+          không lặp lại các câu đã ghi). */}
+      {loiGui && (
+        <p data-testid="exam-loi-gui" role="alert" className="text-sm text-amber-700">
+          Còn {viTriLoi.current.size} câu chưa gửi được lên máy chủ, nên chưa
+          nộp bài được. Tải lại trang này — bài sẽ giữ đúng những câu đã gửi
+          thành công và cho làm tiếp từ câu đầu tiên chưa trả lời.
+        </p>
+      )}
+
+      {/* Lối thoát cho người học không muốn làm tiếp bài này: bấm LÀM BÀI ở
+          buổi học sẽ đưa thẳng vào lại bài dang dở (yêu cầu C bàn giao), nên
+          phải có một cách BỎ HẲN ngay tại đây — nếu không, người từng bỏ dở
+          một bài không còn muốn làm sẽ mắc kẹt vĩnh viễn ở chính bài đó. */}
+      <button
+        type="button"
+        data-testid="exam-bo-bai"
+        disabled={dangNop || dangBo}
+        onClick={() => batDauBo(() => boBaiThi(assessmentId))}
+        className="self-start text-sm text-rose-700 underline disabled:opacity-50"
+      >
+        Bỏ bài — huỷ bài đang làm dở, không lưu kết quả, quay lại buổi học
+      </button>
+    </main>
+  );
+}

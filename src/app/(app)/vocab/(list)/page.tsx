@@ -111,8 +111,11 @@ function describe(state: ActivityState, isReview: boolean): string {
       // từng được ghi vào `assessments` (bài thi là lát 2b), nên trạng thái
       // của nó CHỈ có thể là "chua-lam" suốt lát này. "chưa học" ngụ ý người
       // học bỏ dở một việc có thể làm; nói vậy cho ô này là sai — đổi thành
-      // "sắp có", nhất quán với nút LÀM BÀI (dẫn `/sap-co`) và thẻ Ngữ pháp
-      // trên dashboard ("Sắp có").
+      // "sắp có", nhất quán với thẻ Ngữ pháp trên dashboard ("Sắp có"). Trang
+      // `/sap-co` mà bản chú thích gốc nhắc tới đã bị xoá ở lát 2b (Task 5):
+      // nút LÀM BÀI của buổi học giờ dựng bài thi thật và vào thẳng
+      // `/exam/[id]` (xem `batDauBaiThi`, exam/[id]/actions.ts) — ô Ôn tập ở
+      // ĐÂY vẫn chưa có đích tới, không liên quan tới đường dẫn cũ đã mất.
       return isReview ? "sắp có" : "chưa học";
     case "dang-hoc":
       // +1 vì `wordIndex` đếm từ 0 còn người học đếm từ 1.

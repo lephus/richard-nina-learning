@@ -50,7 +50,7 @@ export default async function BrowsePage({
       <Deck
         cards={cards}
         initialIndex={0}
-        examHref={null}
+        examAction={null}
         lessonId={null}
         initialHideWord={hideWord}
       />

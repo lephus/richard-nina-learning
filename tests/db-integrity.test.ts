@@ -94,4 +94,31 @@ describe.skipIf(!hasEnv)("toàn vẹn database đối chiếu data/clean/", () =
     const orphans = (qs ?? []).filter((q) => !validIds.has(q.lesson_id as number));
     expect(orphans).toEqual([]);
   });
+
+  // Finding 2, vòng soát cuối lát 2b: `assessments.scope` ghi `lessons.id`
+  // (route param — xem exam/[id]/actions.ts, ket-qua/actions.ts,
+  // ket-qua/page.tsx), nhưng `0010_phase2_reset.sql` định nghĩa scope là
+  // ORDINAL buổi (1..20), và CẢ `src/lib/curriculum/progress.ts` (so sánh với
+  // ordinal từ `lessonsOf()`) LẪN `src/lib/stats/compute.ts` (hiện
+  // "Buổi {scope[0]}" như một ordinal) đều đọc scope theo nghĩa đó — hai
+  // NGHĨA khác nhau của cùng một mảng số, chỉ trùng nhau HÔM NAY vì
+  // `scripts/phase0/05-seed.ts` xoá sạch rồi chèn lại KHÔNG reset sequence
+  // của `lessons.id`. Một lần re-seed bất kỳ có thể làm `id` lệch khỏi
+  // `ordinal` — khi đó bài thi đã nộp sẽ không còn khớp đúng buổi/ô hoạt
+  // động trên `/vocab`, `/stats` gắn nhãn "Buổi N" sai cho MỌI điểm, và link
+  // "quay lại buổi học" ở trang kết quả trỏ nhầm buổi.
+  //
+  // Test này KHÔNG sửa được sự trùng hợp đó — đó là một refactor ordinal↔id
+  // ngoài phạm vi vòng soát này (xem quyết định ghi trong report của vòng
+  // soát). Nó chỉ đảm bảo NẾU sự trùng hợp vỡ (re-seed làm lệch id), lỗi hiện
+  // ra NGAY Ở ĐÂY thành một dòng đỏ rõ ràng, thay vì âm thầm làm sai dữ liệu
+  // của người học ở ba nơi khác nhau không ai ngờ tới.
+  it("lessons.id trùng với ordinal cho cả 20 dòng — hai nửa ứng dụng đang dựa vào sự trùng hợp này", async () => {
+    const { data, error } = await admin.from("lessons").select("id, ordinal");
+    if (error) throw error;
+    expect(data).toHaveLength(plan.length);
+    for (const row of data ?? []) {
+      expect(row.id).toBe(row.ordinal);
+    }
+  });
 });

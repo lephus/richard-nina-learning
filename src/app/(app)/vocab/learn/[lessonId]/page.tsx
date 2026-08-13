@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { loadCards } from "@/lib/vocab/load-cards";
 import { groupOf } from "@/lib/curriculum/groups";
 import { Deck } from "@/components/vocab/deck";
+import { batDauBaiThi } from "@/app/(app)/exam/[id]/actions";
 
 export default async function LearnPage({
   params,
@@ -44,7 +45,7 @@ export default async function LearnPage({
       <Deck
         cards={cards}
         initialIndex={cursorRes.data?.word_index ?? 0}
-        examHref={`/vocab/learn/${id}/sap-co`}
+        examAction={batDauBaiThi.bind(null, id)}
         lessonId={id}
         initialHideWord={hideWord}
       />
