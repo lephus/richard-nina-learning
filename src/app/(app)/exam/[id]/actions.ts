@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import {
   baiDangLamCua, boBaiDangLam, recordAnswer, submitExam, timHoacDungBaiThi,
   type KetQuaTraLoi,
@@ -12,7 +13,7 @@ import { lessonsOf, phamViThuocNhom } from "@/lib/curriculum/groups";
 /** Dựng bài thi cho một buổi rồi chuyển thẳng vào bài. */
 export async function batDauBaiThi(lessonId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   // Kiểm TRƯỚC khi dựng bài mới, SỚM nhất có thể — trước cả hai lượt đọc
@@ -82,7 +83,7 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
  */
 export async function batDauOnTap(groupId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   // Cùng tối ưu + cùng cảnh báo lệch phạm vi đã dùng ở `batDauBaiThi` — xem
@@ -114,7 +115,7 @@ export async function traLoi(
   assessmentId: number, position: number, answer: string,
 ): Promise<KetQuaTraLoi> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
   return recordAnswer(supabase, user.id, assessmentId, position, answer);
 }
@@ -133,7 +134,7 @@ export async function nopBai(assessmentId: number): Promise<void> {
  */
 export async function boBaiThi(assessmentId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const baiDaXoa = await boBaiDangLam(supabase, user.id, assessmentId);

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 
 /**
  * Danh sách 20 bài ngữ pháp, mỗi dòng ghép điểm GẦN NHẤT (bài đã nộp mới
@@ -9,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 export default async function GrammarPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const [lessonsRes, assessmentsRes] = await Promise.all([

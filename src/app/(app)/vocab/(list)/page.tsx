@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { batDauOnTap } from "@/app/(app)/exam/[id]/actions";
 import { wordRangeLabel, WORDS_PER_LESSON } from "@/lib/curriculum/groups";
 import {
@@ -10,7 +11,7 @@ import {
 
 export default async function VocabPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const [lessonsRes, assessmentsRes, cursorsRes] = await Promise.all([

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { loadCards } from "@/lib/vocab/load-cards";
 import { groupOf } from "@/lib/curriculum/groups";
 import { Deck } from "@/components/vocab/deck";
@@ -16,7 +17,7 @@ export default async function LearnPage({
   if (!Number.isInteger(id) || id <= 0) notFound();
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const { data: lesson, error: lessonError } = await supabase

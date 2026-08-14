@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { themRelNoopenerChoLienKetNgoai } from "@/lib/content/external-links";
 import { suaDuongDanAnh } from "@/lib/content/fix-image-src";
 import { batDauBaiNguPhap } from "./actions";
@@ -38,7 +39,7 @@ export default async function GrammarLessonPage({
   if (!Number.isInteger(ordinal) || ordinal < 1 || ordinal > TONG_SO_BAI) notFound();
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const { data: bai, error } = await supabase

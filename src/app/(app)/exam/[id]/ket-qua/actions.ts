@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { baiDangLamCua, timHoacDungBaiThi } from "@/lib/exam/run";
 import { napPhamVi } from "@/lib/exam/load-scope";
 
@@ -20,7 +21,7 @@ import { napPhamVi } from "@/lib/exam/load-scope";
  */
 export async function batDauBoTuc(assessmentId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   // SỬA SAU VÒNG SOÁT CUỐI (finding 5): đọc `scope` của bài CHA trước khi
@@ -117,7 +118,7 @@ export async function batDauBoTuc(assessmentId: number): Promise<void> {
  */
 export async function lamLaiBai(assessmentId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const dangLam = await baiDangLamCua(supabase, user.id);
