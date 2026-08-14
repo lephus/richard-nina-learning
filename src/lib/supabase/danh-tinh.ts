@@ -3,11 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 /**
  * Danh tính người dùng cho request hiện tại, **không gọi mạng**.
  *
- * Thay cho hàm `getUser()` của `auth`, thứ mà mọi trang từng gọi — viết tách
- * đôi tên gọi ở đây (không viết liền `auth` + dấu chấm + `getUser()`) để tệp
- * này không tự khớp phép quét chuỗi của `tests/khong-con-getuser.test.ts`,
- * test đó tìm đúng cách viết liền mà mọi CHỖ GỌI thật sự dùng.
- * `getUser()` hỏi máy chủ
+ * Thay cho `auth.getUser()`, thứ mà mọi trang từng gọi. `getUser()` hỏi máy chủ
  * Supabase Auth mỗi lần — đo được 127–135ms — và app gọi nó BA lần cho một lần
  * điều hướng (middleware, layout, chính trang), tức ~64% thời gian tải trang chỉ
  * để hỏi đi hỏi lại cùng một token là của ai.
