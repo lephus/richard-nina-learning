@@ -120,6 +120,15 @@ export async function traLoi(
   return recordAnswer(supabase, user.id, assessmentId, position, answer);
 }
 
+// CỐ Ý không có `danhTinhNguoiDung`/redirect ở đây, khác bốn action còn lại
+// trong tệp này — ĐỪNG chép action này làm khuôn cho action mới. An toàn vì
+// `submitExam` đi qua RPC `finalize_assessment_items` (`security definer`,
+// xem 0009_finalize_atomic.sql): hàm tự kiểm `a.user_id = auth.uid()` bên
+// trong thân hàm TRƯỚC khi đụng tới dòng nào, nên request không đăng nhập
+// (`auth.uid()` là NULL) hay đăng nhập nhưng không phải chủ bài đều bị chính
+// RPC từ chối bằng lỗi 42501 — thiếu bước kiểm ở action này chỉ khiến việc từ
+// chối đó xảy ra muộn hơn một nhịp, không mở ra quyền nào mới. Việc bỏ sót có
+// từ trước nhánh xác thực cục bộ này, không phải hệ quả của nó.
 export async function nopBai(assessmentId: number): Promise<void> {
   const supabase = await createClient();
   await submitExam(supabase, assessmentId);

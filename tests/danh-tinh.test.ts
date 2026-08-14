@@ -36,6 +36,17 @@ describe("danhTinhNguoiDung", () => {
     expect(r).toBeNull();
   });
 
+  // Chốt bảo đảm tường minh mới thêm: `sub` hợp lệ thôi chưa đủ, `role` phải
+  // đúng "authenticated". Không có ca này, việc thêm điều kiện `role` ở
+  // `danh-tinh.ts` không có gì giữ nó khỏi bị xoá lặng lẽ trong một lần "dọn
+  // dẹp" sau này.
+  it("trả null khi có sub nhưng role không phải authenticated", async () => {
+    const r = await danhTinhNguoiDung(
+      gia({ data: { claims: { sub: "abc-123", role: "anon" } }, error: null }),
+    );
+    expect(r).toBeNull();
+  });
+
   // Không được ném: mọi chỗ gọi đều dùng kết quả để quyết định chuyển hướng,
   // và một exception ở đó thành trang lỗi thay vì màn hình đăng nhập.
   it("không ném khi getClaims tự ném", async () => {

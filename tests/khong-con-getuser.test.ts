@@ -24,6 +24,15 @@ function moiTepNguon(thuMuc: string): string[] {
  *
  * Cắt chú thích trước rồi mới quét: tài liệu được tự do nhắc tên API cũ, còn
  * mã thì không được gọi nó.
+ *
+ * GIỚI HẠN đã biết, ghi rõ ra để không ai lỡ tin chốt chặn này bao quát hơn
+ * thực tế: đây là một phép quét chuỗi, không phải trình phân tích cú pháp. Nó
+ * chỉ khớp đúng chuỗi ký tự `auth.getUser()` — một lời gọi viết
+ * `auth.getUser(token)`, tách ra nhiều dòng (`auth\n  .getUser()`), hay gọi
+ * qua chỉ mục động (`auth["getUser"]`) đều lọt qua mà chốt chặn không hề biết.
+ * Nó cũng không thể phát hiện một trang MỚI quên xác thực hoàn toàn — không
+ * có `auth.getUser()` nào để bắt vì không có lời gọi xác thực nào cả; layout
+ * dưới `src/app/(app)/` là tấm chắn cho trường hợp đó, không phải test này.
  */
 function boChuThich(nguon: string): string {
   return nguon
@@ -38,18 +47,46 @@ describe("không còn gọi hàm lấy người dùng qua mạng trong src/", ()
   //
   // Quét cả `src/middleware.ts` chứ không riêng thư mục route: middleware nằm
   // ngoài `app/` nhưng chính là vòng gọi đắt nhất trong ba vòng.
+  const tepNguon = moiTepNguon("src");
+
+  // Kiểm soát dương cho chính phép quét tệp: nếu `moiTepNguon` vì lý do nào đó
+  // (chạy sai thư mục làm việc, lỗi quyền đọc, đường dẫn đổi tên...) trả về
+  // mảng rỗng, assertion `toEqual([])` bên dưới xanh một cách VÔ NGHĨA — không
+  // quét được tệp nào cũng "không tìm thấy" y hệt như quét sạch thật. Chốt một
+  // số lượng hợp lý (repo hiện có 63 tệp .ts/.tsx dưới src/) để phân biệt
+  // "sạch" với "không chạy".
+  it("quét được một số lượng tệp hợp lý dưới src/", () => {
+    expect(tepNguon.length).toBeGreaterThan(20);
+  });
+
   it("không tệp nào dưới src/ gọi nó trong mã thật", () => {
-    const pham = moiTepNguon("src")
+    const pham = tepNguon
       .filter((f) => boChuThich(readFileSync(f, "utf8")).includes("auth.getUser()"))
       .map((f) => f.replace(/^src\//, ""));
     expect(pham).toEqual([]);
   });
 
   // Chốt chặn cho chính chốt chặn: nếu ai đó "đơn giản hoá" `boChuThich` đi,
-  // test trên vẫn xanh trong khi đã mất tác dụng. Hai ca này giữ cho nó thật.
+  // test trên vẫn xanh trong khi đã mất tác dụng. Ba ca này giữ cho nó thật.
   it("bỏ qua chú thích nhưng vẫn bắt được mã thật", () => {
     expect(boChuThich("// dùng auth.getUser() ở đây").includes("auth.getUser()")).toBe(false);
     expect(boChuThich("/* auth.getUser() */").includes("auth.getUser()")).toBe(false);
     expect(boChuThich("const u = await supabase.auth.getUser();").includes("auth.getUser()")).toBe(true);
+  });
+
+  // Ca riêng cho vế `(^|[^:])` của regex — phần dễ bị "đơn giản hoá" nhất vì
+  // nhìn ngoài không rõ nó để làm gì. Không có vế bảo vệ đó, `//` bên trong
+  // một URL đứng TRƯỚC lời gọi thật trên CÙNG một dòng bị hiểu nhầm là điểm
+  // bắt đầu chú thích, và toàn bộ phần còn lại của dòng — gồm cả lời gọi thật
+  // — bị cắt mất theo. Đã xác nhận bằng tay: thay `(^|[^:])\/\/.*$` bằng
+  // `\/\/.*$` (bỏ hẳn vế bảo vệ, đúng regex ngây thơ mà ai đó có thể "gọn hoá"
+  // về) làm đúng ca này ĐỎ trong khi ba ca ở test trên vẫn xanh — tức bản đầu
+  // của test này (không có ca này) cho phép lọt đúng kiểu đơn giản hoá mà nó
+  // được viết ra để chặn.
+  it("URL trong chuỗi cùng dòng không nuốt mất lời gọi thật đứng sau nó", () => {
+    const dong =
+      'const docsUrl = "https://supabase.com/docs/reference/javascript/auth-getuser"; ' +
+      "const u = await supabase.auth.getUser();";
+    expect(boChuThich(dong).includes("auth.getUser()")).toBe(true);
   });
 });
