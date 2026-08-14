@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { signOut } from "@/app/(auth)/actions";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
 
   // Lớp chặn thứ hai. Không thừa: middleware có thể bị bỏ qua khi matcher
   // cấu hình sai, và đó là loại lỗi âm thầm để lộ dữ liệu.

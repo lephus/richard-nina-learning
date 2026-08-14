@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import {
   baiDangLamCua, boBaiDangLam, recordAnswer, submitExam, timHoacDungBaiThi,
   type KetQuaTraLoi,
@@ -12,7 +13,7 @@ import { lessonsOf, phamViThuocNhom } from "@/lib/curriculum/groups";
 /** Dựng bài thi cho một buổi rồi chuyển thẳng vào bài. */
 export async function batDauBaiThi(lessonId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   // Kiểm TRƯỚC khi dựng bài mới, SỚM nhất có thể — trước cả hai lượt đọc
@@ -82,7 +83,7 @@ export async function batDauBaiThi(lessonId: number): Promise<void> {
  */
 export async function batDauOnTap(groupId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   // Cùng tối ưu + cùng cảnh báo lệch phạm vi đã dùng ở `batDauBaiThi` — xem
@@ -114,11 +115,20 @@ export async function traLoi(
   assessmentId: number, position: number, answer: string,
 ): Promise<KetQuaTraLoi> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
   return recordAnswer(supabase, user.id, assessmentId, position, answer);
 }
 
+// CỐ Ý không có `danhTinhNguoiDung`/redirect ở đây, khác bốn action còn lại
+// trong tệp này — ĐỪNG chép action này làm khuôn cho action mới. An toàn vì
+// `submitExam` đi qua RPC `finalize_assessment_items` (`security definer`,
+// xem 0009_finalize_atomic.sql): hàm tự kiểm `a.user_id = auth.uid()` bên
+// trong thân hàm TRƯỚC khi đụng tới dòng nào, nên request không đăng nhập
+// (`auth.uid()` là NULL) hay đăng nhập nhưng không phải chủ bài đều bị chính
+// RPC từ chối bằng lỗi 42501 — thiếu bước kiểm ở action này chỉ khiến việc từ
+// chối đó xảy ra muộn hơn một nhịp, không mở ra quyền nào mới. Việc bỏ sót có
+// từ trước nhánh xác thực cục bộ này, không phải hệ quả của nó.
 export async function nopBai(assessmentId: number): Promise<void> {
   const supabase = await createClient();
   await submitExam(supabase, assessmentId);
@@ -133,7 +143,7 @@ export async function nopBai(assessmentId: number): Promise<void> {
  */
 export async function boBaiThi(assessmentId: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const baiDaXoa = await boBaiDangLam(supabase, user.id, assessmentId);

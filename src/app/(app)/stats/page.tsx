@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import {
   vocabProgress,
   rhythm,
@@ -41,9 +42,7 @@ interface WordDbRow {
 
 export default async function StatsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   // AppLayout đã chặn ở tầng trên, nhưng vẫn tường minh ở đây — cùng cách
   // dashboard/page.tsx đang làm — và cần user.id ngay dưới để lọc tường minh
   // từng bảng riêng-tư-theo-người-dùng.

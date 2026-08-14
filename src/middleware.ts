@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 
 // Trước đây middleware giữ một danh sách TAY các route "được bảo vệ"
 // (`PROTECTED = ["/dashboard", "/learn"]`) — sai không chỉ vì THIẾU (bỏ sót
@@ -75,20 +76,15 @@ export async function middleware(request: NextRequest) {
   );
 
   // Phải gọi SỚM, trước khi sinh response. Nếu token làm mới xong sau khi
-  // response đã chốt thì phiên mới không ghi được vào cookie.
-  let user = null;
-  try {
-    const {
-      data: { user: fetchedUser },
-    } = await supabase.auth.getUser();
-    user = fetchedUser;
-  } catch {
-    // getUser() gọi mạng tới Supabase Auth — có thể lỗi mạng/timeout tạm
-    // thời. Fail closed: coi như CHƯA đăng nhập, không bao giờ coi như đã
-    // đăng nhập khi có lỗi. Route bảo vệ sẽ bị chuyển hướng /login (an
-    // toàn), route công khai vẫn render bình thường.
-    user = null;
-  }
+  // response đã chốt thì phiên mới không ghi được vào cookie. danhTinhNguoiDung
+  // gọi getClaims(), mà bên trong vẫn gọi getSession() nên việc làm mới token
+  // phiên mà middleware gánh không đổi.
+  //
+  // Không còn try/catch ở đây: fail-closed (lỗi thoáng qua → coi như CHƯA
+  // đăng nhập, không bao giờ coi như đã đăng nhập) giờ nằm TRONG helper, xem
+  // danh-tinh.ts. Bọc thêm một lớp try/catch nữa ở đây là thừa, không phải
+  // là mất đi sự đảm bảo đó.
+  const user = await danhTinhNguoiDung(supabase);
 
   if (!user && isProtectedRoute(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();

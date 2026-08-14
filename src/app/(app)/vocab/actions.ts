@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { NOTE_MAX } from "@/lib/vocab/note";
 
 /**
@@ -18,7 +19,7 @@ export async function saveNote(wordId: number, body: string): Promise<void> {
   const clipped = body.slice(0, NOTE_MAX);
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) throw new Error("chưa đăng nhập");
 
   const { error } = await supabase
@@ -41,7 +42,7 @@ export async function saveCursor(lessonId: number, wordIndex: number): Promise<v
   }
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) throw new Error("chưa đăng nhập");
 
   const { error } = await supabase

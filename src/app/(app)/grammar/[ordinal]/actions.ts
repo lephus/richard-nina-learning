@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { baiDangLamCua, timHoacDungBaiNguPhap } from "@/lib/exam/run";
 import type { GrammarQuestionLite } from "@/lib/exam/build-grammar";
 
@@ -18,7 +19,7 @@ import type { GrammarQuestionLite } from "@/lib/exam/build-grammar";
  */
 export async function batDauBaiNguPhap(ordinal: number): Promise<void> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   // SỬA Ở VÒNG SOÁT CUỐI lát 2d (mục 6, IMPORTANT): tấm chắn SỚM mà CẢ HAI

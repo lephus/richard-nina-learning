@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { TOTAL_GROUPS } from "@/lib/curriculum/groups";
 import { groupStates, groupDone, nextActivity, toAssessmentRow } from "@/lib/curriculum/progress";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   // MỘT truy vấn, không phải hai. Bản trước có đọc thêm `lesson_cursor` kèm

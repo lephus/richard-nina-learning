@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { danhTinhNguoiDung } from "@/lib/supabase/danh-tinh";
 import { loadCards } from "@/lib/vocab/load-cards";
 import { lessonsOf, wordRangeLabel, TOTAL_GROUPS } from "@/lib/curriculum/groups";
 import { Deck } from "@/components/vocab/deck";
@@ -24,7 +25,7 @@ export default async function BrowsePage({
   if (!Number.isInteger(group) || group < 1 || group > TOTAL_GROUPS) notFound();
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await danhTinhNguoiDung(supabase);
   if (!user) redirect("/login");
 
   const ordinals = lessonsOf(group);
