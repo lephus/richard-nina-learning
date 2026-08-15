@@ -1,8 +1,8 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { buildVocabExam, type ExamQuestion } from "@/lib/exam/build";
+import { buildVocabExam } from "@/lib/exam/build";
 import {
-  buildGrammarExam, type GrammarExamQuestion, type GrammarQuestionLite,
+  buildGrammarExam, type GrammarQuestionLite,
 } from "@/lib/exam/build-grammar";
 import { createGrammarExam, createVocabExam, recordAnswer } from "@/lib/exam/run";
 import type { VocabLite } from "@/lib/vocab/word";
@@ -185,7 +185,7 @@ describe.skipIf(!hasEnv)("recordAnswer trả đáp án và giải thích", () =>
     expect(ket.dung).toBe(true);
     expect(cau.options).toContain(ket.dapAnDung);
     expect(typeof ket.giaiThich).toBe("string");
-    expect((ket.giaiThich as string).length).toBeGreaterThan(10);
+    expect(ket.giaiThich.length).toBeGreaterThan(10);
   });
 
   // Finding 3 (đã canh ở exam-security.test.ts) áp cho cả dapAnDung/giaiThich

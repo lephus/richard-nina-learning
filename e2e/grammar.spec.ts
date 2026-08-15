@@ -133,7 +133,7 @@ test("nộp bài ngữ pháp xong thấy điểm, không có nút bổ túc (m�
     await page.getByTestId("exam-tiep-tuc").click();
   }
 
-  await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 60_000 });
+  await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 30_000 });
   await expect(page.getByTestId("ket-qua-diem")).toBeVisible();
   // Mục 3.3 (thiết kế phase 2) + §6 (thiết kế lát 2d): bài ngữ pháp KHÔNG có
   // bổ túc — nút này không được phép hiện dù đạt hay không đạt.

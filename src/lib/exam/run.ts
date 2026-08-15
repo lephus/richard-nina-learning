@@ -415,8 +415,20 @@ export async function boBaiDangLam(
  * cách nào phân biệt "câu này VỪA được chấm" với "vị trí này đã có đáp án ghi
  * từ trước, và giá trị đúng/sai dưới đây không mô tả điều đã được chấm" — hai
  * tình huống hoàn toàn khác nhau nhưng trả về giống hệt nhau. `ghiNhanLanNay`
- * tách rõ hai trường hợp đó: nơi gọi (ExamRunner) chỉ được phép hiện dải
- * "câu trước: đúng/sai" khi cờ này là `true`.
+ * tách rõ hai trường hợp đó: nơi gọi (ExamRunner) chỉ được phép hiện phán
+ * quyết đúng/sai ("Chính xác."/"Chưa đúng.", trong khối `exam-phan-hoi` ngay
+ * tại câu vừa làm) khi cờ này là `true`; khi `false` thì hiện thông báo
+ * trung thực "đã ghi nhận từ một lần trả lời trước" thay vì đoán (xem
+ * `ExamRunner.tsx`, nhánh theo `ghiNhanLanNay` quanh dòng 570-583).
+ *
+ * SỬA CHÚ THÍCH Ở VÒNG DỌN CUỐI (trước khi hợp nhất nhánh "dừng lại xem kết
+ * quả" vào main): đoạn trên từng kể "nơi gọi chỉ được phép hiện dải 'câu
+ * trước: đúng/sai'" — dải đầu trang đó bị bỏ HẲN trong chính lát này (xem
+ * chú thích còn giữ lại tại `ExamRunner.tsx`, chỗ từng đặt nó, ngay trên
+ * `exam-de`): phản hồi giờ nằm tại câu vừa làm, không phải một dải riêng ở
+ * đầu trang cho câu đã lùi lại phía sau. Câu kể cũ vì vậy sai về giao diện
+ * hiện tại, dù ý nghĩa cốt lõi của `ghiNhanLanNay` (chỉ được hiện phán quyết
+ * khi `true`) vẫn đúng nguyên.
  */
 export interface KetQuaTraLoi {
   /**
@@ -625,10 +637,20 @@ export async function recordAnswer(
   // "CÂU TRẢ LỜI ĐẦU TIÊN THẮNG": không có lượt ghi thứ hai vô điều kiện nào
   // ở đây để "sửa lại" một đáp án đã lưu — cố ý CHỈ giữ một luật (đầu tiên
   // thắng) thay vì hai luật chồng nhau, khớp với giao diện vốn không bao giờ
-  // cho lùi lại một câu đã trả lời. Lệnh gọi thua cuộc đua vẫn trả về đúng/sai
-  // của CHÍNH đáp án nó vừa nộp (không phải đáp án đã lưu trong DB) — người
-  // gọi chỉ dùng giá trị này để hiện dải "câu trước: đúng/sai" mang tính tham
-  // khảo, không dùng để quyết định có ghi hay không.
+  // cho lùi lại một câu đã trả lời. Lệnh gọi thua cuộc đua vẫn tính `dung`
+  // trên đáp án CHÍNH NÓ vừa gửi — nhưng thứ đã được CHẤM và ghi thật vào
+  // `assessment_items` là đáp án của LẦN TRẢ LỜI ĐẦU TIÊN, có thể khác đáp án
+  // lần này (bấm lại sau khi đã có đáp án, hoặc hai lệnh gọi đồng thời). Vì
+  // vậy `dung` ở lượt thua KHÔNG đáng tin để hiện phán quyết đúng/sai — hiện
+  // nó ra là nói dối người học (màn hình báo "Chính xác" trong khi trang kết
+  // quả chấm SAI theo đáp án đã ghi). Đây là lý do `ExamRunner.tsx` (xem
+  // nhánh theo `ghiNhanLanNay` tại render, quanh dòng 570-583) CẤM hiện phán
+  // quyết đúng/sai khi `ghiNhanLanNay === false`, thay bằng thông báo trung
+  // thực "câu này đã được ghi nhận từ một lần trả lời trước" — ĐỪNG coi
+  // `dung` lúc `ghiNhanLanNay === false` là "mang tính tham khảo" và nới lỏng
+  // chốt chặn đó; một bản chú thích cũ ở đây từng viết đúng như vậy và đã bị
+  // sửa lại (vòng dọn cuối trước khi hợp nhất nhánh "dừng lại xem kết quả"
+  // vào main) vì nó ngược hẳn luật thật.
   const { data: updated, error: ghiErr } = await supabase
     .from("assessment_items")
     .update({ user_answer: answer, is_correct: dung })
@@ -643,6 +665,25 @@ export async function recordAnswer(
   // là một lượt trả lời lại TUẦN TỰ (bấm lại sau khi đã có đáp án) hay một
   // lệnh gọi ĐỒNG THỜI vừa thắng — cả hai trường hợp đều không được cộng
   // thêm, vì cả hai đều không phải "lần trả lời đầu tiên" của câu này nữa.
+  //
+  // GHI NHẬN MỘT CA CÓ THẬT (không đổi logic ở đây, chỉ để người đọc sau
+  // không tưởng nhầm là lỗi): `traLoiCoThuLai` (`ExamRunner.tsx`) tự gọi lại
+  // `recordAnswer` cho ĐÚNG vị trí vừa gửi khi lần gọi trước ném lỗi — kể cả
+  // khi UPDATE ở trên đã COMMIT xong nhưng phản hồi bị rớt trên đường về
+  // (client thấy lỗi mạng dù server đã ghi). Lần thử lại đó thua CAS
+  // (`user_answer` không còn `null`) nên `ghiNhanLanNay` ra `false`, và người
+  // học thấy thông báo "câu này đã được ghi nhận từ một lần trả lời trước" —
+  // dù thực tế họ chỉ bấm ĐÚNG MỘT LẦN. Trung thực nhưng dễ gây hoang mang.
+  // Ca này vô hại hơn vẻ ngoài của nó: đáp án lần "thử lại" giống hệt đáp án
+  // lần đầu (cùng một cú bấm, retry gửi lại đúng tham số), nên `dung` vẫn
+  // khớp với thứ đã ghi, và `dapAnDung`/`giaiThich` luôn đúng bất kể
+  // `ghiNhanLanNay` (xem JSDoc `KetQuaTraLoi.dapAnDung`) — chỉ dòng chữ phán
+  // quyết là dùng nhánh "đã ghi từ trước" thay vì "Chính xác."/"Chưa đúng."
+  // một cách không cần thiết. Không sửa vì không có cách nào ở tầng này phân
+  // biệt "thua CAS vì đây là lần thử lại của chính request đó" với "thua CAS
+  // vì một lần bấm THẬT SỰ khác đã ghi trước" — cả hai đều là "0 dòng khớp"
+  // như nhau, và giả bộ phân biệt được sẽ tệ hơn: hiện "Chính xác." nhầm cho
+  // một ca mà thật ra là ghi đè giả.
   const ghiNhanLanNay = Boolean(updated && updated.length > 0);
   if (ghiNhanLanNay) {
     // Câu trả lời đã NẰM TRONG DATABASE ngay tại UPDATE ở trên — ghi mastery

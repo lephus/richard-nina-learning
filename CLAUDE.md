@@ -41,7 +41,7 @@ npm run phase0:book      # data/images/*.png → WebP 1600px q80 → Storage buc
 | `src/lib/` | pure domain logic, one folder per concern: `book`, `curriculum`, `exam`, `mastery`, `stats`, `vocab`, plus `supabase/server.ts` |
 | `src/content/` | parsers and schemas used by the phase0 scripts |
 | `scripts/phase0/` | offline content pipeline, run with `tsx` |
-| `supabase/migrations/` | `0001`–`0011`; tables: `profiles`, `vocab_words`, `lessons`, `lesson_words`, `grammar_lessons`, `grammar_questions`, `assessments`, `assessment_items`, `word_mastery`, `grammar_mastery`, `user_lesson_progress`, `lesson_cursor`, `word_notes` |
+| `supabase/migrations/` | `0001`–`0013`; tables: `profiles`, `vocab_words`, `lessons`, `lesson_words`, `grammar_lessons`, `grammar_questions`, `assessments`, `assessment_items`, `word_mastery`, `grammar_mastery`, `user_lesson_progress`, `lesson_cursor`, `word_notes` |
 | `data/clean/` | committed JSON: the content of record |
 | `data/images/`, `data/raw/` | **gitignored** intermediates |
 | `docs/superpowers/specs/`, `plans/` | design specs and implementation plans, one per slice — read the relevant spec before changing a feature; they record *why*, not just what |
