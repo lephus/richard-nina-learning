@@ -429,6 +429,23 @@ export interface KetQuaTraLoi {
    */
   ghiNhanLanNay: boolean;
   dung: boolean;
+  /**
+   * Chữ hiển thị của đáp án đúng. AN TOÀN để trả về client vì hàm chỉ GÁN giá
+   * trị này (từ RPC/select bên dưới) rồi trả về SAU KHI câu lệnh UPDATE có CAS
+   * (`user_answer is null`) đã chạy xong — nghĩa là tại thời điểm client nhận
+   * được `dapAnDung`, vị trí này đã bị khoá cứng (thắng HOẶC thua cuộc đua ghi
+   * đều đã ghi rồi), không còn cách nào gửi lại một đáp án KHÁC cho cùng vị
+   * trí để "sửa" theo đáp án vừa biết. Trả về TRƯỚC khi CAS chạy mới là lỗ
+   * hổng — cho ĐÚNG cái brief lát này cấm.
+   */
+  dapAnDung: string;
+  /**
+   * Giải thích tiếng Việt cho câu ngữ pháp (`grammar_questions.explanation`,
+   * qua RPC `dap_an_va_giai_thich`, Task 1). `null` cho CẢ HAI dạng câu từ
+   * vựng — spec thiết kế mục 9 "cố ý không làm": không soạn giải thích riêng
+   * cho từ vựng, dựa vào nghĩa/ví dụ người học đã thấy sẵn ở đề bài.
+   */
+  giaiThich: string | null;
 }
 
 /**
@@ -488,28 +505,68 @@ export async function recordAnswer(
 
   const itemType = item.item_type as string;
   let dapAn: string;
+  // Mặc định `null` — chỉ nhánh ngữ pháp gán lại. Khai báo cùng chỗ với
+  // `dapAn` để mỗi nhánh gán CẢ HAI cùng lúc, không rơi vào tình huống quên
+  // gán một trong hai khi có nhánh mới thêm sau này.
+  let giaiThich: string | null = null;
   if (itemType === "grammar") {
-    // Đáp án của câu ngữ pháp nằm ở `grammar_questions.answer` (một chữ cái
-    // A-D), cột đã bị revoke khỏi `authenticated` (0004_rls.sql) — RPC
-    // `answer_for_question` (security definer, 0006_lesson_position.sql) suy
-    // sẵn CHỮ HIỂN THỊ tương ứng, cùng khuôn `answer_for_word` bên dưới.
-    const { data, error } = await supabase.rpc("answer_for_question", { p_question_id: item.ref_id });
+    // THAY `answer_for_question` bằng `dap_an_va_giai_thich` (migration 0013,
+    // Task 1) — một RPC `security definer` trả CẢ HAI trường trong MỘT lượt
+    // gọi, nên đây là phép THAY chứ không phải THÊM: số vòng gọi mạng cho câu
+    // ngữ pháp không đổi so với trước lát này. `explanation` (cột nguồn của
+    // `giai_thich`) bị revoke khỏi `authenticated` cùng lý do với `answer`
+    // (0004_rls.sql) — RPC là đường hợp lệ duy nhất, xem chú thích đầu 0013.
+    const { data, error } = await supabase.rpc("dap_an_va_giai_thich", { p_question_id: item.ref_id });
     if (error) throw error;
-    dapAn = data as string;
+    // postgrest-js trả hàm `returns table(...)` thành MẢNG — cùng cái bẫy đã
+    // xử lý ở `submitExam` cho `finalize_assessment_items` bên dưới.
+    const hang = Array.isArray(data) ? data[0] : data;
+    if (!hang) {
+      throw new Error(`dap_an_va_giai_thich không trả về dòng nào cho câu hỏi ${item.ref_id}`);
+    }
+    dapAn = hang.dap_an as string;
+    giaiThich = hang.giai_thich as string | null;
   } else {
     const kind = (item.payload as { kind: string }).kind;
     if (kind === "dien") {
       const { data, error } = await supabase.rpc("answer_for_word", { p_word_id: item.ref_id });
       if (error) throw error;
       dapAn = data as string;
+
+      // Vòng gọi THÊM DUY NHẤT của cả lát này (xem bảng vòng gọi ở spec thiết
+      // kế, mục 3): `meaning_vi`/`example_vi` chỉ phục vụ HIỂN THỊ, đáp án
+      // chấm điểm đã lấy đủ từ RPC ở trên rồi. Chạy TRONG LÚC người học đang
+      // đọc màn hình kết quả của câu vừa trả lời, không phải lúc họ đang chờ
+      // phản hồi — không cộng vào độ trễ cảm nhận được của thao tác bấm chọn.
+      // `KetQuaTraLoi` (Task 2) chưa đưa hai cột này vào phần trả về — chỉ
+      // dựng sẵn hình dạng vòng gọi cho phần hiển thị sau. Lỗi ở đây vì vậy
+      // KHÔNG được chặn việc ghi câu trả lời chính: chỉ log lại, cùng khuôn
+      // phòng thủ với lỗi ghi mastery bên dưới (dữ liệu không thiết yếu không
+      // được phép làm hỏng đường chính).
+      const { error: hienThiErr } = await supabase
+        .from("vocab_words")
+        .select("meaning_vi, example_vi")
+        .eq("id", item.ref_id)
+        .single();
+      if (hienThiErr) {
+        console.error(
+          `đọc meaning_vi/example_vi hiển thị cho từ ${item.ref_id} lỗi (không chặn ghi câu trả lời)`,
+          hienThiErr,
+        );
+      }
     } else {
       // Chỉ `blank_answer` bị revoke khỏi `authenticated` (0004_rls.sql) —
-      // `word` vẫn nằm trong danh sách cột đọc công khai, nên câu "nghĩa" đọc
-      // thẳng qua client thường là đủ, không cần vòng qua RPC như câu "điền".
-      // Đây là một sự KHÔNG ĐỐI XỨNG có chủ đích giữa hai nhánh, không phải
-      // thiếu nhất quán.
+      // `word`, `meaning_vi`, `example_vi` đều nằm trong danh sách cột đọc
+      // công khai, nên câu "nghĩa" đọc thẳng qua client thường là đủ, không
+      // cần vòng qua RPC như câu "điền". Đây là một sự KHÔNG ĐỐI XỨNG có chủ
+      // đích giữa hai nhánh, không phải thiếu nhất quán. Mở rộng thêm
+      // `meaning_vi, example_vi` (Task 2, cùng lý do hiển thị như nhánh
+      // "điền" ở trên) là CÙNG một vòng gọi này — không tốn thêm vòng nào.
       const { data, error } = await supabase
-        .from("vocab_words").select("word").eq("id", item.ref_id).single();
+        .from("vocab_words")
+        .select("word, meaning_vi, example_vi")
+        .eq("id", item.ref_id)
+        .single();
       if (error) throw error;
       dapAn = data.word as string;
     }
@@ -597,7 +654,11 @@ export async function recordAnswer(
     }
   }
 
-  return { ghiNhanLanNay, dung };
+  // `dapAn`/`giaiThich` được GÁN từ lâu (ba nhánh phía trên) nhưng chỉ RỜI hàm
+  // này ở đúng dòng return này — SAU dòng UPDATE có CAS ở trên đã chạy xong.
+  // Đây chính là điều làm `dapAnDung` an toàn để gửi cho client (xem chú
+  // thích tại `KetQuaTraLoi`), không phải việc dữ liệu được tính toán muộn.
+  return { ghiNhanLanNay, dung, dapAnDung: dapAn, giaiThich };
 }
 
 /**
