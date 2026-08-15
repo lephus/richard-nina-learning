@@ -94,11 +94,19 @@ test("sau khi trả lời, bấm lại một phương án không làm gì (phư�
     await expect(page.getByTestId("exam-option").nth(k)).toBeDisabled();
   }
 
-  // `force: true` mô phỏng đúng một cú bấm chuột THẬT (không quan tâm thuộc
-  // tính DOM `disabled`, khác `click()` thường) — khẳng định handler phía
-  // component tự chặn (xem `chon` trong `ExamRunner.tsx`), không chỉ dựa vào
-  // đúng một lớp phòng thủ (thuộc tính `disabled`) mà thao tác này đã bấm
-  // xuyên qua. Không có gì đổi: vẫn câu 1, vẫn đúng khối phản hồi cũ.
+  // SỬA Ở VÒNG SỬA 1 (review, Minor 5): chú thích BẢN TRƯỚC nói `force: true`
+  // "khẳng định handler phía component tự chặn (xem `chon`)" — QUÁ MỨC đã
+  // kiểm thật: `force: true` chỉ bỏ qua các kiểm tra "actionable" của RIÊNG
+  // Playwright (hiển thị, không bị che…), KHÔNG bỏ qua được thuộc tính
+  // `disabled` của chính trình duyệt — một `<button disabled>` không phát sự
+  // kiện `click` nào cả dù bấm kiểu gì, nên `onClick`/`chon` trong
+  // `ExamRunner.tsx` KHÔNG hề chạy ở đây; lớp phòng thủ tường minh trong
+  // `chon` (chặn theo `trangThai.loai`) bảo vệ một đường KHÁC — một cú bấm
+  // lọt qua TRƯỚC khi React kịp re-render nút thành `disabled` — không phải
+  // đường kịch bản này đang đi qua. Khẳng định dưới đây vẫn hợp lệ, chỉ hẹp
+  // hơn: nó xác nhận đúng điều người dùng thật trải nghiệm — thuộc tính
+  // `disabled` một mình đã đủ để không cú bấm chuột nào đổi được gì. Không có
+  // gì đổi: vẫn câu 1, vẫn đúng khối phản hồi cũ.
   await page.getByTestId("exam-option").nth(1).click({ force: true });
   await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
   await expect(page.getByTestId("exam-phan-hoi")).toBeVisible();
@@ -387,4 +395,55 @@ test("đạt bài bổ túc thì thấy nút Làm lại bài, bấm vào dựng 
   await expect(page).toHaveURL(/\/exam\/\d+$/);
   await expect(page.getByTestId("exam-heading")).toHaveText("Bài buổi 9");
   await expect(page.getByTestId("exam-option")).toHaveCount(4);
+});
+
+/* ───────────────── Vòng sửa 1 (review) — Important 1 ───────────────── */
+//
+// Ca cụ thể mà review chỉ ra: trả lời xong câu CUỐI, đọc phản hồi, rồi đóng
+// tab TRƯỚC khi bấm "Nộp bài" — chỉ có thể xảy ra SAU lát "dừng lại xem kết
+// quả" (nộp bài giờ là một cú bấm RIÊNG, tách khỏi việc trả lời câu cuối).
+// Mở lại bài: cả 30 câu đã có `user_answer` trong database, nhưng trước bản
+// sửa `chiSoDauTienChuaTraLoi` vẫn đưa `i` về câu 30 với `trangThai =
+// "chua-tra-loi"` — hiện lại y hệt như thể câu đó CHƯA làm. Bấm một phương án
+// ở đó thua CAS (`ghiNhanLanNay: false`), và giao diện có thể hiện một phán
+// quyết đúng/sai không khớp thứ trang kết quả sẽ chấm.
+
+test("đóng trang sau câu cuối mà chưa bấm Nộp bài thì mở lại thấy màn nộp bài, không phải câu cuối như chưa làm", async ({
+  page,
+}) => {
+  // Cùng lý do nới timeout đã ghi ở "trả lời sai hết...": 30 câu, mỗi câu hai
+  // cú bấm (trừ câu cuối — kịch bản này CỐ Ý không bấm "Nộp bài" ở câu cuối).
+  test.setTimeout(240_000);
+  await login(page);
+  await page.goto("/vocab/learn/10");
+  await page.getByTestId("exam-button").click();
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
+
+  for (let n = 1; n <= 30; n++) {
+    await expect(page.getByTestId("exam-tien-do")).toHaveText(`Câu ${n}/30`);
+    const guiDapAn = page.waitForResponse((r) => r.request().method() === "POST");
+    await page.getByTestId("exam-option").first().click();
+    await guiDapAn;
+    await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
+    if (n < 30) {
+      await page.getByTestId("exam-tiep-tuc").click();
+    }
+    // n === 30: KHÔNG bấm "Nộp bài" — đây là toàn bộ điểm của kịch bản: mô
+    // phỏng đóng tab NGAY sau khi đọc phản hồi câu cuối, trước khi nộp.
+  }
+
+  const idBai = page.url().match(/\/exam\/(\d+)$/)?.[1];
+  expect(idBai).toBeTruthy();
+
+  // Mở lại — bài vẫn `in_progress`, đủ 30 câu đã có `user_answer`, `nopBai`
+  // chưa từng được gọi. Trước bản sửa finding 1, đoạn này sẽ hiện lại "Câu
+  // 30/30" với bốn phương án như chưa làm gì.
+  await page.reload();
+
+  await expect(page.getByTestId("exam-da-tra-loi-het")).toBeVisible();
+  await expect(page.getByTestId("exam-option")).toHaveCount(0);
+
+  await page.getByTestId("exam-tiep-tuc").click();
+  await expect(page).toHaveURL(new RegExp(`/exam/${idBai}/ket-qua$`));
+  await expect(page.getByTestId("ket-qua-diem")).toBeVisible();
 });

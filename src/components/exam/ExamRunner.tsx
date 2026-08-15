@@ -21,10 +21,23 @@ interface CauHoi {
 
 /**
  * Vị trí đầu tiên CHƯA trả lời — điểm khởi động của một phiên `ExamRunner`.
- * Tất cả đã trả lời (không nên xảy ra bình thường: câu cuối luôn kích hoạt
- * nộp bài ngay khi trả lời xong — nhưng có thể còn sót nếu `nopBai` chết giữa
- * chừng sau khi hàng đợi đã gửi hết) thì dừng ở câu CUỐI thay vì chỉ số vượt
- * biên, để người học ít nhất còn thấy được một câu và nút "Bỏ bài".
+ * Tất cả đã trả lời thì dừng ở câu CUỐI (`Math.max(length - 1, 0)`) thay vì
+ * một chỉ số vượt biên — `cauHoi[i]` cần luôn hợp lệ (xem chú thích tại `if
+ * (!cau) return null` bên dưới).
+ *
+ * SỬA Ở VÒNG SỬA 1 (review, Minor 3): JSDoc bản trước mô tả sai — ghi "không
+ * nên xảy ra bình thường: câu cuối luôn kích hoạt nộp bài ngay khi trả lời
+ * xong". Câu đó đúng cho bản TRƯỚC lát "dừng lại xem kết quả" (nộp bài xảy ra
+ * NGAY trong `chon()`, cùng lúc với việc ghi câu trả lời), nhưng SAI cho bản
+ * HIỆN TẠI: nộp bài giờ là một cú bấm "Nộp bài" RIÊNG (`tiepTuc`), tách khỏi
+ * việc trả lời câu cuối — nên "đã trả lời hết nhưng CHƯA nộp" (đóng tab ngay
+ * sau khi đọc phản hồi câu cuối, trước khi bấm "Nộp bài") giờ là một đường đi
+ * BÌNH THƯỜNG, không còn là trường hợp biên hiếm cần "sót". `ExamRunner` xử lý
+ * đúng ca này ở một nhánh RIÊNG (`if (cau.daTraLoi)`, ngay dưới `if (!cau)
+ * return null`) — đưa thẳng người học tới màn nộp bài thay vì hiện lại câu
+ * cuối như thể chưa làm (xem Important 1 của vòng sửa 1 để biết lý do: hiện
+ * lại như chưa làm mở đường cho `chon()` nhận một `ghiNhanLanNay: false` mà
+ * giao diện không có cách nào phân biệt với một câu vừa được chấm thật).
  */
 function chiSoDauTienChuaTraLoi(cauHoi: readonly CauHoi[]): number {
   const idx = cauHoi.findIndex((c) => !c.daTraLoi);
@@ -149,12 +162,26 @@ async function traLoiCoThuLai(assessmentId: number, pos: number, dapAn: string) 
  *   băng, hiện khối phản hồi và nút Tiếp tục/Nộp bài.
  * - `gui-hong`: hết số lần thử lại (`traLoiCoThuLai`) mà vẫn trượt — phương
  *   án MỞ LẠI để bấm lại, không phải một trạng thái đọc-only như hai cái trên.
+ *   KHÔNG mang `dapAnDaChon` (khác ba nhánh kia đã từng cân nhắc) — vòng sửa
+ *   1 (review) chỉ ra tô đậm "phương án vừa bấm" ở trạng thái này ngụ ý một
+ *   xác nhận mà chính giao diện KHÔNG có: đáp án đó có thể đã ghi (mất phản
+ *   hồi sau khi commit) hoặc chưa ghi gì cả — không có gì chắc để tô, xem
+ *   thông điệp `exam-loi-gui` bên dưới thay vì suy đoán qua màu sắc.
  *
  * Một `union` theo `loai` thay vì nhiều cờ `boolean` rời rạc (kiểu
  * `ketQuaTruoc`/`loiGui` của bản trước lát này) để KHÔNG THỂ dựng được một tổ
  * hợp vô nghĩa (ví dụ vừa "đang gửi" vừa "gửi hỏng" cùng lúc) — TypeScript tự
  * thu hẹp kiểu theo `loai` nên phần render bên dưới đọc đúng trường mà không
  * cần đoán hay ép kiểu.
+ *
+ * `ghiNhanLanNay` trên nhánh `da-co-ket-qua` — THÊM Ở VÒNG SỬA 1 (review,
+ * Important 1): copy nguyên `KetQuaTraLoi.ghiNhanLanNay` (lib/exam/run.ts) để
+ * phân biệt "phản hồi này mô tả đúng thứ VỪA được chấm và ghi" (`true`) với
+ * "vị trí đã có đáp án ghi từ TRƯỚC lần bấm này — `dung` chỉ so đáp án VỪA
+ * GỬI với đáp án thật, KHÔNG chắc mô tả điều đã ghi trong database" (`false`,
+ * xem JSDoc `KetQuaTraLoi.ghiNhanLanNay` để biết khi nào việc này xảy ra: bấm
+ * lại một câu đã có `user_answer`, hoặc một lệnh gọi đồng thời khác vừa
+ * thắng). Xem chỗ dùng ở `chon` và tại render để biết hệ quả cụ thể.
  */
 type TrangThaiCau =
   | { loai: "chua-tra-loi" }
@@ -165,8 +192,9 @@ type TrangThaiCau =
       dung: boolean;
       dapAnDung: string;
       giaiThich: string;
+      ghiNhanLanNay: boolean;
     }
-  | { loai: "gui-hong"; dapAnDaChon: string };
+  | { loai: "gui-hong" };
 
 export function ExamRunner({
   assessmentId, cauHoi, loaiBai, buoi, phamViNhieuBuoi, canhBaoLechBuoi,
@@ -308,6 +336,64 @@ export function ExamRunner({
   if (!cau) return null;
   const cuoi = i >= cauHoi.length - 1;
 
+  // THÊM Ở VÒNG SỬA 1 (review, Important 1): `cau.daTraLoi === true` ở ĐÂY —
+  // tại chỉ số `i` mà component vừa MOUNT với nó, chưa từng gọi `chon()` lần
+  // nào trong phiên này — CHỈ có thể xảy ra khi TẤT CẢ câu đã có `user_answer`
+  // (xem JSDoc `chiSoDauTienChuaTraLoi`: nó trả về chỉ số ĐẦU TIÊN có
+  // `daTraLoi === false`, nên nếu chỉ số nó chọn lại có `daTraLoi === true`
+  // thì không còn chỉ số nào như vậy). Ca này giờ BÌNH THƯỜNG (đóng tab ngay
+  // sau khi đọc phản hồi câu cuối, trước khi bấm "Nộp bài" — nộp bài đã tách
+  // khỏi việc trả lời câu cuối ở lát này).
+  //
+  // Đưa THẲNG người học tới màn nộp bài, KHÔNG hiện lại 4 phương án như thể
+  // câu cuối chưa làm: nếu để lọt xuống UI bình thường, bấm một phương án ở
+  // đây sẽ gọi `chon()` → `recordAnswer` thua CAS (vị trí đã có `user_answer`
+  // từ trước) → trả về `ghiNhanLanNay: false` → và bất kể giao diện tô "Chính
+  // xác."/"Chưa đúng." theo `dung` nào, giá trị đó có thể KHÔNG khớp thứ trang
+  // kết quả sẽ chấm (đáp án ĐÃ ghi trong database — từ lần bấm trước, chưa
+  // chắc là đáp án VỪA gửi lần này) — đúng bẫy mà Important 1 (vòng sửa 1)
+  // chỉ ra. Nhánh này triệt tiêu bẫy từ gốc: không có phương án nào để bấm thì
+  // không có phán quyết sai nào để hiện.
+  if (cau.daTraLoi) {
+    return (
+      <main className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h1 data-testid="exam-heading" className="text-lg font-semibold">{tieuDe}</h1>
+          <span data-testid="exam-tien-do" className="text-sm font-medium">
+            Câu {i + 1}/{cauHoi.length}
+          </span>
+        </div>
+        <p data-testid="exam-da-tra-loi-het" role="status" className="text-sm text-slate-700">
+          Bạn đã trả lời xong tất cả {cauHoi.length} câu của bài này — có lẽ
+          trang đã đóng trước khi bấm "Nộp bài" lần trước. Không câu nào ở đây
+          được chấm lại; bấm nút bên dưới để nộp và xem kết quả thật.
+        </p>
+        <button
+          type="button"
+          data-testid="exam-tiep-tuc"
+          disabled={dangNop || dangBo}
+          onClick={() => {
+            batDauNop(async () => {
+              await nopBai(assessmentId);
+            });
+          }}
+          className="self-start rounded bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+        >
+          Nộp bài
+        </button>
+        <button
+          type="button"
+          data-testid="exam-bo-bai"
+          disabled={dangNop || dangBo}
+          onClick={() => batDauBo(() => boBaiThi(assessmentId))}
+          className="self-start text-sm text-rose-700 underline disabled:opacity-50"
+        >
+          {nhanBoBai(loaiBai, phamViNhieuBuoi)}
+        </button>
+      </main>
+    );
+  }
+
   // Nhận `pos` từ nơi gọi thay vì đọc `cau.position` ngay trong thân hàm: TS
   // không mang phần thu hẹp `if (!cau) return null` ở trên vào một hàm lồng
   // được ĐỊNH NGHĨA sau đó (dù chỉ ĐỌC cùng biến `const` không đổi) — đây
@@ -324,27 +410,38 @@ export function ExamRunner({
     setTrangThai({ loai: "dang-gui", dapAnDaChon: dapAn });
     traLoiCoThuLai(assessmentId, pos, dapAn)
       .then((ket) => {
-        // KHÔNG còn nhánh theo `ghiNhanLanNay` — khác bản trước lát này (xem
-        // finding 3 cũ, JSDoc `KetQuaTraLoi` tại `lib/exam/run.ts`), nơi dải
-        // "câu trước" có thể sai vì nó hiện ở ĐẦU TRANG trong lúc đã sang câu
-        // KHÁC với câu vừa tạo ra nó. Phản hồi ở đây luôn thuộc ĐÚNG câu vừa
-        // bấm — kể cả khi `ghiNhanLanNay` là `false` (câu đã có đáp án ghi từ
-        // trước, ví dụ mở lại một bài đang làm dở), `dapAnDung`/`giaiThich`
-        // vẫn đúng và `dung` vẫn mô tả đúng đáp án VỪA GỬI, không có gì cần
-        // che — mục 4 spec thiết kế: "câu trả lời đã ghi rồi nên vô hại".
+        // `dapAnDung`/`giaiThich` LUÔN an toàn để hiện — chúng mô tả câu hỏi
+        // (đáp án thật, giải thích), không phải điều VỪA được ghi, nên đúng
+        // bất kể `ket.ghiNhanLanNay`. `dung`/`ghiNhanLanNay` thì KHÔNG đối xứng
+        // như vậy — xem render bên dưới (nhánh theo `ghiNhanLanNay`) để biết
+        // vì sao. SỬA Ở VÒNG SỬA 1 (review, Important 1): bản trước bỏ hẳn
+        // `ghiNhanLanNay` khỏi state với lý do "phản hồi luôn thuộc đúng câu
+        // vừa bấm" — ĐÚNG nhưng KHÔNG ĐỦ: "đúng câu" không có nghĩa là "đúng
+        // ĐÁP ÁN đã ghi". Khi `ghiNhanLanNay` là `false` (câu đã có
+        // `user_answer` từ TRƯỚC lần bấm này — xem nhánh `if (cau.daTraLoi)`
+        // phía trên cho ca phổ biến nhất từ lát này, hoặc một lệnh gọi đồng
+        // thời khác vừa thắng), `dung` chỉ so đáp án VỪA GỬI với đáp án thật —
+        // KHÔNG chắc mô tả điều đã ghi trong database, vì database có thể đã
+        // giữ một đáp án KHÁC từ lần ghi trước. Hiện "Chính xác."/"Chưa đúng."
+        // theo `dung` trong trường hợp này có thể NGƯỢC với thứ trang kết quả
+        // sẽ chấm — giữ nguyên `ghiNhanLanNay` để render biết mà không tự tin
+        // quá mức.
         setTrangThai({
           loai: "da-co-ket-qua",
           dapAnDaChon: dapAn,
           dung: ket.dung,
           dapAnDung: ket.dapAnDung,
           giaiThich: ket.giaiThich,
+          ghiNhanLanNay: ket.ghiNhanLanNay,
         });
       })
       .catch(() => {
         // Hết số lần thử của `traLoiCoThuLai` mà vẫn trượt — dừng NGAY tại
         // câu này, không phải chặn nộp ở cuối bài (xem JSDoc `traLoiCoThuLai`
-        // và chú thích tại chỗ gỡ `viTriLoi` phía trên).
-        setTrangThai({ loai: "gui-hong", dapAnDaChon: dapAn });
+        // và chú thích tại chỗ gỡ `viTriLoi` phía trên). KHÔNG mang
+        // `dapAnDaChon` — xem JSDoc `TrangThaiCau` (nhánh `gui-hong`) cho lý
+        // do: không có gì chắc để tô "đã chọn" ở trạng thái này.
+        setTrangThai({ loai: "gui-hong" });
       });
   }
 
@@ -372,15 +469,25 @@ export function ExamRunner({
    * hợp (đáp án đúng, đã chọn nhưng sai, đã chọn khi đang chờ, chưa chọn) mà
    * viết trực tiếp trong `className` inline sẽ thành một biểu thức ba lần
    * lồng nhau khó đọc. "đã có kết quả" tô XANH cho đáp án đúng bất kể có được
-   * chọn hay không (người học luôn thấy đáp án thật), tô ĐỎ CHỈ cho phương án
-   * đã chọn nếu nó KHÔNG PHẢI đáp án đúng — khi phương án đã chọn chính là
-   * đáp án đúng thì chỉ có một tô màu (xanh), không chồng thêm viền đỏ.
+   * chọn hay không (người học luôn thấy đáp án thật — an toàn vì `dapAnDung`
+   * không phụ thuộc `ghiNhanLanNay`, xem chú thích tại `chon`).
+   *
+   * Tô ĐỎ cho phương án đã chọn — SỬA Ở VÒNG SỬA 1 (review, Important 1) —
+   * CHỈ khi `ghiNhanLanNay` là `true`: nếu không, `dapAnDaChon` là đáp án VỪA
+   * GỬI, có thể KHÁC đáp án đã ghi thật trong database (câu đã có
+   * `user_answer` từ trước), nên tô đỏ nó sẽ ngụ ý một phán quyết "bạn chọn
+   * sai" có thể không đúng với thứ trang kết quả sẽ chấm — cùng bẫy đã sửa ở
+   * dòng chữ "Chính xác."/"Chưa đúng." trong khối `exam-phan-hoi` (xem render
+   * bên dưới). Khi phương án đã chọn chính là đáp án đúng thì chỉ có một tô
+   * màu (xanh), không chồng thêm viền đỏ.
    */
   function lopPhuongAn(o: string): string {
     const nen = "rounded border px-4 py-2 text-left transition-colors";
     if (trangThai.loai === "da-co-ket-qua") {
       if (trangThai.dapAnDung === o) return `${nen} border-emerald-500 bg-emerald-50 text-emerald-900`;
-      if (trangThai.dapAnDaChon === o) return `${nen} border-rose-500 bg-rose-50 text-rose-900`;
+      if (trangThai.ghiNhanLanNay && trangThai.dapAnDaChon === o) {
+        return `${nen} border-rose-500 bg-rose-50 text-rose-900`;
+      }
       return `${nen} border-slate-200 text-slate-400`;
     }
     if (trangThai.loai === "dang-gui" && trangThai.dapAnDaChon === o) {
@@ -432,18 +539,48 @@ export function ExamRunner({
         ))}
       </div>
 
+      {/* THÊM Ở VÒNG SỬA 1 (review, Minor 2): mục 5 đặc tả ghi trạng thái
+          "đang gửi" là "phương án khoá lại, BÁO ĐANG GỬI" — bản trước chỉ
+          khoá (`disabled`), không có tín hiệu nào khác. Với `traLoiCoThuLai`
+          thử tới 3 lần kèm nghỉ 300/600ms, màn hình có thể đứng gần 1 giây mà
+          không có gì đổi ngoài độ mờ nút — `role="status"` để trình đọc màn
+          hình cũng được báo, không chỉ người nhìn thấy được. */}
+      {trangThai.loai === "dang-gui" && (
+        <p data-testid="exam-dang-gui" role="status" className="text-sm text-slate-500">
+          Đang gửi câu trả lời…
+        </p>
+      )}
+
       {trangThai.loai === "da-co-ket-qua" && (
         <div
           data-testid="exam-phan-hoi"
+          role="status"
+          aria-live="polite"
           className="flex flex-col gap-2 rounded border border-slate-200 p-4"
         >
-          <p
-            className={
-              trangThai.dung ? "text-sm font-medium text-emerald-700" : "text-sm font-medium text-rose-700"
-            }
-          >
-            {trangThai.dung ? "Chính xác." : "Chưa đúng."}
-          </p>
+          {/* SỬA Ở VÒNG SỬA 1 (review, Important 1): rẽ theo `ghiNhanLanNay`
+              thay vì luôn hiện "Chính xác."/"Chưa đúng." theo `dung`. Khi
+              `ghiNhanLanNay` là `false`, `dung` chỉ so đáp án VỪA GỬI với đáp
+              án thật — KHÔNG chắc mô tả điều đã ghi trong database (câu này
+              đã có `user_answer` từ TRƯỚC lần bấm này, ví dụ chính ca vừa bị
+              chặn ở nhánh `if (cau.daTraLoi)` phía trên nếu nó lọt được xuống
+              đây, hoặc một lệnh gọi đồng thời khác vừa thắng) — hiện một phán
+              quyết đúng/sai lúc này có thể NGƯỢC với thứ trang kết quả sẽ
+              chấm. Nói đúng thứ đang biết thay vì đoán. */}
+          {trangThai.ghiNhanLanNay ? (
+            <p
+              className={
+                trangThai.dung ? "text-sm font-medium text-emerald-700" : "text-sm font-medium text-rose-700"
+              }
+            >
+              {trangThai.dung ? "Chính xác." : "Chưa đúng."}
+            </p>
+          ) : (
+            <p data-testid="exam-da-ghi-tu-truoc" className="text-sm font-medium text-amber-700">
+              Câu này đã được ghi nhận từ một lần trả lời trước — kết quả tính
+              theo lần ĐẦU TIÊN, không phải lần vừa bấm.
+            </p>
+          )}
           <p data-testid="exam-dap-an-dung" className="text-sm">
             Đáp án đúng: <span className="font-medium">{trangThai.dapAnDung}</span>
           </p>
@@ -471,14 +608,25 @@ export function ExamRunner({
       {/* SỬA Ở LÁT "dừng lại xem kết quả": thông điệp CŨ ("Còn N câu chưa gửi
           được... tải lại trang") mô tả một cơ chế đã bị GỠ (`viTriLoi`, chặn
           nộp ở cuối bài — xem chú thích tại chỗ khai báo `trangThai` và tại
-          `traLoiCoThuLai`). Giao diện lát này dừng NGAY tại câu vừa hỏng nên
-          hành động đúng không còn là "tải lại trang" mà là "bấm lại một
-          phương án đang mở sẵn ngay bên trên". */}
+          `traLoiCoThuLai`).
+          SỬA TIẾP Ở VÒNG SỬA 1 (review, Minor 4): bản thay thế ở lát trên chỉ
+          nói MỘT nguyên nhân ("rớt mạng thoáng qua") và cho MỘT hành động
+          ("bấm lại"), khẳng định chắc "CHƯA được ghi nhận" — nhưng
+          `recordAnswer` (`lib/exam/run.ts:535-540`) còn ném vì lý do KHÔNG
+          thoáng qua: bài đã chuyển khỏi `in_progress` (một tab khác vừa nộp
+          hoặc bỏ). Lúc đó "bấm lại" không bao giờ thành công (bài không còn
+          nhận ghi), còn "CHƯA được ghi nhận" có thể sai (một lần bấm trước có
+          thể ĐÃ commit mà chỉ mất phản hồi trên đường về — xem JSDoc
+          `traLoiCoThuLai`). Nói đúng mức đang biết: hai khả năng, hai hành
+          động — không đoán cái nào đúng. `page.tsx:53` tự chuyển một bài đã
+          `submitted` sang `/ket-qua` khi tải lại, nên "tải lại trang" vẫn là
+          lối thoát cho nhánh không thoáng qua. */}
       {trangThai.loai === "gui-hong" && (
         <p data-testid="exam-loi-gui" role="alert" className="text-sm text-amber-700">
-          Gửi câu trả lời không thành công — có thể là một lần rớt mạng thoáng
-          qua. Câu này CHƯA được ghi nhận, nên bấm lại một phương án bên trên
-          để thử lại — chọn phương án nào cũng được, kể cả khác với lần trước.
+          Gửi câu trả lời không thành công. Nếu chỉ là một lần rớt mạng thoáng
+          qua, bấm lại một phương án bên trên để thử lại. Nếu vẫn lỗi — ví dụ
+          bài này vừa được nộp hoặc bỏ ở một tab khác — hãy tải lại trang để
+          xem đúng trạng thái mới nhất của bài.
         </p>
       )}
 

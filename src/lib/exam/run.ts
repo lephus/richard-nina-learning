@@ -649,13 +649,18 @@ export async function recordAnswer(
     // là một bước SAU, tách rời. SỬA SAU VÒNG SOÁT CUỐI (finding 4, ghi chú
     // "note while you are there"): TRƯỚC bản vá này, một lỗi ở BƯỚC NÀY (ví
     // dụ mất mạng ngay sau khi UPDATE vừa commit) làm cả `recordAnswer` ném
-    // lỗi, khiến `ExamRunner` tưởng nhầm câu trả lời "chưa gửi được" và đưa
-    // vị trí này vào `viTriLoi` — SAI: đáp án đã ghi và đã được chấm đúng
-    // trong `assessment_items`, chặn nộp bài vì nó là chặn vô ích, và bảo
-    // người học "tải lại trang" (thông điệp finding 4 yêu cầu) không sửa
-    // được gì vì lỗi không nằm ở chỗ đó. Vì vậy lỗi ở bước này KHÔNG được ném
-    // tiếp lên — chỉ log lại để còn dấu vết gỡ lỗi, không nuốt hoàn toàn
-    // trong im lặng. (Bên trong `applyWordMastery`/`applyGrammarMastery`, lỗi
+    // lỗi, khiến `ExamRunner` tưởng nhầm câu trả lời "chưa gửi được" — SAI:
+    // đáp án đã ghi và đã được chấm đúng trong `assessment_items`.
+    // SỬA CHÚ THÍCH Ở VÒNG SỬA 1 lát "dừng lại xem kết quả" (review, Minor
+    // 8): đoạn trên từng kể tiếp "...và đưa vị trí này vào `viTriLoi`, chặn
+    // nộp bài ở cuối" — `viTriLoi` đó đã bị GỠ HẲN khỏi `ExamRunner` ở lát đó
+    // (không còn tồn tại, xem `ExamRunner.tsx`), nên câu kể cũ giờ sai về
+    // component hiện tại. Lý do KHÔNG rethrow ở đây vẫn nguyên dù cơ chế phía
+    // trên đã đổi: một câu đã ghi đúng không nên bị giao diện hiện lại như
+    // một lỗi, dù giao diện hiện tại thể hiện điều đó bằng cách nào. Vì vậy
+    // lỗi ở bước này KHÔNG được ném tiếp lên — chỉ log lại để còn dấu vết gỡ
+    // lỗi, không nuốt hoàn toàn trong im lặng. (Bên trong
+    // `applyWordMastery`/`applyGrammarMastery`, lỗi
     // ĐỌC vẫn bắt buộc throw — đó là một bất biến khác, bảo vệ chính upsert
     // của nó khỏi ghi đè sạch tiến độ đã tích luỹ, xem chú thích tại
     // `mastery/write.ts`.)
