@@ -440,12 +440,48 @@ export interface KetQuaTraLoi {
    */
   dapAnDung: string;
   /**
-   * Giải thích tiếng Việt cho câu ngữ pháp (`grammar_questions.explanation`,
-   * qua RPC `dap_an_va_giai_thich`, Task 1). `null` cho CẢ HAI dạng câu từ
-   * vựng — spec thiết kế mục 9 "cố ý không làm": không soạn giải thích riêng
-   * cho từ vựng, dựa vào nghĩa/ví dụ người học đã thấy sẵn ở đề bài.
+   * Giải thích tiếng Việt.
+   *
+   * SỬA VÒNG 1 (coordinator, sau khi task-2-report.md nộp lần đầu): bản trước
+   * kiểu là `string | null`, `null` cho cả hai dạng câu từ vựng — đọc THẲNG
+   * theo câu chữ spec thiết kế mục 8 ("`giaiThich` có nội dung thật cho câu
+   * ngữ pháp, và `null` cho câu từ vựng"). Mục 8 đó SAI, và tự MÂU THUẪN với
+   * chính mục 9 của cùng tài liệu ("Giải thích cho câu từ vựng viết riêng.
+   * DÙNG NGHĨA TIẾNG VIỆT VÀ CÂU VÍ DỤ ĐÃ CÓ; không soạn thêm nội dung mới")
+   * — tức câu từ vựng VẪN phải có giải thích, chỉ là GHÉP từ dữ liệu có sẵn
+   * thay vì soạn mới, không phải bỏ trống. Mục 9 mới là quyết định thật của
+   * người dùng (chọn phương án "đầy đủ" — hiện nghĩa/ví dụ cho câu từ vựng là
+   * phần lớn lý do phương án đó đáng làm); mục 8 đã được sửa lại cho khớp,
+   * xem `docs/superpowers/specs/2026-08-15-dung-lai-xem-ket-qua-design.md`.
+   *
+   * Vì vậy kiểu ở đây là `string` KHÔNG nullable cho CẢ BA dạng câu:
+   * - Ngữ pháp: `grammar_questions.explanation` (cột `not null`, migration
+   *   0001), lấy qua RPC `dap_an_va_giai_thich` — VĂN BẢN NGƯỜI SOẠN VIẾT SẴN.
+   * - Cả hai dạng từ vựng: GHÉP từ `vocab_words.meaning_vi` +
+   *   `vocab_words.example_vi` (cả hai đều `not null`, migration 0001) qua
+   *   `ghepGiaiThichTuVung` bên dưới — KHÔNG PHẢI văn bản soạn riêng, chỉ là
+   *   trình bày lại dữ liệu đã có sẵn từ trước. Đọc `ghepGiaiThichTuVung` nếu
+   *   đi tìm nguồn cho phần từ vựng — `vocab_words` KHÔNG có cột nào tên
+   *   "explanation" như `grammar_questions`, và sẽ không bao giờ có.
    */
-  giaiThich: string | null;
+  giaiThich: string;
+}
+
+/**
+ * Ghép `giaiThich` cho câu TỪ VỰNG (cả hai dạng "nghĩa" và "điền") từ nghĩa
+ * tiếng Việt và câu ví dụ tiếng Việt — GHÉP dữ liệu ĐÃ CÓ SẴN trong
+ * `vocab_words`, KHÔNG PHẢI soạn nội dung giải thích mới (spec thiết kế mục 9
+ * loại trừ rõ việc đó). Khác câu ngữ pháp — nơi `giaiThich` là một cột văn bản
+ * người soạn đề viết sẵn (`grammar_questions.explanation`) — từ vựng không có
+ * cột tương đương, nên hàm này là nguồn DUY NHẤT tạo ra chuỗi hiển thị đó.
+ *
+ * Cách ghép: "Nghĩa: …. Ví dụ: …" — một chuỗi phẳng, không xuống dòng, để
+ * UI (Task 3) render một khối duy nhất mà không cần biết đang ở loại bài nào
+ * (ngữ pháp hay từ vựng, "nghĩa" hay "điền") — cùng một `data-testid` một chỗ
+ * hiển thị cho cả bốn loại câu.
+ */
+function ghepGiaiThichTuVung(meaningVi: string, exampleVi: string): string {
+  return `Nghĩa: ${meaningVi}. Ví dụ: ${exampleVi}`;
 }
 
 /**
@@ -505,10 +541,11 @@ export async function recordAnswer(
 
   const itemType = item.item_type as string;
   let dapAn: string;
-  // Mặc định `null` — chỉ nhánh ngữ pháp gán lại. Khai báo cùng chỗ với
-  // `dapAn` để mỗi nhánh gán CẢ HAI cùng lúc, không rơi vào tình huống quên
-  // gán một trong hai khi có nhánh mới thêm sau này.
-  let giaiThich: string | null = null;
+  // KHÔNG có giá trị mặc định — cả ba nhánh bên dưới đều gán tường minh
+  // (xem sửa vòng 1 tại JSDoc `KetQuaTraLoi.giaiThich`: kiểu ở đây là `string`
+  // không nullable, nên một mặc định `null` ngầm sẽ sai kiểu ngay từ đầu thay
+  // vì chỉ thiếu nội dung).
+  let giaiThich: string;
   if (itemType === "grammar") {
     // THAY `answer_for_question` bằng `dap_an_va_giai_thich` (migration 0013,
     // Task 1) — một RPC `security definer` trả CẢ HAI trường trong MỘT lượt
@@ -525,7 +562,9 @@ export async function recordAnswer(
       throw new Error(`dap_an_va_giai_thich không trả về dòng nào cho câu hỏi ${item.ref_id}`);
     }
     dapAn = hang.dap_an as string;
-    giaiThich = hang.giai_thich as string | null;
+    // `explanation` là cột `not null` (migration 0001) — 537 câu ngữ pháp đều
+    // đã có sẵn giải thích thật, không có trường hợp rỗng cần phòng thủ thêm.
+    giaiThich = hang.giai_thich as string;
   } else {
     const kind = (item.payload as { kind: string }).kind;
     if (kind === "dien") {
@@ -534,34 +573,30 @@ export async function recordAnswer(
       dapAn = data as string;
 
       // Vòng gọi THÊM DUY NHẤT của cả lát này (xem bảng vòng gọi ở spec thiết
-      // kế, mục 3): `meaning_vi`/`example_vi` chỉ phục vụ HIỂN THỊ, đáp án
-      // chấm điểm đã lấy đủ từ RPC ở trên rồi. Chạy TRONG LÚC người học đang
-      // đọc màn hình kết quả của câu vừa trả lời, không phải lúc họ đang chờ
-      // phản hồi — không cộng vào độ trễ cảm nhận được của thao tác bấm chọn.
-      // `KetQuaTraLoi` (Task 2) chưa đưa hai cột này vào phần trả về — chỉ
-      // dựng sẵn hình dạng vòng gọi cho phần hiển thị sau. Lỗi ở đây vì vậy
-      // KHÔNG được chặn việc ghi câu trả lời chính: chỉ log lại, cùng khuôn
-      // phòng thủ với lỗi ghi mastery bên dưới (dữ liệu không thiết yếu không
-      // được phép làm hỏng đường chính).
-      const { error: hienThiErr } = await supabase
+      // kế, mục 3): `meaning_vi`/`example_vi` ghép thành `giaiThich` hiển thị
+      // (xem `ghepGiaiThichTuVung`) — đáp án chấm điểm đã lấy đủ từ RPC ở trên
+      // rồi, vòng này chỉ phục vụ phần đọc kết quả. Chạy TRONG LÚC người học
+      // đang đọc màn hình kết quả của câu vừa trả lời, không phải lúc họ đang
+      // chờ phản hồi — không cộng vào độ trễ cảm nhận được của thao tác bấm
+      // chọn. SỬA VÒNG 1: bản trước bắt lỗi ở đây rồi chỉ log (không throw)
+      // vì dữ liệu "chưa được dùng tới đâu" — giờ `giaiThich` là một phần bắt
+      // buộc của kết quả trả về (kiểu `string`, không nullable), nên lỗi ở
+      // đây phải throw như mọi lỗi đọc khác trong hàm này, không được nuốt.
+      const { data: hienThi, error: hienThiErr } = await supabase
         .from("vocab_words")
         .select("meaning_vi, example_vi")
         .eq("id", item.ref_id)
         .single();
-      if (hienThiErr) {
-        console.error(
-          `đọc meaning_vi/example_vi hiển thị cho từ ${item.ref_id} lỗi (không chặn ghi câu trả lời)`,
-          hienThiErr,
-        );
-      }
+      if (hienThiErr) throw hienThiErr;
+      giaiThich = ghepGiaiThichTuVung(hienThi.meaning_vi as string, hienThi.example_vi as string);
     } else {
       // Chỉ `blank_answer` bị revoke khỏi `authenticated` (0004_rls.sql) —
       // `word`, `meaning_vi`, `example_vi` đều nằm trong danh sách cột đọc
       // công khai, nên câu "nghĩa" đọc thẳng qua client thường là đủ, không
       // cần vòng qua RPC như câu "điền". Đây là một sự KHÔNG ĐỐI XỨNG có chủ
       // đích giữa hai nhánh, không phải thiếu nhất quán. Mở rộng thêm
-      // `meaning_vi, example_vi` (Task 2, cùng lý do hiển thị như nhánh
-      // "điền" ở trên) là CÙNG một vòng gọi này — không tốn thêm vòng nào.
+      // `meaning_vi, example_vi` (Task 2, dùng để ghép `giaiThich` — xem
+      // `ghepGiaiThichTuVung`) là CÙNG một vòng gọi này — không tốn thêm vòng.
       const { data, error } = await supabase
         .from("vocab_words")
         .select("word, meaning_vi, example_vi")
@@ -569,6 +604,7 @@ export async function recordAnswer(
         .single();
       if (error) throw error;
       dapAn = data.word as string;
+      giaiThich = ghepGiaiThichTuVung(data.meaning_vi as string, data.example_vi as string);
     }
   }
 

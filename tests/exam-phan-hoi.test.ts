@@ -117,7 +117,14 @@ describe.skipIf(!hasEnv)("recordAnswer trả đáp án và giải thích", () =>
     }
   });
 
-  it("câu 'nghĩa → từ': dapAnDung đúng bằng vocab_words.word của ref_id, giaiThich là null", async () => {
+  // SỬA VÒNG 1 (coordinator): spec thiết kế mục 8 nói `giaiThich` là `null`
+  // cho câu từ vựng — MÂU THUẪN với mục 9 ("dùng nghĩa tiếng Việt và câu ví dụ
+  // đã có"). Mục 9 mới đúng: `giaiThich` GHÉP từ `meaning_vi`/`example_vi`
+  // (xem `ghepGiaiThichTuVung`, src/lib/exam/run.ts), không phải bỏ trống.
+  // Test dưới đây đối chiếu ĐÚNG công thức ghép đó, đọc `meaning_vi`/
+  // `example_vi` ĐỘC LẬP qua admin — không tin vào field cùng tên ở `words`
+  // (vốn cũng do beforeAll tự đọc, cùng một nguồn).
+  it("câu 'nghĩa → từ': dapAnDung đúng bằng vocab_words.word của ref_id, giaiThich ghép từ meaning_vi + example_vi", async () => {
     const { client, id } = await taoNguoiDung("nghia");
     const baiId = await createVocabExam(client, id, "lesson", [1], words, blanks, 101);
     const cauHoi = buildVocabExam(words, blanks, 101);
@@ -133,12 +140,16 @@ describe.skipIf(!hasEnv)("recordAnswer trả đáp án và giải thích", () =>
     // do buildVocabExam tự tính) — đọc thẳng từ database xem word thật của
     // ref_id có khớp không.
     const { data: tu } = await admin
-      .from("vocab_words").select("word").eq("id", cau.wordId).single();
+      .from("vocab_words").select("word, meaning_vi, example_vi").eq("id", cau.wordId).single();
     expect(ket.dapAnDung).toBe(tu?.word);
-    expect(ket.giaiThich).toBeNull();
+    // Nội dung THẬT phải chứa cả nghĩa lẫn ví dụ tiếng Việt — không khẳng định
+    // đúng nguyên văn định dạng ghép (đó là chi tiết trình bày, có thể đổi),
+    // chỉ khẳng định dữ liệu nguồn có mặt trong chuỗi trả về.
+    expect(ket.giaiThich).toContain(tu?.meaning_vi as string);
+    expect(ket.giaiThich).toContain(tu?.example_vi as string);
   });
 
-  it("câu 'điền': dapAnDung đúng bằng blank_answer của ref_id (đối chiếu qua admin), giaiThich là null", async () => {
+  it("câu 'điền': dapAnDung đúng bằng blank_answer của ref_id (đối chiếu qua admin), giaiThich ghép từ meaning_vi + example_vi", async () => {
     const { client, id } = await taoNguoiDung("dien");
     const baiId = await createVocabExam(client, id, "lesson", [1], words, blanks, 102);
     const cauHoi = buildVocabExam(words, blanks, 102);
@@ -152,11 +163,15 @@ describe.skipIf(!hasEnv)("recordAnswer trả đáp án và giải thích", () =>
 
     // `blank_answer` đã bị revoke khỏi `authenticated` (0004_rls.sql) — chỉ
     // admin (service role) đọc trực tiếp được, đúng như brief yêu cầu "lấy đối
-    // chiếu qua admin client".
+    // chiếu qua admin client". `meaning_vi`/`example_vi` thì đọc được bằng cả
+    // hai vai, đọc qua admin ở đây chỉ để giữ một nguồn đối chiếu duy nhất.
     const { data: tu } = await admin
-      .from("vocab_words").select("blank_answer").eq("id", cau.wordId).single();
+      .from("vocab_words")
+      .select("blank_answer, meaning_vi, example_vi")
+      .eq("id", cau.wordId).single();
     expect(ket.dapAnDung).toBe(tu?.blank_answer);
-    expect(ket.giaiThich).toBeNull();
+    expect(ket.giaiThich).toContain(tu?.meaning_vi as string);
+    expect(ket.giaiThich).toContain(tu?.example_vi as string);
   });
 
   it("câu ngữ pháp: dapAnDung nằm trong options của câu, giaiThich dài hơn 10 ký tự", async () => {

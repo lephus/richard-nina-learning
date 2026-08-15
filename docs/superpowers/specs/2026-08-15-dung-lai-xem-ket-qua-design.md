@@ -109,14 +109,24 @@ phương án vẫn đang trên màn hình để bấm lại. Không còn câu n�
 
 **Tích hợp**
 - `recordAnswer` trả đúng `dapAnDung` cho cả ba dạng câu (nghĩa, điền, ngữ pháp).
-- `giaiThich` có nội dung thật cho câu ngữ pháp, và `null` cho câu từ vựng.
+- `giaiThich` có nội dung thật cho **cả ba** dạng câu — SỬA VÒNG 1 (đối chiếu
+  Task 2, sau khi task-2-report.md nộp lần đầu): bản gốc của dòng này ghi
+  "`giaiThich` có nội dung thật cho câu ngữ pháp, và `null` cho câu từ vựng",
+  MÂU THUẪN trực tiếp với mục 9 ngay dưới đây ("Dùng nghĩa tiếng Việt và câu
+  ví dụ đã có" cho câu từ vựng — tức VẪN có nội dung, chỉ là GHÉP từ dữ liệu
+  sẵn có thay vì soạn mới, không phải bỏ trống). Mục 9 mới là quyết định thật
+  (người dùng chọn phương án "đầy đủ", mà hiện nghĩa/ví dụ cho câu từ vựng là
+  phần lớn lý do phương án đó đáng làm) — câu ở đây đã sai và được sửa lại cho
+  khớp. Xem cách ghép cụ thể (từ `meaning_vi` + `example_vi`, không phải văn
+  bản soạn riêng) tại `ghepGiaiThichTuVung` trong `src/lib/exam/run.ts`.
 - **`payload` vẫn không chứa đáp án** — khẳng định cũ, phải còn nguyên.
 - Trả lời lại một câu đã trả lời: vẫn trả đáp án về, **không** cộng mastery lần hai.
 
 **E2E**
 - Trả lời đúng → thấy báo đúng, thấy nút Tiếp tục, và **chưa** sang câu mới.
 - Trả lời sai → thấy đáp án đúng.
-- Câu ngữ pháp → thấy giải thích.
+- Mọi loại câu (ngữ pháp lẫn từ vựng) → thấy giải thích — xem sửa vòng 1 ở mục
+  "Tích hợp" ngay trên.
 - Bấm Tiếp tục → sang câu sau.
 - Câu cuối → nộp được bài, tới trang kết quả.
 
