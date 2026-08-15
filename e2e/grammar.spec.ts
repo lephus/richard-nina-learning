@@ -105,7 +105,12 @@ test("bấm 'Làm bài' ở một bài ngữ pháp vào /exam/[id], thấy 4 ph�
 test("nộp bài ngữ pháp xong thấy điểm, không có nút bổ túc (mục 3.3: ngữ pháp không có bổ túc)", async ({
   page,
 }) => {
-  test.setTimeout(120_000);
+  // SỬA Ở LÁT "dừng lại xem kết quả" (Task 4): 180s (trước 120s) — mỗi câu
+  // giờ tốn HAI cú bấm (chọn phương án rồi `exam-tiep-tuc`, xem vòng lặp bên
+  // dưới) thay vì một, và cú bấm thứ hai phải CHỜ khối `exam-phan-hoi` hiện ra
+  // trước khi actionable — cùng lý do đã ghi ở `e2e/exam.spec.ts` cho bài 30
+  // câu (180s → 240s ở đó); bài này chỉ 20 câu nên mức tăng thấp hơn.
+  test.setTimeout(180_000);
   await login(page);
   await page.goto("/grammar/1");
   await page.getByTestId("exam-button").click();
@@ -115,8 +120,17 @@ test("nộp bài ngữ pháp xong thấy điểm, không có nút bổ túc (m�
   // phương án đầu, không quan tâm đạt/chưa đạt: kịch bản này chỉ khẳng định
   // trang kết quả AN TOÀN và ĐÚNG hình dạng cho loại bài `grammar`, không
   // khẳng định lại logic chấm điểm (đã có `tests/exam-grammar.test.ts`).
+  //
+  // SỬA Ở LÁT "dừng lại xem kết quả" (Task 4): vòng lặp giờ có HAI cú bấm mỗi
+  // câu — chọn phương án (dừng lại xem kết quả, không tự sang câu kế), rồi
+  // bấm `exam-tiep-tuc` để thật sự sang câu kế. Nút đó cùng `data-testid` cho
+  // cả câu giữa ("Tiếp tục") lẫn câu cuối ("Nộp bài" — xem `ExamRunner.tsx`),
+  // nên vòng lặp không cần rẽ nhánh theo vị trí; câu cuối bấm xong
+  // `exam-tiep-tuc` chính là bấm nộp bài. Cùng khuôn `e2e/exam.spec.ts`.
   for (let n = 0; n < 20; n++) {
     await page.getByTestId("exam-option").first().click();
+    await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
+    await page.getByTestId("exam-tiep-tuc").click();
   }
 
   await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 30_000 });

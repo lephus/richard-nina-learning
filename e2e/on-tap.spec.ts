@@ -90,8 +90,13 @@ test("bổ túc và làm lại bài từ bài ôn tập nhóm đều phủ đủ
 }) => {
   // 60 câu trả lời tuần tự + một lượt "làm lại bài" — nới rộng hơn cả kịch
   // bản 30 câu của `exam.spec.ts` (Notes bàn giao: "cho timeout rộng rãi hơn
-  // là cắt bớt phạm vi chạy").
-  test.setTimeout(400_000);
+  // là cắt bớt phạm vi chạy"). SỬA Ở LÁT "dừng lại xem kết quả" (Task 4):
+  // 600s (trước 400s) — mỗi câu giờ tốn HAI cú bấm (chọn phương án rồi
+  // `exam-tiep-tuc`, xem vòng lặp bên dưới) thay vì một, cú bấm thứ hai phải
+  // CHỜ khối `exam-phan-hoi` hiện ra trước khi actionable — cùng lý do đã ghi
+  // ở `e2e/exam.spec.ts` (180s → 240s cho 30 câu ở đó); bài này gấp đôi số câu
+  // (60) nên mức tăng cũng lớn hơn tương ứng.
+  test.setTimeout(600_000);
   await login(page);
   const admin = adminClient();
 
@@ -121,9 +126,18 @@ test("bổ túc và làm lại bài từ bài ôn tập nhóm đều phủ đủ
   // theo seed, xem build.ts): xác suất CẢ 30 câu thuộc buổi hai đều trúng
   // ngẫu nhiên là (1/4)^30 — không tưởng — nên gần như chắc chắn có ít nhất
   // một từ SAI thuộc buổi thứ hai để kịch bản này kiểm được đúng thứ cần kiểm.
+  //
+  // SỬA Ở LÁT "dừng lại xem kết quả" (Task 4): vòng lặp giờ có HAI cú bấm mỗi
+  // câu — chọn phương án (dừng lại xem kết quả, không tự sang câu kế), rồi
+  // bấm `exam-tiep-tuc` để thật sự sang câu kế. Nút đó cùng `data-testid` cho
+  // cả câu giữa ("Tiếp tục") lẫn câu cuối ("Nộp bài" — xem `ExamRunner.tsx`),
+  // nên vòng lặp không cần rẽ nhánh theo vị trí; câu cuối bấm xong
+  // `exam-tiep-tuc` chính là bấm nộp bài. Cùng khuôn `e2e/exam.spec.ts`.
   for (let n = 1; n <= 60; n++) {
     await expect(page.getByTestId("exam-tien-do")).toHaveText(`Câu ${n}/60`);
     await page.getByTestId("exam-option").first().click();
+    await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
+    await page.getByTestId("exam-tiep-tuc").click();
   }
   await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 180_000 });
   await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();

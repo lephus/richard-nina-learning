@@ -415,8 +415,20 @@ export async function boBaiDangLam(
  * cách nào phân biệt "câu này VỪA được chấm" với "vị trí này đã có đáp án ghi
  * từ trước, và giá trị đúng/sai dưới đây không mô tả điều đã được chấm" — hai
  * tình huống hoàn toàn khác nhau nhưng trả về giống hệt nhau. `ghiNhanLanNay`
- * tách rõ hai trường hợp đó: nơi gọi (ExamRunner) chỉ được phép hiện dải
- * "câu trước: đúng/sai" khi cờ này là `true`.
+ * tách rõ hai trường hợp đó: nơi gọi (ExamRunner) chỉ được phép hiện phán
+ * quyết đúng/sai ("Chính xác."/"Chưa đúng.", trong khối `exam-phan-hoi` ngay
+ * tại câu vừa làm) khi cờ này là `true`; khi `false` thì hiện thông báo
+ * trung thực "đã ghi nhận từ một lần trả lời trước" thay vì đoán (xem
+ * `ExamRunner.tsx`, nhánh theo `ghiNhanLanNay` quanh dòng 570-583).
+ *
+ * SỬA CHÚ THÍCH Ở VÒNG DỌN CUỐI (trước khi hợp nhất nhánh "dừng lại xem kết
+ * quả" vào main): đoạn trên từng kể "nơi gọi chỉ được phép hiện dải 'câu
+ * trước: đúng/sai'" — dải đầu trang đó bị bỏ HẲN trong chính lát này (xem
+ * chú thích còn giữ lại tại `ExamRunner.tsx`, chỗ từng đặt nó, ngay trên
+ * `exam-de`): phản hồi giờ nằm tại câu vừa làm, không phải một dải riêng ở
+ * đầu trang cho câu đã lùi lại phía sau. Câu kể cũ vì vậy sai về giao diện
+ * hiện tại, dù ý nghĩa cốt lõi của `ghiNhanLanNay` (chỉ được hiện phán quyết
+ * khi `true`) vẫn đúng nguyên.
  */
 export interface KetQuaTraLoi {
   /**
@@ -429,6 +441,59 @@ export interface KetQuaTraLoi {
    */
   ghiNhanLanNay: boolean;
   dung: boolean;
+  /**
+   * Chữ hiển thị của đáp án đúng. AN TOÀN để trả về client vì hàm chỉ GÁN giá
+   * trị này (từ RPC/select bên dưới) rồi trả về SAU KHI câu lệnh UPDATE có CAS
+   * (`user_answer is null`) đã chạy xong — nghĩa là tại thời điểm client nhận
+   * được `dapAnDung`, vị trí này đã bị khoá cứng (thắng HOẶC thua cuộc đua ghi
+   * đều đã ghi rồi), không còn cách nào gửi lại một đáp án KHÁC cho cùng vị
+   * trí để "sửa" theo đáp án vừa biết. Trả về TRƯỚC khi CAS chạy mới là lỗ
+   * hổng — cho ĐÚNG cái brief lát này cấm.
+   */
+  dapAnDung: string;
+  /**
+   * Giải thích tiếng Việt.
+   *
+   * SỬA VÒNG 1 (coordinator, sau khi task-2-report.md nộp lần đầu): bản trước
+   * kiểu là `string | null`, `null` cho cả hai dạng câu từ vựng — đọc THẲNG
+   * theo câu chữ spec thiết kế mục 8 ("`giaiThich` có nội dung thật cho câu
+   * ngữ pháp, và `null` cho câu từ vựng"). Mục 8 đó SAI, và tự MÂU THUẪN với
+   * chính mục 9 của cùng tài liệu ("Giải thích cho câu từ vựng viết riêng.
+   * DÙNG NGHĨA TIẾNG VIỆT VÀ CÂU VÍ DỤ ĐÃ CÓ; không soạn thêm nội dung mới")
+   * — tức câu từ vựng VẪN phải có giải thích, chỉ là GHÉP từ dữ liệu có sẵn
+   * thay vì soạn mới, không phải bỏ trống. Mục 9 mới là quyết định thật của
+   * người dùng (chọn phương án "đầy đủ" — hiện nghĩa/ví dụ cho câu từ vựng là
+   * phần lớn lý do phương án đó đáng làm); mục 8 đã được sửa lại cho khớp,
+   * xem `docs/superpowers/specs/2026-08-15-dung-lai-xem-ket-qua-design.md`.
+   *
+   * Vì vậy kiểu ở đây là `string` KHÔNG nullable cho CẢ BA dạng câu:
+   * - Ngữ pháp: `grammar_questions.explanation` (cột `not null`, migration
+   *   0001), lấy qua RPC `dap_an_va_giai_thich` — VĂN BẢN NGƯỜI SOẠN VIẾT SẴN.
+   * - Cả hai dạng từ vựng: GHÉP từ `vocab_words.meaning_vi` +
+   *   `vocab_words.example_vi` (cả hai đều `not null`, migration 0001) qua
+   *   `ghepGiaiThichTuVung` bên dưới — KHÔNG PHẢI văn bản soạn riêng, chỉ là
+   *   trình bày lại dữ liệu đã có sẵn từ trước. Đọc `ghepGiaiThichTuVung` nếu
+   *   đi tìm nguồn cho phần từ vựng — `vocab_words` KHÔNG có cột nào tên
+   *   "explanation" như `grammar_questions`, và sẽ không bao giờ có.
+   */
+  giaiThich: string;
+}
+
+/**
+ * Ghép `giaiThich` cho câu TỪ VỰNG (cả hai dạng "nghĩa" và "điền") từ nghĩa
+ * tiếng Việt và câu ví dụ tiếng Việt — GHÉP dữ liệu ĐÃ CÓ SẴN trong
+ * `vocab_words`, KHÔNG PHẢI soạn nội dung giải thích mới (spec thiết kế mục 9
+ * loại trừ rõ việc đó). Khác câu ngữ pháp — nơi `giaiThich` là một cột văn bản
+ * người soạn đề viết sẵn (`grammar_questions.explanation`) — từ vựng không có
+ * cột tương đương, nên hàm này là nguồn DUY NHẤT tạo ra chuỗi hiển thị đó.
+ *
+ * Cách ghép: "Nghĩa: …. Ví dụ: …" — một chuỗi phẳng, không xuống dòng, để
+ * UI (Task 3) render một khối duy nhất mà không cần biết đang ở loại bài nào
+ * (ngữ pháp hay từ vựng, "nghĩa" hay "điền") — cùng một `data-testid` một chỗ
+ * hiển thị cho cả bốn loại câu.
+ */
+function ghepGiaiThichTuVung(meaningVi: string, exampleVi: string): string {
+  return `Nghĩa: ${meaningVi}. Ví dụ: ${exampleVi}`;
 }
 
 /**
@@ -488,30 +553,70 @@ export async function recordAnswer(
 
   const itemType = item.item_type as string;
   let dapAn: string;
+  // KHÔNG có giá trị mặc định — cả ba nhánh bên dưới đều gán tường minh
+  // (xem sửa vòng 1 tại JSDoc `KetQuaTraLoi.giaiThich`: kiểu ở đây là `string`
+  // không nullable, nên một mặc định `null` ngầm sẽ sai kiểu ngay từ đầu thay
+  // vì chỉ thiếu nội dung).
+  let giaiThich: string;
   if (itemType === "grammar") {
-    // Đáp án của câu ngữ pháp nằm ở `grammar_questions.answer` (một chữ cái
-    // A-D), cột đã bị revoke khỏi `authenticated` (0004_rls.sql) — RPC
-    // `answer_for_question` (security definer, 0006_lesson_position.sql) suy
-    // sẵn CHỮ HIỂN THỊ tương ứng, cùng khuôn `answer_for_word` bên dưới.
-    const { data, error } = await supabase.rpc("answer_for_question", { p_question_id: item.ref_id });
+    // THAY `answer_for_question` bằng `dap_an_va_giai_thich` (migration 0013,
+    // Task 1) — một RPC `security definer` trả CẢ HAI trường trong MỘT lượt
+    // gọi, nên đây là phép THAY chứ không phải THÊM: số vòng gọi mạng cho câu
+    // ngữ pháp không đổi so với trước lát này. `explanation` (cột nguồn của
+    // `giai_thich`) bị revoke khỏi `authenticated` cùng lý do với `answer`
+    // (0004_rls.sql) — RPC là đường hợp lệ duy nhất, xem chú thích đầu 0013.
+    const { data, error } = await supabase.rpc("dap_an_va_giai_thich", { p_question_id: item.ref_id });
     if (error) throw error;
-    dapAn = data as string;
+    // postgrest-js trả hàm `returns table(...)` thành MẢNG — cùng cái bẫy đã
+    // xử lý ở `submitExam` cho `finalize_assessment_items` bên dưới.
+    const hang = Array.isArray(data) ? data[0] : data;
+    if (!hang) {
+      throw new Error(`dap_an_va_giai_thich không trả về dòng nào cho câu hỏi ${item.ref_id}`);
+    }
+    dapAn = hang.dap_an as string;
+    // `explanation` là cột `not null` (migration 0001) — 537 câu ngữ pháp đều
+    // đã có sẵn giải thích thật, không có trường hợp rỗng cần phòng thủ thêm.
+    giaiThich = hang.giai_thich as string;
   } else {
     const kind = (item.payload as { kind: string }).kind;
     if (kind === "dien") {
       const { data, error } = await supabase.rpc("answer_for_word", { p_word_id: item.ref_id });
       if (error) throw error;
       dapAn = data as string;
+
+      // Vòng gọi THÊM DUY NHẤT của cả lát này (xem bảng vòng gọi ở spec thiết
+      // kế, mục 3): `meaning_vi`/`example_vi` ghép thành `giaiThich` hiển thị
+      // (xem `ghepGiaiThichTuVung`) — đáp án chấm điểm đã lấy đủ từ RPC ở trên
+      // rồi, vòng này chỉ phục vụ phần đọc kết quả. Chạy TRONG LÚC người học
+      // đang đọc màn hình kết quả của câu vừa trả lời, không phải lúc họ đang
+      // chờ phản hồi — không cộng vào độ trễ cảm nhận được của thao tác bấm
+      // chọn. SỬA VÒNG 1: bản trước bắt lỗi ở đây rồi chỉ log (không throw)
+      // vì dữ liệu "chưa được dùng tới đâu" — giờ `giaiThich` là một phần bắt
+      // buộc của kết quả trả về (kiểu `string`, không nullable), nên lỗi ở
+      // đây phải throw như mọi lỗi đọc khác trong hàm này, không được nuốt.
+      const { data: hienThi, error: hienThiErr } = await supabase
+        .from("vocab_words")
+        .select("meaning_vi, example_vi")
+        .eq("id", item.ref_id)
+        .single();
+      if (hienThiErr) throw hienThiErr;
+      giaiThich = ghepGiaiThichTuVung(hienThi.meaning_vi as string, hienThi.example_vi as string);
     } else {
       // Chỉ `blank_answer` bị revoke khỏi `authenticated` (0004_rls.sql) —
-      // `word` vẫn nằm trong danh sách cột đọc công khai, nên câu "nghĩa" đọc
-      // thẳng qua client thường là đủ, không cần vòng qua RPC như câu "điền".
-      // Đây là một sự KHÔNG ĐỐI XỨNG có chủ đích giữa hai nhánh, không phải
-      // thiếu nhất quán.
+      // `word`, `meaning_vi`, `example_vi` đều nằm trong danh sách cột đọc
+      // công khai, nên câu "nghĩa" đọc thẳng qua client thường là đủ, không
+      // cần vòng qua RPC như câu "điền". Đây là một sự KHÔNG ĐỐI XỨNG có chủ
+      // đích giữa hai nhánh, không phải thiếu nhất quán. Mở rộng thêm
+      // `meaning_vi, example_vi` (Task 2, dùng để ghép `giaiThich` — xem
+      // `ghepGiaiThichTuVung`) là CÙNG một vòng gọi này — không tốn thêm vòng.
       const { data, error } = await supabase
-        .from("vocab_words").select("word").eq("id", item.ref_id).single();
+        .from("vocab_words")
+        .select("word, meaning_vi, example_vi")
+        .eq("id", item.ref_id)
+        .single();
       if (error) throw error;
       dapAn = data.word as string;
+      giaiThich = ghepGiaiThichTuVung(data.meaning_vi as string, data.example_vi as string);
     }
   }
 
@@ -532,10 +637,20 @@ export async function recordAnswer(
   // "CÂU TRẢ LỜI ĐẦU TIÊN THẮNG": không có lượt ghi thứ hai vô điều kiện nào
   // ở đây để "sửa lại" một đáp án đã lưu — cố ý CHỈ giữ một luật (đầu tiên
   // thắng) thay vì hai luật chồng nhau, khớp với giao diện vốn không bao giờ
-  // cho lùi lại một câu đã trả lời. Lệnh gọi thua cuộc đua vẫn trả về đúng/sai
-  // của CHÍNH đáp án nó vừa nộp (không phải đáp án đã lưu trong DB) — người
-  // gọi chỉ dùng giá trị này để hiện dải "câu trước: đúng/sai" mang tính tham
-  // khảo, không dùng để quyết định có ghi hay không.
+  // cho lùi lại một câu đã trả lời. Lệnh gọi thua cuộc đua vẫn tính `dung`
+  // trên đáp án CHÍNH NÓ vừa gửi — nhưng thứ đã được CHẤM và ghi thật vào
+  // `assessment_items` là đáp án của LẦN TRẢ LỜI ĐẦU TIÊN, có thể khác đáp án
+  // lần này (bấm lại sau khi đã có đáp án, hoặc hai lệnh gọi đồng thời). Vì
+  // vậy `dung` ở lượt thua KHÔNG đáng tin để hiện phán quyết đúng/sai — hiện
+  // nó ra là nói dối người học (màn hình báo "Chính xác" trong khi trang kết
+  // quả chấm SAI theo đáp án đã ghi). Đây là lý do `ExamRunner.tsx` (xem
+  // nhánh theo `ghiNhanLanNay` tại render, quanh dòng 570-583) CẤM hiện phán
+  // quyết đúng/sai khi `ghiNhanLanNay === false`, thay bằng thông báo trung
+  // thực "câu này đã được ghi nhận từ một lần trả lời trước" — ĐỪNG coi
+  // `dung` lúc `ghiNhanLanNay === false` là "mang tính tham khảo" và nới lỏng
+  // chốt chặn đó; một bản chú thích cũ ở đây từng viết đúng như vậy và đã bị
+  // sửa lại (vòng dọn cuối trước khi hợp nhất nhánh "dừng lại xem kết quả"
+  // vào main) vì nó ngược hẳn luật thật.
   const { data: updated, error: ghiErr } = await supabase
     .from("assessment_items")
     .update({ user_answer: answer, is_correct: dung })
@@ -550,19 +665,43 @@ export async function recordAnswer(
   // là một lượt trả lời lại TUẦN TỰ (bấm lại sau khi đã có đáp án) hay một
   // lệnh gọi ĐỒNG THỜI vừa thắng — cả hai trường hợp đều không được cộng
   // thêm, vì cả hai đều không phải "lần trả lời đầu tiên" của câu này nữa.
+  //
+  // GHI NHẬN MỘT CA CÓ THẬT (không đổi logic ở đây, chỉ để người đọc sau
+  // không tưởng nhầm là lỗi): `traLoiCoThuLai` (`ExamRunner.tsx`) tự gọi lại
+  // `recordAnswer` cho ĐÚNG vị trí vừa gửi khi lần gọi trước ném lỗi — kể cả
+  // khi UPDATE ở trên đã COMMIT xong nhưng phản hồi bị rớt trên đường về
+  // (client thấy lỗi mạng dù server đã ghi). Lần thử lại đó thua CAS
+  // (`user_answer` không còn `null`) nên `ghiNhanLanNay` ra `false`, và người
+  // học thấy thông báo "câu này đã được ghi nhận từ một lần trả lời trước" —
+  // dù thực tế họ chỉ bấm ĐÚNG MỘT LẦN. Trung thực nhưng dễ gây hoang mang.
+  // Ca này vô hại hơn vẻ ngoài của nó: đáp án lần "thử lại" giống hệt đáp án
+  // lần đầu (cùng một cú bấm, retry gửi lại đúng tham số), nên `dung` vẫn
+  // khớp với thứ đã ghi, và `dapAnDung`/`giaiThich` luôn đúng bất kể
+  // `ghiNhanLanNay` (xem JSDoc `KetQuaTraLoi.dapAnDung`) — chỉ dòng chữ phán
+  // quyết là dùng nhánh "đã ghi từ trước" thay vì "Chính xác."/"Chưa đúng."
+  // một cách không cần thiết. Không sửa vì không có cách nào ở tầng này phân
+  // biệt "thua CAS vì đây là lần thử lại của chính request đó" với "thua CAS
+  // vì một lần bấm THẬT SỰ khác đã ghi trước" — cả hai đều là "0 dòng khớp"
+  // như nhau, và giả bộ phân biệt được sẽ tệ hơn: hiện "Chính xác." nhầm cho
+  // một ca mà thật ra là ghi đè giả.
   const ghiNhanLanNay = Boolean(updated && updated.length > 0);
   if (ghiNhanLanNay) {
     // Câu trả lời đã NẰM TRONG DATABASE ngay tại UPDATE ở trên — ghi mastery
     // là một bước SAU, tách rời. SỬA SAU VÒNG SOÁT CUỐI (finding 4, ghi chú
     // "note while you are there"): TRƯỚC bản vá này, một lỗi ở BƯỚC NÀY (ví
     // dụ mất mạng ngay sau khi UPDATE vừa commit) làm cả `recordAnswer` ném
-    // lỗi, khiến `ExamRunner` tưởng nhầm câu trả lời "chưa gửi được" và đưa
-    // vị trí này vào `viTriLoi` — SAI: đáp án đã ghi và đã được chấm đúng
-    // trong `assessment_items`, chặn nộp bài vì nó là chặn vô ích, và bảo
-    // người học "tải lại trang" (thông điệp finding 4 yêu cầu) không sửa
-    // được gì vì lỗi không nằm ở chỗ đó. Vì vậy lỗi ở bước này KHÔNG được ném
-    // tiếp lên — chỉ log lại để còn dấu vết gỡ lỗi, không nuốt hoàn toàn
-    // trong im lặng. (Bên trong `applyWordMastery`/`applyGrammarMastery`, lỗi
+    // lỗi, khiến `ExamRunner` tưởng nhầm câu trả lời "chưa gửi được" — SAI:
+    // đáp án đã ghi và đã được chấm đúng trong `assessment_items`.
+    // SỬA CHÚ THÍCH Ở VÒNG SỬA 1 lát "dừng lại xem kết quả" (review, Minor
+    // 8): đoạn trên từng kể tiếp "...và đưa vị trí này vào `viTriLoi`, chặn
+    // nộp bài ở cuối" — `viTriLoi` đó đã bị GỠ HẲN khỏi `ExamRunner` ở lát đó
+    // (không còn tồn tại, xem `ExamRunner.tsx`), nên câu kể cũ giờ sai về
+    // component hiện tại. Lý do KHÔNG rethrow ở đây vẫn nguyên dù cơ chế phía
+    // trên đã đổi: một câu đã ghi đúng không nên bị giao diện hiện lại như
+    // một lỗi, dù giao diện hiện tại thể hiện điều đó bằng cách nào. Vì vậy
+    // lỗi ở bước này KHÔNG được ném tiếp lên — chỉ log lại để còn dấu vết gỡ
+    // lỗi, không nuốt hoàn toàn trong im lặng. (Bên trong
+    // `applyWordMastery`/`applyGrammarMastery`, lỗi
     // ĐỌC vẫn bắt buộc throw — đó là một bất biến khác, bảo vệ chính upsert
     // của nó khỏi ghi đè sạch tiến độ đã tích luỹ, xem chú thích tại
     // `mastery/write.ts`.)
@@ -597,7 +736,11 @@ export async function recordAnswer(
     }
   }
 
-  return { ghiNhanLanNay, dung };
+  // `dapAn`/`giaiThich` được GÁN từ lâu (ba nhánh phía trên) nhưng chỉ RỜI hàm
+  // này ở đúng dòng return này — SAU dòng UPDATE có CAS ở trên đã chạy xong.
+  // Đây chính là điều làm `dapAnDung` an toàn để gửi cho client (xem chú
+  // thích tại `KetQuaTraLoi`), không phải việc dữ liệu được tính toán muộn.
+  return { ghiNhanLanNay, dung, dapAnDung: dapAn, giaiThich };
 }
 
 /**
