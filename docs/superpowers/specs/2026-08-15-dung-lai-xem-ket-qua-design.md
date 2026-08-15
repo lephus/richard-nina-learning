@@ -138,3 +138,27 @@ phương án vẫn đang trên màn hình để bấm lại. Không còn câu n�
   điều đó.
 - **Giải thích cho câu từ vựng viết riêng.** Dùng nghĩa tiếng Việt và câu ví dụ
   đã có; không soạn thêm nội dung mới.
+
+## 10. Một giới hạn đã biết của RPC mới — ghi lại để không phải suy luận lại
+
+`dap_an_va_giai_thich(p_question_id)` nhận **id câu trần**. Nghĩa là bất kỳ ai
+đã đăng nhập cũng hỏi được đáp án của bất kỳ câu ngữ pháp nào, không cần đang
+làm bài chứa câu đó.
+
+Đây **không** phải rò dữ liệu chéo người dùng: `grammar_questions` là nội dung
+dùng chung, còn tiến độ và câu trả lời của người khác nằm ở `assessment_items`,
+đã `revoke all ... from authenticated` từ `0008`.
+
+Cái còn lại là kênh **tự gian lận**, và nó **có sẵn từ trước lát này**:
+`0004_rls.sql` cấp `select (id, lesson_id, stem, options)` cho `authenticated`,
+còn `prompt` hiển thị chính là `stem` — nên client khớp đề trên màn hình về `id`
+qua PostgREST rồi gọi `answer_for_question` (`0006`, cùng kiểu cấp quyền) là ra
+đáp án trước khi trả lời. `0013` sao đúng khuôn đó; phần lộ thêm duy nhất là
+`explanation`, thứ chỉ có nghĩa khi đã biết đáp án.
+
+Nên lát này **không** làm tình hình xấu đi, và vá nửa vời ở đây cũng không đóng
+được kênh — muốn đóng thì phải đóng cả `answer_for_question` lẫn quyền cột ở
+`0004`, tức một lát riêng. Chữ ký đúng khi làm lát đó: `(p_assessment_id,
+p_position)`, kiểm `auth.uid()` sở hữu bài và `user_answer is not null` — khi ấy
+đáp án mới thật sự chỉ rời server sau khi câu trả lời đã bị khoá, đúng như mục 4
+hứa hẹn ở tầng giao diện.
