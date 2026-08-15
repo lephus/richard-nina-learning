@@ -132,7 +132,6 @@ export function Deck({
     // `flushCursor` cố tình không nằm trong danh sách phụ thuộc: nó đọc mọi
     // thứ qua ref (và `lessonId` không đổi trong một lần sống của Deck) nên
     // không cần dựng lại hẹn giờ mỗi lần render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lessonId, index]);
 
   // Lưu nốt khi rời trang HẲN. Deck không remount giữa các thẻ (chỉ WordCard
@@ -144,7 +143,6 @@ export function Deck({
     return () => {
       void flushCursor();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const card = cards[index];

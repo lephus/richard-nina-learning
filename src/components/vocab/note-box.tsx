@@ -56,7 +56,6 @@ export function NoteBox({
     return () => clearTimeout(t);
     // `flush` cố tình không nằm trong danh sách phụ thuộc: nó đọc mọi thứ qua
     // ref nên không cần dựng lại hẹn giờ mỗi lần render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [body, wordId]);
 
   // Lưu nốt khi rời thẻ. `wordId` không bao giờ đổi trong một lần sống của
@@ -67,7 +66,6 @@ export function NoteBox({
     return () => {
       void flush();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
