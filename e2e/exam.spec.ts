@@ -52,26 +52,57 @@ test("bấm LÀM BÀI vào thẳng bài thi, không còn trang sắp có", async
   await expect(page.getByTestId("exam-option")).toHaveCount(4);
 });
 
-test("bấm một đáp án là sang câu sau ngay", async ({ page }) => {
+// SỬA Ở LÁT "dừng lại xem kết quả": kịch bản này khẳng định ĐÚNG hành vi bị
+// đảo lại (spec phase 2 mục 5.4, "bấm một đáp án → sang câu sau ngay lập
+// tức"). Viết lại tên và thân, KHÔNG xoá — xem mục 1 của spec thiết kế lát
+// này ("đây là đảo lại một quyết định cũ, không phải sửa lỗi").
+test("bấm một đáp án thì dừng lại cho xem kết quả, chưa sang câu sau", async ({ page }) => {
   await login(page);
   await page.goto("/vocab/learn/1");
   await page.getByTestId("exam-button").click();
   await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
 
-  // Đợi đúng response gửi đáp án này trước khi kịch bản kết thúc: `chon()`
-  // sang câu kế NGAY, không đợi mạng (đúng thiết kế "bấm nhanh hơn mạng"),
-  // nhưng `afterEach` ngay trên xoá `assessments` của tài khoản test SAU MỖI
-  // kịch bản. Không đợi thì lệnh xoá đó có thể chạy trước khi request
-  // `traLoi()` còn đang bay tới nơi — `recordAnswer` đọc `assessment_items`
-  // của một bài vừa bị xoá giữa chừng, ném `PGRST116` (đã tái hiện thật khi
-  // chạy lần đầu). Không làm hỏng kịch bản nào (server chỉ log lỗi), nhưng là
-  // nhiễu tự gây ra — cùng khuôn `vocab.spec.ts` đợi response trước khi rời
-  // trang/dọn dẹp.
-  const guiDapAn = page.waitForResponse((r) => r.request().method() === "POST");
   await page.getByTestId("exam-option").first().click();
 
+  // Vẫn ở câu 1 — đây là toàn bộ điểm của lát này.
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
+  await expect(page.getByTestId("exam-phan-hoi")).toBeVisible();
+  await expect(page.getByTestId("exam-dap-an-dung")).toBeVisible();
+  await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
+
+  await page.getByTestId("exam-tiep-tuc").click();
   await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 2/30");
-  await guiDapAn;
+});
+
+test("sau khi trả lời, bấm lại một phương án không làm gì (phương án đã đóng băng)", async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto("/vocab/learn/1");
+  await page.getByTestId("exam-button").click();
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
+
+  await page.getByTestId("exam-option").first().click();
+  await expect(page.getByTestId("exam-phan-hoi")).toBeVisible();
+
+  // Bốn phương án đóng băng (`disabled`) ngay khi đã có kết quả — khẳng định
+  // tường minh thuộc tính này trước, vì Playwright coi một phần tử `disabled`
+  // là KHÔNG thể thao tác được và `click()` thường sẽ tự chờ nó "actionable"
+  // rồi hết hạn (không phải hành vi ta muốn kiểm ở đây).
+  const soPhuongAn = await page.getByTestId("exam-option").count();
+  for (let k = 0; k < soPhuongAn; k++) {
+    await expect(page.getByTestId("exam-option").nth(k)).toBeDisabled();
+  }
+
+  // `force: true` mô phỏng đúng một cú bấm chuột THẬT (không quan tâm thuộc
+  // tính DOM `disabled`, khác `click()` thường) — khẳng định handler phía
+  // component tự chặn (xem `chon` trong `ExamRunner.tsx`), không chỉ dựa vào
+  // đúng một lớp phòng thủ (thuộc tính `disabled`) mà thao tác này đã bấm
+  // xuyên qua. Không có gì đổi: vẫn câu 1, vẫn đúng khối phản hồi cũ.
+  await page.getByTestId("exam-option").nth(1).click({ force: true });
+  await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
+  await expect(page.getByTestId("exam-phan-hoi")).toBeVisible();
+  await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
 });
 
 test("trang sắp có cũ không còn tồn tại", async ({ page }) => {
@@ -81,7 +112,12 @@ test("trang sắp có cũ không còn tồn tại", async ({ page }) => {
 });
 
 test("trả lời sai hết thì thấy điểm, trạng thái chưa đạt, và nút bổ túc", async ({ page }) => {
-  test.setTimeout(180_000);
+  // SỬA Ở LÁT "dừng lại xem kết quả": 240s (trước 180s) — mỗi câu giờ tốn
+  // HAI cú bấm (chọn phương án rồi Tiếp tục/Nộp bài, xem vòng lặp bên dưới)
+  // thay vì một, và cú bấm thứ hai phải CHỜ khối `exam-phan-hoi` hiện ra
+  // trước khi actionable — không chỉ đơn thuần gấp đôi số cú bấm mà còn cộng
+  // thêm độ trễ chờ UI giữa hai cú bấm của cùng một câu.
+  test.setTimeout(240_000);
   await login(page);
   await page.goto("/vocab/learn/2");
   await page.getByTestId("exam-button").click();
@@ -89,20 +125,28 @@ test("trả lời sai hết thì thấy điểm, trạng thái chưa đạt, và
 
   // Luôn chọn phương án đầu: có câu trúng có câu trượt, nhưng chắc chắn
   // không đạt 24/30 — đủ để lộ ra nhánh chưa đạt.
+  //
+  // SỬA Ở LÁT "dừng lại xem kết quả": vòng lặp giờ có HAI cú bấm mỗi câu —
+  // chọn phương án (dừng lại xem kết quả, không tự sang câu kế như bản trước
+  // lát này), rồi bấm nút `exam-tiep-tuc` để thật sự sang câu kế. Nút đó cùng
+  // `data-testid` cho cả 29 câu giữa ("Tiếp tục") lẫn câu 30 ("Nộp bài" —
+  // xem `ExamRunner.tsx`), nên vòng lặp không cần rẽ nhánh theo vị trí; câu
+  // cuối bấm xong `exam-tiep-tuc` chính là bấm nộp bài.
   for (let n = 1; n <= 30; n++) {
     await expect(page.getByTestId("exam-tien-do")).toHaveText(`Câu ${n}/30`);
     await page.getByTestId("exam-option").first().click();
+    await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
+    await page.getByTestId("exam-tiep-tuc").click();
   }
 
-  // `hangDoi` (ExamRunner.tsx) gửi 30 câu trả lời TUẦN TỰ — mỗi câu một vòng
-  // mạng thật tới Supabase (~1s/câu đo được), không song song. Vòng lặp trên
-  // đã lướt qua UI trong vài giây (setI không đợi mạng), nhưng hàng đợi phía
-  // sau còn phải rút cạn hết rồi `nopBai` mới gọi được — có thể mất hơn
-  // 5000ms mặc định của `expect`. Nới timeout CHO ĐÚNG khẳng định này (không
+  // `traLoi` gửi mỗi câu trả lời qua một vòng mạng thật tới Supabase
+  // (~1s/câu đo được), TUẦN TỰ (giao diện đứng chờ từng câu trước khi cho
+  // bấm Tiếp tục — xem `ExamRunner.tsx`), cộng thêm thời gian chờ UI cập
+  // nhật giữa hai cú bấm mỗi câu. Nới timeout CHO ĐÚNG khẳng định này (không
   // phải cắt bớt 30 câu để chạy nhanh hơn — bản bàn giao yêu cầu giữ nguyên
   // độ phủ) thay vì chỉ dựa vào `test.setTimeout` tổng, vốn không nới hạn của
   // riêng một lệnh `expect`.
-  await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 60_000 });
+  await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 90_000 });
   await expect(page.getByTestId("ket-qua-diem")).toBeVisible();
   await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();
 
@@ -213,15 +257,22 @@ test("tải lại trang giữa bài thi thì vào lại đúng câu tiếp theo,
   await page.getByTestId("exam-button").click();
   await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
 
-  // Trả lời 3 câu đầu, đợi ĐÚNG response của từng câu trước khi bấm câu kế —
-  // cùng lý do đã ghi ở kịch bản "bấm một đáp án là sang câu sau ngay": phải
-  // chắc chắn câu trả lời đã NẰM TRONG DATABASE trước khi tải lại trang bên
-  // dưới, nếu không việc "mất tiến độ" đo được có thể chỉ là do request còn
-  // đang bay, không phải do lỗi ở logic khôi phục.
+  // Trả lời 3 câu đầu, đợi ĐÚNG response của từng câu trước khi bấm Tiếp tục
+  // — cùng lý do đã ghi ở kịch bản "bấm một đáp án thì dừng lại cho xem kết
+  // quả": phải chắc chắn câu trả lời đã NẰM TRONG DATABASE trước khi tải lại
+  // trang bên dưới, nếu không việc "mất tiến độ" đo được có thể chỉ là do
+  // request còn đang bay, không phải do lỗi ở logic khôi phục.
+  //
+  // SỬA Ở LÁT "dừng lại xem kết quả": mỗi câu giờ hai cú bấm — chọn phương án
+  // (chờ ĐÚNG response POST của nó, như trước), rồi bấm `exam-tiep-tuc` để
+  // thật sự sang câu kế. Cú bấm thứ hai không cần đợi mạng riêng (không gửi
+  // request nào, chỉ đổi state cục bộ), `click()` tự chờ nút actionable.
   for (let n = 1; n <= 3; n++) {
     const guiDapAn = page.waitForResponse((r) => r.request().method() === "POST");
     await page.getByTestId("exam-option").first().click();
     await guiDapAn;
+    await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
+    await page.getByTestId("exam-tiep-tuc").click();
   }
   await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 4/30");
 
@@ -230,11 +281,15 @@ test("tải lại trang giữa bài thi thì vào lại đúng câu tiếp theo,
   // đây sẽ tụt về lại "Câu 1/30" dù 3 câu đầu đã ghi xong trong database.
   await page.reload();
   await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 4/30");
-  // Không có dải "câu trước: đúng/sai" nào — trang không đọc được `is_correct`
-  // (cột đã bị thu hồi khỏi `authenticated`), nên không được đoán bừa cho một
-  // câu vừa hiện lên sau khi tải lại trang mà chưa hề vừa được bấm trong
-  // phiên này.
+  // SỬA Ở LÁT "dừng lại xem kết quả": dải "câu trước: đúng/sai" ở đầu trang
+  // (testid cũ `exam-ket-qua-truoc`) bị BỎ HẲN khỏi `ExamRunner` (mục 5 spec
+  // thiết kế) — phản hồi giờ nằm trong khối `exam-phan-hoi` tại ĐÚNG câu vừa
+  // làm, không còn hiện ở đầu trang khi đã sang câu khác nữa. Sau khi tải
+  // lại trang, câu 4 vừa hiện lên CHƯA từng được bấm trong phiên này nên
+  // không có khối phản hồi nào cho nó — khẳng định luôn `exam-phan-hoi` cũng
+  // vắng mặt, không chỉ testid cũ đã chết.
   await expect(page.getByTestId("exam-ket-qua-truoc")).toHaveCount(0);
+  await expect(page.getByTestId("exam-phan-hoi")).toHaveCount(0);
 });
 
 test("làm bài buổi khác trong khi còn bài dang dở thì thấy cảnh báo lệch buổi (finding 5)", async ({ page }) => {
@@ -286,17 +341,23 @@ test("bỏ bài lần hai từ tab khác (đã bị tab kia xoá trước) thì 
 });
 
 test("đạt bài bổ túc thì thấy nút Làm lại bài, bấm vào dựng được bài chính mới (finding 6)", async ({ page }) => {
-  test.setTimeout(180_000);
+  // SỬA Ở LÁT "dừng lại xem kết quả": 240s (trước 180s) — cùng lý do đã ghi ở
+  // kịch bản "trả lời sai hết...": mỗi câu giờ hai cú bấm thay vì một.
+  test.setTimeout(240_000);
   await login(page);
   await page.goto("/vocab/learn/9");
   await page.getByTestId("exam-button").click();
   await expect(page.getByTestId("exam-tien-do")).toHaveText("Câu 1/30");
 
+  // SỬA Ở LÁT "dừng lại xem kết quả": thêm cú bấm `exam-tiep-tuc` sau mỗi
+  // phương án — cùng khuôn đã dùng ở kịch bản "trả lời sai hết...".
   for (let n = 1; n <= 30; n++) {
     await expect(page.getByTestId("exam-tien-do")).toHaveText(`Câu ${n}/30`);
     await page.getByTestId("exam-option").first().click();
+    await expect(page.getByTestId("exam-tiep-tuc")).toBeVisible();
+    await page.getByTestId("exam-tiep-tuc").click();
   }
-  await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 60_000 });
+  await expect(page).toHaveURL(/\/exam\/\d+\/ket-qua$/, { timeout: 90_000 });
   await expect(page.getByTestId("ket-qua-bo-tuc")).toBeVisible();
 
   await page.getByTestId("ket-qua-bo-tuc").click();
